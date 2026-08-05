@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>גדלים למחר – גליל-טק 🌱</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *{font-family:'Heebo',sans-serif;}
+    .hero{background:linear-gradient(135deg,rgba(20,83,45,.93),rgba(22,101,52,.87)),url('https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=1600&q=80') center/cover;}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .float{animation:float 3s ease-in-out infinite;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .fi{animation:fadeIn .6s ease both;}
+    .card{transition:all .3s;}
+    .card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.15);}
+    /* mode toggle */
+    .mode-student .teacher-only{display:none;}
+    .mode-teacher .student-only{display:none;}
+  </style>
+</head>
+<body class="bg-gray-50 mode-student" id="body">
+
+<!-- NAV -->
+<nav class="bg-green-900 text-white sticky top-0 z-50 shadow-2xl">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center gap-3 flex-wrap">
+    <a href="index.html" class="flex items-center gap-2">
+      <span class="text-2xl float">🌱</span>
+      <div>
+        <div class="text-lg font-black leading-tight">גדלים למחר</div>
+        <div class="text-xs text-green-300">גליל-טק · מונא · תשפ"ז</div>
+      </div>
+    </a>
+
+    <!-- student nav -->
+    <div class="student-only flex flex-wrap gap-2 text-sm font-bold items-center">
+      <a href="#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+      <a href="#sims-section" class="hover:text-lime-300">🎮 סימולטורים</a>
+      <a href="wall.html" class="hover:text-lime-300">🛠 קיר</a>
+      <a href="leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+      <a href="shop.html" class="hover:text-lime-300">🛒 חנות</a>
+      <button onclick="switchToTeacher()" class="bg-yellow-500 hover:bg-yellow-400 text-green-900 px-4 py-2 rounded-xl">👨‍🏫 מורים</button>
+    </div>
+
+    <!-- teacher nav -->
+    <div class="teacher-only flex flex-wrap gap-2 text-sm font-bold items-center">
+      <a href="#lessons-section" class="hover:text-lime-300">📋 מערכי שיעור</a>
+      <a href="#sims-section" class="hover:text-lime-300">🎮 סימולטורים</a>
+      <a href="#tools-section" class="hover:text-lime-300">🔧 כלים</a>
+      <div class="bg-yellow-500 text-green-900 px-3 py-1 rounded-xl text-xs font-black">👨‍🏫 מצב מורה</div>
+      <button onclick="switchToStudent()" class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-xl text-xs">← חזור לתלמיד</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero min-h-screen flex items-center text-white relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none select-none opacity-10">
+    <div class="absolute top-16 right-10 text-8xl float" style="animation-delay:.3s">🌿</div>
+    <div class="absolute bottom-24 left-12 text-7xl float" style="animation-delay:.9s">🍅</div>
+    <div class="absolute top-1/3 left-1/3 text-6xl float" style="animation-delay:1.5s">💧</div>
+  </div>
+  <div class="max-w-5xl mx-auto text-center px-6 py-24">
+    <!-- student hero -->
+    <div class="student-only fi">
+      <div class="inline-block bg-lime-400/20 border border-lime-400/40 text-lime-300 text-sm font-bold px-5 py-2 rounded-full mb-6">🇮🇱 גליל-טק · מונא – חלל לשינוי · תשפ"ז</div>
+      <h1 class="text-6xl md:text-8xl font-black mb-6 leading-tight">חקלאי<br><span class="text-lime-400">העתיד</span> 🔥</h1>
+      <p class="text-2xl text-green-100 mb-8 max-w-2xl mx-auto">אנחנו מגדלים יזמים, מדענים וחקלאים מהגליל המערבי לעולם</p>
+      <div class="bg-green-900/60 inline-block rounded-3xl px-10 py-5 mb-8 backdrop-blur">
+        <div class="text-green-300 text-sm mb-1">🌿 עלים שלי</div>
+        <div class="text-5xl font-black text-lime-400" id="hero-lv">0</div>
+        <div class="text-green-300 text-xs mt-1" id="hero-lvl">רמה: 🌱 זרע</div>
+      </div>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#lessons-section" class="card bg-lime-500 hover:bg-lime-400 text-green-900 px-10 py-5 rounded-3xl text-xl font-black shadow-xl">🚀 לשיעורים</a>
+        <a href="#sims-section" class="card border-2 border-white/40 bg-white/10 text-white px-8 py-5 rounded-3xl text-lg font-bold">🎮 סימולטורים</a>
+      </div>
+    </div>
+
+    <!-- teacher hero -->
+    <div class="teacher-only fi">
+      <div class="inline-block bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 text-sm font-bold px-5 py-2 rounded-full mb-6">👨‍🏫 מרכז מדריכים · גדלים למחר תשפ"ז</div>
+      <h1 class="text-5xl md:text-6xl font-black mb-4">מרכז הוראה 📋</h1>
+      <p class="text-xl text-green-200 mb-8">מערכי שיעור · סימולטורים · כלים · נתוני כיתה</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-8">
+        <div class="bg-white/10 rounded-2xl p-4 text-center"><div class="text-3xl font-black text-lime-400">7</div><div class="text-xs text-green-300">שיעורים מוכנים</div></div>
+        <div class="bg-white/10 rounded-2xl p-4 text-center"><div class="text-3xl font-black text-lime-400">2</div><div class="text-xs text-green-300">סימולטורים</div></div>
+        <div class="bg-white/10 rounded-2xl p-4 text-center"><div class="text-3xl font-black text-lime-400">4</div><div class="text-xs text-green-300">פאזות</div></div>
+        <div class="bg-white/10 rounded-2xl p-4 text-center"><div class="text-3xl font-black text-lime-400">17</div><div class="text-xs text-green-300">שיעורים סה"כ</div></div>
+      </div>
+      <a href="#lessons-section" class="card bg-yellow-500 hover:bg-yellow-400 text-green-900 px-10 py-5 rounded-3xl text-xl font-black shadow-xl inline-block">📋 למערכי שיעור</a>
+    </div>
+  </div>
+</section>
+
+<!-- LESSONS SECTION -->
+<section id="lessons-section" class="max-w-6xl mx-auto px-6 py-16">
+
+  <!-- student view -->
+  <div class="student-only">
+    <h2 class="text-4xl font-black text-green-900 mb-3 text-center">🌱 השיעורים שלנו</h2>
+    <p class="text-center text-gray-500 mb-10">לחץ על שיעור מוכן כדי להתחיל</p>
+    <div class="grid md:grid-cols-4 gap-4 mb-8">
+      <!-- phase labels -->
+      <div class="md:col-span-4 flex gap-3 flex-wrap">
+        <span class="bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-bold">✅ פאזה 1 – גילוי (1–4)</span>
+        <span class="bg-lime-100 text-lime-700 px-4 py-1 rounded-full text-sm font-bold">📍 פאזה 2 – חקר (5–8)</span>
+        <span class="bg-sky-100 text-sky-600 px-4 py-1 rounded-full text-sm font-bold">🔒 פאזה 3 – חדשנות (9–12)</span>
+        <span class="bg-amber-100 text-amber-700 px-4 py-1 rounded-full text-sm font-bold">🔒 פאזה 4 – יצירה (13–17)</span>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-4 gap-4">
+      <!-- lessons 1-4 done -->
+      <a href="#" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-green-400 opacity-80">
+        <p class="text-2xl mb-1">🌾</p><p class="font-black">שיעור 1</p><p class="text-xs text-gray-400">האתגר הגדול</p><span class="text-xs text-green-600 font-bold">✅</span>
+      </a>
+      <a href="#" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-green-400 opacity-80">
+        <p class="text-2xl mb-1">📅</p><p class="font-black">שיעור 2</p><p class="text-xs text-gray-400">מהי חקלאות?</p><span class="text-xs text-green-600 font-bold">✅</span>
+      </a>
+      <a href="#" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-green-400 opacity-80">
+        <p class="text-2xl mb-1">🌱</p><p class="font-black">שיעור 3</p><p class="text-xs text-gray-400">הצמח צריך</p><span class="text-xs text-green-600 font-bold">✅</span>
+      </a>
+      <a href="#" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-green-400 opacity-80">
+        <p class="text-2xl mb-1">💰</p><p class="font-black">שיעור 4</p><p class="text-xs text-gray-400">החקלאי צריך</p><span class="text-xs text-green-600 font-bold">✅</span>
+      </a>
+      <!-- lessons 5-7 active -->
+      <a href="lessons/lesson-05.html" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-lime-400 relative">
+        <div class="absolute top-2 left-2 bg-lime-400 text-green-900 text-xs font-black px-2 py-0.5 rounded-full">📍</div>
+        <p class="text-2xl mb-1">🌿</p><p class="font-black">שיעור 5</p><p class="text-xs text-gray-500">הידרופוניקה · pH · EC</p>
+        <span class="text-xs text-lime-600 font-bold">פתוח ✅</span>
+      </a>
+      <a href="lessons/lesson-06.html" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-lime-400">
+        <p class="text-2xl mb-1">📡</p><p class="font-black">שיעור 6</p><p class="text-xs text-gray-500">חיישנים · ארדואינו</p>
+        <span class="text-xs text-lime-600 font-bold">פתוח ✅</span>
+      </a>
+      <a href="lessons/lesson-07.html" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-lime-400">
+        <p class="text-2xl mb-1">⚙️</p><p class="font-black">שיעור 7</p><p class="text-xs text-gray-500">if/else · LED · Beewise</p>
+        <span class="text-xs text-lime-600 font-bold">פתוח ✅</span>
+      </a>
+      <!-- lesson 8 coming soon -->
+      <div class="card bg-white rounded-2xl p-5 shadow border-t-4 border-lime-200 opacity-60">
+        <p class="text-2xl mb-1">🔗</p><p class="font-black">שיעור 8</p><p class="text-xs text-gray-400">סינרגיה</p>
+        <span class="text-xs text-gray-400">בקרוב...</span>
+      </div>
+      <!-- lessons 9-17 locked -->
+      <div class="md:col-span-4 grid grid-cols-3 md:grid-cols-5 gap-3 opacity-40">
+        <div class="bg-white rounded-2xl p-4 shadow text-center text-xs border-t-4 border-sky-200"><p class="text-xl mb-1">🛰️</p><p class="font-bold">9</p><p class="text-gray-400">GIS</p></div>
+        <div class="bg-white rounded-2xl p-4 shadow text-center text-xs border-t-4 border-sky-200"><p class="text-xl mb-1">🤖</p><p class="font-bold">10</p><p class="text-gray-400">רובוטיקה</p></div>
+        <div class="bg-white rounded-2xl p-4 shadow text-center text-xs border-t-4 border-sky-200"><p class="text-xl mb-1">📊</p><p class="font-bold">11</p><p class="text-gray-400">Big Data</p></div>
+        <div class="bg-white rounded-2xl p-4 shadow text-center text-xs border-t-4 border-sky-200"><p class="text-xl mb-1">🧠</p><p class="font-bold">12</p><p class="text-gray-400">AI</p></div>
+        <div class="bg-white rounded-2xl p-4 shadow text-center text-xs border-t-4 border-amber-200"><p class="text-xl mb-1">💡</p><p class="font-bold">13–17</p><p class="text-gray-400">יצירה</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- teacher view -->
+  <div class="teacher-only">
+    <div class="max-w-3xl mx-auto mb-8 bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <p class="font-black text-amber-900">🌱 חדשים בתוכנית? התחילו כאן.</p>
+        <p class="text-sm text-gray-600">הקדמה קצרה למורה – אופי התוכנית, מטרות, מבנה השנה והגיימיפיקציה, לפני שפותחים שיעור 1.</p>
+      </div>
+      <a href="teachers/teacher-intro.html" class="bg-amber-600 text-white px-5 py-3 rounded-xl text-sm font-bold hover:bg-amber-500 whitespace-nowrap">קריאת הקדמה ↗</a>
+    </div>
+    <h2 class="text-4xl font-black text-green-900 mb-3 text-center">📋 מערכי שיעור</h2>
+    <p class="text-center text-gray-500 mb-10">לחץ על שיעור מוכן לפתיחת מערך המורה</p>
+    <div class="overflow-x-auto">
+      <table class="w-full bg-white rounded-2xl shadow overflow-hidden text-sm">
+        <thead class="bg-green-800 text-white">
+          <tr>
+            <th class="p-4 text-right">שיעור</th>
+            <th class="p-4 text-right">נושא</th>
+            <th class="p-4 text-center">מערך מורה</th>
+            <th class="p-4 text-center">לומדה תלמיד</th>
+            <th class="p-4 text-center">מצגת</th>
+            <th class="p-4 text-center">סטטוס</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">1 ⭐</td>
+            <td class="p-4 font-bold">האתגר הגדול · שרשרת אספקה · Vertical Field</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-01.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-01.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-01-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">2 ⭐</td>
+            <td class="p-4 font-bold">פרמה-קולצ'ר · ציר-ידע · נטפים · טפטוף</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-02.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-02.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-02-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">3 ⭐</td>
+            <td class="p-4 font-bold">4 צרכי צמח · פוטוסינתזה · Supplant · שתיל אישי</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-03.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-03.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-03-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">4 ⭐</td>
+            <td class="p-4 font-bold">כרטיס עלויות · FieldIn · מדידה ראשונה · סוף פאזה 1</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-04.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-04.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-04-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">11 ⭐</td>
+            <td class="p-4 font-bold">ביג דאטה · Prospera/Valley · גרפים · באדג' מדען נתונים</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-11.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-11.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-11-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">12 ⭐</td>
+            <td class="p-4 font-bold">AI בחקלאות · Beewise+AI · שאל את ה-AI · תפוס את ההזיה</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-12.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-12.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-12-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">10 ⭐</td>
+            <td class="p-4 font-bold">רובוטים · Tevel Tech · דיון-קרב · גרף נתונים</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-10.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-10.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-10-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">8 ⭐</td>
+            <td class="p-4 font-bold">סינרגיה · מפת סינרגיה · BioBee · מעגל בקרה</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-08.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-08.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-08-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">9 ⭐</td>
+            <td class="p-4 font-bold">לוויינים · GIS · Taranis · ציור-מאקרו · פנקס רעיונות</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-09.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-09.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-09-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">5 ⭐</td>
+            <td class="p-4 font-bold">הידרופוניקה · pH · EC · Growee</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-05.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-05.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-05-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50">
+            <td class="p-4 font-black">6</td>
+            <td class="p-4">חיישנים · ארדואינו · Phytech</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-06.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-06.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-06-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50">
+            <td class="p-4 font-black">7</td>
+            <td class="p-4">if/else · LED · חיבורים · Beewise</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-07.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-07.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-07-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">13 ⭐</td>
+            <td class="p-4 font-bold">Design Thinking · Empathize/Define/Ideate · Beewise · כמה רעיונות בדקה</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-13.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-13.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-13-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">14 ⭐</td>
+            <td class="p-4 font-bold">אבטיפוס יום א' · PoC · Lean Canvas · לוג בנייה</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-14.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-14.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-14-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">15 ⭐</td>
+            <td class="p-4 font-bold">אבטיפוס יום ב' · Fail Fast · שיפור מהיר · "בנאי האבטיפוס"</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-15.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-15.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-15-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-lime-50">
+            <td class="p-4 font-black text-lime-700">16 ⭐</td>
+            <td class="p-4 font-bold">פיצ'ינג · 4 טכניקות · קהל בוחר · חזרה גנרלית</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-16.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-16.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-16-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-yellow-50">
+            <td class="p-4 font-black text-yellow-700">17 🏆</td>
+            <td class="p-4 font-bold">סיכום · מיפוי אישי · סגירת דרכון · טקס תגים</td>
+            <td class="p-4 text-center"><a href="teachers/teacher-17.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-17.html" class="bg-yellow-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-yellow-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-17-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-bold">🏆 שיעור סיום</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SIMULATORS SECTION -->
+<section id="sims-section" class="bg-slate-800 text-white py-14 px-6">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-3xl font-black text-center mb-3">🎮 סימולטורים</h2>
+    <p class="text-slate-300 text-center text-sm mb-10">כלי אינטראקטיבי לתרגול לפני – ואחרי – השיעור</p>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- plant sim -->
+      <a href="simulators/simulator.html" class="card bg-slate-700 hover:bg-slate-600 rounded-2xl p-6 text-center border border-slate-600">
+        <div class="text-5xl mb-3">🌱</div>
+        <h3 class="text-xl font-black mb-2">סימולטור הצמח</h3>
+        <p class="text-slate-300 text-sm mb-3">5 חיישנים · pH · EC · הארדואינו מחליט</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <span class="bg-slate-600 text-xs px-2 py-1 rounded">pH ו-EC</span>
+          <span class="bg-slate-600 text-xs px-2 py-1 rounded">לידרבורד</span>
+          <span class="bg-slate-600 text-xs px-2 py-1 rounded">אתגר אבחון</span>
+        </div>
+      </a>
+
+      <!-- arduino sim -->
+      <a href="simulators/arduino-simulator.html" class="card bg-slate-700 hover:bg-slate-600 rounded-2xl p-6 text-center border border-slate-600">
+        <div class="text-5xl mb-3">⚙️</div>
+        <h3 class="text-xl font-black mb-2">סימולטור ארדואינו</h3>
+        <p class="text-slate-300 text-sm mb-3">מתח וזרם · לוח אינטראקטיבי · חיבור רכיבים</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <span class="bg-slate-600 text-xs px-2 py-1 rounded">SVG מפורט</span>
+          <span class="bg-slate-600 text-xs px-2 py-1 rounded">גרירת רכיבים</span>
+          <span class="bg-slate-600 text-xs px-2 py-1 rounded">חידון</span>
+        </div>
+      </a>
+
+      <!-- connected sim -->
+      <div class="card bg-gradient-to-br from-slate-700 to-green-900 rounded-2xl p-6 text-center border border-green-700">
+        <div class="text-5xl mb-3">🔗</div>
+        <h3 class="text-xl font-black mb-2">סימולטור משולב</h3>
+        <p class="text-slate-300 text-sm mb-3">pH יוצא מהטווח ← הארדואינו מדליק LED</p>
+        <a href="simulators/simulator.html?mode=connected" class="inline-block bg-lime-500 hover:bg-lime-400 text-green-900 px-6 py-2 rounded-xl text-sm font-bold">נסה עכשיו!</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS SECTION (teacher only) -->
+<section id="tools-section" class="teacher-only max-w-5xl mx-auto px-6 py-14">
+  <h2 class="text-3xl font-black text-gray-900 mb-8 text-center">🔧 כלים למדריך</h2>
+  <div class="grid md:grid-cols-3 gap-6">
+    <a href="wall.html" class="card bg-white rounded-2xl p-6 shadow text-center border">
+      <div class="text-4xl mb-2">🛠</div><h3 class="font-black mb-1">קיר הכיתה</h3>
+      <p class="text-sm text-gray-500">תמונות שתילים ולייקים</p>
+    </a>
+    <a href="leaves.html" class="card bg-white rounded-2xl p-6 shadow text-center border">
+      <div class="text-4xl mb-2">🏆</div><h3 class="font-black mb-1">לוח עלים</h3>
+      <p class="text-sm text-gray-500">לידרבורד כיתתי בין קבוצות</p>
+    </a>
+    <a href="shop.html" class="card bg-white rounded-2xl p-6 shadow text-center border">
+      <div class="text-4xl mb-2">🛒</div><h3 class="font-black mb-1">חנות העלים</h3>
+      <p class="text-sm text-gray-500">קטלוג בהמתנה למילוי</p>
+    </a>
+    <a href="teacher-dashboard.html" class="card bg-white rounded-2xl p-6 shadow text-center border border-blue-200 bg-blue-50">
+      <div class="text-4xl mb-2">📊</div><h3 class="font-black mb-1">לוח בקרה מורה</h3>
+      <p class="text-sm text-gray-500">נתוני תלמיד · MSK · גרפים</p>
+    </a>
+    <a href="journey.html" class="card bg-white rounded-2xl p-6 shadow text-center border">
+      <div class="text-4xl mb-2">📌</div><h3 class="font-black mb-1">מסע התלמיד</h3>
+      <p class="text-sm text-gray-500">רמות והתקדמות</p>
+    </a>
+    <div class="card bg-blue-50 rounded-2xl p-6 shadow text-center border border-blue-200">
+      <div class="text-4xl mb-2">🌐</div><h3 class="font-black mb-1">העלאה לרשת</h3>
+      <p class="text-sm text-gray-500 mb-3">GitHub Pages – חינם, URL קבוע</p>
+      <a href="https://pages.github.com" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-500">מדריך ↗</a>
+    </div>
+    <div class="card bg-purple-50 rounded-2xl p-6 shadow text-center border border-purple-200">
+      <div class="text-4xl mb-2">🔬</div><h3 class="font-black mb-1">Wokwi – ארדואינו אונליין</h3>
+      <p class="text-sm text-gray-500 mb-3">סימולציית קוד אמיתי</p>
+      <a href="https://wokwi.com" target="_blank" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-purple-500">פתח ↗</a>
+    </div>
+    <div class="card bg-green-50 rounded-2xl p-6 shadow text-center border border-green-200">
+      <div class="text-4xl mb-2">📊</div><h3 class="font-black mb-1">Google Sheets – נתוני כיתה</h3>
+      <p class="text-sm text-gray-500 mb-3">חיבור לנתונים אמיתיים</p>
+      <span class="bg-gray-200 text-gray-500 px-4 py-2 rounded-xl text-xs font-bold">בקרוב</span>
+    </div>
+  </div>
+</section>
+
+<!-- GALIL SECTION (student only) -->
+<section class="student-only bg-green-900 text-white py-14 px-6">
+  <div class="max-w-4xl mx-auto text-center">
+    <div class="text-6xl mb-5">🗻</div>
+    <h2 class="text-3xl font-black mb-3">למה הגליל המערבי?</h2>
+    <p class="text-green-200 text-lg mb-8">הגליל הוא בית לחקלאות עתיקה ולטכנולוגיה חדשה. אתם – הדור שמחבר ביניהם.</p>
+    <div class="grid md:grid-cols-3 gap-5">
+      <div class="bg-white/10 rounded-2xl p-5"><div class="text-3xl mb-2">🌾</div><p class="font-bold">חקלאות עתיקה</p><p class="text-green-300 text-sm">אלפי שנים של ידע</p></div>
+      <div class="bg-white/10 rounded-2xl p-5"><div class="text-3xl mb-2">💻</div><p class="font-bold">טכנולוגיה חדשה</p><p class="text-green-300 text-sm">IoT · AI · ארדואינו</p></div>
+      <div class="bg-white/10 rounded-2xl p-5"><div class="text-3xl mb-2">🚀</div><p class="font-bold">דור חדש</p><p class="text-green-300 text-sm">אתם – חקלאי העתיד</p></div>
+    </div>
+    <p class="text-green-400 text-sm mt-8">גליל-טק · מונא – חלל לשינוי · בשיתוף שלומי, מעלה יוסף, מטה אשר</p>
+  </div>
+</section>
+
+<footer class="bg-green-950 text-green-400 py-6 text-center text-sm">
+  <p class="font-black text-white mb-1">🌱 גדלים למחר – גליל-טק</p>
+  <p>תכנית אגרו-טק · מונא – חלל לשינוי · תשפ"ז</p>
+  <p class="mt-1 text-green-600 text-xs">© כל הזכויות שמורות</p>
+</footer>
+
+<script>
+// ── MODE ──
+let teacherMode=false;
+
+function switchToTeacher(){
+  document.getElementById('body').className='bg-gray-50 mode-teacher';
+  teacherMode=true;sessionStorage.setItem('teacher','1');
+}
+function switchToStudent(){
+  document.getElementById('body').className='bg-gray-50 mode-student';
+  teacherMode=false;sessionStorage.removeItem('teacher');
+}
+
+// restore teacher mode if was logged in
+if(sessionStorage.getItem('teacher')==='1'){switchToTeacher();}
+
+// ── HERO LEAVES ──
+// leaves_earned = סכום כל ה-ls{N} (מצטבר, קובע רמה, לעולם לא יורד)
+let leavesEarned=0;
+for(let i=1;i<=17;i++){ leavesEarned+=parseInt(localStorage.getItem('ls'+i)||'0'); }
+document.getElementById('hero-lv').textContent=leavesEarned;
+const lvls=[[0,'🌱 זרע'],[150,'🌿 שתיל'],[400,'🌳 צמח צעיר'],[700,'🌻 פורח'],[1050,'🏆 חקלאי העתיד']];
+document.getElementById('hero-lvl').textContent='רמה: '+lvls.filter(l=>leavesEarned>=l[0]).pop()[1];
+</script>
+</body>
+</html>

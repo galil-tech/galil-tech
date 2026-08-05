@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שיעור 12 – שקפים | גדלים למחר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/slides-core.css">
+</head>
+<body>
+
+<div id="deck-title">שיעור 12 – AI בחקלאות: בינה מלאכותית שיודעת לגדל</div>
+<div id="backdrop">
+
+  <!-- שקף 1 - מה זה Machine Learning (תבנית B) -->
+  <section class="slide active" data-name="שקף 1" style="background:linear-gradient(160deg,#f0fdf4 0%, #ecfccb 100%);">
+    <div class="topbar transparent">
+      <span class="eyebrow">שיעור 12 · גדלים למחר</span>
+      <span class="phase-chip">🌸 פאזה 3 – פריחה</span>
+    </div>
+    <div class="stage-center">
+      <div>
+        <p class="h1">Machine Learning —<br>מחשב שלומד מאלפי דוגמאות</p>
+      </div>
+    </div>
+    <div class="mascot">🌸</div>
+  </section>
+
+  <!-- שקף 2 - AI נכון מול שגוי (תבנית D) -->
+  <section class="slide" data-name="שקף 2" data-steps="3">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 12 · גדלים למחר</span>
+      <span class="phase-chip">🌸 פאזה 3 – פריחה</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:4%; text-align:center;">איך נבדוק?</p>
+      <div style="display:flex; align-items:center; gap:3%; padding:0 5%;">
+        <div class="rv card card-green" data-step="1" style="flex:1;">
+          <p class="label label-green" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">✅ תשובת AI נכונה</p>
+          <p class="h2" style="color:#374151;">מבוססת על נתונים אמיתיים</p>
+        </div>
+        <div class="vs-badge pulse-at" data-step="2">VS</div>
+        <div class="rv card" data-step="3" style="flex:1; background:#fef2f2; border:2px solid #fecaca;">
+          <p class="label" style="color:#b91c1c; font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">❌ תשובה שגויה ("הזיה")</p>
+          <p class="h2" style="color:#374151;">בטוחה, אבל לא נכונה</p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🌸</div>
+  </section>
+
+</div>
+
+<div id="controls">
+  <button class="navbtn" onclick="slidesGo(-1)">→</button>
+  <span id="counter">1 / 2</span>
+  <div id="dots"></div>
+  <button class="navbtn" onclick="slidesGo(1)">←</button>
+  <button class="navbtn" id="fsbtn" title="מסך מלא">⛶</button>
+</div>
+
+<script src="assets/slides-core.js"></script>
+</body>
+</html>

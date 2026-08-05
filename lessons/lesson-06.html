@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 6 – איך מדברים עם צמחים? | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;}
+    .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;}
+    .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;animation:fadeUp .35s ease;}
+    .reveal.show{display:block;}
+    .qopt{cursor:pointer;border:2px solid #d1fae5;border-radius:12px;padding:14px;text-align:center;font-size:.9rem;transition:all .2s;background:white;}
+    .qopt:hover{border-color:#84cc16;background:#f0fdf4;}
+    .qopt.correct{background:#dcfce7!important;border-color:#16a34a!important;pointer-events:none;}
+    .qopt.wrong{background:#fee2e2!important;border-color:#dc2626!important;pointer-events:none;}
+    .qopt.locked{pointer-events:none;opacity:.7;}
+    /* code */
+    .code-block{cursor:grab;user-select:none;background:#1e293b;color:#7dd3fc;border:2px solid #334155;border-radius:12px;padding:10px 16px;font-family:monospace;font-size:.88rem;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
+    .code-block:hover{border-color:#0ea5e9;transform:scale(1.02);}
+    .code-block.used{opacity:.3;cursor:default;}
+    .code-slot{min-height:52px;border:2.5px dashed #334155;border-radius:12px;background:#0f172a;display:flex;align-items:center;padding:8px 12px;transition:all .2s;font-family:monospace;font-size:.85rem;color:#64748b;}
+    .code-slot.drag-over{border-color:#0ea5e9;background:#0c1e33;}
+    .code-slot.correct-slot{border-color:#16a34a!important;background:#0f2a1a;color:#4ade80;}
+    .code-slot.wrong-slot{border-color:#dc2626;animation:shake .3s;}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+    /* real code reveal */
+    .real-code{display:none;animation:fadeUp .5s ease;}
+    .real-code.show{display:block;}
+    /* sensor */
+    .sensor-card{border:2px solid #e2e8f0;border-radius:20px;transition:all .3s;}
+    .sensor-card.ok{border-color:#16a34a;background:#f0fdf4;}
+    .sensor-card.alert{border-color:#dc2626;background:#fff5f5;}
+    .sensor-card.warn{border-color:#f59e0b;background:#fffbeb;}
+    input[type=range]{-webkit-appearance:none;height:8px;border-radius:4px;background:#e2e8f0;cursor:pointer;width:100%;}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:white;border:3px solid #166534;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2);}
+    .sc-opt{cursor:pointer;border:2px solid #e2e8f0;border-radius:12px;padding:12px;font-size:.85rem;transition:all .2s;}
+    .sc-opt:hover{border-color:#84cc16;}
+    .sc-opt.sc-ok{border-color:#16a34a;background:#f0fdf4;pointer-events:none;}
+    .sc-opt.sc-wrong{border-color:#dc2626;background:#fff5f5;pointer-events:none;}
+    .mission-card{border:2px solid transparent;transition:all .3s;}
+    .mission-card.done{border-color:#16a34a;background:#f0fdf4;opacity:.65;}
+    .yt-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:16px;}
+    .yt-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
+    textarea:focus,input[type=number]:focus,select:focus{outline:2px solid #84cc16;}
+    /* channel cards */
+    .channel-card{border:2px solid transparent;border-radius:16px;padding:16px;transition:all .3s;cursor:pointer;}
+    .channel-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1);}
+    .channel-card.open{border-color:#84cc16;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+
+<!-- MASCOT -->
+<div class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" style="font-size:2.6rem">🌱</div>
+  <div id="mbubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+      <a href="../wall.html" class="hover:text-lime-300">🛠 קיר</a>
+      <a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-gradient-to-r from-slate-800 to-blue-900 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="bg-blue-400 text-blue-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 2</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 6 מתוך 17</span>
+      <span class="bg-lime-400/20 text-lime-300 text-xs px-3 py-1 rounded-full">← המשך משיעור 5</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">📡 איך מדברים עם צמחים?</h1>
+    <p class="text-blue-200 text-lg">שפת הצמחים · חיישנים · ארדואינו · לוגיקת קוד · Phytech</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-blue-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 8</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-blue-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: שפת הצמחים ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-4xl">🌿</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">צמחים מדברים – אנחנו לא שומעים</h2>
+        <p class="text-gray-400 text-sm">← גשר משיעור 5 · קרא הכל לפני שממשיכים</p>
+      </div>
+    </div>
+
+    <!-- bridge -->
+    <div class="bg-lime-50 border-r-4 border-lime-500 rounded-2xl p-4 mb-5">
+      <p class="text-sm font-bold text-lime-700 mb-1">זוכרים משיעור 5?</p>
+      <p class="text-gray-700 text-sm">מדדתם pH ו-EC ידנית. אבל מה קורה בשעה 3 בלילה כש-pH נופל? <b>מי ישמור על הצמח?</b> התשובה טמונה בהבנת שפת הצמח עצמו.</p>
+    </div>
+
+    <!-- main content -->
+    <div class="bg-green-50 border-r-4 border-green-500 rounded-2xl p-6 mb-5 text-gray-700 leading-relaxed">
+      <p class="text-xl font-black text-green-900 mb-4">הצמח מתקשר בשלושה ערוצים:</p>
+
+      <!-- channel 1 -->
+      <div class="bg-white rounded-2xl p-5 mb-4 border border-green-100">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-3xl">👁️</span>
+          <h3 class="text-xl font-black text-green-800">ערוץ חזותי – מה שרואים</h3>
+        </div>
+        <div class="grid md:grid-cols-3 gap-3 text-sm">
+          <div class="bg-green-50 rounded-xl p-3">
+            <p class="font-bold">🌸 פרח צבעוני וגדול</p>
+            <p class="text-gray-500">"בואו אלי – יש כאן צוף!" מושך מאביקים להפריית הפרח</p>
+          </div>
+          <div class="bg-yellow-50 rounded-xl p-3">
+            <p class="font-bold">🟡 עלים צהובים</p>
+            <p class="text-gray-500">"אני במצוקה!" – חסר מינרלים, pH לא תקין, או מחלה</p>
+          </div>
+          <div class="bg-red-50 rounded-xl p-3">
+            <p class="font-bold">🔴 פרי בשל</p>
+            <p class="text-gray-500">"אכלו אותי!" – צבע עז מזמין בעלי חיים לפזר זרעים</p>
+          </div>
+        </div>
+        <div class="mt-3 bg-blue-50 rounded-xl p-3 text-sm">
+          <p class="font-bold text-blue-800">🔗 הקשר לשיעור שלנו:</p>
+          <p class="text-gray-600">עלים צהובים = הצמח "צועק" שמשהו לא בסדר. ה<b>חיישן</b> שלנו יגלה את זה <b>לפני</b> שהצבע משתנה!</p>
+        </div>
+      </div>
+
+      <!-- channel 2 -->
+      <div class="bg-white rounded-2xl p-5 mb-4 border border-purple-100">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-3xl">🧪</span>
+          <h3 class="text-xl font-black text-purple-800">ערוץ כימי – ריחות ופרומונים</h3>
+        </div>
+        <div class="grid md:grid-cols-2 gap-3 text-sm mb-3">
+          <div class="bg-purple-50 rounded-xl p-3">
+            <p class="font-bold">🌺 סחלב הדבורנית</p>
+            <p class="text-gray-500">מפריש ריח שמחקה <b>פרומון מין</b> של דבורים. הזכרים נמשכים, מנסים "להפרות" את הפרח – ומאביקים אותו בטעות! רמאות מושלמת.</p>
+          </div>
+          <div class="bg-orange-50 rounded-xl p-3">
+            <p class="font-bold">🥔 תפוח אדמה בר</p>
+            <p class="text-gray-500">כשנמלה נושכת בו, הוא מפריש ריח שמחקה <b>פרומון אזהרה</b> של נמלים. כל הנמלות בסביבה בורחות מיד!</p>
+          </div>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-3 text-sm">
+          <p class="font-bold text-blue-800">🔗 הקשר לשיעור שלנו:</p>
+          <p class="text-gray-600">פרומון = "אות כימי". חיישן EC מודד את ריכוז החומרים הכימיים במים – גם הצמח וגם אנחנו "שומעים" בערוץ הכימי!</p>
+        </div>
+      </div>
+
+      <!-- channel 3 -->
+      <div class="bg-white rounded-2xl p-5 border border-teal-100">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-3xl">📏</span>
+          <h3 class="text-xl font-black text-teal-800">ערוץ פיזי – שינויים גופניים</h3>
+        </div>
+        <div class="grid md:grid-cols-2 gap-3 text-sm mb-3">
+          <div class="bg-teal-50 rounded-xl p-3">
+            <p class="font-bold">🌳 כיווץ גזע (דנדרומטר)</p>
+            <p class="text-gray-500">כשעץ צמא, תאיו מאבדים נוזלים והגזע <b>מתכווץ מעט</b>. Phytech מודדים שינוי זעיר זה לפני שרואים בעיניים!</p>
+          </div>
+          <div class="bg-teal-50 rounded-xl p-3">
+            <p class="font-bold">🍃 זווית עלים</p>
+            <p class="text-gray-500">עלים <b>מכוונים לאור</b> בזמן גדילה. בלילה הם משתטחים. שינוי כיוון = תקשורת עם הסביבה.</p>
+          </div>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-3 text-sm">
+          <p class="font-bold text-blue-800">🔗 הקשר לשיעור שלנו:</p>
+          <p class="text-gray-600">חיישן <b>טמפרטורה + לחות + אור</b> קוראים בדיוק את התנאים שהצמח "מגיב" אליהם. אנחנו לומדים את שפתו!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- summary box -->
+    <div class="bg-slate-800 text-white rounded-2xl p-5">
+      <p class="font-black text-xl mb-3">💡 אז מה הבעיה?</p>
+      <p class="text-slate-200">הצמח מדבר כל הזמן – אבל אנחנו לא יכולים לשבת לידו 24 שעות ביממה. צריך מישהו שישמע ויגיב במקומנו.</p>
+      <p class="text-blue-300 font-black text-xl mt-3">הפתרון: חיישן + ארדואינו = "אוזניים" לצמח 📡</p>
+    </div>
+  </div>
+
+  <!-- quiz on step 1 -->
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-5">
+    <p class="font-bold text-lg mb-4">❓ לפי מה שקראת – איזה ערוץ תקשורת "משתמשים" בו עלים צהובים?</p>
+    <div class="grid grid-cols-2 gap-3" id="q-p1">
+      <div class="qopt" onclick="pickQ('p1',this,true)">ערוץ חזותי – שינוי צבע</div>
+      <div class="qopt" onclick="pickQ('p1',this,false)">ערוץ כימי – ריח</div>
+      <div class="qopt" onclick="pickQ('p1',this,false)">ערוץ פיזי – כיווץ גזע</div>
+      <div class="qopt" onclick="pickQ('p1',this,false)">אין ערוץ – זו מחלה בלבד</div>
+    </div>
+    <div id="fb-p1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+  </div>
+
+  <div class="flex justify-end">
+    <button onclick="goTo(2)" id="b1" class="hidden bg-slate-700 hover:bg-slate-600 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">מה זה חיישן? ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: חיישנים ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">👃</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">חיישן – החוש של המחשב</h2>
+        <p class="text-gray-400 text-sm">🌿 עד 20 עלים בשלב זה</p>
+      </div>
+    </div>
+    <div class="bg-slate-50 border-r-4 border-slate-400 rounded-2xl p-6 mb-5 text-gray-700 leading-relaxed">
+      <p class="text-lg mb-4"><b>חיישן</b> ממיר תופעה פיזית למספר שמחשב יכול לקרוא. לבני אדם יש 5 חושים – לארדואינו עם חיישנים, כמה שרוצים.</p>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center text-sm">
+        <div class="bg-purple-50 rounded-xl p-3 border border-purple-200">
+          <p class="text-2xl mb-1">⚗️</p><p class="font-bold text-purple-800">pH</p>
+          <p class="text-xs text-gray-400">חומציות המים</p>
+          <p class="text-xs font-bold text-purple-600">← שיעור 5!</p>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-3 border border-blue-200">
+          <p class="text-2xl mb-1">⚡</p><p class="font-bold text-blue-800">EC</p>
+          <p class="text-xs text-gray-400">מוליכות/מינרלים</p>
+          <p class="text-xs font-bold text-blue-600">← שיעור 5!</p>
+        </div>
+        <div class="bg-red-50 rounded-xl p-3 border border-red-100">
+          <p class="text-2xl mb-1">🌡️</p><p class="font-bold">טמפ'</p>
+          <p class="text-xs text-gray-400">°C</p>
+        </div>
+        <div class="bg-sky-50 rounded-xl p-3 border border-sky-100">
+          <p class="text-2xl mb-1">💧</p><p class="font-bold">לחות</p>
+          <p class="text-xs text-gray-400">%</p>
+        </div>
+        <div class="bg-yellow-50 rounded-xl p-3 border border-yellow-100">
+          <p class="text-2xl mb-1">☀️</p><p class="font-bold">אור</p>
+          <p class="text-xs text-gray-400">lux</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gray-50 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-4">❓ למה חיישן עדיף על מדידה ידנית?</p>
+      <div class="grid grid-cols-2 gap-3" id="q-s1">
+        <div class="qopt" onclick="pickQ('s1',this,false)">הוא מדויק יותר תמיד</div>
+        <div class="qopt" onclick="pickQ('s1',this,true)">הוא מודד ברציפות – גם בלילה, גם בסופ"ש</div>
+        <div class="qopt" onclick="pickQ('s1',this,false)">הוא זול יותר מאדם</div>
+        <div class="qopt" onclick="pickQ('s1',this,false)">הוא לא צריך חשמל</div>
+      </div>
+      <div id="fb-s1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="q2-reveal" class="reveal bg-gray-50 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ חיישן pH מודד 4.2. מה המחשב "רואה"?</p>
+      <div class="grid grid-cols-2 gap-3" id="q-s2">
+        <div class="qopt" onclick="pickQ('s2',this,false)">טקסט: "חומצי מאוד"</div>
+        <div class="qopt" onclick="pickQ('s2',this,true)">מספר: 4.2</div>
+        <div class="qopt" onclick="pickQ('s2',this,false)">צבע אדום</div>
+        <div class="qopt" onclick="pickQ('s2',this,false)">אות חשמלי ייחודי</div>
+      </div>
+      <div id="fb-s2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="goTo(1)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="goTo(3)" id="b2" class="hidden bg-slate-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">הארדואינו ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: ארדואינו ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🧠</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">ארדואינו – המוח שמקשיב</h2>
+        <p class="text-gray-400 text-sm">🌿 עד 10 עלים</p>
+      </div>
+    </div>
+    <div class="bg-blue-50 border-r-4 border-blue-500 rounded-2xl p-6 mb-5 text-gray-700 text-lg">
+      <p class="mb-3"><b>ארדואינו</b> הוא מחשב קטן (~₪50) שמחובר לעולם הפיזי. הוא קורא חיישנים, מחליט, ומפעיל ציוד.</p>
+      <div class="bg-white rounded-xl p-4 border border-blue-200 mt-3">
+        <p class="font-bold text-blue-800 mb-2">🔄 הלולאה הבסיסית:</p>
+        <div class="font-mono text-sm bg-slate-900 text-green-400 rounded-xl p-4 leading-loose">
+          <p>1. <span class="text-blue-300">קרא</span> ערך מהחיישן (pH? EC? טמפ'?)</p>
+          <p>2. <span class="text-yellow-300">בדוק</span> האם הערך מחוץ לטווח</p>
+          <p>3. <span class="text-red-300">אם כן</span> – שלח התראה / הפעל משאבה</p>
+          <p>4. <span class="text-gray-400">המתן</span> 5 שניות</p>
+          <p>5. <span class="text-green-400">חזור</span> לשלב 1 ♾️</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- local video -->
+    <div class="mb-5">
+      <p class="font-bold text-gray-700 mb-2">🎬 סרטון: ארדואינו בחקלאות (בעברית)</p>
+      <div class="rounded-2xl overflow-hidden bg-black">
+        <video controls class="w-full rounded-2xl" style="max-height:340px">
+          <source src="arduino.mp4" type="video/mp4">
+          <div class="yt-wrap">
+            <iframe src="https://www.youtube-nocookie.com/embed/nL34zDTPkcs?rel=0&modestbranding=1" title="Arduino" allowfullscreen></iframe>
+          </div>
+        </video>
+      </div>
+      <p class="text-xs text-gray-400 mt-1">שמור את הסרטון בתיקיית האתר בשם: <code class="bg-gray-100 px-2 py-1 rounded">arduino.mp4</code></p>
+    </div>
+
+    <div class="bg-gray-50 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה ההבדל בין ארדואינו למחשב רגיל?</p>
+      <div class="grid grid-cols-2 gap-3" id="q-a1">
+        <div class="qopt" onclick="pickQ('a1',this,false)">ארדואינו חכם יותר</div>
+        <div class="qopt" onclick="pickQ('a1',this,true)">ארדואינו מחובר לעולם הפיזי – חיישנים ומנועים</div>
+        <div class="qopt" onclick="pickQ('a1',this,false)">ארדואינו לא צריך קוד</div>
+        <div class="qopt" onclick="pickQ('a1',this,false)">ארדואינו יותר מהיר</div>
+      </div>
+      <div id="fb-a1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="goTo(2)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="goTo(4)" id="b3" class="hidden bg-slate-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">משחק הקוד ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: CODE DRAG + REAL CODE REVEAL ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-4xl">🎮</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">סדר את שורות הקוד!</h2>
+        <p class="text-gray-400 text-sm">🌿 עד 25 עלים + הפתעה 🎁</p>
+      </div>
+    </div>
+    <div class="bg-slate-800 rounded-2xl p-4 mb-5 text-sm text-slate-300">
+      🎯 <b class="text-white">המשימה:</b> תוכנית שקוראת pH ושולחת התראה אם מתחת ל-5.5 (מחוץ לטווח שלמדנו!)
+    </div>
+    <div id="code-bank" class="flex flex-wrap gap-3 mb-5 p-4 bg-slate-100 rounded-2xl">
+      <div class="code-block" draggable="true" data-val="wait">⏱️ המתן(5000)</div>
+      <div class="code-block" draggable="true" data-val="read">📡 ph = קרא_חיישן()</div>
+      <div class="code-block" draggable="true" data-val="alert">🚨 שלח_התראה("pH נמוך!")</div>
+      <div class="code-block" draggable="true" data-val="if">🤔 אם ph &lt; 5.5:</div>
+      <div class="code-block" draggable="true" data-val="loop">🔄 חזור לתחילה</div>
+    </div>
+    <div class="bg-slate-900 rounded-2xl p-5 space-y-2 mb-4">
+      <div class="flex gap-3 items-center">
+        <span class="text-slate-500 font-mono text-sm w-5">1</span>
+        <div class="code-slot flex-1 rounded-xl" id="cs1" data-answer="read">גרור לכאן...</div>
+      </div>
+      <div class="flex gap-3 items-center">
+        <span class="text-slate-500 font-mono text-sm w-5">2</span>
+        <div class="code-slot flex-1 rounded-xl" id="cs2" data-answer="if">גרור לכאן...</div>
+      </div>
+      <div class="flex gap-3 items-center mr-6">
+        <span class="text-slate-500 font-mono text-sm w-5">3</span>
+        <div class="code-slot flex-1 rounded-xl" id="cs3" data-answer="alert">גרור לכאן (בתוך ה-if)...</div>
+      </div>
+      <div class="flex gap-3 items-center">
+        <span class="text-slate-500 font-mono text-sm w-5">4</span>
+        <div class="code-slot flex-1 rounded-xl" id="cs4" data-answer="wait">גרור לכאן...</div>
+      </div>
+      <div class="flex gap-3 items-center">
+        <span class="text-slate-500 font-mono text-sm w-5">5</span>
+        <div class="code-slot flex-1 rounded-xl" id="cs5" data-answer="loop">גרור לכאן...</div>
+      </div>
+    </div>
+    <div id="code-msg" class="hidden text-center font-bold text-red-500 text-sm mb-3"></div>
+
+    <!-- success + real code reveal -->
+    <div id="code-done" class="hidden">
+      <div class="bg-slate-800 border border-blue-500 rounded-2xl p-5 text-center mb-4">
+        <p class="text-xl font-black text-blue-400 mb-1">💻 +25 עלים! תוכנית מושלמת!</p>
+        <p class="text-slate-300 text-sm">עכשיו – רוצה לראות איך זה נראה בקוד אמיתי של Arduino?</p>
+        <button onclick="revealCode()" class="mt-3 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold">🎁 הצג קוד אמיתי!</button>
+      </div>
+
+      <!-- REAL CODE -->
+      <div id="real-code" class="real-code">
+        <div class="bg-slate-900 rounded-2xl p-5 border border-green-500">
+          <p class="text-green-400 font-bold text-sm mb-4">✅ זה בדיוק הקוד שכתבת – רק באנגלית של Arduino:</p>
+          <!-- header row -->
+          <div class="flex mb-2 px-1">
+            <div class="w-1/2 text-left text-xs text-slate-500 font-bold">קוד Arduino (אנגלית) →</div>
+            <div class="w-1/2 text-right text-xs text-slate-500 font-bold">← פירוש בעברית</div>
+          </div>
+          <!-- code rows: always LTR layout: code on LEFT, Hebrew on RIGHT -->
+          <div dir="ltr" class="font-mono text-sm leading-loose space-y-1">
+
+            <div class="flex items-center gap-3">
+              <code class="text-blue-300 w-1/2 text-left">float ph = readSensor();</code>
+              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 1: קרא חיישן pH ושמור כמספר</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <code class="text-yellow-300 w-1/2 text-left">if (ph &lt; 5.5) {</code>
+              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 2: אם pH מתחת ל-5.5...</span>
+            </div>
+
+            <div class="flex items-center gap-3 pl-6">
+              <code class="text-red-300 w-1/2 text-left">&nbsp;&nbsp;sendAlert("pH too low!");</code>
+              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 3: שלח התראה (בתוך ה-if)</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <code class="text-slate-500 w-1/2 text-left">}</code>
+              <span class="text-slate-500 text-xs w-1/2 text-right" dir="rtl">סגירת תנאי ה-if</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <code class="text-gray-400 w-1/2 text-left">delay(5000);</code>
+              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 4: המתן 5 שניות (5000 מילישניות)</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <code class="text-green-400 w-1/2 text-left">// loop() repeats ♾️</code>
+              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 5: loop() חוזר אוטומטית לנצח</span>
+            </div>
+
+          </div>
+          <div class="mt-4 bg-green-900/30 rounded-xl p-3 text-green-300 text-sm" dir="rtl">
+            💡 <b>שימו לב:</b> הקוד שסידרתם בבלוקים = בדיוק הקוד שמתכנתים אמיתיים כותבים. אתם כבר מבינים קוד!
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="goTo(3)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="goTo(5)" id="b4" class="hidden bg-slate-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">סימולטור ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: SIMULATOR – כל 5 חיישנים ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-4xl">📊</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">סימולטור חיישנים חי</h2>
+        <p class="text-gray-400 text-sm">🌿 עד 15 עלים · גרום ל-2 התראות לפחות</p>
+      </div>
+    </div>
+    <p class="text-gray-500 text-sm mb-5">הארדואינו מחובר ל-5 חיישנים. הזיזו כל אחד – ראו מה קורה.</p>
+
+    <div class="grid md:grid-cols-5 gap-3 mb-5">
+      <!-- pH -->
+      <div class="sensor-card ok p-4 text-center" id="sc-ph">
+        <div class="text-3xl mb-1" id="ph-i">⚗️</div>
+        <p class="font-black text-sm mb-1">pH</p>
+        <div class="text-2xl font-black my-1" id="ph-v">6.0</div>
+        <input type="range" min="30" max="90" value="60" id="ph-sl" oninput="updateSensors()">
+        <div class="text-xs mt-1" id="ph-s">✅ תקין</div>
+      </div>
+      <!-- EC -->
+      <div class="sensor-card ok p-4 text-center" id="sc-ec">
+        <div class="text-3xl mb-1" id="ec-i">⚡</div>
+        <p class="font-black text-sm mb-1">EC</p>
+        <div class="text-2xl font-black my-1" id="ec-v">1.6</div>
+        <input type="range" min="0" max="50" value="16" id="ec-sl" oninput="updateSensors()">
+        <div class="text-xs mt-1" id="ec-s">✅ תקין</div>
+      </div>
+      <!-- temp -->
+      <div class="sensor-card ok p-4 text-center" id="sc-temp">
+        <div class="text-3xl mb-1" id="ti">🌡️</div>
+        <p class="font-black text-sm mb-1">טמפ'</p>
+        <div class="text-2xl font-black my-1" id="tv">22°C</div>
+        <input type="range" min="10" max="45" value="22" id="tsl" oninput="updateSensors()">
+        <div class="text-xs mt-1" id="ts">✅ תקין</div>
+      </div>
+      <!-- hum -->
+      <div class="sensor-card ok p-4 text-center" id="sc-hum">
+        <div class="text-3xl mb-1" id="hi">💧</div>
+        <p class="font-black text-sm mb-1">לחות</p>
+        <div class="text-2xl font-black my-1" id="hv">60%</div>
+        <input type="range" min="10" max="95" value="60" id="hsl" oninput="updateSensors()">
+        <div class="text-xs mt-1" id="hs">✅ תקין</div>
+      </div>
+      <!-- light -->
+      <div class="sensor-card ok p-4 text-center" id="sc-light">
+        <div class="text-3xl mb-1" id="li">☀️</div>
+        <p class="font-black text-sm mb-1">אור</p>
+        <div class="text-2xl font-black my-1" id="lv">600</div>
+        <input type="range" min="0" max="1200" value="600" id="lsl" oninput="updateSensors()">
+        <div class="text-xs mt-1" id="ls">✅ תקין</div>
+      </div>
+    </div>
+
+    <div class="bg-slate-900 rounded-2xl p-4 mb-4">
+      <p class="text-slate-400 text-xs mb-2 font-mono">// הארדואינו מחליט:</p>
+      <div id="ard-dec" class="font-mono text-base text-green-400">✅ כל הערכים תקינים 🌱</div>
+    </div>
+
+    <div id="sim-done" class="hidden bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
+      <p class="text-xl font-black text-lime-700">🎉 +15 עלים! גרמת להתראות!</p>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="goTo(4)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="goTo(6)" id="b5" class="hidden bg-slate-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">תרחישים ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: SCENARIOS + PHYTECH ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🔍</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">זיהוי תרחישים + Phytech</h2>
+        <p class="text-gray-400 text-sm">🌿 עד 30 עלים</p>
+      </div>
+    </div>
+
+    <div class="space-y-5 mb-6">
+      <div class="bg-gray-50 rounded-2xl p-5">
+        <div class="bg-slate-800 rounded-xl p-4 font-mono text-sm mb-4">
+          <p class="text-green-400">pH: <span class="text-red-400">4.1</span> 🔴 | EC: <span class="text-white">1.8</span> ✅ | טמפ': <span class="text-white">22°C</span> ✅</p>
+        </div>
+        <p class="font-bold mb-3">מה הבעיה ומה לעשות?</p>
+        <div class="grid grid-cols-2 gap-2" id="q-sc1">
+          <div class="sc-opt" onclick="pickSc(1,this,true)">pH חומצי מדי – הצמח לא יכול לספוג מינרלים. הוסף pH UP</div>
+          <div class="sc-opt" onclick="pickSc(1,this,false)">EC נמוך – הצמח רעב. הוסף דשן</div>
+          <div class="sc-opt" onclick="pickSc(1,this,false)">טמפ' גבוהה – קרר את המים</div>
+          <div class="sc-opt" onclick="pickSc(1,this,false)">הכל תקין</div>
+        </div>
+        <div id="fb-sc1" class="hidden mt-3 p-3 rounded-xl text-sm"></div>
+      </div>
+
+      <div id="sc2-reveal" class="reveal bg-gray-50 rounded-2xl p-5">
+        <div class="bg-slate-800 rounded-xl p-4 font-mono text-sm mb-4">
+          <p class="text-green-400">pH: <span class="text-white">6.0</span> ✅ | EC: <span class="text-red-400">0.6</span> 🔴 | לחות: <span class="text-white">65%</span> ✅ | אור: <span class="text-white">500 lux</span> ✅</p>
+        </div>
+        <p class="font-bold mb-3">מה הבעיה?</p>
+        <div class="grid grid-cols-2 gap-2" id="q-sc2">
+          <div class="sc-opt" onclick="pickSc(2,this,false)">הכל תקין</div>
+          <div class="sc-opt" onclick="pickSc(2,this,true)">EC נמוך מדי – הצמח רעב. עלים בהירים בקרוב!</div>
+          <div class="sc-opt" onclick="pickSc(2,this,false)">pH בעיה</div>
+          <div class="sc-opt" onclick="pickSc(2,this,false)">אור חלש מדי</div>
+        </div>
+        <div id="fb-sc2" class="hidden mt-3 p-3 rounded-xl text-sm"></div>
+      </div>
+    </div>
+
+    <!-- PHYTECH -->
+    <div class="bg-gradient-to-br from-green-900 to-teal-800 text-white rounded-2xl p-6">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-4xl">🇮🇱</span>
+        <div>
+          <p class="text-teal-300 text-xs font-bold uppercase">סטארטאפ של השיעור</p>
+          <h3 class="text-2xl font-black">Phytech</h3>
+          <p class="text-teal-200 text-sm">קיבוץ יד מרדכי · Digital Farming</p>
+        </div>
+      </div>
+      <div class="bg-white/10 rounded-xl p-4 mb-4 text-green-100 text-sm leading-relaxed">
+        <p class="mb-2">Phytech פיתחו <b class="text-white">דנדרומטר</b> – חיישן שנצמד לגזע העץ ומודד שינויים זעירים בקוטרו. כשעץ צמא, תאיו מאבדים נוזלים והגזע מתכווץ. הם מגלים זאת <b class="text-white">לפני שהחקלאי רואה בעיניים</b> – ממש כמו שלמדנו: הצמח "מדבר" בערוץ הפיזי!</p>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-center text-sm">
+        <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-teal-300">500B</div><div class="text-xs text-teal-200">ליטר מים נחסכו</div></div>
+        <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-teal-300">43M</div><div class="text-xs text-teal-200">עצים בניטור</div></div>
+        <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-teal-300">$23.5M</div><div class="text-xs text-teal-200">גיוס אחרון</div></div>
+        <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-teal-300">Netafim</div><div class="text-xs text-teal-200">שותפות</div></div>
+      </div>
+      <div class="bg-teal-400/20 border border-teal-400/40 rounded-xl p-4">
+        <p class="font-bold text-teal-300 mb-2">💭 חיבור לשיעור שלנו:</p>
+        <p class="text-white text-sm">אנחנו מודדים pH, EC, טמפ' ולחות ידנית. Phytech עושים זאת אוטומטי ב-43 מיליון עצים. <b>מה ההבדל בין מה שאנחנו עושים לבין מה ש-Growee ו-Phytech עושים?</b></p>
+        <textarea id="phytech-ans" rows="2" class="mt-3 w-full bg-white/10 border border-teal-400/30 rounded-xl p-3 text-sm text-white resize-none placeholder-teal-300" placeholder="כתבו..."></textarea>
+        <button onclick="submitPhytech(this)" class="mt-2 bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-xl font-bold text-sm">שלח +10 עלים 🌿</button>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="goTo(5)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="goTo(7)" id="b6" class="hidden bg-slate-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">לפרויקט! ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 7: PROJECT ══ -->
+<div class="step-panel" id="step-7">
+  <div class="bg-slate-800 text-white rounded-3xl shadow-xl p-8 mb-5 text-center">
+    <div class="text-6xl mb-3">📡</div>
+    <h2 class="text-4xl font-black mb-2">עכשיו לפרויקט!</h2>
+    <p class="text-slate-300 text-xl mb-5">השאר את המחשב – קח רק את הרשימה</p>
+    <div class="bg-white/10 rounded-2xl p-5 text-right mb-5 space-y-3">
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m1"><div class="text-2xl">⚗️</div><div class="flex-1"><p class="font-bold">א. חבר מד pH לארדואינו</p><p class="text-slate-400 text-xs">לפי הסכמה – טמרל מד pH אנלוגי לפורט A0</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(1)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m2"><div class="text-2xl">⚡</div><div class="flex-1"><p class="font-bold">ב. חבר מד EC לארדואינו</p><p class="text-slate-400 text-xs">מד EC אנלוגי לפורט A1</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(2)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m3"><div class="text-2xl">🌡️</div><div class="flex-1"><p class="font-bold">ג. חבר חיישן טמפרטורה ולחות (DHT22) + אור (BH1750)</p><p class="text-slate-400 text-xs">לפי הסכמה על השולחן</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(3)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m4"><div class="text-2xl">📺</div><div class="flex-1"><p class="font-bold">ד. בקש מהמורה להעלות קוד – בדוק שמציג 5 ערכים</p><p class="text-slate-400 text-xs">pH · EC · טמפ' · לחות · אור</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(4)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m5"><div class="text-2xl">📝</div><div class="flex-1"><p class="font-bold">ה. רשום את 5 הערכים ובדוק אם תקינים</p><p class="text-slate-400 text-xs">pH 5.5–6.5 | EC 1.2–2.0 | טמפ' 15–28°C | לחות 50–80% | אור 400–1000 lux</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(5)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m6"><div class="text-2xl">📸</div><div class="flex-1"><p class="font-bold">ו. צלם את הארדואינו המחובר עם כל 5 החיישנים</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(6)"></div>
+    </div>
+    <div id="bonus-m" class="hidden bg-blue-400/20 border border-blue-300 rounded-2xl p-4 mb-5 text-right">
+      <p class="font-bold text-blue-200">⭐ בונוס (+20 עלים)</p>
+      <p class="text-white text-sm">חמם את חיישן הטמפ' ביד – כמה עלה הערך?</p>
+    </div>
+    <p id="mp" class="text-slate-300 mb-4">0 מתוך 6 ✓</p>
+    <button onclick="goTo(8)" id="bm" class="hidden bg-blue-500 hover:bg-blue-400 text-white px-12 py-5 rounded-2xl text-2xl font-black shadow-2xl">✅ סיימתי! ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 8: DATA + SUMMARY ══ -->
+<div class="step-panel" id="step-8">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <h2 class="text-3xl font-black text-gray-900 mb-6">📊 נתוני החיישנים + קיר הכיתה</h2>
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+      <div class="space-y-4">
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">🌡️ טמפרטורה (°C)</label><input type="number" id="dt" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="24"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">💧 לחות (%)</label><input type="number" id="dh" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="65"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">☀️ אור (lux)</label><input type="number" id="dl" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="450"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">💬 הערה</label><textarea id="do" rows="2" class="w-full border-2 border-gray-200 rounded-xl p-4 resize-none"></textarea></div>
+        <button onclick="submitData()" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-4 rounded-2xl font-bold text-lg">📡 שלח נתונים!</button>
+        <div id="dfb" class="hidden p-4 rounded-xl text-sm"></div>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-700 text-lg mb-3">🛠 קיר הכיתה</h3>
+        <div id="feed" class="space-y-3 max-h-72 overflow-y-auto mb-3"></div>
+        <a href="../wall.html" class="block text-center border-2 border-slate-600 text-slate-700 py-3 rounded-2xl font-bold text-sm">לקיר המלא →</a>
+      </div>
+    </div>
+    <div class="bg-gray-50 rounded-2xl p-5 mb-6"><h3 class="font-bold mb-3">🏆 לידרבורד</h3><div id="lb"></div></div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-8 text-center">
+    <div class="text-6xl mb-2">🏆</div>
+    <h2 class="text-4xl font-black text-gray-900 mb-2">סיימת שיעור 6!</h2>
+    <div class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-6 mb-6 inline-block">
+      <div class="text-4xl font-black text-blue-700" id="fl">🌿 0</div>
+      <p class="text-gray-500 text-sm mt-1">עלים הרווחת</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6 text-xs">
+      <div class="bg-green-50 rounded-xl p-3"><p class="text-xl">🌿</p><p class="font-bold">שפת צמחים</p><p class="text-gray-400">חזותי/כימי/פיזי</p></div>
+      <div class="bg-slate-50 rounded-xl p-3"><p class="text-xl">👃</p><p class="font-bold">5 חיישנים</p><p class="text-gray-400">pH·EC·טמפ'·לחות·אור</p></div>
+      <div class="bg-blue-50 rounded-xl p-3"><p class="text-xl">🧠</p><p class="font-bold">ארדואינו</p><p class="text-gray-400">המוח שמקשיב</p></div>
+      <div class="bg-orange-50 rounded-xl p-3"><p class="text-xl">💻</p><p class="font-bold">קוד אמיתי</p><p class="text-gray-400">if/delay/loop</p></div>
+      <div class="bg-teal-50 rounded-xl p-3"><p class="text-xl">🇮🇱</p><p class="font-bold">Phytech</p><p class="text-gray-400">דנדרומטר</p></div>
+    </div>
+    <div class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-5 mb-5 text-right">
+      <p class="font-bold text-blue-900">🎯 כוכב הצפון: החיישנים והקוד שראיתם היום הם הלב הטכנולוגי של האבטיפוס שתציגו בתערוכה. <b>איך זה רלוונטי לפרויקט שלי?</b></p>
+    </div>
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-4 text-right">
+      <p class="font-bold">🔮 שיעור 7: "נכתוב קוד אמיתי!"</p>
+      <p class="text-blue-300">לולאות, תנאים, ובקרת ברז אוטומטית</p>
+    </div>
+    <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-5 mb-5">
+      <p class="font-bold text-yellow-900">✍️ Teaser: <b>הטמפרטורה עלתה מעל 30°C – איך תכתבו קוד שמפעיל מאוורר?</b></p>
+    </div>
+    <div class="flex gap-4 justify-center">
+      <a href="../wall.html" class="bg-slate-700 text-white px-8 py-4 rounded-2xl font-bold">📸 קיר</a>
+      <a href="../index.html#lessons-section" class="border-2 border-slate-700 text-slate-700 px-8 py-4 rounded-2xl font-bold">שיעורים</a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const TOTAL=8;
+let cur=1;
+let lv=parseInt(localStorage.getItem('ls6')||'0');
+const sName=localStorage.getItem('studentName')||'תלמיד';
+let qDone={};
+let codeOk=0,codeReveal=false;
+let simAlerts=0,simDone=false;
+let scDone=0;
+let mcCnt=0;
+
+function addLv(n){
+  lv+=n;localStorage.setItem('ls6',lv);
+  document.getElementById('lc').textContent=lv;
+  document.getElementById('fl').textContent='🌿 '+lv;
+  for(let i=0;i<7;i++){
+    const e=document.createElement('div');e.className='leaf-burst';
+    e.style.cssText='left:'+(15+Math.random()*70)+'%;top:'+(15+Math.random()*70)+'%;--tx:'+(Math.random()-.5)*200+'px;--ty:'+(-50-Math.random()*130)+'px;';
+    e.textContent='🌿';document.body.appendChild(e);setTimeout(()=>e.remove(),950);
+  }
+}
+
+function goTo(n){
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('step-'+cur).classList.add('active');
+  document.getElementById('pbar').style.width=((n-1)/TOTAL*100)+'%';
+  document.getElementById('plabel').textContent='שלב '+n+' מתוך '+TOTAL;
+  buildDots();window.scrollTo({top:0,behavior:'smooth'});
+}
+function buildDots(){
+  const c=document.getElementById('dots');c.innerHTML='';
+  for(let i=1;i<=TOTAL;i++){
+    const d=document.createElement('div');
+    d.className='step-dot'+(i<cur?' done':i===cur?' current':'');
+    if(i<cur)d.onclick=()=>goTo(i);c.appendChild(d);
+  }
+}
+
+// ── QUIZ ──
+function pickQ(qid,el,correct){
+  if(qDone[qid])return;
+  qDone[qid]=true;
+  const grid=document.getElementById('q-'+qid);
+  grid.querySelectorAll('.qopt').forEach(o=>o.classList.add('locked'));
+  el.classList.add(correct?'correct':'wrong');
+  if(!correct){
+    grid.querySelectorAll('.qopt').forEach(o=>{
+      if(o.onclick&&o.onclick.toString().indexOf('true')>-1)o.classList.add('correct');
+    });
+  }
+  const fbMap={
+    p1:{ok:'✅ נכון! עלים צהובים = ערוץ חזותי של מצוקה. הצמח "צועק" בצבע.',fail:'💡 לא בדיוק. עלים צהובים הם שינוי צבע = ערוץ חזותי.',lv:10},
+    s1:{ok:'✅ נכון! חיישן עובד 24/7 – גם בלילה ובסופ"ש.',fail:'💡 היתרון הגדול הוא ניטור רציף, לא רק דיוק.',lv:10},
+    s2:{ok:'✅ בדיוק! מחשב מבין מספרים. 4.2 = 4.2',fail:'💡 מחשבים עובדים עם מספרים. 4.2 = pH חומצי בצורת מספר.',lv:10},
+    a1:{ok:'✅ נכון! ארדואינו = גשר לעולם הפיזי.',fail:'💡 ארדואינו מחובר לחיישנים ומנועים – זה מה שמייחד אותו.',lv:10},
+  };
+  const d=fbMap[qid];
+  if(d){
+    const fb=document.getElementById('fb-'+qid);
+    fb.classList.remove('hidden');
+    fb.className=correct?'mt-3 rounded-xl p-4 text-sm bg-green-50 border border-green-300':'mt-3 rounded-xl p-4 text-sm bg-orange-50 border border-orange-300';
+    fb.textContent=correct?d.ok:d.fail;
+    if(correct)addLv(d.lv);
+  }
+  // cascades
+  if(qid==='p1'){document.getElementById('b1').classList.remove('hidden');}
+  if(qid==='s1'){setTimeout(()=>document.getElementById('q2-reveal').classList.add('show'),400);document.getElementById('b2').classList.remove('hidden');}
+  if(qid==='a1'){document.getElementById('b3').classList.remove('hidden');}
+}
+
+// ── CODE DRAG ──
+let dragging=null;
+document.querySelectorAll('.code-block').forEach(el=>{
+  el.addEventListener('dragstart',e=>{dragging=el;e.dataTransfer.setData('text/plain',el.dataset.val);});
+  el.addEventListener('dragend',()=>{dragging=null;});
+  let tc=null;
+  el.addEventListener('touchstart',e=>{
+    if(el.classList.contains('used'))return;
+    dragging=el;
+    tc=el.cloneNode(true);
+    tc.style.cssText='position:fixed;opacity:.8;pointer-events:none;z-index:9999;font-family:monospace;background:#1e293b;color:#7dd3fc;border:2px solid #334155;border-radius:12px;padding:10px 16px;font-size:.88rem;';
+    document.body.appendChild(tc);
+  },{passive:true});
+  el.addEventListener('touchmove',e=>{
+    if(!tc)return;e.preventDefault();
+    const t=e.touches[0];tc.style.left=(t.clientX-60)+'px';tc.style.top=(t.clientY-20)+'px';
+  },{passive:false});
+  el.addEventListener('touchend',e=>{
+    if(!tc)return;tc.remove();tc=null;
+    const t=e.changedTouches[0];
+    const tgt=document.elementFromPoint(t.clientX,t.clientY);
+    const slot=tgt&&tgt.classList.contains('code-slot')?tgt:tgt&&tgt.closest('.code-slot');
+    if(slot&&dragging)dropOnSlot(slot,dragging.dataset.val);
+    dragging=null;
+  });
+});
+document.querySelectorAll('.code-slot').forEach(slot=>{
+  slot.addEventListener('dragover',e=>{e.preventDefault();slot.classList.add('drag-over');});
+  slot.addEventListener('dragleave',()=>slot.classList.remove('drag-over'));
+  slot.addEventListener('drop',e=>{
+    e.preventDefault();slot.classList.remove('drag-over');
+    if(!dragging)return;dropOnSlot(slot,e.dataTransfer.getData('text/plain'));
+  });
+});
+const codeLabels={read:'📡 ph = קרא_חיישן()',if:'🤔 אם ph < 5.5:',alert:'🚨 שלח_התראה("pH נמוך!")',wait:'⏱️ המתן(5000)',loop:'🔄 חזור לתחילה'};
+function dropOnSlot(slot,val){
+  if(slot.dataset.filled)return;
+  if(val===slot.dataset.answer){
+    slot.textContent=codeLabels[val]||val;
+    slot.classList.add('correct-slot');slot.dataset.filled='true';
+    document.querySelectorAll('.code-block').forEach(b=>{if(b.dataset.val===val)b.classList.add('used');});
+    codeOk++;addLv(5);
+    if(codeOk===5){document.getElementById('code-done').classList.remove('hidden');document.getElementById('b4').classList.remove('hidden');}
+  } else {
+    slot.classList.add('wrong-slot');setTimeout(()=>slot.classList.remove('wrong-slot'),500);
+    const m=document.getElementById('code-msg');m.classList.remove('hidden');m.textContent='לא הסדר הנכון – נסה שוב!';
+    setTimeout(()=>m.classList.add('hidden'),1500);
+  }
+}
+function revealCode(){
+  document.getElementById('real-code').classList.add('show');
+  addLv(5);
+}
+
+// ── SIMULATOR – 5 sensors ──
+function updateSensors(){
+  const ph=parseInt(document.getElementById('ph-sl').value)/10;
+  const ec=parseInt(document.getElementById('ec-sl').value)/10;
+  const t=parseInt(document.getElementById('tsl').value);
+  const h=parseInt(document.getElementById('hsl').value);
+  const l=parseInt(document.getElementById('lsl').value);
+
+  document.getElementById('ph-v').textContent=ph.toFixed(1);
+  document.getElementById('ec-v').textContent=ec.toFixed(1);
+  document.getElementById('tv').textContent=t+'°C';
+  document.getElementById('hv').textContent=h+'%';
+  document.getElementById('lv').textContent=l;
+
+  const alerts=[];
+  const setSensor=(id,icon,status,ok,warnHi,alertHi,alertLo,val,unit)=>{
+    const card=document.getElementById('sc-'+id);
+    const si=document.getElementById(icon[0]);const ss=document.getElementById(icon[1]);
+    if(val<alertLo){card.className='sensor-card alert p-4 text-center';si.textContent='🔴';ss.textContent='❌ נמוך מדי';alerts.push(id+' נמוך ('+val+unit+')');}
+    else if(val>alertHi){card.className='sensor-card alert p-4 text-center';si.textContent='🔴';ss.textContent='❌ גבוה מדי';alerts.push(id+' גבוה ('+val+unit+')');}
+    else if(val>warnHi){card.className='sensor-card warn p-4 text-center';si.textContent='⚠️';ss.textContent='⚠️ גבוה';}
+    else{card.className='sensor-card ok p-4 text-center';si.textContent=ok;ss.textContent='✅ תקין';}
+  };
+  if(ph<5.5){document.getElementById('sc-ph').className='sensor-card alert p-4 text-center';document.getElementById('ph-i').textContent='🔴';document.getElementById('ph-s').textContent='❌ חומצי!';alerts.push('pH נמוך ('+ph.toFixed(1)+')');}
+  else if(ph>6.5){document.getElementById('sc-ph').className='sensor-card alert p-4 text-center';document.getElementById('ph-i').textContent='🔴';document.getElementById('ph-s').textContent='❌ בסיסי!';alerts.push('pH גבוה ('+ph.toFixed(1)+')');}
+  else{document.getElementById('sc-ph').className='sensor-card ok p-4 text-center';document.getElementById('ph-i').textContent='⚗️';document.getElementById('ph-s').textContent='✅ תקין';}
+
+  if(ec<1.2){document.getElementById('sc-ec').className='sensor-card alert p-4 text-center';document.getElementById('ec-i').textContent='😢';document.getElementById('ec-s').textContent='❌ רעב!';alerts.push('EC נמוך ('+ec.toFixed(1)+')');}
+  else if(ec>2.5){document.getElementById('sc-ec').className='sensor-card alert p-4 text-center';document.getElementById('ec-i').textContent='🔥';document.getElementById('ec-s').textContent='❌ שריפה!';alerts.push('EC גבוה ('+ec.toFixed(1)+')');}
+  else{document.getElementById('sc-ec').className='sensor-card ok p-4 text-center';document.getElementById('ec-i').textContent='⚡';document.getElementById('ec-s').textContent='✅ תקין';}
+
+  if(t<15){document.getElementById('sc-temp').className='sensor-card alert p-4 text-center';document.getElementById('ti').textContent='🥶';document.getElementById('ts').textContent='❌ קר!';alerts.push('טמפ\' נמוכה');}
+  else if(t>28){document.getElementById('sc-temp').className='sensor-card alert p-4 text-center';document.getElementById('ti').textContent='🔥';document.getElementById('ts').textContent='❌ חם!';alerts.push('טמפ\' גבוהה ('+t+'°C)');}
+  else{document.getElementById('sc-temp').className='sensor-card ok p-4 text-center';document.getElementById('ti').textContent='🌡️';document.getElementById('ts').textContent='✅ תקין';}
+
+  if(h<50){document.getElementById('sc-hum').className='sensor-card alert p-4 text-center';document.getElementById('hi').textContent='🏜️';document.getElementById('hs').textContent='❌ יבש!';alerts.push('לחות נמוכה');}
+  else if(h>80){document.getElementById('sc-hum').className='sensor-card warn p-4 text-center';document.getElementById('hi').textContent='🍄';document.getElementById('hs').textContent='⚠️ לח מדי';}
+  else{document.getElementById('sc-hum').className='sensor-card ok p-4 text-center';document.getElementById('hi').textContent='💧';document.getElementById('hs').textContent='✅ תקין';}
+
+  if(l<400){document.getElementById('sc-light').className='sensor-card alert p-4 text-center';document.getElementById('li').textContent='🌑';document.getElementById('ls').textContent='❌ חשוך!';alerts.push('אור חלש');}
+  else if(l>1000){document.getElementById('sc-light').className='sensor-card warn p-4 text-center';document.getElementById('li').textContent='🌞';document.getElementById('ls').textContent='⚠️ חזק מדי';}
+  else{document.getElementById('sc-light').className='sensor-card ok p-4 text-center';document.getElementById('li').textContent='☀️';document.getElementById('ls').textContent='✅ תקין';}
+
+  const dec=document.getElementById('ard-dec');
+  if(alerts.length>0){
+    dec.className='font-mono text-base text-red-400';
+    dec.innerHTML='🚨 התראה!'+alerts.map(a=>'<br>→ '+a).join('');
+    simAlerts++;
+    if(simAlerts>=2&&!simDone){simDone=true;addLv(15);document.getElementById('sim-done').classList.remove('hidden');document.getElementById('b5').classList.remove('hidden');}
+  } else {
+    dec.className='font-mono text-base text-green-400';
+    dec.textContent='✅ כל הערכים תקינים 🌱';
+    if(simAlerts>=2)document.getElementById('b5').classList.remove('hidden');
+  }
+}
+
+// ── SCENARIOS ──
+function pickSc(n,el,correct){
+  const grid=document.getElementById('q-sc'+n);
+  grid.querySelectorAll('.sc-opt').forEach(o=>{o.style.pointerEvents='none';});
+  el.classList.add(correct?'sc-ok':'sc-wrong');
+  if(!correct)grid.querySelectorAll('.sc-opt').forEach(o=>{if(o.onclick&&o.onclick.toString().indexOf('true')>-1)o.classList.add('sc-ok');});
+  const msgs={
+    1:{ok:'✅ נכון! pH 4.1 = חומצי מדי. המינרלים "נעולים". הוסף pH UP.',fail:'💡 EC ואחרים בסדר. הבעיה היחידה היא pH 4.1 – חומצי מדי!'},
+    2:{ok:'✅ נכון! EC 0.6 = הצמח רעב. בקרוב יהיו עלים בהירים. הוסף דשן!',fail:'💡 pH ושאר הנתונים בסדר. EC 0.6 = פחות ממחצית הנדרש.'},
+  };
+  const fb=document.getElementById('fb-sc'+n);
+  fb.classList.remove('hidden');
+  fb.className=correct?'mt-3 p-3 rounded-xl text-sm bg-green-50 border border-green-300':'mt-3 p-3 rounded-xl text-sm bg-orange-50 border border-orange-300';
+  fb.textContent=correct?msgs[n].ok:msgs[n].fail;
+  if(correct)addLv(10);
+  scDone++;
+  if(n===1)setTimeout(()=>document.getElementById('sc2-reveal').classList.add('show'),400);
+  if(scDone>=2)document.getElementById('b6').classList.remove('hidden');
+}
+
+function submitPhytech(btn){
+  if(!document.getElementById('phytech-ans').value.trim()){alert('כתוב משהו קודם!');return;}
+  addLv(10);
+  document.getElementById('phytech-ans').disabled=true;
+  btn.textContent='✅ נשלח!';
+  document.getElementById('b6').classList.remove('hidden');
+}
+
+// ── MISSIONS ──
+function mc(n){
+  mcCnt++;document.getElementById('m'+n).classList.add('done');addLv(6);
+  document.getElementById('mp').textContent=mcCnt+' מתוך 6 ✓';
+  if(mcCnt===3)document.getElementById('bonus-m').classList.remove('hidden');
+  if(mcCnt===6){addLv(10);document.getElementById('bm').classList.remove('hidden');}
+}
+
+// ── DATA ──
+function submitData(){
+  const t=document.getElementById('dt').value,h=document.getElementById('dh').value,l=document.getElementById('dl').value;
+  if(!t||!h||!l){alert('מלא את כל השדות');return;}
+  addLv(20);
+  const rec={name:sName,temp:t,hum:h,light:l,obs:document.getElementById('do').value,ts:Date.now()};
+  let all=JSON.parse(localStorage.getItem('cls6')||'[]');
+  all=all.filter(r=>r.name!==sName);all.push(rec);localStorage.setItem('cls6',JSON.stringify(all));
+  if(window.GC) GC.pushPassport('measurements',{lesson:6,temp:parseFloat(t)||0,hum:parseFloat(h)||0,light:parseFloat(l)||0,obs:rec.obs,ts:rec.ts});
+  let msg='<p class="font-bold text-slate-800 text-lg mb-1">✅ נתונים נשמרו! +20 עלים 🌿</p>';
+  if(parseFloat(t)>28)msg+='<p class="text-red-600">⚠️ טמפ\' גבוהה.</p>';
+  if(parseFloat(h)<50)msg+='<p class="text-orange-500">💡 לחות נמוכה.</p>';
+  if(parseFloat(l)<400)msg+='<p class="text-yellow-600">💡 אור חלש.</p>';
+  const fb=document.getElementById('dfb');fb.classList.remove('hidden');
+  fb.className='p-4 rounded-xl bg-slate-50 border border-slate-200 text-sm';fb.innerHTML=msg;
+  renderFeed();renderLB();
+}
+function renderFeed(){
+  const data=JSON.parse(localStorage.getItem('cls6')||'[]');
+  const feed=document.getElementById('feed');
+  if(!data.length){feed.innerHTML='<p class="text-gray-400 text-center py-4 text-sm">עדיין אין נתונים</p>';return;}
+  feed.innerHTML=data.slice(-5).reverse().map(r=>`<div class="bg-gray-50 rounded-xl p-3 border"><p class="font-bold text-sm">${r.name}</p><p class="text-xs text-gray-500">🌡️${r.temp}°C · 💧${r.hum}% · ☀️${r.light}lux</p>${r.obs?'<p class="text-xs text-gray-400 italic">"'+r.obs+'"</p>':''}</div>`).join('');
+}
+function renderLB(){
+  const s=JSON.parse(localStorage.getItem('alv6')||'{}');
+  s[sName]=Math.max(s[sName]||0,lv);localStorage.setItem('alv6',JSON.stringify(s));
+  const sorted=Object.entries(s).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const m=['🥇','🥈','🥉','4.','5.'];
+  document.getElementById('lb').innerHTML=sorted.map(([n,l],i)=>`<div class="flex justify-between py-2 px-3 ${n===sName?'bg-lime-50 rounded-xl font-bold':''}"><span>${m[i]} ${n}</span><span class="text-slate-700 font-bold">${l} 🌿</span></div>`).join('');
+}
+
+// ── INIT ──
+document.getElementById('lc').textContent=lv;
+document.getElementById('fl').textContent='🌿 '+lv;
+buildDots();renderFeed();renderLB();
+</script>
+</body>
+</html>

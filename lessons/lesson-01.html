@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 1 – האתגר הגדול: להאכיל 10 מיליארד | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    /* ── סגנונות ייחודיים לשיעור 1 ── */
+    .cmp-row { background:#f9fafb; border-radius:12px; }
+    .cmp-btn { border:2px solid #e5e7eb; cursor:pointer; transition:all .2s; border-radius:10px; }
+    .cmp-btn:hover:not([disabled]) { border-color:#84cc16; background:#f0fdf4; }
+    .cmp-btn.picked-correct { background:#dcfce7; border-color:#16a34a; font-weight:900; }
+    .cmp-btn.picked-wrong   { background:#fee2e2; border-color:#dc2626; }
+    .bet-btn { border:2px solid #d1fae5; cursor:pointer; transition:all .2s; border-radius:16px; background:white; }
+    .bet-btn:hover:not([disabled]) { border-color:#84cc16; background:#f0fdf4; }
+    .bet-btn.chosen { border-color:#166534; background:#dcfce7; font-weight:900; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-lime-50 min-h-screen">
+
+<!-- MASCOT -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+      <a href="../wall.html" class="hover:text-lime-300">🛠 קיר</a>
+      <a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-lime-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 1 – נביטה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 1 מתוך 17</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🌍 האתגר הגדול: להאכיל 10 מיליארד</h1>
+    <p class="text-green-200">שרשרת אספקה · חקלאות מדייקת · Vertical Field</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 6</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: פתיחה + הימור האוכלוסייה ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <!-- Tutorial (only in lesson 1) -->
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 mb-7">
+      <h3 class="font-black text-lime-900 text-xl mb-3">👋 ברוכים הבאים ללומדה!</h3>
+      <ul class="text-sm text-gray-700 space-y-2">
+        <li>📋 <b>עובדים בזוגות</b> – מחשב אחד לשני תלמידים. השתיל האישי נשאר אישי.</li>
+        <li>🌿 כל תשובה נכונה ופעילות מרוויחה <b>עלים 🌿</b> – המטבע של התוכנית</li>
+        <li>🔘 <b>הנקודות</b> בראש הדף מראות באיזה שלב אתם</li>
+        <li>⭐ בסוף כל שיעור תמצאו את <b>שאלת כוכב הצפון</b> – המחברת את מה שלמדתם לתערוכה שלכם</li>
+      </ul>
+    </div>
+
+    <div class="flex items-center gap-3 mb-6">
+      <span class="text-4xl">🌍</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">הימור האוכלוסייה</h2>
+        <p class="text-gray-400 text-sm">נחשו לפני שחושפים את המספרים האמיתיים</p>
+      </div>
+    </div>
+
+    <p class="text-lg text-gray-700 mb-4 font-bold">כמה אנשים חיים היום על כדור הארץ?</p>
+    <div class="grid grid-cols-3 gap-3 mb-5">
+      <button class="bet-btn p-4 text-2xl font-black" onclick="placeBet('b1',this)" data-val="5 מיליארד">5 מיליארד</button>
+      <button class="bet-btn p-4 text-2xl font-black" onclick="placeBet('b1',this)" data-val="8 מיליארד">8 מיליארד</button>
+      <button class="bet-btn p-4 text-2xl font-black" onclick="placeBet('b1',this)" data-val="11 מיליארד">11 מיליארד</button>
+    </div>
+
+    <div id="reveal-b1" class="reveal">
+      <div class="bg-green-50 border-2 border-green-300 rounded-2xl p-5 mb-6">
+        <p class="font-black text-2xl text-green-900 mb-1">✅ התשובה: <span class="text-4xl text-lime-600">~8 מיליארד</span></p>
+        <p class="text-gray-600 text-sm">כ-8 מיליארד בני אדם חיים היום. ועד 2050?</p>
+      </div>
+
+      <p class="text-lg text-gray-700 mb-4 font-bold">מה לדעתכם יהיה גודל האוכלוסייה העולמית בשנת 2050?</p>
+      <div class="grid grid-cols-3 gap-3 mb-5">
+        <button class="bet-btn p-4 text-xl font-black" onclick="placeBet('b2',this)" data-val="9 מיליארד">9 מיליארד</button>
+        <button class="bet-btn p-4 text-xl font-black" onclick="placeBet('b2',this)" data-val="10 מיליארד">10 מיליארד</button>
+        <button class="bet-btn p-4 text-xl font-black" onclick="placeBet('b2',this)" data-val="12 מיליארד">12 מיליארד</button>
+      </div>
+    </div>
+
+    <div id="reveal-b2" class="reveal">
+      <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 mb-6">
+        <p class="font-black text-2xl text-amber-900 mb-1">📊 הניבוי: <span class="text-4xl text-amber-600">~10 מיליארד</span></p>
+        <p class="text-gray-600 text-sm">עוד <b>2 מיליארד איש</b> תוך 25 שנה – אבל כמות האדמה הפנויה לחקלאות <b>לא גדלה.</b> זה האתגר הגדול שאנחנו כאן כדי לפתור.</p>
+      </div>
+
+      <!-- Main discussion question -->
+      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+        <p class="font-bold text-lg mb-4">❓ מה הבעיה הכי גדולה מבחינת מזון כשהאוכלוסייה גדלה?</p>
+        <div class="grid gap-3" id="q1">
+          <div class="quiz-opt p-4" onclick="ansQ(this,false,'q1')">יש יותר מדי אוכל בעולם ואנחנו מבזבזים</div>
+          <div class="quiz-opt p-4" onclick="ansQ(this,true,'q1')" data-correct="true">כמות האדמה לחקלאות לא גדלה, אבל הביקוש למזון כן – צריך לגדל <em>יותר</em> עם <em>פחות</em></div>
+          <div class="quiz-opt p-4" onclick="ansQ(this,false,'q1')">אנשים אוכלים פחות בגלל דיאטות</div>
+          <div class="quiz-opt p-4" onclick="ansQ(this,false,'q1')">אין בעיה – הטכנולוגיה תפתור הכל בלי לשנות דבר</div>
+        </div>
+        <div id="fb-q1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">Vertical Field ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: Vertical Field ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">📦</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">Vertical Field – לגדל בתוך מכולה</h2>
+        <p class="text-gray-400 text-sm">קראו → צפו → ענו</p>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-700 to-lime-600 text-white rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🇮🇱</span>
+        <div>
+          <h3 class="font-black text-xl">Vertical Field</h3>
+          <p class="text-green-200 text-sm">ישראל · גידול Geoponic עירוני</p>
+        </div>
+      </div>
+      <p class="text-sm text-green-100 mb-4">חברה ישראלית שנוסדה ב-2006, מפתחת פלטפורמת גידול בתוך <b>מכולות מסע</b> – עם אדמה אמיתית, תאורה מלאכותית ובקרה אוטומטית מלאה. כ-200 סוגי גידולים, בשלות תוך <b>21 יום בלבד</b>.</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">21</b>ימים לבשלות</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">$25M</b>גיוס 2024</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">200+</b>סוגי גידולים</div>
+      </div>
+    </div>
+
+    <div class="bg-green-50 border-r-4 border-green-500 rounded-2xl p-5 mb-5 text-gray-700 text-sm leading-relaxed">
+      <p class="mb-2">שיתוף פעולה עם רשת <b>רמי לוי</b> – מכולות גידול בתוך סופרמרקטים. הלקוח קונה ירקות שגודלו ממש באותו חדר שבו הוא עומד. גם פיילוט <b>באמירויות</b>.</p>
+      <p>זה לא הידרופוניקה – Vertical Field גדלים <b>באדמה אמיתית</b>, רק בתוך מכולה. לכן הם קוראים לזה "Geoponic".</p>
+    </div>
+
+    <div class="bg-gray-100 rounded-2xl p-6 text-center mb-5">
+      <p class="text-2xl mb-2">🎬</p>
+      <p class="text-gray-500 font-bold">סרטון Vertical Field</p>
+      <p class="text-gray-400 text-xs mt-1">📋 המורה יציג תמונות/סרטון קצר של חוות Vertical Field</p>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-4">❓ מה ייחודי בגישת Vertical Field לעומת חקלאות שדה רגילה?</p>
+      <div class="grid gap-3" id="vfq1">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'vfq1')">מגדלים רק פירות טרופיים שלא גדלים בארץ</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'vfq1')" data-correct="true">מגדלים בתוך מכולה בעיר – ללא תלות בשטח חקלאי פנוי ובמזג האוויר</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'vfq1')">משתמשים רק בהידרופוניקה ללא אדמה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'vfq1')">מגדלים רק לשימוש עצמי, לא למכירה</div>
+      </div>
+      <div id="fb-vfq1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="vfq2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ כמה ימים לוקח לגידול להגיע לבשלות במכולה של Vertical Field?</p>
+      <div class="grid grid-cols-4 gap-3" id="vfq2">
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'vfq2')">7</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,true,'vfq2')" data-correct="true">21</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'vfq2')">90</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'vfq2')">180</div>
+      </div>
+      <div id="fb-vfq2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3)">השוואה ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: השוואה שדה מול אנכי ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">⚖️</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">שדה מול חקלאות אנכית</h2>
+        <p class="text-gray-400 text-sm">לכל תכונה – של מי היא? לחצו!</p>
+      </div>
+    </div>
+
+    <div class="space-y-2 mb-5" id="cmp-zone"></div>
+
+    <div id="cmp-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-4 text-center mb-4">
+      <p class="font-black text-lime-800 text-xl">✅ סיווגתם את כל התכונות!</p>
+      <p class="text-gray-600 text-sm mt-1">שתי השיטות משלימות זו את זו – אין "מנצח" מוחלט</p>
+    </div>
+
+    <div id="cq-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה <em>לא</em> מהווה יתרון של חקלאות אנכית?</p>
+      <div class="grid gap-3" id="cq1">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'cq1')">חיסכון משמעותי במים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'cq1')">אפשרות לגדל בתוך עיר ללא שטח חקלאי</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'cq1')" data-correct="true">עלות ייצור נמוכה יותר מחקלאות שדה רגילה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'cq1')">גידול עונה שלמה ללא תלות במזג אוויר</div>
+      </div>
+      <div id="fb-cq1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)">שרשרת האספקה ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: שרשרת האספקה ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🥑</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">שרשרת האספקה – מהגליל לעולם</h2>
+        <p class="text-gray-400 text-sm">גרור כל שלב לתיבה הנכונה</p>
+      </div>
+    </div>
+
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-5 text-gray-700 text-sm">
+      <b>גליל אקספורט:</b> מדי שנה נשלחות מהגליל המערבי אלפי טונות של ירקות ופירות לאירופה ולרוסיה. איך אבוקדו מגיע מהשדה בגליל לבית משפחה במוסקבה?
+    </div>
+
+    <!-- Bank -->
+    <div class="flex flex-wrap justify-center gap-3 mb-5" id="supply-bank">
+      <div class="drag-item flex items-center gap-2 px-4 py-3 text-sm font-bold" draggable="true" data-val="grow">🌳 גידול בגליל</div>
+      <div class="drag-item flex items-center gap-2 px-4 py-3 text-sm font-bold" draggable="true" data-val="pack">📦 אריזה</div>
+      <div class="drag-item flex items-center gap-2 px-4 py-3 text-sm font-bold" draggable="true" data-val="truck">🚛 שילוח לנמל</div>
+      <div class="drag-item flex items-center gap-2 px-4 py-3 text-sm font-bold" draggable="true" data-val="ship">⛵ הובלה ימית</div>
+      <div class="drag-item flex items-center gap-2 px-4 py-3 text-sm font-bold" draggable="true" data-val="dist">🏭 הפצה</div>
+      <div class="drag-item flex items-center gap-2 px-4 py-3 text-sm font-bold" draggable="true" data-val="store">🛒 חנות</div>
+      <div class="drag-item flex items-center gap-2 px-4 py-3 text-sm font-bold" draggable="true" data-val="home">🏠 בית</div>
+    </div>
+
+    <!-- Drop zones -->
+    <div class="grid grid-cols-4 md:grid-cols-7 gap-2 mb-4">
+      <div class="drop-zone h-20 p-1" data-correct="grow" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropSupply(event,this)"><span class="text-gray-400 text-xs">① גידול</span></div>
+      <div class="drop-zone h-20 p-1" data-correct="pack" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropSupply(event,this)"><span class="text-gray-400 text-xs">② אריזה</span></div>
+      <div class="drop-zone h-20 p-1" data-correct="truck" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropSupply(event,this)"><span class="text-gray-400 text-xs">③ שילוח</span></div>
+      <div class="drop-zone h-20 p-1" data-correct="ship" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropSupply(event,this)"><span class="text-gray-400 text-xs">④ ים</span></div>
+      <div class="drop-zone h-20 p-1" data-correct="dist" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropSupply(event,this)"><span class="text-gray-400 text-xs">⑤ הפצה</span></div>
+      <div class="drop-zone h-20 p-1" data-correct="store" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropSupply(event,this)"><span class="text-gray-400 text-xs">⑥ חנות</span></div>
+      <div class="drop-zone h-20 p-1" data-correct="home" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropSupply(event,this)"><span class="text-gray-400 text-xs">⑦ בית</span></div>
+    </div>
+
+    <div id="supply-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-5">
+      <p class="font-black text-xl text-lime-800 text-center mb-3">🎉 שרשרת שלמה! מהשדה בגליל עד הבית במוסקבה</p>
+      <p class="text-gray-700 text-sm font-bold mb-2">💡 שאלה פתוחה לדיון בזוג:</p>
+      <p class="text-gray-700 text-sm">"<b>באיזה שלב בשרשרת הייתם מכניסים שיפור טכנולוגי?</b> (רובוט, AI, חיישן...)"</p>
+      <textarea id="supply-open" rows="2" placeholder="הרעיון שלנו: ..." class="w-full mt-3 border-2 border-lime-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-lime-500"></textarea>
+      <p class="text-xs text-gray-400 mt-1">🔗 הרעיון הזה יחזור בשיעור 10 כשנבחן איפה רובוטים יכולים להיכנס לשרשרת</p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)">דרכון חקלאי ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: דרכון חקלאי דיגיטלי ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">📔</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">הדרכון החקלאי הדיגיטלי</h2>
+        <p class="text-gray-400 text-sm">עמוד ראשון – מי אני ולמה הצטרפתי?</p>
+      </div>
+    </div>
+
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-6 mb-5">
+      <p class="text-gray-700 text-sm mb-5">הדרכון ילווה אתכם כל השנה. בכל שיעור תרשמו בו תצפיות, נתוני שתיל, ורעיונות. זה <b>אישי לחלוטין.</b></p>
+      <div class="space-y-4">
+        <div>
+          <label class="block font-bold text-gray-700 mb-2">📛 שם / כינוי:</label>
+          <input id="p-name" type="text" maxlength="30" placeholder="ראשי תיבות, כינוי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
+        </div>
+        <div>
+          <label class="block font-bold text-gray-700 mb-2">🌱 למה הצטרפתי ל"גדלים למחר"? (משפט אחד)</label>
+          <input id="p-why" type="text" maxlength="120" placeholder="הצטרפתי כי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
+        </div>
+        <div>
+          <label class="block font-bold text-gray-700 mb-2">🔮 מה הכי מסקרן אותי לגלות השנה?</label>
+          <input id="p-curious" type="text" maxlength="120" placeholder="הכי מסקרן לי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
+        </div>
+      </div>
+      <button onclick="savePassport()" class="mt-5 w-full bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg transition-colors">📔 שמור את הדרכון</button>
+    </div>
+
+    <div id="passport-saved" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-6 text-center">
+      <p class="text-4xl mb-2">📔✨</p>
+      <p class="font-black text-xl text-lime-800 mb-1">הדרכון נשמר!</p>
+      <p class="text-gray-600 text-sm">הרשומה הראשונה שלכם. תוסיפו בכל שיעור.</p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">סיכום ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: סיכום + פרויקט + כוכב הצפון ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🏁</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">סיכום + סיור במערכת</h2>
+        <p class="text-gray-400 text-sm">פרויקט + כוכב הצפון + Teaser לשיעור 2</p>
+      </div>
+    </div>
+
+    <div class="bg-green-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3">📚 מה למדנו היום:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex gap-2"><span class="text-green-600">🌍</span> האוכלוסייה עולה ל-10 מיליארד עד 2050 – ביקוש מזון גדל, שטח חקלאי לא</li>
+        <li class="flex gap-2"><span class="text-green-600">📦</span> Vertical Field פותרת זאת בדרך מפתיעה: גידול בתוך מכולה, בתוך העיר עצמה</li>
+        <li class="flex gap-2"><span class="text-green-600">🥑</span> שרשרת האספקה – 7 שלבים מהמגדל לצרכן – ניתנת לשיפור טכנולוגי בכל שלב</li>
+      </ul>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-lime-900 mb-1">🌿 משימות הקבוצה – סיור במערכת ההידרופונית</h3>
+      <p class="text-xs text-gray-500 mb-3">עם המורה. סמנו ✅ כל משימה שסיימתם:</p>
+      <div class="space-y-2" id="missions">
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkMission(this,0)">
+          <span class="mission-icon text-2xl">⬜</span> א. סיירנו וזיהינו: מאגר מים, משאבה, תומך שתילים
+        </div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkMission(this,1)">
+          <span class="mission-icon text-2xl">⬜</span> ב. בחרנו שם לתחנה שלנו
+        </div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkMission(this,2)">
+          <span class="mission-icon text-2xl">⬜</span> ג. רשמנו בדרכון: "המערכת שלנו נראית כך..."
+        </div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkMission(this,3)">
+          <span class="mission-icon text-2xl">⬜</span> ד. צילמנו את המערכת / הקבוצה שלנו (אופציונלי)
+        </div>
+      </div>
+      <div id="mission-done" class="hidden mt-3 bg-lime-100 rounded-xl p-3 text-center font-bold text-lime-800">
+        🏆 כל המשימות הושלמו! +10 עלים 🌿
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">⭐</span>
+        <h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3>
+      </div>
+      <p class="text-gray-800 font-bold text-lg mb-3">"איך האתגר של 'להאכיל 10 מיליארד' מתחבר לפרויקט שתבנו ותציגו בתערוכה בפברואר?"</p>
+      <textarea id="north-star" rows="2" placeholder="הפרויקט שלנו יכול לתרום על ידי..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא:</p>
+      <p class="font-black text-xl">"אם הכל התחיל בחקלאות מסורתית – איך בכלל הגענו למכולות גידול בתוך העיר?"</p>
+      <p class="text-slate-400 text-sm mt-2">רמז: יש המצאה ישראלית אחת שהובילה את המהפכה...</p>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים שנצברו בשיעור 1:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך מקסימום ~50 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4">
+    <a href="lesson-02.html" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">לשיעור 2 ←</a>
+  </div>
+</div>
+
+</div><!-- /max-w -->
+
+<script>
+// ── STATE ייחודי לשיעור 1 ──
+let bets = {};
+let supplyOk = 0;
+let missionsDone = [];
+let passportSaved = false;
+let projectLeaves = false;
+
+// ── BET MECHANIC ──
+function placeBet(betId, el) {
+  if (bets[betId]) return;
+  bets[betId] = true;
+  el.closest('div').querySelectorAll('.bet-btn').forEach(b => b.disabled = true);
+  el.classList.add('chosen');
+  GC.addLeaves(5, 'K');
+  GC.reveal('reveal-' + betId);
+  if (betId === 'b2') mascotSay('10 מיליארד! זה האתגר שלנו לפתור', '🌱');
+}
+
+// ── COMPARE EXERCISE ──
+const cmpData = [
+  { text: 'דורשת שטח חקלאי גדול',               ans: 'שדה' },
+  { text: 'חוסכת עד 90% מים',                   ans: 'אנכי' },
+  { text: 'מושפעת ממזג אוויר וחוסר גשמים',       ans: 'שדה' },
+  { text: 'אפשרית לגידול בתוך העיר',             ans: 'אנכי' },
+  { text: 'עלות ייצור נמוכה יחסית לאחר ההשקעה', ans: 'שדה' },
+  { text: 'גידול מהיר – בשלות תוך ימים ספורים', ans: 'אנכי' }
+];
+let cmpDone = 0;
+
+function buildCmp() {
+  const zone = document.getElementById('cmp-zone');
+  cmpData.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'cmp-row flex items-center gap-3 p-3';
+    row.id = 'cr' + i;
+    row.innerHTML = `<span class="flex-1 text-sm font-bold text-gray-700">${item.text}</span>
+      <button class="cmp-btn px-3 py-2 text-sm font-bold" onclick="cmpAns(${i},'שדה',this)">שדה 🌾</button>
+      <button class="cmp-btn px-3 py-2 text-sm font-bold" onclick="cmpAns(${i},'אנכי',this)">אנכי 📦</button>`;
+    zone.appendChild(row);
+  });
+}
+
+function cmpAns(i, ans, el) {
+  const row = document.getElementById('cr' + i);
+  if (row.dataset.done) return;
+  row.dataset.done = '1';
+  row.querySelectorAll('.cmp-btn').forEach(b => b.disabled = true);
+  const ok = ans === cmpData[i].ans;
+  el.classList.add(ok ? 'picked-correct' : 'picked-wrong');
+  cmpDone++;
+  if (cmpDone === cmpData.length) {
+    document.getElementById('cmp-done').classList.remove('hidden');
+    GC.reveal('cq-wrap');
+    mascotSay('השוואה מושלמת! עכשיו שאלה אחרונה...', '⚖️');
+  }
+}
+
+// ── SUPPLY CHAIN DRAG ──
+let supplyOkCount = 0;
+
+function dropSupply(e, zone) {
+  const ok = GC.handleDrop(e, zone, zone.dataset.correct,
+    (src, z) => {
+      z.innerHTML = src.innerHTML;
+      z.style.fontSize = '0.8rem';
+      supplyOkCount++;
+      if (supplyOkCount === 7) {
+        document.getElementById('supply-done').classList.remove('hidden');
+        GC.showBtn('btn4');
+        mascotSay('שרשרת שלמה! 7 שלבים מהגליל למוסקבה 🎉', '🥑');
+      }
+    }
+  );
+}
+
+// ── PASSPORT (P1.3: writes to passport1 via GC.savePassport — no overwrite) ──
+function savePassport() {
+  if (passportSaved) return;
+  const name    = document.getElementById('p-name').value.trim();
+  const why     = document.getElementById('p-why').value.trim();
+  const curious = document.getElementById('p-curious').value.trim();
+  if (!name && !why && !curious) { mascotSay('מלאו לפחות שדה אחד!', '📔'); return; }
+  // P1.3: merge into passport1, not overwrite
+  if (name)    GC.savePassport('name', name);
+  if (why)     GC.savePassport('why', why);
+  if (curious) GC.savePassport('curious', curious);
+  GC.savePassport('date1', new Date().toLocaleDateString('he-IL'));
+  if (name)    localStorage.setItem('studentName', name);
+  passportSaved = true;
+  document.getElementById('passport-saved').classList.remove('hidden');
+  GC.showBtn('btn5');
+  GC.addLeaves(10, 'S');
+  mascotSay('הדרכון נשמר! ילווה אתכם כל השנה 📔', '🌱');
+}
+
+// ── MISSIONS ──
+let doneCount = 0;
+
+function checkMission(el, idx) {
+  if (missionsDone.includes(idx)) return;
+  missionsDone.push(idx);
+  el.classList.add('done-card');
+  el.querySelector('.mission-icon').textContent = '✅';
+  doneCount++;
+  if (doneCount >= 3 && !projectLeaves) {
+    projectLeaves = true;
+    document.getElementById('mission-done').classList.remove('hidden');
+    GC.addLeaves(10, 'S');
+    mascotSay('מעולה! סיירתם, תיעדתם, ירדתם לשטח 🌿', '🌱');
+  }
+}
+
+// ── INIT ──
+function init() {
+  // אתחול תשתית משותפת
+  GC.initLesson({
+    lessonId: 1,
+    steps: 6,
+    mascotMessages: {
+      1: 'שלום! אני גרגיר 🌱 – ניחשו לפני שמגלים!',
+      2: 'Vertical Field – ישראלים שגדלים בתוך מכולה!',
+      3: 'שתי שיטות, שני עולמות – מה היתרון של כל אחת?',
+      4: 'שרשרת האספקה – כל שלב הוא הזדמנות לחדשנות',
+      5: 'הדרכון ילווה אתכם כל השנה. שמרו אותו!',
+      6: 'שיעור 1 הסתיים! כוכב הצפון: התערוכה בפברואר ⭐'
+    }
+  });
+
+  // רישום cascades של שיעור זה
+  GC.registerCascades({
+    'vfq1': () => GC.reveal('vfq2-wrap'),
+    'vfq2': () => { GC.showBtn('btn2'); mascotSay('21 יום! בשדה רגיל זה לוקח חודשים', '📦'); },
+    'q1':   () => { GC.showBtn('btn1'); mascotSay('בדיוק! לגדל יותר עם פחות – זה מה שנלמד', '🌍'); },
+    'cq1':  () => { GC.showBtn('btn3'); mascotSay('נכון – חקלאות אנכית יקרה יותר, אבל חוסכת משאבים', '⚖️'); }
+  });
+
+  // אתחול תרגיל ההשוואה
+  buildCmp();
+
+  // אתחול touch-drag לשרשרת האספקה
+  GC.initTouch('.drag-item', '.drop-zone', dropSupply);
+
+  // שחזור דרכון שמור
+  const p = GC.getPassport();
+  if (p.name)    { document.getElementById('p-name').value    = p.name; }
+  if (p.why)     { document.getElementById('p-why').value     = p.why; }
+  if (p.curious) { document.getElementById('p-curious').value = p.curious; }
+}
+
+init();
+</script>
+</body>
+</html>

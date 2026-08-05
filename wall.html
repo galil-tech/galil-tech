@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛠 הקיר שלנו</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-green-50 dark:bg-gray-900">
+  <nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+      <div class="flex gap-4 text-sm">
+        <a href="index.html" class="hover:text-lime-300">🏠</a>
+        <a href="index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+        <a href="leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+        <a href="shop.html" class="hover:text-lime-300">🛒 חנות</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-6xl mx-auto px-6 py-12">
+    <h1 class="text-5xl font-black text-center mb-4">🛠 הקיר ההידרופוני של חקלאי העתיד</h1>
+    <p class="text-center text-xl mb-10">העלו תמונה של השתיל שלכם ותקבלו לייקים מהחבר'ה!</p>
+
+    <div id="gallery" class="grid md:grid-cols-3 gap-8"></div>
+
+    <!-- Upload Form -->
+    <div class="mt-16 bg-white dark:bg-gray-800 p-10 rounded-3xl shadow-2xl">
+      <h2 class="text-3xl font-bold mb-6">📸 העלה תמונה של השתיל שלך</h2>
+      <input id="photoUrl" type="text" placeholder="הדבק לינק תמונה (Imgur או Google Drive)" class="w-full p-5 border-2 rounded-2xl text-lg">
+      <button onclick="uploadPhoto()" class="mt-6 bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-2xl text-xl w-full">🚀 העלה וקבל עלים!</button>
+    </div>
+  </div>
+
+  <script>
+    let photos = JSON.parse(localStorage.getItem('wallPhotos')) || [
+      {url: "https://i.imgur.com/8zY5K9L.jpg", likes: 47, caption: "השתיל שלי ביום 3 🌱"},
+      {url: "https://i.imgur.com/2fK9pL.jpg", likes: 32, caption: "ראיתם איך הוא גדל? 🔥"}
+    ];
+
+    function renderGallery() {
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '';
+      photos.forEach((photo, i) => {
+        gallery.innerHTML += `
+          <div class="bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-xl card-hover">
+            <img src="${photo.url}" class="w-full h-64 object-cover">
+            <div class="p-6">
+              <p class="text-lg">${photo.caption}</p>
+              <button onclick="likePhoto(${i})" class="mt-4 flex items-center gap-2 text-red-500 hover:text-red-600 text-2xl">
+                ❤️ <span id="like-count-${i}">${photo.likes}</span>
+              </button>
+            </div>
+          </div>`;
+      });
+    }
+
+    function likePhoto(i) {
+      photos[i].likes++;
+      document.getElementById(`like-count-${i}`).textContent = photos[i].likes;
+      localStorage.setItem('wallPhotos', JSON.stringify(photos));
+    }
+
+    function uploadPhoto() {
+      const url = document.getElementById('photoUrl').value;
+      if (url) {
+        photos.unshift({url, likes: 0, caption: "שתיל חדש שלי! 🌱"});
+        localStorage.setItem('wallPhotos', JSON.stringify(photos));
+        renderGallery();
+        alert('✅ תמונה הועלתה! קיבלת 30 עלים 🌿');
+      }
+    }
+
+    renderGallery();
+  </script>
+</body>
+</html>

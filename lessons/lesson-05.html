@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 5 – חקלאות לא קונבנציונלית | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;}
+    .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;}
+    .quiz-opt:hover:not(.done){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
+    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;}
+    .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;animation:fadeUp .35s ease;}
+    .reveal.show{display:block;}
+
+    /* ── drag drop (aqua + pH sort) ── */
+    .drag-item{cursor:grab;user-select:none;border:2px dashed #a7f3d0;background:white;border-radius:12px;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;}
+    .drag-item:hover{transform:scale(1.1);border-color:#10b981;}
+    .drag-item.used{opacity:.3;cursor:default;border-color:#d1d5db;background:#f9fafb;}
+    .drop-zone{border:2.5px dashed #6ee7b7;border-radius:14px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+    .drop-zone.drag-over{border-color:#10b981;background:#d1fae5;transform:scale(1.06);}
+    .drop-zone.correct-drop{border-color:#16a34a;background:#dcfce7;border-style:solid;}
+    .drop-zone.wrong-drop{border-color:#dc2626;background:#fee2e2;animation:shake .3s;}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+    /* ── pH scale bar ── */
+    .ph-gradient{height:32px;border-radius:16px;background:linear-gradient(to left,#7c3aed 0%,#2563eb 8%,#0891b2 16%,#059669 24%,#84cc16 36%,#22c55e 43%,#84cc16 50%,#facc15 62%,#f97316 76%,#dc2626 88%,#7f1d1d 100%);}
+    .ph-scale-item{position:relative;flex:1;text-align:center;}
+
+    /* ── pH slider ── */
+    .ph-track{position:relative;height:28px;border-radius:14px;background:linear-gradient(to left,#dc2626 0%,#f97316 15%,#facc15 30%,#84cc16 42%,#22c55e 55%,#84cc16 68%,#facc15 80%,#f97316 90%,#dc2626 100%);margin:10px 0;}
+    input[type=range]{-webkit-appearance:none;width:100%;height:28px;background:transparent;position:relative;z-index:2;cursor:pointer;}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:36px;height:36px;border-radius:50%;background:white;border:3px solid #166534;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);margin-top:-4px;}
+    input[type=range]::-webkit-slider-runnable-track{height:28px;background:transparent;}
+
+    /* ── EC bar ── */
+    .ec-bar{height:22px;border-radius:11px;background:linear-gradient(to right,#bfdbfe,#3b82f6,#1d4ed8,#7c3aed);transition:width .4s;}
+
+    /* ── mascot ── */
+    .mascot{font-size:2.8rem;transition:all .4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .mascot-bounce{animation:bounce .6s ease 3;}
+
+    /* ── mission ── */
+    .mission-card{border:2px solid transparent;transition:all .3s;}
+    .mission-card.done{border-color:#16a34a;background:#f0fdf4;opacity:.65;}
+    .yt-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:16px;}
+    .yt-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
+    .photo-card{transition:transform .2s;}
+    .photo-card:hover{transform:translateY(-3px);}
+    textarea:focus,input[type=number]:focus,select:focus{outline:2px solid #84cc16;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-lime-50 min-h-screen">
+
+<!-- MASCOT bubble (fixed) -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+      <a href="../wall.html" class="hover:text-lime-300">🛠 קיר</a>
+      <a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-lime-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 2</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 5 מתוך 17</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🌿 חקלאות לא קונבנציונלית</h1>
+    <p class="text-green-200">הידרופוניקה · אקוופוניקה · pH · EC · Growee</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 7</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: הידרופוניקה ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">💧</span>
+      <div><h2 class="text-3xl font-black text-green-900">הידרופוניקה – גידול ללא אדמה</h2><p class="text-gray-400 text-sm">קרא → צפה → ענה</p></div>
+    </div>
+    <div class="bg-sky-50 border-r-4 border-sky-500 rounded-2xl p-6 mb-5 text-gray-700 leading-relaxed text-lg">
+      <p class="mb-3"><b>הידרופוניקה</b> היא גידול צמחים בתמיסת מים עשירה במינרלים – <b>ללא אדמה כלל.</b> השורשים נתמכים במצע ניטרלי (סלע לבה, פרליט, קוקוס) שתפקידו פיזי בלבד.</p>
+      <p>חקלאי שמגדל עגבנייה בשדה רגיל צורך עד <b>60 ליטר מים לקילו</b>. במערכת הידרופונית – רק <b>6 ליטר</b>. חיסכון של <b>90%</b>. 🌍 זו המערכת שלנו בכיתה!</p>
+    </div>
+    <div class="mb-5">
+      <p class="font-bold text-gray-700 mb-2">🎬 סרטון: כיצד עובדת הידרופוניקה (3 דקות)</p>
+      <div class="yt-wrap"><iframe src="https://www.youtube-nocookie.com/embed/O_pQJbODPKg?rel=0&modestbranding=1" title="Hydroponics" allowfullscreen></iframe></div>
+      <a href="https://www.youtube.com/watch?v=O_pQJbODPKg" target="_blank" class="text-xs text-sky-500 underline mt-1 inline-block">פתח ביוטיוב ←</a>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-4">❓ מה תפקיד המצע?</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,false,'h1')">מספק מינרלים</div>
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,true,'h1')">תומך בשורשים פיזית בלבד</div>
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,false,'h1')">מסנן מים</div>
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,false,'h1')">מזין את הצמח</div>
+      </div>
+      <div id="fb-h1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+    <div id="h2b" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ כמה מים חוסכת הידרופוניקה?</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,false,'h2')">30%</div>
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,false,'h2')">50%</div>
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,true,'h2')">90%</div>
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,false,'h2')">20%</div>
+      </div>
+      <div id="fb-h2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button onclick="next()" id="b1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">אקוופוניקה ←</button></div>
+</div>
+
+<!-- ══ STEP 2: אקוופוניקה ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🐟</span>
+      <div><h2 class="text-3xl font-black text-green-900">אקוופוניקה – מעגל החנקן</h2>
+      <p class="text-gray-400 text-sm">צפה בסרטון → ענה על שאלות → גרור לתרשים</p></div>
+    </div>
+
+    <div class="bg-teal-50 border-r-4 border-teal-500 rounded-2xl p-5 mb-5 text-gray-700 leading-relaxed">
+      <p class="mb-2">אקוופוניקה = דגים + ירקות במעגל סגור מושלם. הדגים מייצרים פסולת חנקנית, חיידקים הופכים אותה לדשן, הצמחים סופגים, המים חוזרים נקיים לדגים. <b>אפס פסולת, אפס דשן חיצוני.</b></p>
+      <p class="text-sm">בגליל המערבי יש חווה שמוכרת בזיליקום וטילאפיה לאותו שוק – הדגים "מכינים" את הדשן בחינם!</p>
+    </div>
+
+    <!-- LOCAL VIDEO -->
+    <div class="mb-6">
+      <p class="font-bold text-gray-700 mb-2">🎬 סרטון: אקוופוניקה – איך זה עובד?</p>
+      <div class="rounded-2xl overflow-hidden bg-black">
+        <video controls class="w-full rounded-2xl" style="max-height:360px">
+          <source src="aqua.mp4" type="video/mp4">
+          <p class="text-white text-center p-8">הדפדפן שלך לא תומך בוידאו. <a href="aqua.mp4" class="underline text-lime-400">לחץ להורדה</a></p>
+        </video>
+      </div>
+    </div>
+
+    <!-- QUESTIONS TIED TO VIDEO -->
+    <div class="space-y-4 mb-6">
+      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+        <p class="font-bold text-lg mb-3">❓ מה הופך את האקוופוניקה ל"מעגל סגור"?</p>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,false,'aq1')">הדגים והצמחים גדלים באותו מים</div>
+          <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,true,'aq1')">פסולת הדגים הופכת לדשן לצמחים, המים חוזרים נקיים לדגים</div>
+          <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,false,'aq1')">אין צורך באור שמש</div>
+          <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,false,'aq1')">הדגים אוכלים את הצמחים</div>
+        </div>
+        <div id="fb-aq1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+
+      <div id="aq2-block" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+        <p class="font-bold text-lg mb-3">❓ מה תפקיד החיידקים במעגל?</p>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,false,'aq2q')">מנקים את המים ישירות</div>
+          <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,true,'aq2q')">הופכים פסולת חנקנית רעילה לדשן שמחים לספוג</div>
+          <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,false,'aq2q')">מאכילים את הדגים</div>
+          <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,false,'aq2q')">מייצרים חמצן לצמחים</div>
+        </div>
+        <div id="fb-aq2q" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+    </div>
+
+    <!-- CIRCULAR DRAG & DROP GAME -->
+    <div id="aqua-game-block" class="reveal bg-teal-50 border-2 border-teal-200 rounded-2xl p-6">
+      <h3 class="text-xl font-black text-center text-teal-900 mb-1">🎮 בן את מעגל החנקן!</h3>
+      <p class="text-center text-gray-500 text-sm mb-5">גרור כל אמוג'י לתיבה הנכונה בתרשים המעגלי</p>
+
+      <!-- emoji bank -->
+      <div id="aqua-bank" class="flex flex-wrap justify-center gap-3 mb-6">
+        <div class="drag-item text-3xl w-16 h-16" draggable="true" data-val="🐟">🐟</div>
+        <div class="drag-item text-3xl w-16 h-16" draggable="true" data-val="💩">💩</div>
+        <div class="drag-item text-3xl w-16 h-16" draggable="true" data-val="🦠">🦠</div>
+        <div class="drag-item text-3xl w-16 h-16" draggable="true" data-val="🌱">🌱</div>
+        <div class="drag-item text-3xl w-16 h-16" draggable="true" data-val="💧">💧</div>
+      </div>
+
+      <!-- CIRCULAR DIAGRAM with SVG arrows -->
+      <div class="relative mx-auto" style="width:320px;height:320px;">
+        <svg class="absolute inset-0" width="320" height="320" viewBox="0 0 320 320">
+          <!-- circle arrows connecting the 5 nodes -->
+          <!-- top → top-right -->
+          <path d="M 185 60 Q 250 80 255 125" stroke="#5eead4" stroke-width="3" fill="none" marker-end="url(#arr)"/>
+          <!-- top-right → bottom-right -->
+          <path d="M 268 165 Q 270 220 235 252" stroke="#5eead4" stroke-width="3" fill="none" marker-end="url(#arr)"/>
+          <!-- bottom-right → bottom-left -->
+          <path d="M 195 272 Q 160 295 120 272" stroke="#5eead4" stroke-width="3" fill="none" marker-end="url(#arr)"/>
+          <!-- bottom-left → top-left -->
+          <path d="M 82 252 Q 48 220 52 165" stroke="#5eead4" stroke-width="3" fill="none" marker-end="url(#arr)"/>
+          <!-- top-left → top -->
+          <path d="M 65 125 Q 70 80 135 60" stroke="#5eead4" stroke-width="3" fill="none" marker-end="url(#arr)"/>
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#5eead4"/>
+            </marker>
+          </defs>
+          <!-- center label -->
+          <text x="160" y="148" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f766e">מעגל</text>
+          <text x="160" y="164" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f766e">האקוופוניקה</text>
+          <text x="160" y="180" text-anchor="middle" font-size="11" fill="#5eead4">♻️</text>
+        </svg>
+
+        <!-- 5 drop nodes positioned around the circle -->
+        <!-- top (12 o'clock) -->
+        <div class="absolute text-center" style="top:4px;left:50%;transform:translateX(-50%)">
+          <div class="drop-zone w-16 h-16 rounded-full" id="aq1" data-answer="🐟">?</div>
+          <div class="text-xs font-bold text-teal-700 mt-1 whitespace-nowrap">דגים</div>
+        </div>
+        <!-- top-right (2 o'clock) -->
+        <div class="absolute text-center" style="top:90px;right:4px">
+          <div class="drop-zone w-16 h-16 rounded-full" id="aq2" data-answer="💩">?</div>
+          <div class="text-xs font-bold text-teal-700 mt-1 whitespace-nowrap">פסולת</div>
+        </div>
+        <!-- bottom-right (5 o'clock) -->
+        <div class="absolute text-center" style="bottom:30px;right:12px">
+          <div class="drop-zone w-16 h-16 rounded-full" id="aq3" data-answer="🦠">?</div>
+          <div class="text-xs font-bold text-teal-700 mt-1 whitespace-nowrap">חיידקים</div>
+        </div>
+        <!-- bottom-left (7 o'clock) -->
+        <div class="absolute text-center" style="bottom:30px;left:12px">
+          <div class="drop-zone w-16 h-16 rounded-full" id="aq4" data-answer="🌱">?</div>
+          <div class="text-xs font-bold text-teal-700 mt-1 whitespace-nowrap">צמחים</div>
+        </div>
+        <!-- top-left (10 o'clock) -->
+        <div class="absolute text-center" style="top:90px;left:4px">
+          <div class="drop-zone w-16 h-16 rounded-full" id="aq5" data-answer="💧">?</div>
+          <div class="text-xs font-bold text-teal-700 mt-1 whitespace-nowrap">מים נקיים</div>
+        </div>
+      </div>
+
+      <div id="aq-msg" class="hidden mt-4 text-center font-bold text-red-600 text-sm"></div>
+      <div id="aq-done" class="hidden mt-4 bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
+        <p class="text-xl font-black text-lime-700">🎉 מושלם! +20 עלים!</p>
+        <p class="text-sm text-gray-500 mt-1">הבנת את מעגל החנקן – הבסיס של כל מערכת אקוופונית</p>
+      </div>
+    </div>
+
+  </div>
+  <div class="flex justify-between">
+    <button onclick="prev()" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="next()" id="b2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">pH – חלק א' ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: pH PART 1 – DRAG TO SCALE ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-4xl">⚗️</span>
+      <div><h2 class="text-3xl font-black text-green-900">pH – חלק א'</h2><p class="text-gray-400 text-sm">גרור כל חומר למקומו על הסקלה</p></div>
+    </div>
+
+    <div class="bg-purple-50 border-r-4 border-purple-400 rounded-2xl p-5 mb-6 text-gray-700 text-lg">
+      <p class="mb-2"><b>pH</b> הוא מדד חומציות על סולם 0–14. 0 = חומצי מאוד, 14 = בסיסי מאוד, 7 = ניטרלי.</p>
+      <p>לצמחים הידרופוניים יש "אזור נוחות" מאוד ספציפי: <b>pH 5.5 עד 6.5.</b></p>
+    </div>
+
+    <!-- pH visual scale -->
+    <div class="mb-6">
+      <div class="ph-gradient mb-2 rounded-2xl"></div>
+      <div class="flex text-xs text-gray-400 px-1 justify-between"><span>0 – חומצי חזק</span><span>7 – ניטרלי</span><span>14 – בסיסי חזק</span></div>
+    </div>
+
+    <!-- DRAG GAME: substances to scale zones -->
+    <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-6">
+      <h3 class="text-xl font-black text-center text-purple-900 mb-2">🎮 איפה כל חומר על הסקלה?</h3>
+      <p class="text-center text-gray-500 text-sm mb-5">גרור כל חומר לאזור הנכון שלו</p>
+
+      <!-- substance bank -->
+      <div id="sub-bank" class="flex flex-wrap justify-center gap-3 mb-6">
+        <div class="drag-item px-4 py-3 text-lg font-bold flex-col gap-1" draggable="true" data-val="lemon" style="min-width:80px;text-align:center">🍋<br><span class="text-sm">לימון</span></div>
+        <div class="drag-item px-4 py-3 text-lg font-bold flex-col gap-1" draggable="true" data-val="battery" style="min-width:80px;text-align:center">🔋<br><span class="text-sm">חומצת<br>בטריה</span></div>
+        <div class="drag-item px-4 py-3 text-lg font-bold flex-col gap-1" draggable="true" data-val="ac" style="min-width:80px;text-align:center">❄️<br><span class="text-sm">מים<br>מזגן</span></div>
+        <div class="drag-item px-4 py-3 text-lg font-bold flex-col gap-1" draggable="true" data-val="tap" style="min-width:80px;text-align:center">🚿<br><span class="text-sm">מי ברז</span></div>
+        <div class="drag-item px-4 py-3 text-lg font-bold flex-col gap-1" draggable="true" data-val="baking" style="min-width:80px;text-align:center">🧂<br><span class="text-sm">סודה<br>לשתייה</span></div>
+      </div>
+
+      <!-- drop zones on scale -->
+      <div class="relative">
+        <div class="ph-gradient rounded-2xl h-10 mb-1"></div>
+        <div class="flex gap-1" id="ph-zones">
+          <!-- zone: 0-2 very acid -->
+          <div class="flex-1 text-center">
+            <div class="drop-zone h-16 rounded-xl" id="pz-battery" data-answer="battery" data-label="0–2" data-ph="1">
+              <span class="text-xs text-gray-400">0–2</span>
+            </div>
+            <div class="text-xs text-red-600 mt-1 font-bold">חומצי מאוד</div>
+          </div>
+          <!-- zone: 2-4 acid -->
+          <div class="flex-1 text-center">
+            <div class="drop-zone h-16 rounded-xl" id="pz-lemon" data-answer="lemon" data-label="2–4" data-ph="2.5">
+              <span class="text-xs text-gray-400">2–4</span>
+            </div>
+            <div class="text-xs text-orange-500 mt-1 font-bold">חומצי</div>
+          </div>
+          <!-- zone: 5-7 slightly acid / neutral -->
+          <div class="flex-1 text-center">
+            <div class="drop-zone h-16 rounded-xl border-green-400" id="pz-ac" data-answer="ac" data-label="5–7" data-ph="5.5">
+              <span class="text-xs text-gray-400">5–7</span>
+            </div>
+            <div class="text-xs text-green-600 mt-1 font-bold">כמעט ניטרלי</div>
+          </div>
+          <!-- zone: 7-8 neutral/slightly base -->
+          <div class="flex-1 text-center">
+            <div class="drop-zone h-16 rounded-xl" id="pz-tap" data-answer="tap" data-label="7–8" data-ph="7.5">
+              <span class="text-xs text-gray-400">7–8</span>
+            </div>
+            <div class="text-xs text-blue-500 mt-1 font-bold">ניטרלי</div>
+          </div>
+          <!-- zone: 8-10 basic -->
+          <div class="flex-1 text-center">
+            <div class="drop-zone h-16 rounded-xl" id="pz-baking" data-answer="baking" data-label="8–10" data-ph="9">
+              <span class="text-xs text-gray-400">8–10</span>
+            </div>
+            <div class="text-xs text-purple-600 mt-1 font-bold">בסיסי</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sub-msg" class="hidden mt-3 text-center text-red-600 font-bold text-sm"></div>
+      <div id="sub-done" class="hidden mt-4 bg-lime-50 border border-lime-300 rounded-xl p-5 text-center">
+        <p class="text-xl font-black text-lime-700 mb-2">🎉 מדהים! +20 עלים!</p>
+        <div class="text-sm text-gray-600 grid grid-cols-2 gap-2 text-right mt-3">
+          <div>🔋 חומצת בטריה = pH ~1 ☠️</div>
+          <div>🍋 לימון = pH ~2.5 🍋</div>
+          <div>❄️ מי מזגן = pH ~5.5 ✅ (אידיאלי!)</div>
+          <div>🚿 מי ברז = pH ~7.5 ⚠️</div>
+          <div>🧂 סודה לשתייה = pH ~9 ⚠️</div>
+        </div>
+        <p class="text-green-700 font-bold mt-3">💡 מי מזגן – הכי קרוב לאידיאל לצמחים!</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="prev()" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="next()" id="b3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">pH – חלק ב' ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: pH PART 2 – SLIDER ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-4xl">🎚️</span>
+      <div><h2 class="text-3xl font-black text-green-900">pH – חלק ב'</h2><p class="text-gray-400 text-sm">כוונן את הסליידר לאזור הנכון לצמח</p></div>
+    </div>
+    <div class="bg-purple-50 border-r-4 border-purple-400 rounded-2xl p-5 mb-6 text-gray-700">
+      <p>עכשיו שאתה יודע את הסקלה – <b>מצא את אזור הנוחות של הצמח שלך.</b> pH 5.5–6.5 = הצמח יכול לספוג את כל המינרלים. מחוץ לטווח? המינרלים "נעולים".</p>
+    </div>
+    <div class="bg-gray-50 rounded-2xl p-6 mb-5">
+      <div class="text-center mb-4">
+        <div id="ph-plant" class="text-7xl mb-2 transition-all duration-500">😐</div>
+        <div class="text-3xl font-black" id="ph-val">pH: 7.0</div>
+        <div class="text-sm text-gray-500 mt-1" id="ph-txt">ניטרלי – לא אידיאלי</div>
+      </div>
+      <div class="ph-track rounded-xl">
+        <input type="range" min="0" max="140" value="70" id="ph-sl" oninput="updatePH(this.value)">
+      </div>
+      <div class="flex justify-between text-xs text-gray-400 mt-1 px-1"><span>0 חומצי</span><span>7 ניטרלי</span><span>14 בסיסי</span></div>
+      <div id="ph-win" class="hidden mt-4 bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
+        <p class="text-xl font-black text-lime-700">🌱 +15 עלים! מצאת את אזור הנוחות!</p>
+      </div>
+    </div>
+    <div id="ph-q" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ למה מחוץ ל-5.5–6.5 הצמח סובל גם כשיש מינרלים?</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,false,'ph1')">המינרלים מתאדים</div>
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,true,'ph1')">הצמח לא יכול לספוג מחוץ לטווח</div>
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,false,'ph1')">המים נעשים רעילים</div>
+        <div class="quiz-opt rounded-xl p-4 text-center" onclick="ansQ(this,false,'ph1')">השורשים נרקבים מיד</div>
+      </div>
+      <div id="fb-ph1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="prev()" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="next()" id="b4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">EC ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: EC + GROWEE ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-4xl">⚡</span>
+      <div><h2 class="text-3xl font-black text-green-900">EC + סטארטאפ ישראלי</h2><p class="text-gray-400 text-sm">מינרלים, כוונון, ו-Growee</p></div>
+    </div>
+
+    <div class="bg-blue-50 border-r-4 border-blue-400 rounded-2xl p-5 mb-5 text-gray-700 text-lg">
+      <p class="mb-3"><b>EC (Electrical Conductivity)</b> מודד כמה מינרלים מומסים במים. יחידה: mS/cm. לרוב הצמחים: <b>1.2–2.0 mS/cm</b>.</p>
+      <div class="grid grid-cols-2 gap-3 mt-3">
+        <div class="bg-white rounded-xl p-3 text-sm text-center border border-red-200"><p class="text-2xl">😢</p><b class="text-red-600">EC &lt;1.2</b><p class="text-gray-500">רעב – עלים בהירים</p></div>
+        <div class="bg-white rounded-xl p-3 text-sm text-center border border-green-200"><p class="text-2xl">😄</p><b class="text-green-600">EC 1.2–2.0</b><p class="text-gray-500">מושלם!</p></div>
+        <div class="bg-white rounded-xl p-3 text-sm text-center border border-orange-200"><p class="text-2xl">🥵</p><b class="text-orange-600">EC &gt;3.0</b><p class="text-gray-500">שריפת שורשים</p></div>
+        <div class="bg-white rounded-xl p-3 text-sm text-center border border-blue-200"><p class="text-2xl">🌊</p><b class="text-blue-600">EC ≈ 0</b><p class="text-gray-500">מים טהורים – אין כלום</p></div>
+      </div>
+    </div>
+
+    <!-- EC slider -->
+    <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 mb-6">
+      <h3 class="text-xl font-black text-center mb-4">🎮 כוונן את ה-EC!</h3>
+      <div class="grid md:grid-cols-2 gap-6 items-center">
+        <div>
+          <div class="bg-white rounded-2xl p-4 border-2 border-blue-100 mb-3">
+            <p class="text-sm font-bold text-gray-500 mb-2">מד מינרלים</p>
+            <div class="bg-gray-200 rounded-full h-5 overflow-hidden mb-2">
+              <div class="ec-bar" id="ec-bar" style="width:40%"></div>
+            </div>
+            <div class="flex justify-between text-xs text-gray-400"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0+</span></div>
+            <div class="text-center mt-2"><span class="text-3xl font-black" id="ec-val">1.6</span><span class="text-gray-500"> mS/cm</span></div>
+          </div>
+          <input type="range" min="0" max="50" value="16" id="ec-sl" oninput="updateEC(this.value)" class="w-full h-3 rounded-full cursor-pointer accent-blue-600">
+        </div>
+        <div class="text-center">
+          <div class="text-8xl" id="ec-plant">🌱</div>
+          <div class="text-xl font-black mt-2" id="ec-status">נראה טוב!</div>
+          <div class="text-sm text-gray-500" id="ec-adv">המשיכו כך</div>
+        </div>
+      </div>
+      <div id="ec-win" class="hidden mt-4 bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
+        <p class="text-xl font-black text-lime-700">⚡ +15 עלים! EC מושלם!</p>
+      </div>
+    </div>
+
+    <!-- GROWEE STARTUP CARD – ENRICHED -->
+    <div class="bg-gradient-to-br from-green-900 to-green-700 text-white rounded-2xl p-6 mb-5 shadow-xl">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-5xl">🇮🇱</span>
+        <div>
+          <p class="text-lime-300 text-xs font-bold uppercase tracking-wide">סטארטאפ ישראלי של השיעור</p>
+          <h3 class="text-3xl font-black">Growee</h3>
+          <p class="text-green-300 text-sm">Smart Hydroponics · ישראל</p>
+        </div>
+      </div>
+
+      <div class="bg-white/10 rounded-xl p-4 mb-4 text-green-100 leading-relaxed">
+        <p class="mb-2">מייסדים: <b class="text-white">עידן אביטן ושותפיו</b> – מהנדסים ישראלים שפתרו בעיה שהם עצמם חוו כמגדלים.</p>
+        <p>הם בנו מכשיר Wi-Fi שמנטר pH, EC וטמפרטורת מים <b class="text-white">24/7 בזמן אמת</b>, מאזן אוטומטית ושולח התראות לאפליקציה. הפתרון מיועד <b class="text-white">גם למוסדות חינוך</b> – בדיוק כמו הכיתה שלנו.</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+        <div class="bg-white/10 rounded-xl p-3 text-center">
+          <div class="text-2xl font-black text-lime-300">20+</div>
+          <div class="text-xs text-green-300">מדינות</div>
+        </div>
+        <div class="bg-white/10 rounded-xl p-3 text-center">
+          <div class="text-2xl font-black text-lime-300">6</div>
+          <div class="text-xs text-green-300">פטנטים</div>
+        </div>
+        <div class="bg-white/10 rounded-xl p-3 text-center">
+          <div class="text-2xl font-black text-lime-300">1–5k</div>
+          <div class="text-xs text-green-300">צמחים לניטור</div>
+        </div>
+        <div class="bg-white/10 rounded-xl p-3 text-center">
+          <div class="text-2xl font-black text-lime-300">🏆</div>
+          <div class="text-xs text-green-300">רשות החדשנות</div>
+        </div>
+      </div>
+
+      <!-- product breakdown -->
+      <div class="grid md:grid-cols-3 gap-3 mb-5">
+        <div class="bg-white/10 rounded-xl p-3 text-sm">
+          <p class="font-black text-lime-300 mb-1">🧠 Hydro Master</p>
+          <p class="text-green-200">ה"מוח" – מודד pH, EC וטמפרטורה בזמן אמת ושולח לאפליקציה</p>
+        </div>
+        <div class="bg-white/10 rounded-xl p-3 text-sm">
+          <p class="font-black text-lime-300 mb-1">⚗️ pH Balancer</p>
+          <p class="text-green-200">שתי משאבות – אחת מחמיצה, אחת מבסיסת. מאזן אוטומטית לטווח שהגדרת</p>
+        </div>
+        <div class="bg-white/10 rounded-xl p-3 text-sm">
+          <p class="font-black text-lime-300 mb-1">💊 Nutrient Doser</p>
+          <p class="text-green-200">מזריק דשן אוטומטית לפי רמת EC – הצמח מקבל בדיוק מה שצריך</p>
+        </div>
+      </div>
+
+      <div class="bg-lime-400/20 border border-lime-400/40 rounded-xl p-4">
+        <p class="font-bold text-lime-300 mb-2">💭 שאלת חשיבה:</p>
+        <p class="text-white">אם Growee הייתה מחוברת למערכת שלנו – <b>מה הייתה עושה אחרת ממה שאנחנו עושים עכשיו ידנית?</b></p>
+      </div>
+
+      <a href="https://getgrowee.com" target="_blank" class="mt-4 inline-block text-lime-300 text-sm underline hover:text-lime-200">growee.com ← בקרו באתר</a>
+    </div>
+
+    <div id="growee-q" class="reveal bg-amber-50 border-2 border-amber-200 rounded-2xl p-5">
+      <p class="font-bold text-lg text-amber-900 mb-3">❓ תרחיש: pH = 4.2, EC = 1.8. מה הבעיה?</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,true,'g1')">pH חומצי מדי – הצמח לא יכול לספוג מינרלים</div>
+        <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,false,'g1')">EC נמוך מדי – הצמח רעב</div>
+        <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,false,'g1')">שתיהם גרועים</div>
+        <div class="quiz-opt rounded-xl p-4 text-center text-sm" onclick="ansQ(this,false,'g1')">הכל תקין</div>
+      </div>
+      <div id="fb-g1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="prev()" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="next()" id="b5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">לפרויקט! ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: PROJECT ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-green-800 text-white rounded-3xl shadow-xl p-8 mb-5 text-center">
+    <div class="text-6xl mb-3">🌱</div>
+    <h2 class="text-4xl font-black mb-2">עכשיו לפרויקט!</h2>
+    <p class="text-green-200 text-xl mb-5">השאר את המחשב – קח רק את הרשימה</p>
+
+    <!-- METERS EXPLAINER -->
+    <div class="bg-white/10 rounded-2xl p-5 mb-5 text-right">
+      <h3 class="text-lg font-black text-lime-300 mb-3">🔬 רגע לפני – איך מודדים pH ו-EC?</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="bg-white/10 rounded-xl p-4">
+          <p class="font-black text-lime-200 mb-2">⚗️ מד חומציות (pH meter)</p>
+          <p class="text-green-200 text-sm leading-relaxed">מוט עם חיישן בקצה. טובלים אותו במים 30 שניות, קוראים את המספר על המסך. לפני שימוש: שוטפים במים נקיים. אחרי שימוש: שוטפים ומניחים בתמיסת שמירה (KCl).</p>
+          <div class="mt-2 bg-green-900/50 rounded-lg p-2 text-xs text-lime-200">
+            🎯 טווח תקין לצמחים: <b class="text-white">5.5 – 6.5</b>
+          </div>
+        </div>
+        <div class="bg-white/10 rounded-xl p-4">
+          <p class="font-black text-lime-200 mb-2">⚡ מד מוליכות (EC meter)</p>
+          <p class="text-green-200 text-sm leading-relaxed">נראה בדיוק כמו מד pH אבל מודד מוליכות חשמלית. כמה מינרלים מומסים במים. גם אותו טובלים, מחכים 30 שניות, קוראים. יחידה: mS/cm.</p>
+          <div class="mt-2 bg-green-900/50 rounded-lg p-2 text-xs text-lime-200">
+            🎯 טווח תקין: <b class="text-white">1.2 – 2.0 mS/cm</b>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3 bg-yellow-400/20 rounded-xl p-3 text-sm text-yellow-200">
+        ⚠️ <b>חשוב:</b> תמיד קראו ערכים <b>שלוש פעמים</b> ורשמו את הממוצע. מדים רגישים – אל תפילו!
+      </div>
+    </div>
+
+    <div class="bg-white/10 rounded-2xl p-5 text-right mb-4 space-y-3">
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m1">
+        <div class="text-2xl">🔌</div>
+        <div class="flex-1"><p class="font-bold">א. בדוק שהמשאבה פועלת</p><p class="text-green-300 text-xs">מים זורמים? לא = קרא למורה</p></div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(1)">
+      </div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m2">
+        <div class="text-2xl">📏</div>
+        <div class="flex-1"><p class="font-bold">ב. מדוד גובה השתיל (ס"מ)</p><p class="text-green-300 text-xs">רשום בנייר – תזין אחר כך</p></div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(2)">
+      </div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m3">
+        <div class="text-2xl">⚗️</div>
+        <div class="flex-1">
+          <p class="font-bold">ג. מדוד את pH המים במערכת</p>
+          <p class="text-green-300 text-xs">טבול מד → 30 שניות → קרא 3 פעמים → רשום ממוצע</p>
+          <p class="text-xs text-yellow-300 mt-1">תקין: 5.5–6.5 | מחוץ לטווח? רשום ודווח למורה</p>
+        </div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(3)">
+      </div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m4">
+        <div class="text-2xl">⚡</div>
+        <div class="flex-1">
+          <p class="font-bold">ד. מדוד EC (מוליכות) של המים</p>
+          <p class="text-green-300 text-xs">אותה שיטה – טבול → 30 שניות → 3 קריאות → ממוצע</p>
+          <p class="text-xs text-yellow-300 mt-1">תקין: 1.2–2.0 | גבוה? הוסף מים. נמוך? הוסף דשן</p>
+        </div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(4)">
+      </div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m5">
+        <div class="text-2xl">🔍</div>
+        <div class="flex-1"><p class="font-bold">ה. תצפית עלים – צבע? כתמים?</p><p class="text-green-300 text-xs">השווה לשבוע שעבר. קשר לנתוני pH/EC?</p></div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(5)">
+      </div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m6">
+        <div class="text-2xl">📸</div>
+        <div class="flex-1"><p class="font-bold">ו. צלם תמונה של השתיל</p><p class="text-green-300 text-xs">תעלה לקיר אחרי שתחזור</p></div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(6)">
+      </div>
+    </div>
+
+    <div id="bonus-m" class="hidden bg-yellow-400/20 border border-yellow-300 rounded-2xl p-4 mb-4 text-right">
+      <p class="font-bold text-yellow-200">⭐ בונוס (+20 עלים)</p>
+      <p class="text-white text-sm">השווה את ה-pH וה-EC של המערכת שלך לקבוצה אחרת. יש הבדל? נסה להסביר למה לדעתך.</p>
+    </div>
+    <p id="mp" class="text-green-200 mb-4">0 מתוך 6 ✓</p>
+    <button onclick="next()" id="bm" class="hidden bg-lime-400 hover:bg-lime-300 text-green-900 px-12 py-5 rounded-2xl text-2xl font-black shadow-2xl">✅ סיימתי! ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 7: DATA + SOCIAL + SUMMARY ══ -->
+<div class="step-panel" id="step-7">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <h2 class="text-3xl font-black text-green-900 mb-6">📊 נתונים + קיר הכיתה</h2>
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <div class="space-y-4">
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">📏 גובה (ס"מ)</label><input type="number" id="dh" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="12"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">🌿 מספר עלים</label><input type="number" id="dn" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="8"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">🎨 מצב עלים</label>
+          <select id="dc" class="w-full border-2 border-gray-200 rounded-xl p-4 text-lg">
+            <option value="">בחר...</option>
+            <option value="green">ירוק בריא ✅</option>
+            <option value="light">ירוק בהיר ⚠️</option>
+            <option value="yellow">צהוב ❌</option>
+            <option value="spots">כתמים ❓</option>
+          </select>
+        </div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">💬 תצפית</label><textarea id="do" rows="2" class="w-full border-2 border-gray-200 rounded-xl p-4 resize-none" placeholder="מה שמת לב..."></textarea></div>
+        <button onclick="submitData()" class="w-full bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg">🌿 שלח נתונים!</button>
+        <div id="dfb" class="hidden p-4 rounded-xl text-sm"></div>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-700 text-lg mb-3">🛠 קיר הכיתה</h3>
+        <div id="feed" class="space-y-3 max-h-72 overflow-y-auto mb-3"></div>
+        <a href="../wall.html" class="block text-center border-2 border-green-600 text-green-700 py-3 rounded-2xl font-bold text-sm hover:bg-green-50">לקיר המלא →</a>
+      </div>
+    </div>
+    <div class="bg-gray-50 rounded-2xl p-5 mb-6"><h3 class="font-bold mb-3">🏆 לידרבורד</h3><div id="lb"></div></div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="bg-white rounded-3xl shadow-lg p-8 text-center">
+    <div class="text-6xl mb-2">🏆</div>
+    <h2 class="text-4xl font-black text-green-900 mb-2">סיימת שיעור 5!</h2>
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-6 mb-6 inline-block min-w-48">
+      <div class="text-4xl font-black text-lime-700" id="fl">🌿 0</div>
+      <p class="text-gray-500 text-sm mt-1">עלים הרווחת</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+      <div class="bg-sky-50 rounded-xl p-3 text-center"><p class="text-xl">💧</p><p class="text-xs font-bold">הידרופוניקה</p></div>
+      <div class="bg-teal-50 rounded-xl p-3 text-center"><p class="text-xl">🐟</p><p class="text-xs font-bold">אקוופוניקה</p></div>
+      <div class="bg-purple-50 rounded-xl p-3 text-center"><p class="text-xl">⚗️</p><p class="text-xs font-bold">pH 5.5–6.5</p></div>
+      <div class="bg-blue-50 rounded-xl p-3 text-center"><p class="text-xl">⚡</p><p class="text-xs font-bold">EC 1.2–2.0</p></div>
+      <div class="bg-green-50 rounded-xl p-3 text-center"><p class="text-xl">🇮🇱</p><p class="text-xs font-bold">Growee</p></div>
+    </div>
+    <div class="bg-teal-50 border-2 border-teal-300 rounded-2xl p-5 mb-5 text-right">
+      <p class="font-bold text-teal-900">🎯 כוכב הצפון: המערכת ששמרתם עליה היום – pH ו-EC מאוזנים – היא בדיוק מה שיהפוך לאבטיפוס שתציגו בתערוכה. <b>איך זה רלוונטי לפרויקט שלי?</b></p>
+    </div>
+    <div class="bg-green-800 text-white rounded-2xl p-5 mb-4 text-right">
+      <p class="font-bold">🔮 שיעור 6: "איך מדברים עם צמחים?"</p>
+      <p class="text-green-200">נחבר חיישן pH לארדואינו – ויראו את הנתונים בזמן אמת!</p>
+    </div>
+    <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-5 mb-5">
+      <p class="font-bold text-yellow-900">✍️ Teaser: אם הצמח לא מרגיש טוב – <b>איך תדע לפני שרואים בעיניים?</b></p>
+    </div>
+    <div class="flex gap-4 justify-center">
+      <a href="../wall.html" class="bg-green-700 text-white px-8 py-4 rounded-2xl font-bold">📸 קיר</a>
+      <a href="../index.html#lessons-section" class="border-2 border-green-700 text-green-700 px-8 py-4 rounded-2xl font-bold">שיעורים</a>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<script>
+// ═══ STATE ═══
+let cur=1; const TOTAL=7;
+let lv=parseInt(localStorage.getItem('ls5')||'0');
+let ans={}; let aqOk=0; let subOk=0; let mcCnt=0;
+let phWon=false,ecWon=false;
+const sName=localStorage.getItem('studentName')||'תלמיד';
+
+// ═══ LEAVES ═══
+function addLv(n){lv+=n;localStorage.setItem('ls5',lv);document.getElementById('lc').textContent=lv;document.getElementById('fl').textContent='🌿 '+lv;burst();}
+function burst(){for(let i=0;i<7;i++){const e=document.createElement('div');e.className='leaf-burst';e.style.cssText=`left:${15+Math.random()*70}%;top:${15+Math.random()*70}%;--tx:${(Math.random()-.5)*200}px;--ty:${-50-Math.random()*130}px;`;e.textContent='🌿';document.body.appendChild(e);setTimeout(()=>e.remove(),950);}}
+
+// ═══ MASCOT ═══
+const mascotLines={
+  1:["היי! אני גרגיר, המדריך שלכם 🌱","הידרופוניקה = שורשים במים בלי אדמה. קסם!","שמתם לב? אתם כבר גרים בתוך מערכת הידרופונית!"],
+  2:["אקוופוניקה – הדגים עובדים בשבילנו 🐟","מעגל סגור = אפס פסולת. נדיר בטבע!"],
+  3:["pH זה לא רק כימיה – זה חיים!","לימון = pH 2.5, מי מזגן = pH 5.5. כמה קרובים!"],
+  4:["עכשיו אתם יודעים לכוונן pH. Growee עושה את זה אוטומטית!"],
+  5:["EC = כמה 'אוכל' יש למים. לא פחות, לא יותר!","Growee = הארדואינו החכם של המקצוענים 🚀"],
+  6:["צאו לצמחים! הם מחכים לכם 🌱"],
+  7:["מדהים! השיעור הזה היה עמוס. אתם מוכנים לשיעור 6!"],
+};
+function showMascot(step){
+  const lines=mascotLines[step]||[];
+  if(!lines.length) return;
+  const line=lines[Math.floor(Math.random()*lines.length)];
+  const bubble=document.getElementById('mascot-bubble');
+  const m=document.getElementById('mascot');
+  bubble.textContent=line;
+  bubble.classList.remove('hidden');
+  m.classList.add('mascot-bounce');
+  setTimeout(()=>{m.classList.remove('mascot-bounce');},2000);
+  setTimeout(()=>bubble.classList.add('hidden'),5000);
+}
+
+// ═══ NAVIGATION ═══
+function goTo(n){document.getElementById('step-'+cur).classList.remove('active');cur=n;document.getElementById('step-'+cur).classList.add('active');document.getElementById('pbar').style.width=((n-1)/(TOTAL)*100)+'%';document.getElementById('plabel').textContent='שלב '+n+' מתוך '+TOTAL;buildDots();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>showMascot(n),600);}
+function next(){if(cur<TOTAL)goTo(cur+1);}
+function prev(){if(cur>1)goTo(cur-1);}
+function buildDots(){const c=document.getElementById('dots');c.innerHTML='';for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='step-dot'+(i<cur?' done':i===cur?' current':'');if(i<cur)d.onclick=()=>goTo(i);c.appendChild(d);}}
+
+// ═══ QUIZ ═══
+const FB={
+  h1:{ok:'✅ נכון! המצע = מדף. המינרלים מגיעים מהתמיסה.',fail:'💡 לא. המצע תומך פיזית בלבד.',lv:10},
+  h2:{ok:'✅ בדיוק! מ-60 ל-6 ליטר – 90% חיסכון.',fail:'💡 לא. הידרופוניקה חוסכת ~90%.',lv:10},
+  aq1:{ok:'✅ נכון! זה המעגל הסגור – כל פסולת הופכת למשאב.',fail:'💡 לא בדיוק. המפתח הוא שפסולת הדגים הופכת לדשן, והמים חוזרים נקיים.',lv:10},
+  aq2q:{ok:'✅ בדיוק! החיידקים הם ה"מפעל" שמעבד את הרעל לדשן.',fail:'💡 לא. החיידקים הם הגיבורים הנסתרים – הם הופכים אמוניה רעילה לניטראט שמזין את הצמחים.',lv:10},
+  ph1:{ok:'✅ נכון! pH מחוץ לטווח חוסם ספיגת מינרלים.',fail:'💡 לא בדיוק. pH מחוץ לטווח = מינרלים "נעולים".',lv:10},
+  g1:{ok:'✅ נכון! pH 4.2 חומצי מדי – הצמח לא יכול לספוג. EC בסדר.',fail:'💡 EC = 1.8 תקין! הבעיה היא pH = 4.2, חומצי מדי.',lv:10},
+};
+function ansQ(el,ok,id){
+  if(ans[id])return;ans[id]=true;
+  el.parentElement.querySelectorAll('.quiz-opt').forEach(o=>{o.style.pointerEvents='none';o.classList.add('done');});
+  el.classList.add(ok?'correct':'wrong');
+  if(!ok)el.parentElement.querySelectorAll('.quiz-opt').forEach(o=>{if(o.onclick?.toString().includes('true'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+id);const d=FB[id];
+  if(!fb||!d)return;
+  fb.classList.remove('hidden');
+  fb.className=(ok?'mt-3 rounded-xl p-4 text-sm bg-green-50 border border-green-300':'mt-3 rounded-xl p-4 text-sm bg-orange-50 border border-orange-300');
+  fb.textContent=ok?d.ok:d.fail;
+  if(ok)addLv(d.lv);
+  if(id==='h1')setTimeout(()=>document.getElementById('h2b').classList.add('show'),400);
+  if(id==='h2')document.getElementById('b1').classList.remove('hidden');
+  if(id==='aq1')setTimeout(()=>document.getElementById('aq2-block').classList.add('show'),400);
+  if(id==='aq2q')setTimeout(()=>document.getElementById('aqua-game-block').classList.add('show'),500);
+  if(id==='ph1')document.getElementById('b4').classList.remove('hidden');
+  if(id==='g1')document.getElementById('b5').classList.remove('hidden');
+}
+
+// ═══ DRAG: AQUA ═══
+let drag=null;
+function initDrag(bank,zones,onOk,onDone){
+  bank.querySelectorAll('.drag-item').forEach(el=>{
+    el.addEventListener('dragstart',e=>{drag=el;e.dataTransfer.setData('text/plain',el.dataset.val);});
+    el.addEventListener('dragend',()=>drag=null);
+    // touch
+    let tc2=null;
+    el.addEventListener('touchstart',e=>{if(el.classList.contains('used'))return;drag=el;tc2=el.cloneNode(true);tc2.style.cssText='position:fixed;opacity:.7;pointer-events:none;z-index:9999;font-size:2rem;';document.body.appendChild(tc2);},{passive:true});
+    el.addEventListener('touchmove',e=>{if(!tc2)return;e.preventDefault();const t=e.touches[0];tc2.style.left=(t.clientX-30)+'px';tc2.style.top=(t.clientY-30)+'px';},{passive:false});
+    el.addEventListener('touchend',e=>{if(!tc2)return;tc2.remove();tc2=null;const t=e.changedTouches[0];const tgt=document.elementFromPoint(t.clientX,t.clientY);const z=tgt?.closest('.drop-zone');if(z&&drag)dropOnZone(z,drag.dataset.val,onOk,onDone);drag=null;});
+  });
+  zones.querySelectorAll('.drop-zone').forEach(z=>{
+    z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag-over');});
+    z.addEventListener('dragleave',()=>z.classList.remove('drag-over'));
+    z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag-over');if(!drag)return;dropOnZone(z,e.dataTransfer.getData('text/plain'),onOk,onDone);});
+  });
+}
+function dropOnZone(zone,val,onOk,onDone){
+  if(zone.dataset.filled)return;
+  const expected=zone.dataset.answer;
+  if(val===expected){
+    zone.textContent=val;zone.classList.add('correct-drop');zone.dataset.filled='true';
+    // mark source used
+    document.querySelectorAll('.drag-item').forEach(el=>{if(el.dataset.val===val&&!el.classList.contains('used')){el.classList.add('used');el.setAttribute('draggable','false');}});
+    addLv(4);if(onOk)onOk();
+  } else {
+    zone.classList.add('wrong-drop');setTimeout(()=>zone.classList.remove('wrong-drop'),600);
+    if(onDone)onDone(false);
+  }
+}
+
+// aqua game
+let aqCount=0;
+initDrag(
+  document.getElementById('aqua-bank'),
+  document.querySelector('#step-2'),
+  ()=>{aqCount++;if(aqCount===5){document.getElementById('aq-done').classList.remove('hidden');document.getElementById('b2').classList.remove('hidden');}},
+  (ok)=>{if(!ok){const m=document.getElementById('aq-msg');m.classList.remove('hidden');m.textContent='לא בדיוק – נסה שוב! 💪';setTimeout(()=>m.classList.add('hidden'),1500);}}
+);
+
+// substance drag
+let subCount=0;
+initDrag(
+  document.getElementById('sub-bank'),
+  document.querySelector('#step-3'),
+  ()=>{subCount++;if(subCount===5){document.getElementById('sub-done').classList.remove('hidden');addLv(0);document.getElementById('b3').classList.remove('hidden');}},
+  (ok)=>{if(!ok){const m=document.getElementById('sub-msg');m.classList.remove('hidden');m.textContent='לא מדויק – נסה שוב!';setTimeout(()=>m.classList.add('hidden'),1500);}}
+);
+
+// ═══ pH SLIDER ═══
+function updatePH(v){
+  const ph=(v/10).toFixed(1);
+  document.getElementById('ph-val').textContent='pH: '+ph;
+  const p=document.getElementById('ph-plant'),t=document.getElementById('ph-txt');
+  const n=parseFloat(ph);
+  if(n>=5.5&&n<=6.5){p.textContent='🌱😄';t.textContent='מושלם! הצמח ספוג מינרלים';p.style.transform='scale(1.2)';
+    if(!phWon){phWon=true;addLv(15);document.getElementById('ph-win').classList.remove('hidden');setTimeout(()=>document.getElementById('ph-q').classList.add('show'),600);}}
+  else if((n>=4&&n<5.5)||(n>6.5&&n<=8)){p.textContent='😐';t.textContent='לא אידיאלי – ספיגה חלקית';p.style.transform='scale(1)';}
+  else{p.textContent='😵';t.textContent='סכנה! הצמח לא יכול לספוג';p.style.transform='scale(0.9)';}
+}
+
+// ═══ EC SLIDER ═══
+function updateEC(v){
+  const ec=(v/10).toFixed(1);
+  document.getElementById('ec-bar').style.width=(v/50*100)+'%';
+  document.getElementById('ec-val').textContent=ec;
+  const p=document.getElementById('ec-plant'),s=document.getElementById('ec-status'),a=document.getElementById('ec-adv');
+  const n=parseFloat(ec);
+  if(n<1.2){p.textContent='😢🌱';s.textContent='הצמח רעב!';a.textContent='הוסף דשן';}
+  else if(n<=2.0){p.textContent='🌿😄';s.textContent='מושלם!';a.textContent='המשיכו כך';
+    if(!ecWon){ecWon=true;addLv(15);document.getElementById('ec-win').classList.remove('hidden');setTimeout(()=>document.getElementById('growee-q').classList.add('show'),600);}}
+  else if(n<=3){p.textContent='😰';s.textContent='קצת גבוה';a.textContent='דלל עם מים';}
+  else{p.textContent='🔥😵';s.textContent='שריפה!';a.textContent='דלל מיד!';}
+}
+
+// ═══ MISSIONS ═══
+function mc(n){mcCnt++;document.getElementById('m'+n).classList.add('done');addLv(6);document.getElementById('mp').textContent=mcCnt+' מתוך 6 ✓';if(mcCnt===3)document.getElementById('bonus-m').classList.remove('hidden');if(mcCnt===6){addLv(10);document.getElementById('bm').classList.remove('hidden');}}
+
+// ═══ DATA ═══
+function submitData(){
+  const h=document.getElementById('dh').value,n=document.getElementById('dn').value,c=document.getElementById('dc').value;
+  if(!h||!n||!c){alert('מלא את כל השדות');return;}
+  addLv(20);
+  // P3.1: capture current pH+EC slider values alongside height/leaves
+  const phSlider=document.getElementById('ph-sl');const ecSlider=document.getElementById('ec-sl');
+  const phVal=phSlider?(phSlider.value/10).toFixed(1):null;const ecVal=ecSlider?(ecSlider.value/10).toFixed(1):null;
+  const rec={name:sName,height:h,leaves:n,color:c,obs:document.getElementById('do').value,ph:phVal,ec:ecVal,ts:Date.now()};
+  let all=JSON.parse(localStorage.getItem('cls5')||'[]');
+  all=all.filter(r=>r.name!==sName);all.push(rec);localStorage.setItem('cls5',JSON.stringify(all));
+  // P1.3: also persist to passport1 for cross-lesson data access
+  if(window.GC) GC.pushPassport('measurements',{lesson:5,height:parseInt(h)||0,leaves:parseInt(n)||0,color:c,obs:rec.obs,ts:rec.ts});
+  const map={green:'🟢',light:'🟡',yellow:'🔴',spots:'🟠'};
+  let msg='<p class="font-bold text-green-800 text-lg mb-1">✅ נשמר! +20 עלים 🌿</p>';
+  if(c==='yellow')msg+='<p class="text-red-600">⚠️ עלים צהובים – בדוק pH (5.5–6.5) ו-EC (1.2–2.0).</p>';
+  else if(c==='light')msg+='<p class="text-orange-500">💡 ירוק בהיר – EC כנראה נמוך. הוסף דשן.</p>';
+  else if(c==='spots')msg+='<p class="text-orange-500">🔍 כתמים – הראה למורה.</p>';
+  else msg+='<p class="text-green-600">הצמח נראה בריא! 🌱</p>';
+  const fb=document.getElementById('dfb');fb.classList.remove('hidden');fb.className='p-4 rounded-xl bg-lime-50 border border-lime-300 text-sm';fb.innerHTML=msg;
+  renderFeed();renderLB();
+}
+function renderFeed(){
+  const data=JSON.parse(localStorage.getItem('cls5')||'[]');
+  const feed=document.getElementById('feed');
+  if(!data.length){feed.innerHTML='<p class="text-gray-400 text-center py-4 text-sm">עדיין אין נתונים</p>';return;}
+  const map={green:'🟢',light:'🟡',yellow:'🔴',spots:'🟠'};
+  feed.innerHTML=data.slice(-5).reverse().map(r=>`<div class="photo-card bg-gray-50 rounded-xl p-3 border"><p class="font-bold text-sm">${r.name} ${map[r.color]||''}</p><p class="text-xs text-gray-500">${r.height}ס"מ · ${r.leaves} עלים</p>${r.obs?`<p class="text-xs italic text-gray-400">"${r.obs}"</p>`:''}</div>`).join('');
+}
+function renderLB(){
+  const s=JSON.parse(localStorage.getItem('alv5')||'{}');
+  s[sName]=Math.max(s[sName]||0,lv);localStorage.setItem('alv5',JSON.stringify(s));
+  const sorted=Object.entries(s).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const m=['🥇','🥈','🥉','4.','5.'];
+  document.getElementById('lb').innerHTML=sorted.map(([name,l],i)=>`<div class="flex justify-between py-2 px-3 ${name===sName?'bg-lime-50 rounded-xl font-bold':''}"><span>${m[i]} ${name}</span><span class="text-green-700 font-bold">${l} 🌿</span></div>`).join('');
+}
+
+// ═══ INIT ═══
+document.getElementById('lc').textContent=lv;
+document.getElementById('fl').textContent='🌿 '+lv;
+buildDots();renderFeed();renderLB();
+updatePH(70);updateEC(16);
+setTimeout(()=>showMascot(1),1200);
+</script>
+</body>
+</html>

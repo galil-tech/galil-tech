@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 9 – לוויינים, רחפנים ו-GIS | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;}
+    .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;border-radius:12px;}
+    .quiz-opt:hover:not([data-done]){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
+    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;} .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;} .reveal.show{display:block;animation:fadeUp .35s ease;}
+    .mascot{font-size:2.8rem;transition:all .4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .mascot-bounce{animation:bounce .6s ease 3;}
+    /* Canvas drawing */
+    canvas{touch-action:none;}
+    /* Idea card */
+    .idea-card{border:2px solid #d1fae5;border-radius:12px;background:#f9fafb;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-sky-50 to-blue-50 min-h-screen">
+
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="lesson-08.html" class="hover:text-lime-300">← שיעור 8</a>
+      <a href="../wall.html" class="hover:text-lime-300">🛠 קיר</a>
+      <a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<div class="bg-sky-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-sky-400 text-sky-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 3 – פריחה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 9 מתוך 17</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🛰️ לוויינים, רחפנים ו-GIS</h1>
+    <p class="text-sky-200">חוקר מרחוק · Taranis · ציור-מאקרו · פנקס רעיונות</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-sky-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 6</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-sky-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: גשר + חישה מרחוק ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-6">
+      <p class="font-bold text-amber-900 mb-1">🔁 Teaser מהשיעור הקודם:</p>
+      <p class="text-gray-700 text-sm">"בנינו מעגל בקרה בקרקע — חיישן אחד, ברז אחד. אבל מה אם נרצה לראות את כל השדה מלמעלה, לא רק נקודה אחת?"</p>
+    </div>
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🛰️</span>
+      <div>
+        <h2 class="text-3xl font-black text-sky-900">חישה מרחוק – לראות הכל מלמעלה</h2>
+        <p class="text-gray-400 text-sm">כשהחקלאי לא יכול לסייר בכל שדה — המצלמה מסיירת בשבילו</p>
+      </div>
+    </div>
+    <div class="bg-sky-50 border-r-4 border-sky-500 rounded-2xl p-5 mb-5 text-gray-700 text-sm">
+      <p class="mb-2"><b>GIS (Geographic Information System)</b> = מערכת מידע גאוגרפי. כל נקודה בשדה מקבלת קואורדינטות, וכל מדידה (לחות, בריאות צמח, מחלה) נשמרת <b>על המפה</b> — לא רק בטבלה.</p>
+      <p>כך חקלאי יודע: "בדיוק בחלקה B4, שורה 7 — יש בעיה." בלי לסייר. בלי לנחש.</p>
+      <p class="mt-2">אמצעי החישה: <b>רחפנים (UAV)</b> — גמישות, נמוך + <b>מטוסים מאוישים בעלי כנף קבועה</b> — שטח גדול + <b>לוויינים</b> — כל העולם בפעם אחת.</p>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה היתרון הגדול ביותר של מצלמה מהאוויר לעומת בדיקה ידנית בשדה?</p>
+      <div class="grid gap-3" id="q-gis1">
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-gis1')">המצלמה יקרה יותר ולכן מדויקת יותר</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,true,'q-gis1')" data-correct="true">בדיקה ידנית מכסה נקודות בודדות, בעוד מצלמה מהאוויר סורקת שדה שלם בדקות</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-gis1')">המצלמה רואה מתחת לאדמה</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-gis1')">בדיקה ידנית תמיד מהירה יותר</div>
+      </div>
+      <div id="fb-q-gis1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn1" class="hidden bg-sky-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-sky-600" onclick="goTo(2)">Taranis ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: Taranis ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">✈️</span>
+      <div>
+        <h2 class="text-3xl font-black text-sky-900">Taranis – עיניים מהשמיים</h2>
+        <p class="text-gray-400 text-sm">רחפנים + מטוסים + AI = גילוי מחלות מוקדם</p>
+      </div>
+    </div>
+    <div class="bg-gradient-to-br from-sky-700 to-blue-600 text-white rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🇮🇱</span>
+        <div>
+          <h3 class="font-black text-xl">Taranis</h3>
+          <p class="text-sky-200 text-sm">ישראל · חקלאות מדויקת מהאוויר</p>
+        </div>
+      </div>
+      <p class="text-sm text-sky-100 mb-4">חברה ישראלית שמשתמשת ב<b>רחפנים וגם מטוסים קלים מאוישים בעלי כנף קבועה</b> כדי לצלם שדות בדיוק גבוה, ו-AI שמנתח את התמונות ומזהה מחלות, מזיקים וחוסרי מים — לפני שהחקלאי רואה בעיניו.</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-lg block">🚁+✈️</b>רחפנים + מטוסים</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-lg block">🤖</b>AI לזיהוי</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-lg block">🗺️</b>GIS מדויק</div>
+      </div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-4">❓ מה ה-AI עושה עם תמונות הרחפן של Taranis?</p>
+      <div class="grid gap-3" id="q-tar1">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tar1')">שולח אותן לחקלאי שבודק ידנית</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-tar1')" data-correct="true">מנתח כל פיקסל ומסמן אוטומטית איפה יש מחלה, מזיק או חוסר מים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tar1')">מייצר מפות מזג אוויר</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tar1')">הורס את צילומי הלוויין של המתחרים</div>
+      </div>
+      <div id="fb-q-tar1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+    <div id="q-tar2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ למה Taranis משתמשת גם במטוסים בעלי כנף קבועה ולא רק ברחפנים?</p>
+      <div class="grid gap-3" id="q-tar2">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tar2')">כי רחפנים אסורים בישראל</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-tar2')" data-correct="true">מטוסים מכסים שטח גדול בפחות זמן, בעוד רחפנים טובים לאזורים קטנים ומדויקים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tar2')">כי מטוסים צולמים טוב יותר בגובה נמוך</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tar2')">כי רחפנים מפחידים פרות בקרבת שדות</div>
+      </div>
+      <div id="fb-q-tar2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn2" class="hidden bg-sky-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-sky-600" onclick="goTo(3)">חוקר מרחוק ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: חוקר מרחוק ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🔍</span>
+      <div>
+        <h2 class="text-3xl font-black text-sky-900">חוקר מרחוק – מה רואים מהאוויר?</h2>
+        <p class="text-gray-400 text-sm">תרגיל: "קראו" תמונת אוויר מתוארת וזהו מה שמוצג</p>
+      </div>
+    </div>
+    <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-5 mb-5">
+      <p class="font-black text-sky-900 mb-3">🛰️ "תמונת לוויין" — תיאור:</p>
+      <p class="text-gray-700 text-sm leading-relaxed">שדה ירקות, 5 דונם. <b>רוב השדה ירוק כהה</b> — צמחים בריאים. בפינה הצפון-מזרחית, אזור בגודל ~50 מ"ר: <b>ירוק-צהבהב</b>. בשורה המרכזית: פסל כהה, כמעט שחור. ב<b>שוליים הדרומיים</b>: ירוק בהיר ודליל.</p>
+    </div>
+    <div class="space-y-4 mb-4" id="detective-zone"></div>
+    <div id="detective-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-4 text-center">
+      <p class="font-black text-lime-800 text-xl">🔍 חוקר מרחוק — הסתיים! +5 עלים 🌿</p>
+      <p class="text-gray-600 text-sm mt-1">ה-AI של Taranis עושה את אותו ניתוח — בשניות, על אלפי דונם</p>
+    </div>
+    <div id="q-detect-wrap" class="reveal mt-4 bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ לפי התמונה — מה הפעולה הדחופה ביותר עבור החקלאי?</p>
+      <div class="grid gap-3" id="q-detect">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-detect')">להתחיל לקצור את כל השדה מיד</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-detect')" data-correct="true">לבדוק את הפינה הצפון-מזרחית — האזור הצהבהב מסמן בעיה מתחילה שניתן לטפל בה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-detect')">להוסיף דשן לכל השדה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-detect')">להחליף את כל מערכת ההשקיה</div>
+      </div>
+      <div id="fb-q-detect" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn3" class="hidden bg-sky-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-sky-600" onclick="goTo(4)">ציור-מאקרו ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: ציור-מאקרו ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">✏️</span>
+      <div>
+        <h2 class="text-3xl font-black text-sky-900">ציור-מאקרו – הכיתה מהאוויר</h2>
+        <p class="text-gray-400 text-sm">כל קבוצה מציירת את חלקה. ביחד — מפת הכיתה</p>
+      </div>
+    </div>
+    <div class="bg-blue-50 border-r-4 border-blue-400 rounded-2xl p-5 mb-5 text-gray-700 text-sm">
+      <p class="mb-2"><b>מה זה ציור-מאקרו?</b> לצייר מ"ניצב מלמעלה" — כמו מה שרחפן היה רואה. לא נראה מהצד, לא תלת-מימד. רק מלמעלה.</p>
+      <p>הציירו את <b>הפינה של הכיתה שלכם</b>: המערכת ההידרופונית, השתילים, הארדואינו — מ"מבט ציפור". <b>בסוף השיעור</b> נחבר את כל הציורים לתמונה אחת של כל הכיתה.</p>
+      <p class="text-xs text-gray-500 mt-2">🔗 הציור הזה יחזור בשיעור 10 כשנחפש "איפה רובוט יכול להיכנס"</p>
+    </div>
+    <div class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-4 mb-4 text-center">
+      <p class="font-bold text-gray-700 mb-3">✏️ שרטטו כאן (או על דף/ביומן):</p>
+      <canvas id="macro-canvas" width="600" height="300" class="border-2 border-gray-300 rounded-xl w-full bg-white" style="max-height:280px;cursor:crosshair;touch-action:none;"></canvas>
+      <div class="flex gap-3 justify-center mt-3 flex-wrap">
+        <button onclick="undoCanvas()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-xl text-sm font-bold">↩️ בטל</button>
+        <button onclick="clearCanvas()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-xl text-sm font-bold">🗑️ נקה</button>
+        <button onclick="saveDrawing()" class="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-xl text-sm font-bold">✅ סיימתי לצייר (+10 עלים)</button>
+      </div>
+      <div id="drawing-saved" class="hidden mt-2 font-bold text-lime-700 text-sm">✅ הציור נשמר!</div>
+    </div>
+    <div id="q-macro-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ למה חשוב לצייר מ"מבט ציפור" ולא מהצד?</p>
+      <div class="grid gap-3" id="q-macro">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-macro')">כי ציור מהצד קשה יותר לביצוע</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-macro')" data-correct="true">כי GIS/רחפנים רואים מלמעלה — ציור מלמעלה מייצג מה שמצלמות ואנחנו מנתחים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-macro')">כי מהצד לא ניתן לזהות שתילים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-macro')">כי מבט ציפור נחשב "אמנות" יותר</div>
+      </div>
+      <div id="fb-q-macro" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn4" class="hidden bg-sky-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-sky-600" onclick="goTo(5)">פנקס רעיונות ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: פנקס רעיונות + דרכון ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">💡</span>
+      <div>
+        <h2 class="text-3xl font-black text-sky-900">פנקס רעיונות – ניצוצות לפרויקט הסופי</h2>
+        <p class="text-gray-400 text-sm">הרעיון שלכם לתערוכה מתחיל כאן</p>
+      </div>
+    </div>
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 mb-5">
+      <p class="font-bold text-amber-900 mb-2">🎯 מה אנחנו עושים כאן?</p>
+      <p class="text-gray-700 text-sm">בשיעור 13 נעבור Design Thinking מסודר, אבל <b>עכשיו מתחילים לאסוף ניצוצות</b>. כל רעיון שגרם לכם להגיד "מגניב!" בשיעורים 1-9 — רשמו אותו. גם "טיפשי" ו"בלתי אפשרי" עכשיו, עלול להיות הבסיס לאבטיפוס בפברואר.</p>
+      <p class="text-xs text-gray-500 mt-2">💡 פנקס הרעיונות = אותו מאגר כמו "קיר סיעור מוחות" בקיר הכיתה (<a href="../wall.html" class="text-sky-600 underline">ראו wall.html</a>) — רק אישי</p>
+    </div>
+    <div class="space-y-3 mb-5">
+      <div class="idea-card p-4">
+        <label class="block font-bold text-gray-700 mb-2 text-sm">💡 רעיון 1 (חובה):</label>
+        <input id="idea1" type="text" maxlength="100" placeholder="בעיה שרציתי לפתור..." class="w-full border-2 border-sky-200 rounded-xl p-3 text-sm outline-none focus:border-sky-500">
+      </div>
+      <div class="idea-card p-4">
+        <label class="block font-bold text-gray-700 mb-2 text-sm">💡 רעיון 2 (חובה):</label>
+        <input id="idea2" type="text" maxlength="100" placeholder="טכנולוגיה שרציתי לנסות..." class="w-full border-2 border-sky-200 rounded-xl p-3 text-sm outline-none focus:border-sky-500">
+      </div>
+      <div class="idea-card p-4">
+        <label class="block font-bold text-gray-700 mb-2 text-sm">💡 רעיון 3 (בונוס):</label>
+        <input id="idea3" type="text" maxlength="100" placeholder="משהו ששמעתי ואמרתי 'וואו'..." class="w-full border-2 border-sky-200 rounded-xl p-3 text-sm outline-none focus:border-sky-500">
+      </div>
+    </div>
+    <button onclick="saveIdeas()" class="w-full bg-sky-700 hover:bg-sky-600 text-white py-4 rounded-2xl font-black shadow transition-colors">💡 שמור פנקס רעיונות (+15 עלים)</button>
+    <div id="ideas-saved" class="hidden mt-3 bg-lime-50 border-2 border-lime-300 rounded-xl p-4 text-center font-black text-lime-800">✅ הרעיונות נשמרו! נחזור אליהם בשיעור 13 🎯</div>
+
+    <!-- Passport -->
+    <div class="mt-5 bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+      <h3 class="font-black text-green-900 mb-2">📔 דרכון – שיעור 9</h3>
+      <textarea id="p9-obs" rows="2" maxlength="150" placeholder="מה ראיתם בתמונת ה'לוויין'? מה הניצוץ הכי מעניין שגיליתם היום?" class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+      <button onclick="saveEntry9()" class="mt-3 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-xl font-black shadow transition-colors">📔 שמור רשומה</button>
+      <div id="p9-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! +10 עלים 🌿</div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn5" class="hidden bg-sky-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-sky-600" onclick="goTo(6)">סיכום ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: סיכום + כוכב הצפון ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-sky-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-sky-900 mb-3">📚 מה למדנו היום:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex gap-2"><span class="text-sky-600">🛰️</span> GIS + חישה מרחוק = שדה שלם על מפה, כל נקודה עם נתונים</li>
+        <li class="flex gap-2"><span class="text-sky-600">✈️</span> Taranis: רחפנים + מטוסים + AI = גילוי מחלה לפני שרואים בעיניים</li>
+        <li class="flex gap-2"><span class="text-sky-600">🔍</span> "חוקר מרחוק" — ניתוח תמונת אוויר הוא מיומנות שניתן לפתח</li>
+        <li class="flex gap-2"><span class="text-sky-600">💡</span> הרעיונות לפרויקט הסופי כבר מתחילים להיאסף!</li>
+      </ul>
+    </div>
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3"><span class="text-2xl">⭐</span><h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3></div>
+      <p class="text-gray-800 font-bold text-lg mb-3">"אם יכולתם לשלוח רחפן עם מצלמה מעל המערכת שלכם בכיתה — מה הייתם רוצים לדעת שאין לכם עכשיו?"</p>
+      <textarea id="north-star" rows="2" placeholder="הרחפן היה מגלה לי ש..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא (שיעור 10):</p>
+      <p class="font-black text-xl">"ראינו מלמעלה. עכשיו — מה קורה כשנשלח רובוט בתוך השדה עצמו?"</p>
+    </div>
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים שנצברו בשיעור 9:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך מקסימום ~65 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4">
+    <a href="lesson-10.html" class="bg-sky-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-sky-600">לשיעור 10 ←</a>
+  </div>
+</div>
+
+</div>
+<script>
+const STEPS=6,detectData=[
+  {q:'הצבע הצהבהב בפינה הצפון-מזרחית מסמן:',ans:'מחסור בחנקן / תחילת מחלה',opts:['מחסור בחנקן / תחילת מחלה','עודף מים','שריפה מהשמש','צמחים בשלים לקטיף']},
+  {q:'הפסל הכהה בשורה המרכזית מסמן:',ans:'בעיה בהשקיה — יובש / חוסר מים',opts:['בעיה בהשקיה — יובש / חוסר מים','מחלת פטרייה','גדלים הכי טוב','השתילים הגדולים']},
+  {q:'הצמחים הדלילים בשוליים הדרומיים:',ans:'השקיה לא אחידה — השוליים מקבלים פחות',opts:['השקיה לא אחידה — השוליים מקבלים פחות','הכי בריאים בשדה','סוג צמח אחר','בעיית קרקע']}
+];
+let cur=1,lv=parseInt(localStorage.getItem('ls9')||'0'),maxReached=1;
+let detectDone=0,drawingSaved=false,ideasSaved=false,entry9Saved=false;
+
+function goTo(n){
+  if(n<1||n>STEPS) return;
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur=n;if(cur>maxReached)maxReached=cur;
+  document.getElementById('step-'+cur).classList.add('active');
+  renderDots();updateHeader();window.scrollTo({top:0,behavior:'smooth'});updateMascot(cur);
+}
+function updateHeader(){document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';}
+function renderDots(){document.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');});}
+function addLv(n){lv+=n;localStorage.setItem('ls9',lv);document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
+function leafBurst(n){for(let i=0;i<Math.min(n,8);i++){const el=document.createElement('div');el.className='leaf-burst';el.textContent='🌿';el.style.left=(20+Math.random()*60)+'vw';el.style.top=(15+Math.random()*50)+'vh';el.style.setProperty('--tx',(Math.random()*120-60)+'px');el.style.setProperty('--ty',(-80-Math.random()*80)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),950);}}
+function ansQ(el,correct,qid){
+  const c=document.getElementById(qid);if(!c||c.dataset.done)return;
+  c.dataset.done='1';c.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');
+  el.classList.add(correct?'correct':'wrong');
+  if(!correct){const r=c.querySelector('[data-correct="true"]');if(r)r.classList.add('correct');}
+  const fb=document.getElementById('fb-'+qid);
+  if(fb){fb.className='mt-3 rounded-xl p-4 text-sm '+(correct?'bg-green-50 text-green-800':'bg-red-50 text-red-800');fb.textContent=correct?'✅ מצוין! +5 עלים 🌿':'❌ לא בדיוק – תשובה נכונה מסומנת בירוק';fb.classList.remove('hidden');}
+  if(correct)addLv(5);
+  const casc={'q-gis1':()=>{document.getElementById('btn1').classList.remove('hidden');mascotSay('בדיוק! מלמעלה רואים הכל בבת אחת','🛰️');},'q-tar1':()=>document.getElementById('q-tar2-wrap').classList.add('show'),'q-tar2':()=>{document.getElementById('btn2').classList.remove('hidden');mascotSay('רחפנים+מטוסים = גמישות+שטח גדול','✈️');},'q-detect':()=>{document.getElementById('btn3').classList.remove('hidden');mascotSay('אבחון מרחוק — כמו רופא לשדה!','🔍');},'q-macro':()=>{document.getElementById('btn4').classList.remove('hidden');mascotSay('בדיוק! מבט ציפור = שפת GIS','✏️');}};
+  if(casc[qid])casc[qid]();
+}
+
+// Detective exercise
+function buildDetective(){
+  const z=document.getElementById('detective-zone');
+  detectData.forEach((item,i)=>{
+    const d=document.createElement('div');d.id='det-'+i;d.className='bg-gray-50 rounded-2xl p-4';
+    d.innerHTML=`<p class="font-bold text-sm text-gray-800 mb-2">${item.q}</p><div class="grid grid-cols-2 gap-2">${item.opts.map(o=>`<button class="quiz-opt p-2 text-sm" onclick="detectAns(${i},this,'${o}')">${o}</button>`).join('')}</div><div id="det-fb-${i}" class="hidden mt-2 rounded-xl p-2 text-sm"></div>`;
+    z.appendChild(d);
+  });
+}
+function detectAns(i,el,ans){
+  const row=document.getElementById('det-'+i);if(row.dataset.done)return;
+  row.dataset.done='1';row.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
+  const ok=ans===detectData[i].ans;
+  el.classList.add(ok?'correct':'wrong');
+  if(!ok)row.querySelectorAll('.quiz-opt').forEach(b=>{if(b.textContent===detectData[i].ans)b.classList.add('correct');});
+  const fb=document.getElementById('det-fb-'+i);fb.className='mt-2 rounded-xl p-2 text-sm '+(ok?'bg-green-50 text-green-800':'bg-red-50 text-red-800');fb.textContent=ok?'✅ נכון!':'❌ '+detectData[i].ans;fb.classList.remove('hidden');
+  detectDone++;
+  if(detectDone===3){document.getElementById('detective-done').classList.remove('hidden');document.getElementById('q-detect-wrap').classList.add('show');addLv(5);mascotSay('3/3! חוקר מרחוק מקצועי','🔍');}
+}
+
+// P3.1: undo history for macro canvas
+const _canvasHist=[];
+function undoCanvas(){
+  if(!_canvasHist.length)return;_canvasHist.pop();
+  const c=document.getElementById('macro-canvas');const ctx=c.getContext('2d');
+  if(_canvasHist.length>0)ctx.putImageData(_canvasHist[_canvasHist.length-1],0,0);
+  else ctx.clearRect(0,0,c.width,c.height);
+}
+// Canvas drawing
+function initCanvas(){
+  const canvas=document.getElementById('macro-canvas');const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth||600;canvas.height=Math.min(280,canvas.offsetWidth*0.5);
+  let drawing=false,lx=0,ly=0;
+  ctx.strokeStyle='#1e40af';ctx.lineWidth=2;ctx.lineCap='round';
+  function saveH(){if(_canvasHist.length>25)_canvasHist.shift();_canvasHist.push(ctx.getImageData(0,0,canvas.width,canvas.height));}
+  function getPos(e){const r=canvas.getBoundingClientRect();if(e.touches)return{x:(e.touches[0].clientX-r.left)*(canvas.width/r.width),y:(e.touches[0].clientY-r.top)*(canvas.height/r.height)};return{x:(e.clientX-r.left)*(canvas.width/r.width),y:(e.clientY-r.top)*(canvas.height/r.height)};}
+  canvas.addEventListener('mousedown',e=>{drawing=true;saveH();const p=getPos(e);lx=p.x;ly=p.y;});
+  canvas.addEventListener('mousemove',e=>{if(!drawing)return;const p=getPos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;});
+  canvas.addEventListener('mouseup',()=>drawing=false);canvas.addEventListener('mouseleave',()=>drawing=false);
+  canvas.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;saveH();const p=getPos(e);lx=p.x;ly=p.y;},{passive:false});
+  canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const p=getPos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;},{passive:false});
+  canvas.addEventListener('touchend',()=>drawing=false);
+}
+function clearCanvas(){_canvasHist.length=0;const c=document.getElementById('macro-canvas');c.getContext('2d').clearRect(0,0,c.width,c.height);}
+function saveDrawing(){
+  if(drawingSaved)return;drawingSaved=true;
+  document.getElementById('drawing-saved').classList.remove('hidden');
+  addLv(10);document.getElementById('q-macro-wrap').classList.add('show');
+  mascotSay('ציור מאקרו נשמר! הכיתה כולה תתחבר יחד','✏️');
+}
+
+// Ideas
+let ideasLeaves=false,entry9saved2=false;
+function saveIdeas(){
+  const i1=document.getElementById('idea1').value.trim(),i2=document.getElementById('idea2').value.trim();
+  if(!i1||!i2){mascotSay('מלאו לפחות 2 רעיונות!','💡');return;}
+  if(ideasSaved)return;ideasSaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');
+  p.lesson9Ideas={idea1:i1,idea2:i2,idea3:document.getElementById('idea3').value.trim(),date:new Date().toLocaleDateString('he-IL')};
+  localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('ideas-saved').classList.remove('hidden');
+  addLv(15);mascotSay('פנקס רעיונות שמור! שיעור 13 = Design Thinking','💡');
+  checkStep5Done();
+}
+function saveEntry9(){
+  if(entry9Saved)return;const obs=document.getElementById('p9-obs').value.trim();
+  if(!obs){mascotSay('כתבו משהו שגיליתם היום!','📔');return;}
+  entry9Saved=true;const p=JSON.parse(localStorage.getItem('passport1')||'{}');
+  p.lesson9={obs,date:new Date().toLocaleDateString('he-IL')};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('p9-saved').classList.remove('hidden');addLv(10);mascotSay('תיעוד + רעיונות = בסיס לפרויקט הסופי!','🌱');checkStep5Done();
+}
+function checkStep5Done(){if(ideasSaved&&entry9Saved)document.getElementById('btn5').classList.remove('hidden');}
+
+const mascotLines={1:'GIS — כל נקודה בשדה על המפה',2:'Taranis: רחפנים + מטוסים + AI = עיניים בשמיים',3:'חוקר מרחוק! ניתחו את "התמונה"',4:'ציירו מלמעלה — כמו רחפן',5:'פנקס רעיונות — הגרעין של הפרויקט הסופי',6:'שיעור 9 הסתיים! בשיעור 10 — רובוטים! ⭐'};
+function updateMascot(s){mascotSay(mascotLines[s]||'','🌱');}
+function mascotSay(msg,emoji){const m=document.getElementById('mascot'),b=document.getElementById('mascot-bubble');if(emoji)m.textContent=emoji;b.textContent=msg;b.classList.remove('hidden');m.classList.add('mascot-bounce');clearTimeout(mascotSay._t);mascotSay._t=setTimeout(()=>{b.classList.add('hidden');m.classList.remove('mascot-bounce');},5000);}
+function init(){
+  const d=document.getElementById('dots');
+  for(let i=1;i<=STEPS;i++){const dot=document.createElement('div');dot.className='step-dot'+(i===1?' current':'');dot.title='שלב '+i;dot.onclick=()=>{if(i<=maxReached)goTo(i);};d.appendChild(dot);}
+  buildDetective();initCanvas();
+  document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;updateHeader();
+  try{const p=JSON.parse(localStorage.getItem('passport1')||'{}');if(p.lesson9Ideas){document.getElementById('idea1').value=p.lesson9Ideas.idea1||'';document.getElementById('idea2').value=p.lesson9Ideas.idea2||'';document.getElementById('idea3').value=p.lesson9Ideas.idea3||'';}if(p.lesson9)document.getElementById('p9-obs').value=p.lesson9.obs||'';}catch(e){}
+  mascotSay(mascotLines[1],'🌱');
+}
+init();
+</script>
+</body>
+</html>

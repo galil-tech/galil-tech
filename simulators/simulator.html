@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>סימולטור החיישנים שלי | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .sensor-card{border:2px solid #e2e8f0;border-radius:20px;transition:all .35s;}
+    .sensor-card.ok{border-color:#16a34a;background:#f0fdf4;}
+    .sensor-card.alert{border-color:#dc2626;background:#fff5f5;animation:pulse-red 1.2s infinite;}
+    .sensor-card.warn{border-color:#f59e0b;background:#fffbeb;}
+    @keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.25)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
+    input[type=range]{-webkit-appearance:none;height:9px;border-radius:5px;background:#e2e8f0;cursor:pointer;width:100%;}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:white;border:3px solid #166534;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+    .ph-track{height:12px;border-radius:6px;background:linear-gradient(to right,#7c3aed,#2563eb,#0891b2,#22c55e,#84cc16,#22c55e,#facc15,#f97316,#dc2626);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .tab-btn{padding:10px 20px;border-radius:12px;font-weight:700;font-size:.9rem;transition:all .2s;cursor:pointer;}
+    .tab-btn.active{background:#1e293b;color:white;}
+    .tab-btn:not(.active){background:#f1f5f9;color:#64748b;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;animation:fadeUp .3s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+      <a href="../lessons/lesson-06.html" class="hover:text-lime-300">← שיעור 6</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-gradient-to-r from-slate-800 to-blue-900 text-white pt-10 pb-8 px-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="bg-blue-400 text-blue-900 text-xs font-bold px-3 py-1 rounded-full">נפתח אחרי שיעור 6</span>
+      <span class="bg-lime-400/20 text-lime-300 text-xs px-3 py-1 rounded-full">כלי אישי</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">📡 סימולטור החיישנים שלי</h1>
+    <p class="text-blue-200 text-lg">5 חיישנים · הארדואינו מחליט בזמן אמת · תרגול לפני הבדיקה האמיתית</p>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-4 py-8">
+
+  <!-- TABS -->
+  <div class="flex gap-2 mb-8 flex-wrap">
+    <button class="tab-btn active" onclick="switchTab('sim')">🎮 סימולטור</button>
+    <button class="tab-btn" onclick="switchTab('ref')">📋 טבלת ערכים</button>
+    <button class="tab-btn" onclick="switchTab('quiz')">🧪 אתגר אבחון</button>
+  </div>
+
+  <!-- TAB 1: SIMULATOR -->
+  <div class="tab-panel active" id="tab-sim">
+
+    <p class="text-gray-500 text-sm mb-6">הזיזו כל סליידר – הארדואינו מגיב בזמן אמת. נסו לגרום לכל סוגי ההתראות!</p>
+
+    <!-- 5 sensor cards -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+
+      <!-- pH -->
+      <div class="sensor-card ok p-4 text-center" id="sc-ph">
+        <div class="text-3xl mb-1" id="ph-icon">⚗️</div>
+        <p class="font-black text-sm">pH</p>
+        <div class="text-2xl font-black my-2" id="ph-val">6.0</div>
+        <div class="ph-track mb-2 rounded-full"></div>
+        <input type="range" min="30" max="90" value="60" id="ph-sl" oninput="update()">
+        <div class="text-xs mt-2 font-bold" id="ph-status">✅ תקין</div>
+        <div class="text-xs text-gray-400 mt-1">5.5–6.5</div>
+      </div>
+
+      <!-- EC -->
+      <div class="sensor-card ok p-4 text-center" id="sc-ec">
+        <div class="text-3xl mb-1" id="ec-icon">⚡</div>
+        <p class="font-black text-sm">EC (mS/cm)</p>
+        <div class="text-2xl font-black my-2" id="ec-val">1.6</div>
+        <input type="range" min="0" max="50" value="16" id="ec-sl" oninput="update()">
+        <div class="text-xs mt-2 font-bold" id="ec-status">✅ תקין</div>
+        <div class="text-xs text-gray-400 mt-1">1.2–2.0</div>
+      </div>
+
+      <!-- temp -->
+      <div class="sensor-card ok p-4 text-center" id="sc-temp">
+        <div class="text-3xl mb-1" id="temp-icon">🌡️</div>
+        <p class="font-black text-sm">טמפרטורה</p>
+        <div class="text-2xl font-black my-2" id="temp-val">22°C</div>
+        <input type="range" min="5" max="45" value="22" id="temp-sl" oninput="update()">
+        <div class="text-xs mt-2 font-bold" id="temp-status">✅ תקין</div>
+        <div class="text-xs text-gray-400 mt-1">15–28°C</div>
+      </div>
+
+      <!-- humidity -->
+      <div class="sensor-card ok p-4 text-center" id="sc-hum">
+        <div class="text-3xl mb-1" id="hum-icon">💧</div>
+        <p class="font-black text-sm">לחות</p>
+        <div class="text-2xl font-black my-2" id="hum-val">60%</div>
+        <input type="range" min="10" max="95" value="60" id="hum-sl" oninput="update()">
+        <div class="text-xs mt-2 font-bold" id="hum-status">✅ תקין</div>
+        <div class="text-xs text-gray-400 mt-1">50–80%</div>
+      </div>
+
+      <!-- light -->
+      <div class="sensor-card ok p-4 text-center" id="sc-light">
+        <div class="text-3xl mb-1" id="light-icon">☀️</div>
+        <p class="font-black text-sm">אור</p>
+        <div class="text-2xl font-black my-2" id="light-val">600 lux</div>
+        <input type="range" min="0" max="1200" value="600" id="light-sl" oninput="update()">
+        <div class="text-xs mt-2 font-bold" id="light-status">✅ תקין</div>
+        <div class="text-xs text-gray-400 mt-1">400–1000 lux</div>
+      </div>
+    </div>
+
+    <!-- Arduino decision panel -->
+    <div class="bg-slate-900 rounded-2xl p-6 mb-6">
+      <div class="flex justify-between items-center mb-3">
+        <p class="text-slate-400 text-xs font-mono">// הארדואינו מחליט:</p>
+        <span class="text-xs text-slate-500" id="alert-count">0 התראות</span>
+      </div>
+      <div id="arduino-dec" class="font-mono text-lg text-green-400 leading-relaxed">✅ כל הערכים תקינים – הצמח בסדר 🌱</div>
+    </div>
+
+    <!-- plant visual reaction -->
+    <div class="bg-white rounded-2xl p-6 text-center mb-6 shadow">
+      <p class="font-bold text-gray-700 mb-3">🌱 איך הצמח שלך נראה כרגע?</p>
+      <div class="text-7xl mb-2" id="plant-emoji">🌿</div>
+      <div class="text-lg font-bold" id="plant-msg">הצמח שמח ובריא!</div>
+      <div class="text-sm text-gray-500 mt-1" id="plant-advice"></div>
+    </div>
+
+    <!-- reset button -->
+    <button onclick="resetAll()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-8 py-3 rounded-xl font-bold text-sm">🔄 אפס לערכים תקינים</button>
+  </div>
+
+  <!-- TAB 2: REFERENCE TABLE -->
+  <div class="tab-panel" id="tab-ref">
+    <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+      <div class="bg-slate-700 text-white p-5">
+        <h2 class="text-2xl font-black">📋 טבלת ערכים – מה תקין ומה לא?</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-100">
+            <tr>
+              <th class="p-4 text-right font-bold">חיישן</th>
+              <th class="p-4 text-center font-bold text-red-600">נמוך מדי ❌</th>
+              <th class="p-4 text-center font-bold text-green-700">תקין ✅</th>
+              <th class="p-4 text-center font-bold text-red-600">גבוה מדי ❌</th>
+              <th class="p-4 text-right font-bold">מה עושים?</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr class="hover:bg-purple-50">
+              <td class="p-4 font-bold">⚗️ pH</td>
+              <td class="p-4 text-center text-red-600">&lt;5.5<br><span class="text-xs text-gray-400">חומצי מדי</span></td>
+              <td class="p-4 text-center text-green-700 font-bold">5.5 – 6.5</td>
+              <td class="p-4 text-center text-red-600">&gt;6.5<br><span class="text-xs text-gray-400">בסיסי מדי</span></td>
+              <td class="p-4 text-sm text-gray-600">נמוך → הוסף pH UP<br>גבוה → הוסף pH DOWN</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-blue-50">
+              <td class="p-4 font-bold">⚡ EC</td>
+              <td class="p-4 text-center text-red-600">&lt;1.2<br><span class="text-xs text-gray-400">רעב!</span></td>
+              <td class="p-4 text-center text-green-700 font-bold">1.2 – 2.0</td>
+              <td class="p-4 text-center text-red-600">&gt;2.5<br><span class="text-xs text-gray-400">שריפת שורשים</span></td>
+              <td class="p-4 text-sm text-gray-600">נמוך → הוסף דשן<br>גבוה → הוסף מים</td>
+            </tr>
+            <tr class="hover:bg-red-50">
+              <td class="p-4 font-bold">🌡️ טמפרטורה</td>
+              <td class="p-4 text-center text-red-600">&lt;15°C<br><span class="text-xs text-gray-400">קר מדי</span></td>
+              <td class="p-4 text-center text-green-700 font-bold">15°C – 28°C</td>
+              <td class="p-4 text-center text-red-600">&gt;30°C<br><span class="text-xs text-gray-400">חם מדי</span></td>
+              <td class="p-4 text-sm text-gray-600">נמוך → חמם<br>גבוה → אוורר / הצל</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-sky-50">
+              <td class="p-4 font-bold">💧 לחות</td>
+              <td class="p-4 text-center text-red-600">&lt;50%<br><span class="text-xs text-gray-400">יבש מדי</span></td>
+              <td class="p-4 text-center text-green-700 font-bold">50% – 80%</td>
+              <td class="p-4 text-center text-orange-500">&gt;80%<br><span class="text-xs text-gray-400">סכנת פטרייה</span></td>
+              <td class="p-4 text-sm text-gray-600">נמוך → לחות<br>גבוה → אוורר</td>
+            </tr>
+            <tr class="hover:bg-yellow-50">
+              <td class="p-4 font-bold">☀️ אור</td>
+              <td class="p-4 text-center text-red-600">&lt;400 lux<br><span class="text-xs text-gray-400">חשוך מדי</span></td>
+              <td class="p-4 text-center text-green-700 font-bold">400 – 1000 lux</td>
+              <td class="p-4 text-center text-orange-500">&gt;1000 lux<br><span class="text-xs text-gray-400">חזק מדי</span></td>
+              <td class="p-4 text-sm text-gray-600">נמוך → הוסף תאורה<br>גבוה → הצל</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: QUIZ -->
+  <div class="tab-panel" id="tab-quiz">
+    <div class="bg-white rounded-3xl shadow-lg p-8">
+      <h2 class="text-2xl font-black text-gray-900 mb-2">🧪 אתגר אבחון – רופא הצמחים</h2>
+      <p class="text-gray-500 text-sm mb-6">קרא את הדוח – אבחן את הבעיה – בחר פתרון</p>
+
+      <div id="quiz-container" class="space-y-8"></div>
+
+      <div id="quiz-score" class="hidden mt-6 bg-lime-50 border-2 border-lime-300 rounded-2xl p-6 text-center">
+        <p class="text-2xl font-black text-lime-700" id="score-text"></p>
+        <button onclick="resetQuiz()" class="mt-3 bg-lime-500 text-white px-8 py-3 rounded-xl font-bold">נסה שוב</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end max-w -->
+
+<footer class="bg-green-950 text-green-400 py-6 text-center text-sm mt-8">
+  <p class="font-black text-white">🌱 גדלים למחר · גליל-טק</p>
+</footer>
+
+<script>
+// ── tabs ──
+function switchTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── sensor update ──
+let alertsTriggered=0;
+function update(){
+  const ph=parseInt(document.getElementById('ph-sl').value)/10;
+  const ec=parseInt(document.getElementById('ec-sl').value)/10;
+  const t=parseInt(document.getElementById('temp-sl').value);
+  const h=parseInt(document.getElementById('hum-sl').value);
+  const l=parseInt(document.getElementById('light-sl').value);
+
+  document.getElementById('ph-val').textContent=ph.toFixed(1);
+  document.getElementById('ec-val').textContent=ec.toFixed(1);
+  document.getElementById('temp-val').textContent=t+'°C';
+  document.getElementById('hum-val').textContent=h+'%';
+  document.getElementById('light-val').textContent=l+' lux';
+
+  const alerts=[];
+
+  // pH
+  if(ph<5.5){set('ph','🔴','❌ חומצי!','alert');alerts.push({msg:'pH='+ph.toFixed(1)+' – חומצי מדי',fix:'הוסף pH UP'});}
+  else if(ph>6.5){set('ph','🔵','❌ בסיסי!','alert');alerts.push({msg:'pH='+ph.toFixed(1)+' – בסיסי מדי',fix:'הוסף pH DOWN'});}
+  else set('ph','⚗️','✅ תקין','ok');
+
+  // EC
+  if(ec<1.2){set('ec','😢','❌ רעב!','alert');alerts.push({msg:'EC='+ec.toFixed(1)+' – הצמח רעב',fix:'הוסף דשן'});}
+  else if(ec>2.5){set('ec','🔥','❌ שריפה!','alert');alerts.push({msg:'EC='+ec.toFixed(1)+' – גבוה מדי',fix:'הוסף מים טהורים'});}
+  else set('ec','⚡','✅ תקין','ok');
+
+  // temp
+  if(t<15){set('temp','🥶','❌ קר!','alert');alerts.push({msg:'טמפ\'='+t+'°C – קר מדי',fix:'חמם את החדר'});}
+  else if(t>28){set('temp','🔥','❌ חם!','alert');alerts.push({msg:'טמפ\'='+t+'°C – חם מדי',fix:'אוורר / הצל'});}
+  else set('temp','🌡️','✅ תקין','ok');
+
+  // humidity
+  if(h<50){set('hum','🏜️','❌ יבש!','alert');alerts.push({msg:'לחות='+h+'% – יבש מדי',fix:'הגדל לחות'});}
+  else if(h>80){set('hum','🍄','⚠️ לח מדי','warn');alerts.push({msg:'לחות='+h+'% – סכנת פטרייה',fix:'אוורר'});}
+  else set('hum','💧','✅ תקין','ok');
+
+  // light
+  if(l<400){set('light','🌑','❌ חשוך!','alert');alerts.push({msg:'אור='+l+'lux – חשוך מדי',fix:'הוסף תאורה'});}
+  else if(l>1000){set('light','🌞','⚠️ חזק מדי','warn');alerts.push({msg:'אור='+l+'lux – חזק מדי',fix:'הצל'});}
+  else set('light','☀️','✅ תקין','ok');
+
+  // arduino decision
+  const dec=document.getElementById('arduino-dec');
+  document.getElementById('alert-count').textContent=alerts.length+' התראות';
+  if(alerts.length===0){
+    dec.className='font-mono text-lg text-green-400 leading-relaxed';
+    dec.textContent='✅ כל הערכים תקינים – הצמח בסדר 🌱';
+    setPlant('🌿','הצמח שמח ובריא!','המשיכו כך 👍');
+  } else {
+    dec.className='font-mono text-base text-red-400 leading-relaxed';
+    dec.innerHTML='🚨 התראה!<br>'+alerts.map(a=>`→ ${a.msg}<br>&nbsp;&nbsp;💊 פתרון: ${a.fix}`).join('<br>');
+    alertsTriggered++;
+    if(alerts.some(a=>a.msg.includes('pH')||a.msg.includes('EC'))){
+      setPlant('😵','בעיה בכימיית המים!','בדוק pH ו-EC מיד');
+    } else if(alerts.length>=2){
+      setPlant('🥀','הצמח במצוקה!','יש כמה בעיות – טפל בהן לפי הסדר');
+    } else {
+      setPlant('😐','הצמח לא בשיאו','תקן את הבעיה');
+    }
+  }
+}
+
+function set(id,icon,status,cls){
+  document.getElementById('sc-'+id).className='sensor-card '+cls+' p-4 text-center';
+  document.getElementById(id+'-icon').textContent=icon;
+  document.getElementById(id+'-status').textContent=status;
+}
+function setPlant(emoji,msg,advice){
+  document.getElementById('plant-emoji').textContent=emoji;
+  document.getElementById('plant-msg').textContent=msg;
+  document.getElementById('plant-advice').textContent=advice;
+}
+function resetAll(){
+  document.getElementById('ph-sl').value=60;
+  document.getElementById('ec-sl').value=16;
+  document.getElementById('temp-sl').value=22;
+  document.getElementById('hum-sl').value=60;
+  document.getElementById('light-sl').value=600;
+  update();
+}
+
+// ── QUIZ ──
+const quizData=[
+  {title:'תרחיש 1',data:'pH: 4.1 | EC: 1.8 | טמפ\': 22°C | לחות: 65% | אור: 500 lux',
+   answers:['pH חומצי מדי – הצמח לא יכול לספוג מינרלים','EC נמוך – הצמח רעב','טמפ\' גבוהה','הכל תקין'],
+   correct:0,explain:'pH 4.1 חומצי מדי (תקין: 5.5–6.5). EC ואחרים בסדר. פתרון: הוסף pH UP.'},
+  {title:'תרחיש 2',data:'pH: 6.1 | EC: 0.6 | טמפ\': 24°C | לחות: 70% | אור: 600 lux',
+   answers:['pH גבוה מדי','EC נמוך מדי – הצמח רעב','לחות גבוהה','הכל תקין'],
+   correct:1,explain:'EC 0.6 = פחות ממחצית הנדרש. הצמח רעב. בקרוב יהיו עלים בהירים. פתרון: הוסף דשן.'},
+  {title:'תרחיש 3',data:'pH: 6.0 | EC: 1.5 | טמפ\': 36°C | לחות: 22% | אור: 700 lux',
+   answers:['pH בעיה','EC גבוה','חום ויובש – הצמח מאבד מים מהר','אור חזק מדי'],
+   correct:2,explain:'טמפ\' 36°C + לחות 22% = הצמח מתייבש. פתרון: קרר + הגדל לחות.'},
+  {title:'תרחיש 4',data:'pH: 6.2 | EC: 1.7 | טמפ\': 20°C | לחות: 65% | אור: 80 lux',
+   answers:['הכל תקין','אור חלש מדי – פוטוסינתזה איטית','לחות גבוהה','pH נמוך'],
+   correct:1,explain:'80 lux = כמו חדר עם וילונות. פוטוסינתזה איטית, גדילה תואט. פתרון: הוסף תאורה.'},
+];
+
+let quizScore=0;
+function buildQuiz(){
+  const c=document.getElementById('quiz-container');
+  c.innerHTML=quizData.map((q,i)=>`
+    <div class="bg-gray-50 rounded-2xl p-5" id="qz${i}">
+      <p class="font-bold text-gray-800 mb-1">${q.title}</p>
+      <div class="bg-slate-800 rounded-xl p-3 font-mono text-sm text-green-400 mb-4">${q.data}</div>
+      <p class="font-bold mb-3">מה הבעיה?</p>
+      <div class="grid grid-cols-2 gap-2">
+        ${q.answers.map((a,j)=>`<div class="border-2 border-gray-200 rounded-xl p-3 text-sm cursor-pointer hover:border-green-400 transition" onclick="answerQuiz(${i},${j},${j===q.correct})">${a}</div>`).join('')}
+      </div>
+      <div id="qz-fb-${i}" class="hidden mt-3 p-3 rounded-xl text-sm"></div>
+    </div>
+  `).join('');
+}
+
+function answerQuiz(qi,ai,correct){
+  const block=document.getElementById('qz'+qi);
+  block.querySelectorAll('div[onclick]').forEach(el=>el.style.pointerEvents='none');
+  const ans=block.querySelectorAll('div[onclick]')[ai];
+  ans.style.background=correct?'#dcfce7':'#fee2e2';
+  ans.style.borderColor=correct?'#16a34a':'#dc2626';
+  if(!correct){
+    block.querySelectorAll('div[onclick]').forEach((el,j)=>{
+      if(j===quizData[qi].correct){el.style.background='#dcfce7';el.style.borderColor='#16a34a';}
+    });
+  }
+  const fb=document.getElementById('qz-fb-'+qi);
+  fb.classList.remove('hidden');
+  fb.className=(correct?'mt-3 p-3 rounded-xl text-sm bg-green-50 border border-green-300':'mt-3 p-3 rounded-xl text-sm bg-orange-50 border border-orange-300');
+  fb.textContent=(correct?'✅ ':'💡 ')+quizData[qi].explain;
+  if(correct)quizScore++;
+  const answered=document.querySelectorAll('[id^="qz-fb-"]:not(.hidden)').length;
+  if(answered===quizData.length){
+    document.getElementById('quiz-score').classList.remove('hidden');
+    document.getElementById('score-text').textContent=`ציון: ${quizScore}/${quizData.length} 🌿`;
+  }
+}
+
+function resetQuiz(){
+  quizScore=0;
+  document.getElementById('quiz-score').classList.add('hidden');
+  buildQuiz();
+}
+
+// init
+update();
+buildQuiz();
+</script>
+</body>
+</html>

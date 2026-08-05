@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שיעור 11 – שקפים | גדלים למחר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/slides-core.css">
+</head>
+<body>
+
+<div id="deck-title">שיעור 11 – ביג דאטה בחקלאות: מה עושים עם המידע?</div>
+<div id="backdrop">
+
+  <!-- שקף 1 - ציון דרך: בחירת נושא הפרויקט (תבנית B) -->
+  <section class="slide active milestone" data-name="שקף 1" style="background:linear-gradient(160deg,#ecfeff 0%, #cffafe 100%);">
+    <div class="topbar transparent">
+      <span class="eyebrow" style="color:#0e7490;">שיעור 11 · גדלים למחר</span>
+      <span class="phase-chip" style="background:#0e7490; color:#fff;">🌸 פאזה 3 – פריחה</span>
+    </div>
+    <div class="stage-center">
+      <div>
+        <p class="rocket">🚀</p>
+        <p class="h1" style="margin-top:14px;">בחירת נושא הפרויקט!</p>
+        <p class="body" style="margin-top:14px;">כל קבוצה יוצאת היום עם בעיה אחת סופית לתערוכה</p>
+      </div>
+    </div>
+    <div class="mascot">🌸</div>
+  </section>
+
+  <!-- שקף 2 - טבלה מול גרף (תבנית D) -->
+  <section class="slide" data-name="שקף 2" data-steps="3">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 11 · גדלים למחר</span>
+      <span class="phase-chip">🌸 פאזה 3 – פריחה</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:4%; text-align:center;">איזה אחד "מספר סיפור"?</p>
+      <div style="display:flex; align-items:center; gap:3%; padding:0 5%;">
+        <div class="rv card" data-step="1" style="flex:1; background:#f9fafb; border:2px solid #e5e7eb;">
+          <p class="label" style="color:#4b5563; font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">📋 טבלה</p>
+          <p class="h2" style="color:#374151;">מספרים גולמיים</p>
+        </div>
+        <div class="vs-badge pulse-at" data-step="2">VS</div>
+        <div class="rv card card-green" data-step="3" style="flex:1;">
+          <p class="label label-green" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">📈 גרף</p>
+          <p class="h2" style="color:#374151;">מספר את הסיפור</p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🌸</div>
+  </section>
+
+  <!-- שקף 3 - נתונים -> ידע -> החלטה (תבנית C) -->
+  <section class="slide" data-name="שקף 3" data-steps="3">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 11 · גדלים למחר</span>
+      <span class="phase-chip">🌸 פאזה 3 – פריחה</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:5%;">מהנתון להחלטה</p>
+      <div style="display:flex; align-items:center; gap:1.6%;">
+        <div class="rv card card-green" data-step="1" style="flex:1;">
+          <p class="label label-green">🔢 נתונים</p>
+          <p class="body" style="margin-top:8px;">מה שמדדנו</p>
+        </div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-lime" data-step="2" style="flex:1;">
+          <p class="label label-lime">💡 ידע</p>
+          <p class="body" style="margin-top:8px;">מה זה אומר</p>
+        </div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-amber" data-step="3" style="flex:1;">
+          <p class="label label-amber">🎯 החלטה</p>
+          <p class="body" style="margin-top:8px;">מה עושים עם זה</p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🌸</div>
+  </section>
+
+</div>
+
+<div id="controls">
+  <button class="navbtn" onclick="slidesGo(-1)">→</button>
+  <span id="counter">1 / 3</span>
+  <div id="dots"></div>
+  <button class="navbtn" onclick="slidesGo(1)">←</button>
+  <button class="navbtn" id="fsbtn" title="מסך מלא">⛶</button>
+</div>
+
+<script src="assets/slides-core.js"></script>
+</body>
+</html>

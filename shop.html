@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>חנות העלים - חקלאי העתיד</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-green-50 dark:bg-gray-900">
+  <nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+      <div class="flex gap-4 text-sm">
+        <a href="index.html" class="hover:text-lime-300">🏠</a>
+        <a href="leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+        <a href="wall.html" class="hover:text-lime-300">🛠 קיר</a>
+        <a href="journey.html" class="hover:text-lime-300">📌 מסע</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-5xl mx-auto px-6 py-12">
+    <h1 class="text-5xl font-black text-center mb-2">🛒 חנות העלים</h1>
+    <p class="text-center text-gray-500 mb-8">קונים פריטים עם היתרה הפנויה. קנייה <b>לא</b> מורידה רמה – הרמה נקבעת לפי העלים שנצברו, שלא יורדים. ראו <a href="leaves.html" class="text-green-700 underline">העלים שלי →</a></p>
+
+    <div class="bg-white rounded-3xl shadow-2xl p-8 text-center mb-10 inline-block w-full">
+      <p class="text-gray-500">יתרה פנויה לקנייה</p>
+      <p id="balance-count" class="text-6xl font-black text-lime-700">0</p>
+      <p class="text-gray-400">עלים 🌿</p>
+    </div>
+
+    <!--
+      TODO (פלייסהולדר - ממתין למילוי ע"י המשתמש):
+      הוסיפו פריטים למערך CATALOG בתחתית הקובץ (בתוך <script>), בפורמט:
+      {name:'שם הפריט', price:100, emoji:'🌸'}
+      אפשר להחליף emoji בתג <img src="..."> אם יש תמונה אמיתית לפריט.
+    -->
+    <div id="catalog" class="grid md:grid-cols-3 gap-6"></div>
+  </div>
+
+  <script>
+    // קטלוג ריק בכוונה - ממתין למילוי פריטים. כל פריט: {name, price, emoji}
+    const CATALOG = [];
+
+    function getLeavesEarned(){
+      let total=0;
+      for(let i=1;i<=17;i++){ total+=parseInt(localStorage.getItem('ls'+i)||'0'); }
+      return total;
+    }
+    function getLeavesSpent(){ return parseInt(localStorage.getItem('leaves_spent')||'0'); }
+    function getLeavesBalance(){ return Math.max(0, getLeavesEarned()-getLeavesSpent()); }
+
+    function renderBalance(){
+      document.getElementById('balance-count').textContent=getLeavesBalance();
+    }
+
+    function renderCatalog(){
+      const el=document.getElementById('catalog');
+      if(CATALOG.length===0){
+        el.innerHTML='<p class="text-gray-400 text-center py-10 md:col-span-3">החנות עדיין ריקה - פריטים יתווספו בקרוב 🌱</p>';
+        return;
+      }
+      const balance=getLeavesBalance();
+      el.innerHTML=CATALOG.map((item,i)=>`
+        <div class="bg-white rounded-3xl shadow p-6 text-center">
+          <div class="text-5xl mb-3">${item.emoji||'🎁'}</div>
+          <p class="text-lg font-bold mb-1">${item.name}</p>
+          <p class="text-green-600 font-black mb-4">${item.price} עלים</p>
+          <button onclick="buyItem(${i})" class="w-full bg-lime-600 hover:bg-lime-700 disabled:bg-gray-300 text-white px-4 py-3 rounded-xl font-bold" ${balance<item.price?'disabled':''}>קנה</button>
+        </div>`).join('');
+    }
+
+    function buyItem(i){
+      const item=CATALOG[i];
+      const balance=getLeavesBalance();
+      if(balance<item.price){ alert('אין מספיק עלים 😔'); return; }
+      const spent=getLeavesSpent()+item.price;
+      localStorage.setItem('leaves_spent', spent);
+      renderBalance();
+      renderCatalog();
+      alert(`✅ קנית ${item.name}!`);
+    }
+
+    renderBalance();
+    renderCatalog();
+  </script>
+</body>
+</html>

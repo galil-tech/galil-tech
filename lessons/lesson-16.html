@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 16 – פיצ'ינג | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;} .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;border-radius:12px;}
+    .quiz-opt:hover:not([data-done]){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
+    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;} .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;} .reveal.show{display:block;animation:fadeUp .35s ease;}
+    .mascot{font-size:2.8rem;transition:all .4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .mascot-bounce{animation:bounce .6s ease 3;}
+    @keyframes timer{from{width:100%}to{width:0%}}
+    .timer-bar{animation:timer 180s linear forwards;height:8px;background:#7c3aed;border-radius:4px;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-violet-50 min-h-screen">
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm"><a href="../index.html" class="hover:text-lime-300">🏠</a><a href="lesson-15.html" class="hover:text-lime-300">← שיעור 15</a><a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a></div>
+  </div>
+</nav>
+<div class="bg-purple-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-purple-400 text-purple-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 4 – פירות</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 16 מתוך 17 · לפני התערוכה!</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🎤 פיצ'ינג: איך מספרים לעולם?</h1>
+    <p class="text-purple-200">4 טכניקות מסירה · מבנה פיץ' · קהל בוחר · חזרה גנרלית</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-purple-300 mb-1"><span id="plabel">שלב 1 מתוך 6</span><span>🌿 <b id="lc">0</b> עלים</span></div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden"><div id="pbar" class="h-3 bg-purple-400 rounded-full transition-all duration-500" style="width:0%"></div></div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- STEP 1: 4 delivery techniques -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-4 mb-5 text-sm"><b>🔁 Teaser:</b> "האבטיפוס עובד. עכשיו — איך מספרים עליו ב-3 דקות לאנשים שלא יודעים כלום על הנושא?"</div>
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🎤</span><div><h2 class="text-3xl font-black text-purple-900">4 טכניקות מסירה</h2></div></div>
+    <div class="grid grid-cols-2 gap-4 mb-5 text-center text-sm">
+      <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4"><p class="text-3xl mb-2">🗣️</p><b class="text-purple-800">קול</b><p class="text-gray-600 text-xs mt-1">קצב ברור, לא מהיר ולא איטי, הדגשות</p></div>
+      <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4"><p class="text-3xl mb-2">🧍</p><b class="text-purple-800">גוף</b><p class="text-gray-600 text-xs mt-1">תנועה, ידיים, מבט בקהל — לא בגב</p></div>
+      <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4"><p class="text-3xl mb-2">📝</p><b class="text-purple-800">תוכן</b><p class="text-gray-600 text-xs mt-1">ניסוח פשוט וברור, בלי מילים טכניות</p></div>
+      <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4"><p class="text-3xl mb-2">💪</p><b class="text-purple-800">ביטחון</b><p class="text-gray-600 text-xs mt-1">גם אם טועים — להמשיך בביטחון</p></div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה הטעות הכי נפוצה בפרזנטציה מול קהל?</p>
+      <div class="grid gap-3" id="q-pitch1">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-pitch1')">להתחיל עם "שלום לכולם"</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-pitch1')" data-correct="true">לקרוא מהשקף / מהמסמך במקום לדבר לקהל — גב לקהל + מונוטוני</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-pitch1')">להיות קצר מדי</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-pitch1')">לדבר בעברית</div>
+      </div>
+      <div id="fb-q-pitch1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn1" class="hidden bg-purple-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-purple-600" onclick="goTo(2)">מבנה פיץ' ←</button></div>
+</div>
+
+<!-- STEP 2: Pitch structure -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📐</span><div><h2 class="text-3xl font-black text-purple-900">מבנה פיץ' של 3 דקות</h2></div></div>
+    <div class="grid grid-cols-4 gap-3 text-center text-sm mb-5">
+      <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-4"><b class="text-3xl block mb-1">❓</b><b>בעיה</b><p class="text-gray-500 text-xs">מה הבעיה? מי סובל?</p><p class="text-gray-400 text-xs">~30 שניות</p></div>
+      <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-4"><b class="text-3xl block mb-1">💡</b><b>פתרון</b><p class="text-gray-500 text-xs">מה האבטיפוס עושה?</p><p class="text-gray-400 text-xs">~60 שניות</p></div>
+      <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4"><b class="text-3xl block mb-1">🎬</b><b>הדגמה</b><p class="text-gray-500 text-xs">הראו שעובד!</p><p class="text-gray-400 text-xs">~60 שניות</p></div>
+      <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4"><b class="text-3xl block mb-1">🏁</b><b>סיכום</b><p class="text-gray-500 text-xs">מה רוצים שיזכרו</p><p class="text-gray-400 text-xs">~30 שניות</p></div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה הבדל בין "הדגמה" ל"הסבר" בפיץ'?</p>
+      <div class="grid gap-3" id="q-pitch2">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-pitch2')">אין הבדל — שניהם אותו דבר</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-pitch2')" data-correct="true">הסבר = מדברים על הפתרון. הדגמה = מראים שהוא עובד בפועל — "Show, don't tell"</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-pitch2')">הדגמה חייבת להיות עם מקרן</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-pitch2')">הסבר הוא בעברית, הדגמה בעברית ואנגלית</div>
+      </div>
+      <div id="fb-q-pitch2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn2" class="hidden bg-purple-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-purple-600" onclick="goTo(3)">כתיבת טיוטה ←</button></div>
+</div>
+
+<!-- STEP 3: Draft pitch -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">✍️</span><div><h2 class="text-3xl font-black text-purple-900">כתבו את הפיץ' שלכם</h2></div></div>
+    <div class="space-y-4 mb-5">
+      <div class="bg-red-50 rounded-xl p-4">
+        <label class="block font-black text-red-800 mb-2 text-sm">❓ הבעיה (30 שניות):</label>
+        <textarea id="pitch-problem" rows="2" maxlength="150" class="w-full text-sm border-0 bg-transparent outline-none resize-none" placeholder="הבעיה שאנחנו פותרים: ..."></textarea>
+      </div>
+      <div class="bg-green-50 rounded-xl p-4">
+        <label class="block font-black text-green-800 mb-2 text-sm">💡 הפתרון (60 שניות):</label>
+        <textarea id="pitch-solution" rows="2" maxlength="200" class="w-full text-sm border-0 bg-transparent outline-none resize-none" placeholder="האבטיפוס שלנו הוא: ..."></textarea>
+      </div>
+      <div class="bg-blue-50 rounded-xl p-4">
+        <label class="block font-black text-blue-800 mb-2 text-sm">🎬 ההדגמה:</label>
+        <input id="pitch-demo" type="text" maxlength="100" class="w-full text-sm border-0 bg-transparent outline-none" placeholder="נראה לקהל: ...">
+      </div>
+      <div class="bg-amber-50 rounded-xl p-4">
+        <label class="block font-black text-amber-800 mb-2 text-sm">🏁 סיכום (30 שניות):</label>
+        <input id="pitch-close" type="text" maxlength="100" class="w-full text-sm border-0 bg-transparent outline-none" placeholder="נרצה שתזכרו: ...">
+      </div>
+    </div>
+    <button onclick="saveDraft()" class="w-full bg-purple-700 text-white py-4 rounded-xl font-black">✍️ שמור טיוטה (+15 עלים)</button>
+    <div id="draft-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ טיוטה נשמרה! עכשיו — תרגלו</div>
+  </div>
+  <div class="flex justify-end"><button id="btn3" class="hidden bg-purple-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-purple-600" onclick="goTo(4)">תרגול + קהל בוחר ←</button></div>
+</div>
+
+<!-- STEP 4: Practice + audience vote -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🗳️</span><div><h2 class="text-3xl font-black text-purple-900">תרגול + קהל בוחר</h2></div></div>
+    <div class="bg-purple-50 border-r-4 border-purple-500 rounded-2xl p-4 mb-5 text-sm text-gray-700">
+      <b>מכניקה: "קהל בוחר"</b> — אחרי כל סבב פיצ'ים, הכיתה מצביעה (בלי קול, ביד/פתק) על הפיץ' שהיה המשכנע ביותר. לא תחרות — כלי לקבלת Feedback אנונימי.
+    </div>
+    <div class="bg-purple-100 border-2 border-purple-300 rounded-2xl p-5 mb-5 text-center">
+      <p class="font-bold text-purple-900 mb-3">⏱️ טיימר 3 דקות לתרגול הפיץ'</p>
+      <div id="pitch-timer-container" class="bg-gray-200 rounded-xl overflow-hidden mb-3 h-3"><div id="pitch-timer-bar" class="timer-bar hidden"></div></div>
+      <button onclick="startPitchTimer()" id="pitch-timer-btn" class="bg-purple-700 text-white px-8 py-3 rounded-xl font-black">▶️ התחילו לתרגל (3 דק')</button>
+    </div>
+    <div class="mb-4">
+      <label class="block font-bold text-gray-700 mb-2">📝 משוב מהקהל שקיבלתם (2 חיוביים + 1 לשיפור):</label>
+      <textarea id="audience-feedback" rows="3" maxlength="200" placeholder="חיובי 1: ... | חיובי 2: ... | לשיפור: ..." class="w-full border-2 border-purple-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-purple-500"></textarea>
+      <button onclick="saveFeedback()" class="mt-3 w-full bg-purple-700 text-white py-3 rounded-xl font-black">💾 שמור משוב (+20 עלים)</button>
+      <div id="feedback-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר!</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn4" class="hidden bg-purple-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-purple-600" onclick="goTo(5)">דרכון ←</button></div>
+</div>
+
+<!-- STEP 5: Passport + project reminder -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📔</span><div><h2 class="text-3xl font-black text-purple-900">דרכון + תזכורות לתערוכה</h2></div></div>
+    <div class="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-4 mb-5 text-sm text-emerald-800">
+      🌱 <b>אל תשכחו!</b> בהתרגשות של פרויקט הסיום — השתיל האישי שלכם עדיין צריך טיפול. תיעוד קצר + גובה של היום.
+    </div>
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+      <h3 class="font-black text-green-900 mb-3">📔 דרכון – שיעור 16</h3>
+      <textarea id="p16-obs" rows="2" maxlength="150" placeholder="מה השתפר בפיץ' מהתרגול? מה עדיין צריך לשפר לתערוכה?" class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+      <button onclick="saveEntry16()" class="mt-3 w-full bg-green-700 text-white py-3 rounded-xl font-black">📔 שמור</button>
+      <div id="p16-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! +10 עלים 🌿</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn5" class="hidden bg-purple-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-purple-600" onclick="goTo(6)">סיכום ←</button></div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-purple-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-purple-900 mb-3">📚 מה למדנו:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex gap-2"><span class="text-purple-600">🎤</span> 4 טכניקות: קול, גוף, תוכן, ביטחון</li>
+        <li class="flex gap-2"><span class="text-purple-600">📐</span> מבנה פיץ': בעיה → פתרון → הדגמה → סיכום</li>
+        <li class="flex gap-2"><span class="text-purple-600">🗳️</span> "קהל בוחר" — משוב אנונימי וישיר</li>
+      </ul>
+    </div>
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3"><span class="text-2xl">⭐</span><h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3></div>
+      <p class="text-gray-800 font-bold text-lg mb-3">"אחרי כל המסע — מה ה-One Liner שתגידו לאדם שנפגש איתכם בתערוכה ושואל 'מה עשיתם?'"</p>
+      <textarea id="north-star" rows="2" placeholder="'השנה בניתי...' (משפט אחד!)" class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-300 font-black text-xl mb-2">🎉 התערוכה מחכה לכם!</p>
+      <p class="text-slate-400 text-sm">ואחרי התערוכה — שיעור 17: מה הלאה?</p>
+    </div>
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים שנצברו בשיעור 16:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך מקסימום ~55 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4"><a href="lesson-17.html" class="bg-purple-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-purple-600">לשיעור 17 – אחרי התערוכה ←</a></div>
+</div>
+
+</div>
+<script>
+const STEPS=6;let cur=1,lv=parseInt(localStorage.getItem('ls16')||'0'),maxReached=1;
+let draftSaved=false,feedbackSaved=false,entry16Saved=false;
+
+function goTo(n){if(n<1||n>STEPS)return;document.getElementById('step-'+cur).classList.remove('active');cur=n;if(cur>maxReached)maxReached=cur;document.getElementById('step-'+cur).classList.add('active');renderDots();updateHeader();window.scrollTo({top:0,behavior:'smooth'});updateMascot(cur);}
+function updateHeader(){document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';}
+function renderDots(){document.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');});}
+function addLv(n){lv+=n;localStorage.setItem('ls16',lv);document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
+function leafBurst(n){for(let i=0;i<Math.min(n,8);i++){const el=document.createElement('div');el.className='leaf-burst';el.textContent='🌿';el.style.left=(20+Math.random()*60)+'vw';el.style.top=(15+Math.random()*50)+'vh';el.style.setProperty('--tx',(Math.random()*120-60)+'px');el.style.setProperty('--ty',(-80-Math.random()*80)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),950);}}
+function ansQ(el,correct,qid){
+  const c=document.getElementById(qid);if(!c||c.dataset.done)return;c.dataset.done='1';c.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');el.classList.add(correct?'correct':'wrong');if(!correct){const r=c.querySelector('[data-correct="true"]');if(r)r.classList.add('correct');}
+  const fb=document.getElementById('fb-'+qid);if(fb){fb.className='mt-3 rounded-xl p-4 text-sm '+(correct?'bg-green-50 text-green-800':'bg-red-50 text-red-800');fb.textContent=correct?'✅ מצוין! +5 עלים 🌿':'❌ לא בדיוק – תשובה נכונה מסומנת בירוק';fb.classList.remove('hidden');}if(correct)addLv(5);
+  const casc={'q-pitch1':()=>{document.getElementById('btn1').classList.remove('hidden');mascotSay('מבט בקהל = 80% מהרושם','🎤');},'q-pitch2':()=>{document.getElementById('btn2').classList.remove('hidden');mascotSay('Show don\'t tell = הדגמה > הסבר','📐');}};if(casc[qid])casc[qid]();
+}
+function startPitchTimer(){
+  const btn=document.getElementById('pitch-timer-btn');btn.disabled=true;
+  const bar=document.getElementById('pitch-timer-bar');bar.classList.remove('hidden');bar.style.animation='none';bar.offsetHeight;bar.style.animation='timer 180s linear forwards';
+  let remaining=180;
+  const tick=setInterval(()=>{
+    remaining--;
+    const m=Math.floor(remaining/60),s=remaining%60;
+    btn.textContent='⏱️ '+m+':'+(s<10?'0':'')+s;
+    if(remaining<=30)btn.style.color='#dc2626';
+    if(remaining<=0){clearInterval(tick);btn.textContent='⏰ זמן! שמעו משוב';if(window.GC)GC.playSound('achievement');}
+  },1000);
+}
+function saveDraft(){
+  if(draftSaved)return;const p1=document.getElementById('pitch-problem').value.trim(),s1=document.getElementById('pitch-solution').value.trim();
+  if(!p1||!s1){mascotSay('מלאו לפחות בעיה ופתרון!','✍️');return;}draftSaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson16Pitch={problem:p1,solution:s1,demo:document.getElementById('pitch-demo').value.trim(),close:document.getElementById('pitch-close').value.trim()};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('draft-saved').classList.remove('hidden');addLv(15);document.getElementById('btn3').classList.remove('hidden');mascotSay('טיוטה נשמרה! עכשיו תרגלו','✍️');
+}
+function saveFeedback(){
+  if(feedbackSaved)return;const t=document.getElementById('audience-feedback').value.trim();if(!t)return;feedbackSaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson16Feedback=t;localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('feedback-saved').classList.remove('hidden');addLv(20);document.getElementById('btn4').classList.remove('hidden');mascotSay('משוב = מתנה! תשפרו לתערוכה','🗳️');
+}
+function saveEntry16(){
+  if(entry16Saved)return;const obs=document.getElementById('p16-obs').value.trim();if(!obs)return;entry16Saved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson16={obs,date:new Date().toLocaleDateString('he-IL')};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('p16-saved').classList.remove('hidden');addLv(10);document.getElementById('btn5').classList.remove('hidden');
+}
+const mascotLines={1:'4 טכניקות מסירה — פשוט, ברור, משכנע',2:'מבנה פיץ׳ = מפה ל-3 דקות',3:'כותבים את הפיץ׳ שלכם',4:'קהל בוחר! תרגלו + שמעו משוב',5:'דרכון + אל תשכחו את השתיל',6:'שיעור 16 הסתיים! מחכה התערוכה ⭐'};
+function updateMascot(s){mascotSay(mascotLines[s]||'','🌱');}
+function mascotSay(msg,emoji){const m=document.getElementById('mascot'),b=document.getElementById('mascot-bubble');if(emoji)m.textContent=emoji;b.textContent=msg;b.classList.remove('hidden');m.classList.add('mascot-bounce');clearTimeout(mascotSay._t);mascotSay._t=setTimeout(()=>{b.classList.add('hidden');m.classList.remove('mascot-bounce');},5000);}
+function init(){
+  const d=document.getElementById('dots');for(let i=1;i<=STEPS;i++){const dot=document.createElement('div');dot.className='step-dot'+(i===1?' current':'');dot.title='שלב '+i;dot.onclick=()=>{if(i<=maxReached)goTo(i);};d.appendChild(dot);}
+  document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;updateHeader();
+  try{const p=JSON.parse(localStorage.getItem('passport1')||'{}');
+    if(p.lesson16Pitch){document.getElementById('pitch-problem').value=p.lesson16Pitch.problem||'';document.getElementById('pitch-solution').value=p.lesson16Pitch.solution||'';document.getElementById('pitch-demo').value=p.lesson16Pitch.demo||'';document.getElementById('pitch-close').value=p.lesson16Pitch.close||'';draftSaved=true;document.getElementById('btn3').classList.remove('hidden');}
+    if(p.lesson16Feedback){document.getElementById('audience-feedback').value=p.lesson16Feedback;feedbackSaved=true;document.getElementById('btn4').classList.remove('hidden');}
+    if(p.lesson16){document.getElementById('p16-obs').value=p.lesson16.obs||'';entry16Saved=true;document.getElementById('btn5').classList.remove('hidden');}
+  }catch(e){}
+  mascotSay(mascotLines[1],'🌱');
+}
+init();
+</script>
+</body>
+</html>

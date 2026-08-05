@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 17 – מה הלאה? | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;} .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;border-radius:12px;}
+    .quiz-opt:hover:not([data-done]){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
+    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;} .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .mascot{font-size:2.8rem;transition:all .4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .mascot-bounce{animation:bounce .6s ease 3;}
+    .survey-opt{cursor:pointer;border:2px solid #e5e7eb;transition:all .2s;border-radius:10px;}
+    .survey-opt:hover:not(.chosen){border-color:#84cc16;background:#f0fdf4;}
+    .survey-opt.chosen{border-color:#16a34a;background:#dcfce7;font-weight:900;}
+    .badge-chip{border-radius:12px;padding:6px 12px;font-size:0.8rem;font-weight:900;display:inline-block;margin:4px;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-50 min-h-screen">
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm"><a href="../index.html" class="hover:text-lime-300">🏠</a><a href="lesson-16.html" class="hover:text-lime-300">← שיעור 16</a><a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a></div>
+  </div>
+</nav>
+<div class="bg-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-gold-400 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 4 – פירות · שיעור סיום</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 17 מתוך 17 🎉</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🏆 מה הלאה? המסע ממשיך</h1>
+    <p class="text-green-200">סגירת דרכון · טקס תגים · שאלון · מכתב לדור הבא</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-300 mb-1"><span id="plabel">שלב 1 מתוך 6</span><span>🌿 <b id="lc">0</b> עלים</span></div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden"><div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div></div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- STEP 1: After exhibition + reflection -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-4 mb-5 text-sm"><b>🎉 השיעור הזה מגיע אחרי התערוכה!</b> זה לא עוד שיעור טכני — זה מסע חזרה על השנה ומבט קדימה.</div>
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🌱→🏆</span><div><h2 class="text-3xl font-black text-green-900">המסע שלנו — משיעור 1 עד היום</h2></div></div>
+    <div class="bg-green-50 rounded-2xl p-5 mb-5 text-sm text-gray-700">
+      <p class="font-bold text-green-900 mb-3">זכרו מה שאלנו בשיעור 1:</p>
+      <p class="italic text-lg text-gray-600 mb-3">"איך ניתן להאכיל 10 מיליארד אנשים בתנאים משתנים?"</p>
+      <p>עברתם מ"זרע 🌱" ל"חקלאי העתיד 🏆". ממש.</p>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה השתנה בהבנת המילה "חקלאות" מתחילת השנה?</p>
+      <div class="grid gap-3" id="q-reflect">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-reflect')">כלום — חקלאות זה אותו הדבר</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-reflect')" data-correct="true">הבנתי שחקלאות = מדע + טכנולוגיה + עסק + אחריות — לא רק לגדל דברים בשדה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-reflect')">השתנה כי למדתי מילים חדשות</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-reflect')">לא ממש הבנתי</div>
+      </div>
+      <div id="fb-q-reflect" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">מיפוי אישי ←</button></div>
+</div>
+
+<!-- STEP 2: Personal mapping -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🗺️</span><div><h2 class="text-3xl font-black text-green-900">מיפוי אישי – לאן אני ממשיך?</h2></div></div>
+    <div class="space-y-4 mb-5">
+      <div>
+        <label class="block font-bold text-gray-700 mb-2">💫 מה היה השיעור שהכי אהבתי ולמה?</label>
+        <input id="fav-lesson" type="text" maxlength="100" placeholder="הכי אהבתי שיעור ___ כי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none focus:border-green-500">
+      </div>
+      <div>
+        <label class="block font-bold text-gray-700 mb-2">🚀 תחום שרוצה להעמיק בו:</label>
+        <div class="grid grid-cols-3 gap-2 text-center text-sm" id="path-btns">
+          <button class="survey-opt p-3" onclick="pickPath(this,'AI וביג דאטה')">🤖 AI + ביג דאטה</button>
+          <button class="survey-opt p-3" onclick="pickPath(this,'חומרה / ארדואינו')">⚡ חומרה</button>
+          <button class="survey-opt p-3" onclick="pickPath(this,'עיצוב וחדשנות')">🎨 עיצוב</button>
+          <button class="survey-opt p-3" onclick="pickPath(this,'חקלאות וסביבה')">🌿 חקלאות</button>
+          <button class="survey-opt p-3" onclick="pickPath(this,'יזמות ועסקים')">💼 יזמות</button>
+          <button class="survey-opt p-3" onclick="pickPath(this,'עדיין מחפש')">🔍 מחפש</button>
+        </div>
+      </div>
+      <div>
+        <label class="block font-bold text-gray-700 mb-2">🔮 משהו שרוצה לעשות בהמשך:</label>
+        <input id="future-path" type="text" maxlength="100" placeholder="בעתיד רוצה לנסות / ללמוד / לבנות..." class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none focus:border-green-500">
+      </div>
+    </div>
+    <button onclick="saveMapping()" class="w-full bg-green-700 text-white py-4 rounded-xl font-black">🗺️ שמור מיפוי (+15 עלים)</button>
+    <div id="mapping-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ מיפוי נשמר!</div>
+  </div>
+  <div class="flex justify-end"><button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3)">סגירת דרכון ←</button></div>
+</div>
+
+<!-- STEP 3: Close passport -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📔</span><div><h2 class="text-3xl font-black text-green-900">סגירת הדרכון החקלאי</h2></div></div>
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 mb-5 text-sm text-gray-700">
+      <p class="mb-2">הדרכון שלכם מכיל את כל השנה — מהשתיל הראשון ועד האבטיפוס. כתבו עמוד סיכום.</p>
+    </div>
+    <div class="space-y-4 mb-5">
+      <div>
+        <label class="block font-bold text-gray-700 mb-2">🌱 השתיל שלי: מה קרה לו השנה?</label>
+        <textarea id="plant-summary" rows="2" maxlength="150" placeholder="השתיל שלי התחיל ב... סיים ב... הכי מעניין שראיתי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+      </div>
+      <div>
+        <label class="block font-bold text-gray-700 mb-2">✨ משפט סיכום אחד:</label>
+        <input id="final-sentence" type="text" maxlength="120" placeholder="'השנה למדתי ש...'" class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none focus:border-green-500">
+      </div>
+    </div>
+    <button onclick="closePassport()" class="w-full bg-green-700 text-white py-4 rounded-xl font-black">📔 סגור דרכון (+15 עלים)</button>
+    <div id="passport-closed" class="hidden mt-3 bg-green-50 border-2 border-green-300 rounded-xl p-4 text-center">
+      <p class="text-3xl mb-2">📔✨</p><p class="font-black text-green-900 text-xl">הדרכון נסגר!</p>
+      <p class="text-gray-600 text-sm mt-1">הדרכון הדיגיטלי שלך שמור לעד — בחשבון הדפדפן</p>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)">שאלון + מכתב ←</button></div>
+</div>
+
+<!-- STEP 4: Survey + letter -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📋</span><div><h2 class="text-3xl font-black text-green-900">שאלון + מכתב לדור הבא</h2></div></div>
+    <div class="bg-sky-50 border-r-4 border-sky-500 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-sky-900 mb-3">📊 שאלון משוב — עוזר לשפר את התוכנית</h3>
+      <div class="space-y-3 text-sm">
+        <!-- P3.2: Star rating -->
+        <div>
+          <p class="font-bold text-gray-700 mb-2">⭐ דירוג כללי לתוכנית (1-5):</p>
+          <div class="flex gap-2" id="star-rating">
+            <button class="star-btn text-3xl" data-val="1" onclick="rateStar(1)" title="1 כוכב">☆</button>
+            <button class="star-btn text-3xl" data-val="2" onclick="rateStar(2)" title="2 כוכבים">☆</button>
+            <button class="star-btn text-3xl" data-val="3" onclick="rateStar(3)" title="3 כוכבים">☆</button>
+            <button class="star-btn text-3xl" data-val="4" onclick="rateStar(4)" title="4 כוכבים">☆</button>
+            <button class="star-btn text-3xl" data-val="5" onclick="rateStar(5)" title="5 כוכבים">☆</button>
+          </div>
+        </div>
+        <!-- P3.2: Recommended -->
+        <div>
+          <p class="font-bold text-gray-700 mb-2">👥 הייתם ממליצים על התוכנית לחבר?</p>
+          <div class="flex gap-3">
+            <button id="rec-yes" class="flex-1 py-2 rounded-xl border-2 border-gray-200 font-bold hover:border-green-400 hover:bg-green-50" onclick="setRecommend('yes',this)">✅ כן, בהחלט!</button>
+            <button id="rec-maybe" class="flex-1 py-2 rounded-xl border-2 border-gray-200 font-bold hover:border-yellow-400 hover:bg-yellow-50" onclick="setRecommend('maybe',this)">🤔 אולי</button>
+            <button id="rec-no" class="flex-1 py-2 rounded-xl border-2 border-gray-200 font-bold hover:border-red-400 hover:bg-red-50" onclick="setRecommend('no',this)">❌ לא</button>
+          </div>
+        </div>
+        <div>
+          <p class="font-bold text-gray-700 mb-2">השיעור הכי מועיל:</p>
+          <input id="survey-best" type="text" maxlength="50" placeholder="שיעור ___" class="w-full border-2 border-sky-200 rounded-xl p-2 outline-none focus:border-sky-400">
+        </div>
+        <div>
+          <p class="font-bold text-gray-700 mb-2">מה היה קשה / לא ברור:</p>
+          <input id="survey-hard" type="text" maxlength="80" placeholder="הכי קשה היה..." class="w-full border-2 border-sky-200 rounded-xl p-2 outline-none focus:border-sky-400">
+        </div>
+        <div>
+          <p class="font-bold text-gray-700 mb-2">המלצה אחת לשינוי:</p>
+          <input id="survey-suggest" type="text" maxlength="100" placeholder="הייתי ממליץ ל..." class="w-full border-2 border-sky-200 rounded-xl p-2 outline-none focus:border-sky-400">
+        </div>
+      </div>
+      <button onclick="saveSurvey()" class="mt-3 w-full bg-sky-700 text-white py-3 rounded-xl font-black">📊 שלח שאלון (+5 עלים)</button>
+      <div id="survey-sent" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ תודה! המשוב חשוב</div>
+    </div>
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5">
+      <h3 class="font-black text-amber-900 mb-3">✉️ מכתב לתלמידים של השנה הבאה</h3>
+      <textarea id="letter-next" rows="3" maxlength="200" placeholder="לתלמידים של שנה הבאה: הדבר הכי חשוב שכדאי לדעת מראש הוא..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+      <button onclick="saveLetter()" class="mt-3 w-full bg-amber-700 text-white py-3 rounded-xl font-black">✉️ שמור מכתב (+5 עלים)</button>
+      <div id="letter-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ המכתב נשמר!</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)">טקס תגים ←</button></div>
+</div>
+
+<!-- STEP 5: Badge ceremony -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🏅</span><div><h2 class="text-3xl font-black text-green-900">טקס התגים – סגירת דרכון + טקס</h2></div></div>
+    <div class="bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-yellow-300 rounded-2xl p-5 mb-5 text-center">
+      <p class="font-black text-2xl text-yellow-900 mb-3">🎖️ כל הבאדג'ים שנצברו השנה:</p>
+      <div class="flex flex-wrap justify-center gap-2 mb-4" id="all-badges">
+        <span class="badge-chip bg-green-100 text-green-800">🔍 חוקר שטח</span>
+        <span class="badge-chip bg-lime-100 text-lime-800">🌱 השתלן</span>
+        <span class="badge-chip bg-blue-100 text-blue-800">💧 ידיים על המדים</span>
+        <span class="badge-chip bg-purple-100 text-purple-800">💻 הקוד עובד!</span>
+        <span class="badge-chip bg-teal-100 text-teal-800">🔁 סוגר מעגל</span>
+        <span class="badge-chip bg-indigo-100 text-indigo-800">📊 מדען נתונים</span>
+        <span class="badge-chip bg-orange-100 text-orange-800">🛠️ בנאי האבטיפוס</span>
+        <span class="badge-chip bg-rose-100 text-rose-800">🚀 יזם העתיד</span>
+        <span class="badge-chip bg-yellow-200 text-yellow-900 border-2 border-yellow-400">🏆 חקלאי העתיד</span>
+      </div>
+      <button onclick="claimFinalBadge()" id="claim-btn" class="bg-yellow-500 hover:bg-yellow-400 text-yellow-900 px-8 py-4 rounded-2xl font-black text-lg">🏆 קבלו את הבאדג' "חקלאי העתיד" (+5 עלים)</button>
+      <div id="final-badge-claimed" class="hidden mt-3 font-black text-xl text-yellow-800">✨ מגיע לכם! אתם חקלאי העתיד של הגליל המערבי 🌾</div>
+    </div>
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+      <h3 class="font-black text-green-900 mb-3">📔 דרכון – שיעור 17 (האחרון)</h3>
+      <textarea id="p17-final" rows="3" maxlength="200" placeholder="סיימתי את 'גדלים למחר'. השנה הזאת לימדה אותי ש..." class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+      <button onclick="saveEntry17()" class="mt-3 w-full bg-green-700 text-white py-3 rounded-xl font-black">📔 שמור רשומה אחרונה</button>
+      <div id="p17-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! +5 עלים 🌿</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">המסע הסתיים ←</button></div>
+</div>
+
+<!-- STEP 6: Final -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="text-center mb-8">
+      <p class="text-6xl mb-4">🌾🎓🌱</p>
+      <h2 class="text-4xl font-black text-green-900 mb-3">המסע הסתיים!</h2>
+      <p class="text-gray-600 text-lg max-w-lg mx-auto">הגליל המערבי תמיד הוביל בחקלאות. אתם — הדור שמחבר אותה לטכנולוגיה.</p>
+    </div>
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3"><span class="text-2xl">⭐</span><h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון האחרונה</h3></div>
+      <p class="text-gray-800 font-bold text-lg mb-3">"בעוד 10 שנים — מה תספרו לחברים על מה שבניתם ב'גדלים למחר'?"</p>
+      <textarea id="north-star" rows="2" placeholder="בעוד 10 שנים אספר ש..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center mb-5">
+      <p class="text-gray-500 text-sm mb-1">🌿 סה"כ עלים שנצברו השנה:</p>
+      <p class="text-6xl font-black text-lime-700" id="total-leaves-display">0</p>
+      <p id="total-level" class="text-2xl font-black text-green-700 mt-2">🌱 זרע</p>
+      <p class="text-gray-400 text-sm mt-1">עלים בשיעור 17:</p>
+      <p class="text-3xl font-black text-lime-600" id="final-lv">0</p>
+    </div>
+    <div class="text-center py-6">
+      <p class="text-2xl font-black text-green-900 mb-2">🌱→🌿→🌳→🌻→🏆</p>
+      <p class="text-gray-500">תודה שהיית חקלאי העתיד שלנו.</p>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+const STEPS=6;let cur=1,lv=parseInt(localStorage.getItem('ls17')||'0'),maxReached=1;
+const LEVELS=[[0,'🌱 זרע'],[150,'🌿 שתיל'],[400,'🌳 צמח צעיר'],[700,'🌻 פורח'],[1050,'🏆 חקלאי העתיד']];
+let chosenPath='';
+let mappingSaved=false,passportClosed=false,surveySaved=false,letterSaved=false,badgeClaimed=false,entry17Saved=false;
+let _surveyStars=0,_surveyRecommend='';
+
+// P3.2: Star rating
+function rateStar(n){
+  _surveyStars=n;
+  document.querySelectorAll('.star-btn').forEach((btn,i)=>{btn.textContent=i<n?'⭐':'☆';});
+}
+// P3.2: Recommend
+function setRecommend(val,el){
+  _surveyRecommend=val;
+  ['rec-yes','rec-maybe','rec-no'].forEach(id=>{const b=document.getElementById(id);if(b){b.classList.remove('border-green-400','bg-green-50','border-yellow-400','bg-yellow-50','border-red-400','bg-red-50','font-black');}});
+  const colors={yes:['border-green-400','bg-green-50'],maybe:['border-yellow-400','bg-yellow-50'],no:['border-red-400','bg-red-50']};
+  el.classList.add(...(colors[val]||[]),'font-black');
+}
+
+function goTo(n){if(n<1||n>STEPS)return;document.getElementById('step-'+cur).classList.remove('active');cur=n;if(cur>maxReached)maxReached=cur;document.getElementById('step-'+cur).classList.add('active');renderDots();updateHeader();window.scrollTo({top:0,behavior:'smooth'});updateMascot(cur);if(n===6)showTotals();}
+function updateHeader(){document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';}
+function renderDots(){document.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');});}
+function addLv(n){lv+=n;localStorage.setItem('ls17',lv);document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
+function leafBurst(n){for(let i=0;i<Math.min(n,8);i++){const el=document.createElement('div');el.className='leaf-burst';el.textContent='🌿';el.style.left=(20+Math.random()*60)+'vw';el.style.top=(15+Math.random()*50)+'vh';el.style.setProperty('--tx',(Math.random()*120-60)+'px');el.style.setProperty('--ty',(-80-Math.random()*80)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),950);}}
+function ansQ(el,correct,qid){
+  const c=document.getElementById(qid);if(!c||c.dataset.done)return;c.dataset.done='1';c.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');el.classList.add(correct?'correct':'wrong');if(!correct){const r=c.querySelector('[data-correct="true"]');if(r)r.classList.add('correct');}
+  const fb=document.getElementById('fb-'+qid);if(fb){fb.className='mt-3 rounded-xl p-4 text-sm '+(correct?'bg-green-50 text-green-800':'bg-red-50 text-red-800');fb.textContent=correct?'✅ מצוין! +5 עלים 🌿':'❌ לא בדיוק – תשובה נכונה מסומנת בירוק';fb.classList.remove('hidden');}if(correct)addLv(5);
+  const casc={'q-reflect':()=>{document.getElementById('btn1').classList.remove('hidden');mascotSay('גדלתם! מ"שדה" ל"טכנולוגיה + אחריות"','🌱');}};if(casc[qid])casc[qid]();
+}
+function pickPath(el,path){chosenPath=path;document.querySelectorAll('#path-btns button').forEach(b=>b.classList.remove('chosen'));el.classList.add('chosen');}
+function saveMapping(){
+  if(mappingSaved)return;const fav=document.getElementById('fav-lesson').value.trim();if(!fav&&!chosenPath){mascotSay('מלאו לפחות שיעור אהוב!','🗺️');return;}mappingSaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson17Mapping={fav,path:chosenPath,future:document.getElementById('future-path').value.trim()};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('mapping-saved').classList.remove('hidden');addLv(15);document.getElementById('btn2').classList.remove('hidden');mascotSay('מיפוי נשמר! '+chosenPath,'🗺️');
+}
+function closePassport(){
+  if(passportClosed)return;passportClosed=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.closed=true;p.closingNote=document.getElementById('final-sentence').value.trim();p.plantSummary=document.getElementById('plant-summary').value.trim();p.closedDate=new Date().toLocaleDateString('he-IL');localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('passport-closed').classList.remove('hidden');addLv(15);document.getElementById('btn3').classList.remove('hidden');mascotSay('הדרכון נסגר! שמור לעד 📔','📔');
+}
+function saveSurvey(){
+  if(surveySaved)return;surveySaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');
+  p.survey={best:document.getElementById('survey-best').value.trim(),hard:document.getElementById('survey-hard').value.trim(),suggest:document.getElementById('survey-suggest').value.trim(),stars:_surveyStars,recommend:_surveyRecommend};
+  localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('survey-sent').classList.remove('hidden');addLv(5);checkStep4();
+}
+function saveLetter(){
+  if(letterSaved)return;const t=document.getElementById('letter-next').value.trim();if(!t)return;letterSaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.letterNext=t;localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('letter-saved').classList.remove('hidden');addLv(5);checkStep4();
+}
+function checkStep4(){if(surveySaved&&letterSaved)document.getElementById('btn4').classList.remove('hidden');}
+function claimFinalBadge(){
+  if(badgeClaimed)return;badgeClaimed=true;
+  document.getElementById('claim-btn').disabled=true;
+  document.getElementById('final-badge-claimed').classList.remove('hidden');
+  addLv(5);
+  mascotSay('חקלאי העתיד 🏆 — מגיע לכם!','🏅');
+  if(window.GC)GC.playSound('achievement');
+  // P3.1: confetti animation
+  const emojis=['🌿','🏆','🎉','⭐','🌱','🌾','🎊'];
+  for(let i=0;i<30;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.style.cssText='position:fixed;top:-20px;left:'+(10+Math.random()*80)+'vw;font-size:'+(1.2+Math.random()*1.4)+'rem;z-index:9999;pointer-events:none;animation:gc-burst .8s ease forwards;';
+      el.style.setProperty('--tx',(Math.random()*100-50)+'px');
+      el.style.setProperty('--ty',(window.innerHeight*0.7+Math.random()*200)+'px');
+      el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),900);
+    },i*80);
+  }
+}
+function saveEntry17(){
+  if(entry17Saved)return;const t=document.getElementById('p17-final').value.trim();if(!t)return;entry17Saved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson17={final:t,date:new Date().toLocaleDateString('he-IL')};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('p17-saved').classList.remove('hidden');addLv(5);document.getElementById('btn5').classList.remove('hidden');
+}
+function showTotals(){
+  let total=0;for(let i=1;i<=17;i++){total+=parseInt(localStorage.getItem('ls'+i)||'0');}
+  const spent=parseInt(localStorage.getItem('leaves_spent')||'0');const earned=Math.max(total,0);
+  document.getElementById('total-leaves-display').textContent=earned;
+  const lvl=LEVELS.filter(l=>earned>=l[0]).pop();
+  document.getElementById('total-level').textContent=lvl[1]+' ('+earned+' עלים)';
+}
+const mascotLines={1:'שיעור אחרון! חשוב לשמוע מה השתנה',2:'לאן ממשיכים? כל דרך מכאן פתוחה',3:'הדרכון נסגר — שמור לעד',4:'שאלון + מכתב = מתנה לדור הבא',5:'טקס! הבאדג׳ האחרון הכי חשוב',6:'המסע הסתיים 🌾'};
+function updateMascot(s){mascotSay(mascotLines[s]||'','🌱');}
+function mascotSay(msg,emoji){const m=document.getElementById('mascot'),b=document.getElementById('mascot-bubble');if(emoji)m.textContent=emoji;b.textContent=msg;b.classList.remove('hidden');m.classList.add('mascot-bounce');clearTimeout(mascotSay._t);mascotSay._t=setTimeout(()=>{b.classList.add('hidden');m.classList.remove('mascot-bounce');},5000);}
+function init(){
+  const d=document.getElementById('dots');for(let i=1;i<=STEPS;i++){const dot=document.createElement('div');dot.className='step-dot'+(i===1?' current':'');dot.title='שלב '+i;dot.onclick=()=>{if(i<=maxReached)goTo(i);};d.appendChild(dot);}
+  document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;updateHeader();
+  try{const p=JSON.parse(localStorage.getItem('passport1')||'{}');
+    if(p.lesson17Mapping){document.getElementById('fav-lesson').value=p.lesson17Mapping.fav||'';document.getElementById('future-path').value=p.lesson17Mapping.future||'';if(p.lesson17Mapping.path){chosenPath=p.lesson17Mapping.path;document.querySelectorAll('#path-btns button').forEach(b=>{if(b.textContent.includes(p.lesson17Mapping.path.substring(0,5)))b.classList.add('chosen');});}mappingSaved=true;document.getElementById('btn2').classList.remove('hidden');}
+    if(p.closed){passportClosed=true;document.getElementById('btn3').classList.remove('hidden');}
+    if(p.survey){surveySaved=true;document.getElementById('survey-sent').classList.remove('hidden');}if(p.letterNext){letterSaved=true;document.getElementById('letter-next').value=p.letterNext;document.getElementById('letter-saved').classList.remove('hidden');}checkStep4();
+    if(p.lesson17){document.getElementById('p17-final').value=p.lesson17.final||'';entry17Saved=true;document.getElementById('btn5').classList.remove('hidden');}
+  }catch(e){}
+  mascotSay(mascotLines[1],'🌱');
+}
+init();
+</script>
+</body>
+</html>

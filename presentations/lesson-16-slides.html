@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שיעור 16 – שקפים | גדלים למחר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/slides-core.css">
+</head>
+<body>
+
+<div id="deck-title">שיעור 16 – איך מספרים לעולם? פיצ'ינג ומצגות</div>
+<div id="backdrop">
+
+  <!-- שקף 1 - מבנה פיץ' (תבנית C) -->
+  <section class="slide active" data-name="שקף 1" data-steps="4">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 16 · גדלים למחר</span>
+      <span class="phase-chip">🍎 פאזה 4 – פירות</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:5%;">מבנה הפיץ'</p>
+      <div style="display:flex; align-items:center; gap:1.6%;">
+        <div class="rv card card-green" data-step="1" style="flex:1;">
+          <p class="label label-green">1️⃣ בעיה</p>
+        </div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-lime" data-step="2" style="flex:1;">
+          <p class="label label-lime">2️⃣ פתרון</p>
+        </div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-amber" data-step="3" style="flex:1;">
+          <p class="label label-amber">3️⃣ הדגמה</p>
+        </div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-blue" data-step="4" style="flex:1;">
+          <p class="label label-blue">4️⃣ סיכום</p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🍎</div>
+  </section>
+
+  <!-- שקף 2 - 4 דברים לזכור מול קהל (תבנית E) -->
+  <section class="slide" data-name="שקף 2" data-steps="4">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 16 · גדלים למחר</span>
+      <span class="phase-chip">🍎 פאזה 4 – פירות</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:4%;">4 דברים לזכור מול קהל</p>
+      <div class="fw-grid">
+        <div class="rv fw-cell card-green" data-step="1">
+          <p class="label label-green">🗣️ קול</p>
+          <p class="body" style="margin-top:6px;">קצב וברור</p>
+        </div>
+        <div class="rv fw-cell card-blue" data-step="2">
+          <p class="label label-blue">🧍 גוף</p>
+          <p class="body" style="margin-top:6px;">תנועה, ידיים, מבט בקהל</p>
+        </div>
+        <div class="rv fw-cell card-gold" data-step="3">
+          <p class="label label-gold">📝 תוכן</p>
+          <p class="body" style="margin-top:6px;">ניסוח פשוט וברור</p>
+        </div>
+        <div class="rv fw-cell card-purple" data-step="4">
+          <p class="label label-purple">💪 ביטחון</p>
+          <p class="body" style="margin-top:6px;">אתם מכירים את זה הכי טוב</p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🍎</div>
+  </section>
+
+  <!-- שקף 3 - דוגמת פיץ' (כרטיס-הנחיה: המורה מדגים/מפעיל סרטון) -->
+  <section class="slide" data-name="שקף 3">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 16 · גדלים למחר</span>
+      <span class="phase-chip">🍎 פאזה 4 – פירות</span>
+    </div>
+    <div class="stage-center">
+      <div class="cue-card" style="width:min(70%,600px);">
+        <p class="play">🎤</p>
+        <p class="h1" style="margin-top:12px;">דוגמת פיץ' קצרה</p>
+        <p class="small" style="margin-top:10px;">המורה מדגים, או מפעילים סרטון</p>
+      </div>
+    </div>
+    <div class="mascot">🍎</div>
+  </section>
+
+</div>
+
+<div id="controls">
+  <button class="navbtn" onclick="slidesGo(-1)">→</button>
+  <span id="counter">1 / 3</span>
+  <div id="dots"></div>
+  <button class="navbtn" onclick="slidesGo(1)">←</button>
+  <button class="navbtn" id="fsbtn" title="מסך מלא">⛶</button>
+</div>
+
+<script src="assets/slides-core.js"></script>
+</body>
+</html>

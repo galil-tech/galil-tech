@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שיעור 3 – שקפים | גדלים למחר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/slides-core.css">
+</head>
+<body>
+
+<div id="deck-title">שיעור 3 – פוקוס על הצמח: מה צמח צריך?</div>
+<div id="backdrop">
+
+  <!-- שקף 1 - 4 צרכי הצמח (תבנית E) -->
+  <section class="slide active" data-name="שקף 1" data-steps="4">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 3 · גדלים למחר</span>
+      <span class="phase-chip">🌱 פאזה 1 – נביטה</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:4%;">מה צמח צריך כדי לגדול?</p>
+      <div class="fw-grid">
+        <div class="rv fw-cell card-green" data-step="1">
+          <p class="label label-green">☀️ אור</p>
+          <p class="body" style="margin-top:6px;">מקור האנרגיה לפוטוסינתזה</p>
+        </div>
+        <div class="rv fw-cell card-blue" data-step="2">
+          <p class="label label-blue">💧 מים</p>
+          <p class="body" style="margin-top:6px;">להובלת מזון ולתהליכי החיים</p>
+        </div>
+        <div class="rv fw-cell card-gold" data-step="3">
+          <p class="label label-gold">🌿 דישון</p>
+          <p class="body" style="margin-top:6px;">מינרלים שהצמח לא מייצר בעצמו</p>
+        </div>
+        <div class="rv fw-cell card-purple" data-step="4">
+          <p class="label label-purple">🫧 חמצן</p>
+          <p class="body" style="margin-top:6px;">גם השורשים צריכים לנשום</p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🌱</div>
+  </section>
+
+  <!-- שקף 2 - פוטוסינתזה במשפט אחד (תבנית B) -->
+  <section class="slide" data-name="שקף 2" style="background:linear-gradient(160deg,#f0fdf4 0%, #ecfccb 100%);">
+    <div class="topbar transparent">
+      <span class="eyebrow">שיעור 3 · גדלים למחר</span>
+      <span class="phase-chip">🌱 פאזה 1 – נביטה</span>
+    </div>
+    <div class="stage-center">
+      <div>
+        <p class="h1">☀️ אור + 💧 מים + 🌬️ CO₂<br>← פוטוסינתזה →<br>🍬 סוכר + 🫧 חמצן</p>
+        <p class="h2" style="color:#ca8a04; margin-top:20px; font-weight:800;">כך הצמח מכין לעצמו מזון</p>
+      </div>
+    </div>
+    <div class="mascot">🌱</div>
+  </section>
+
+</div>
+
+<div id="controls">
+  <button class="navbtn" onclick="slidesGo(-1)">→</button>
+  <span id="counter">1 / 2</span>
+  <div id="dots"></div>
+  <button class="navbtn" onclick="slidesGo(1)">←</button>
+  <button class="navbtn" id="fsbtn" title="מסך מלא">⛶</button>
+</div>
+
+<script src="assets/slides-core.js"></script>
+</body>
+</html>

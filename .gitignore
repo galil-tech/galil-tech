@@ -1,0 +1,6 @@
+~$*
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# מעל מגבלת 100MB של GitHub - צריך פתרון נפרד (Git LFS / אחסון חיצוני) - ראה CLAUDE.md
+lessons/aqua.mp4

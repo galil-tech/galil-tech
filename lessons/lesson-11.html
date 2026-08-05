@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 11 – ביג דאטה בחקלאות | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;} .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;border-radius:12px;}
+    .quiz-opt:hover:not([data-done]){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
+    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;} .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;} .reveal.show{display:block;animation:fadeUp .35s ease;}
+    .mascot{font-size:2.8rem;transition:all .4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .mascot-bounce{animation:bounce .6s ease 3;}
+    .graph-bar{transition:height .5s;border-radius:4px 4px 0 0;background:#16a34a;}
+    .graph-bar:hover{background:#15803d;}
+    .chart-type-btn{border:2px solid #e5e7eb;cursor:pointer;transition:all .2s;border-radius:10px;}
+    .chart-type-btn:hover,.chart-type-btn.active{border-color:#16a34a;background:#f0fdf4;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen">
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="lesson-10.html" class="hover:text-lime-300">← שיעור 10</a>
+      <a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+<div class="bg-indigo-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-indigo-400 text-indigo-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 3 – פריחה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 11 מתוך 17</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">📊 ביג דאטה בחקלאות</h1>
+    <p class="text-indigo-200">סוגי גרפים · Prospera/Valley · תובנה מהנתונים · באדג' מדען נתונים</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-indigo-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 6</span><span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden"><div id="pbar" class="h-3 bg-indigo-400 rounded-full transition-all duration-500" style="width:0%"></div></div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- STEP 1 -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-4 mb-5 text-sm"><b class="text-amber-900">🔁 Teaser:</b> "יש לנו נתונים. מה הם אומרים?"</div>
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📊</span><div><h2 class="text-3xl font-black text-indigo-900">ביג דאטה – נתונים שמדברים</h2></div></div>
+    <div class="bg-indigo-50 border-r-4 border-indigo-500 rounded-2xl p-5 mb-5 text-gray-700 text-sm">
+      <p class="mb-2"><b>ביג דאטה בחקלאות</b> = אסוף נתונים ממיליוני נקודות (חיישנים, תמונות, מדידות) וחפש בהם דפוסים שאף אחד לא ראה ידנית.</p>
+      <p>חקלאי שמדד pH כל יום לאורך 3 שנים — לא יוכל לנתח זאת בראש. AI + גרפים — כן.</p>
+      <p class="mt-2 text-xs">⚠️ אחד מסוגי הגרפים שנלמד יהיה <b>גרף קווי</b> — בדיוק כמו זה שגדל מנתוני השתיל שלכם.</p>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה ה"ביג" ב"ביג דאטה"?</p>
+      <div class="grid gap-3" id="q-big1">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-big1')">שהקבצים שוקלים הרבה קילוגרמים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-big1')" data-correct="true">כמות הנתונים גדולה מכדי שאדם יוכל לנתח ידנית — נדרש AI/מחשב</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-big1')">שהמסך גדול</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-big1')">שהחקלאי גדול בגובה</div>
+      </div>
+      <div id="fb-q-big1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn1" class="hidden bg-indigo-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-indigo-600" onclick="goTo(2)">סוגי גרפים ←</button></div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📈</span><div><h2 class="text-3xl font-black text-indigo-900">3 סוגי גרפים – מתי כל אחד?</h2></div></div>
+    <div class="grid md:grid-cols-3 gap-4 mb-5 text-center text-sm">
+      <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4">
+        <p class="text-3xl mb-2">📈</p><p class="font-black text-blue-800 mb-1">גרף קווי</p>
+        <p class="text-gray-600">מתי: <b>שינוי לאורך זמן</b></p>
+        <p class="text-gray-500 text-xs mt-1">גובה שתיל לאורך שבועות</p>
+      </div>
+      <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-4">
+        <p class="text-3xl mb-2">📊</p><p class="font-black text-green-800 mb-1">גרף עמודות</p>
+        <p class="text-gray-600">מתי: <b>השוואה בין קטגוריות</b></p>
+        <p class="text-gray-500 text-xs mt-1">pH ממוצע לפי קבוצה</p>
+      </div>
+      <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4">
+        <p class="text-3xl mb-2">🥧</p><p class="font-black text-amber-800 mb-1">גרף עוגה</p>
+        <p class="text-gray-600">מתי: <b>חלקים מתוך שלם</b></p>
+        <p class="text-gray-500 text-xs mt-1">% עלים מול מים מול אנרגיה</p>
+      </div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ נרצה להראות "כמה השתיל גדל כל שבוע" — איזה גרף?</p>
+      <div class="grid grid-cols-3 gap-3" id="q-chart1">
+        <div class="quiz-opt p-4 text-center" onclick="ansQ(this,true,'q-chart1')" data-correct="true">📈 קווי</div>
+        <div class="quiz-opt p-4 text-center" onclick="ansQ(this,false,'q-chart1')">📊 עמודות</div>
+        <div class="quiz-opt p-4 text-center" onclick="ansQ(this,false,'q-chart1')">🥧 עוגה</div>
+      </div>
+      <div id="fb-q-chart1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn2" class="hidden bg-indigo-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-indigo-600" onclick="goTo(3)">Prospera ←</button></div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🌾</span><div><h2 class="text-3xl font-black text-indigo-900">Prospera → Valley Irrigation</h2></div></div>
+    <div class="bg-gradient-to-br from-indigo-700 to-purple-600 text-white rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-3 mb-3"><span class="text-3xl">🇮🇱</span><div><h3 class="font-black text-xl">Prospera → Valley Irrigation</h3><p class="text-indigo-200 text-sm">ישראל · ביג דאטה חקלאי · נרכשה</p></div></div>
+      <p class="text-sm text-indigo-100 mb-4">Prospera הייתה חברת ביג דאטה ישראלית שהשתמשה במצלמות ו-AI לניטור שדות. נרכשה על ידי <b>Valley Irrigation</b> (ענקית השקיה אמריקאית) — דוגמה לאיך חברה ישראלית קטנה יכולה להשפיע על תעשייה עולמית שלמה.</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-lg block">🤝</b>נרכשה</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-lg block">📸</b>מצלמות+AI</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-lg block">🌾</b>שדות עולמיים</div>
+      </div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-4">❓ למה חברה אמריקאית ענקית קנתה סטארטאפ ישראלי קטן?</p>
+      <div class="grid gap-3" id="q-prosp1">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-prosp1')">כי היה זול</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-prosp1')" data-correct="true">כי הסטארטאפ פיתח יכולת AI שהחברה הגדולה לא הייתה לה — קל יותר לקנות מאשר לפתח מאפס</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-prosp1')">כי ישראל קרובה גאוגרפית לארה"ב</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-prosp1')">כי לחברה הגדולה לא היה שם לחברה שלה</div>
+      </div>
+      <div id="fb-q-prosp1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+    <div id="q-prosp2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה Prospera עשתה עם הנתונים שאספה?</p>
+      <div class="grid gap-3" id="q-prosp2">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-prosp2')">מכרה אותם לממשלות</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-prosp2')" data-correct="true">מצאה דפוסים: "שדות עם pH X + לחות Y → תשואה Z", המלצות אוטומטיות לחקלאי</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-prosp2')">העלתה לרשתות חברתיות</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-prosp2')">מחקה אחרי 90 יום</div>
+      </div>
+      <div id="fb-q-prosp2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn3" class="hidden bg-indigo-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-indigo-600" onclick="goTo(4)">הגרף שלי ←</button></div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📈</span><div><h2 class="text-3xl font-black text-indigo-900">הגרף שלי – נתוני הצמח</h2></div></div>
+    <div class="bg-blue-50 border-r-4 border-blue-400 rounded-2xl p-4 mb-5 text-sm text-blue-800">
+      ⚠️ <b>הערה לבונה הלומדה:</b> גרף זה דורש היסטוריית דרכון דיגיטלית מלאה (שיעורים 3-10). הוא תלוי בשכבת הנתונים של שלב 9ב.
+    </div>
+    <div id="my-chart" class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-5 mb-5">
+      <p class="font-bold text-center text-gray-700 mb-4">גרף צמיחת השתיל שלכם (ס"מ)</p>
+      <div class="flex items-end gap-2 h-40 justify-center" id="lesson11-chart">
+        <p class="text-gray-400 text-sm">טוען נתונים...</p>
+      </div>
+      <div class="flex justify-center gap-4 mt-3 text-xs text-gray-500">
+        <span>📈 גרף קווי</span><span>|</span><span id="chart-max">מקסימום: 0 ס"מ</span>
+      </div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה סוג הגרף המתאים לנתוני גובה לאורך שיעורים?</p>
+      <div class="grid grid-cols-3 gap-3" id="q-mygraph">
+        <div class="quiz-opt p-4 text-center" onclick="ansQ(this,true,'q-mygraph')" data-correct="true">📈 קווי (שינוי לאורך זמן)</div>
+        <div class="quiz-opt p-4 text-center" onclick="ansQ(this,false,'q-mygraph')">📊 עמודות</div>
+        <div class="quiz-opt p-4 text-center" onclick="ansQ(this,false,'q-mygraph')">🥧 עוגה</div>
+      </div>
+      <div id="fb-q-mygraph" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn4" class="hidden bg-indigo-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-indigo-600" onclick="goTo(5)">תובנה ←</button></div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🔬</span><div><h2 class="text-3xl font-black text-indigo-900">מדען נתונים – מה הגרף אומר?</h2></div></div>
+    <div class="bg-indigo-50 border-r-4 border-indigo-400 rounded-2xl p-5 mb-5 text-sm text-gray-700">
+      <p class="mb-2"><b>תובנה</b> = לא "הצמח גדל", אלא "הצמח גדל מהר יותר בשבועות בהם ה-pH היה 5.8-6.2".</p>
+      <p>ההבדל: תובנה מסבירה <b>למה</b> ומה <b>לעשות</b>, לא רק מה קרה.</p>
+    </div>
+    <div class="mb-5">
+      <label class="block font-bold text-gray-700 mb-2">📝 כתבו תובנה אחת מהגרף שלכם:</label>
+      <textarea id="insight-text" rows="3" maxlength="200" placeholder="בגרף שלי אני רואה שהשתיל... זה מלמד אותי ש..." class="w-full border-2 border-indigo-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-indigo-500"></textarea>
+      <button onclick="saveInsight()" class="mt-3 w-full bg-indigo-700 hover:bg-indigo-600 text-white py-4 rounded-xl font-black">🔬 שמור תובנה + קבל באדג' "מדען נתונים" (+20 עלים)</button>
+      <div id="insight-saved" class="hidden mt-3 bg-indigo-50 border-2 border-indigo-300 rounded-xl p-4 text-center">
+        <p class="text-2xl mb-1">📊</p><p class="font-black text-indigo-800 text-xl">באדג' "מדען נתונים" 🏅</p>
+        <p class="text-gray-600 text-sm mt-1">הפקתם תובנה מנתונים — זה בדיוק מה שPrima Prospera עשתה!</p>
+      </div>
+    </div>
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+      <h3 class="font-black text-green-900 mb-2">📔 דרכון – שיעור 11</h3>
+      <p class="text-xs text-gray-500 mb-2">⚠️ ציינו: נתון זה דורש היסטוריית כל השיעורים — בשלב 9ב יתחבר אוטומטית</p>
+      <textarea id="p11-obs" rows="2" maxlength="150" placeholder="התובנה הכי מעניינת שגיליתי מהנתונים שלי: ..." class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+      <button onclick="saveEntry11()" class="mt-3 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-xl font-black">📔 שמור</button>
+      <div id="p11-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! +10 עלים 🌿</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn5" class="hidden bg-indigo-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-indigo-600" onclick="goTo(6)">סיכום ←</button></div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-indigo-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-indigo-900 mb-3">📚 מה למדנו:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex gap-2"><span class="text-indigo-600">📊</span> ביג דאטה = נתונים שאדם לא יכול לנתח לבד, AI יכול</li>
+        <li class="flex gap-2"><span class="text-indigo-600">📈</span> 3 גרפים: קווי (זמן), עמודות (השוואה), עוגה (חלקים)</li>
+        <li class="flex gap-2"><span class="text-indigo-600">🌾</span> Prospera נרכשה — ישראל בונה טכנולוגיה שהעולם קונה</li>
+        <li class="flex gap-2"><span class="text-indigo-600">🔬</span> תובנה = לא "מה קרה" אלא "למה" ו"מה לעשות"</li>
+      </ul>
+    </div>
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3"><span class="text-2xl">⭐</span><h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3></div>
+      <p class="text-gray-800 font-bold text-lg mb-3">"אילו נתונים תרצו לאסוף על המערכת שלכם כדי לשפר את הפרויקט הסופי? ומה תרצו שגרף יראה לכם?"</p>
+      <textarea id="north-star" rows="2" placeholder="הייתי רוצה לאסוף... ולהציג בגרף..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא (שיעור 12):</p>
+      <p class="font-black text-xl">"יש לנו נתונים. יש לנו גרפים. עכשיו — מה AI עושה עם כל זה?"</p>
+    </div>
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים שנצברו בשיעור 11:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך מקסימום ~55 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4"><a href="lesson-12.html" class="bg-indigo-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-indigo-600">לשיעור 12 ←</a></div>
+</div>
+
+</div>
+<script>
+const STEPS=6;let cur=1,lv=parseInt(localStorage.getItem('ls11')||'0'),maxReached=1;
+let insightSaved=false,entry11Saved=false;
+
+function goTo(n){if(n<1||n>STEPS)return;document.getElementById('step-'+cur).classList.remove('active');cur=n;if(cur>maxReached)maxReached=cur;document.getElementById('step-'+cur).classList.add('active');renderDots();updateHeader();window.scrollTo({top:0,behavior:'smooth'});updateMascot(cur);}
+function updateHeader(){document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';}
+function renderDots(){document.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');});}
+function addLv(n){lv+=n;localStorage.setItem('ls11',lv);document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
+function leafBurst(n){for(let i=0;i<Math.min(n,8);i++){const el=document.createElement('div');el.className='leaf-burst';el.textContent='🌿';el.style.left=(20+Math.random()*60)+'vw';el.style.top=(15+Math.random()*50)+'vh';el.style.setProperty('--tx',(Math.random()*120-60)+'px');el.style.setProperty('--ty',(-80-Math.random()*80)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),950);}}
+function ansQ(el,correct,qid){
+  const c=document.getElementById(qid);if(!c||c.dataset.done)return;c.dataset.done='1';c.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');el.classList.add(correct?'correct':'wrong');if(!correct){const r=c.querySelector('[data-correct="true"]');if(r)r.classList.add('correct');}
+  const fb=document.getElementById('fb-'+qid);if(fb){fb.className='mt-3 rounded-xl p-4 text-sm '+(correct?'bg-green-50 text-green-800':'bg-red-50 text-red-800');fb.textContent=correct?'✅ מצוין! +5 עלים 🌿':'❌ לא בדיוק – תשובה נכונה מסומנת בירוק';fb.classList.remove('hidden');}if(correct)addLv(5);
+  const casc={'q-big1':()=>{document.getElementById('btn1').classList.remove('hidden');mascotSay('מיליוני נתונים — רק AI יכול!','📊');},'q-chart1':()=>{document.getElementById('btn2').classList.remove('hidden');mascotSay('גרף קווי = שינוי לאורך זמן','📈');},'q-prosp1':()=>document.getElementById('q-prosp2-wrap').classList.add('show'),'q-prosp2':()=>{document.getElementById('btn3').classList.remove('hidden');mascotSay('Prospera = AI שמוצא דפוסים!','🌾');},'q-mygraph':()=>{document.getElementById('btn4').classList.remove('hidden');mascotSay('גרף קווי לנתוני זמן','📈');}};
+  if(casc[qid])casc[qid]();
+}
+function loadChart(){
+  try{
+    const p=JSON.parse(localStorage.getItem('passport1')||'{}');const data=p.growthData||[];
+    const el=document.getElementById('lesson11-chart');
+    if(!data.length){el.innerHTML='<p class="text-gray-400 text-sm">לא נמצאו מדידות — הזינו נתונים בשיעורים 4/10</p>';return;}
+    const heights=data.map(d=>d.height);
+    const max=Math.max(...heights,1);
+    document.getElementById('chart-max').textContent='מקסימום: '+max+' ס"מ';
+    el.innerHTML='';
+    data.forEach(d=>{const bar=document.createElement('div');bar.className='flex flex-col items-center gap-1';bar.innerHTML=`<span class="text-xs font-bold text-indigo-700">${d.height}</span><div class="graph-bar w-8 bg-indigo-500" style="height:${Math.round((d.height/max)*128)}px;"></div><span class="text-xs text-gray-400">ש${d.lesson||'?'}</span>`;el.appendChild(bar);});
+    // P3.1: trend analysis
+    if(heights.length>=2){
+      const first=heights[0],last=heights[heights.length-1];
+      const avg=Math.round(heights.reduce((a,b)=>a+b,0)/heights.length);
+      const rate=parseFloat(((last-first)/(heights.length-1)).toFixed(1));
+      const trendIcon=last>first?'📈':last<first?'📉':'➡️';
+      const trendLabel=last>first?'צומח':last<first?'יורד':'יציב';
+      const rateColor=rate>0?'text-green-600':'text-red-600';
+      let anaEl=document.getElementById('chart-analysis');
+      if(!anaEl){anaEl=document.createElement('div');anaEl.id='chart-analysis';el.parentNode.appendChild(anaEl);}
+      anaEl.className='mt-4 grid grid-cols-3 gap-3 text-center text-sm';
+      anaEl.innerHTML=`
+        <div class="bg-indigo-50 rounded-xl p-3"><p class="text-gray-400 text-xs">מגמה</p><p class="font-black text-xl">${trendIcon}</p><p class="text-xs font-bold">${trendLabel}</p></div>
+        <div class="bg-indigo-50 rounded-xl p-3"><p class="text-gray-400 text-xs">ממוצע</p><p class="font-black text-xl text-indigo-700">${avg}</p><p class="text-xs font-bold">ס"מ</p></div>
+        <div class="bg-indigo-50 rounded-xl p-3"><p class="text-gray-400 text-xs">גדילה/שיעור</p><p class="font-black text-xl ${rateColor}">${rate>0?'+':''}${rate}</p><p class="text-xs font-bold">ס"מ</p></div>`;
+    }
+  }catch(e){}}
+function saveInsight(){
+  if(insightSaved)return;const t=document.getElementById('insight-text').value.trim();if(!t){mascotSay('כתבו תובנה!','🔬');return;}
+  insightSaved=true;const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson11Insight=t;localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('insight-saved').classList.remove('hidden');addLv(20);mascotSay('מדען נתונים! 🏅','🔬');checkStep5();
+}
+function saveEntry11(){
+  if(entry11Saved)return;const obs=document.getElementById('p11-obs').value.trim();if(!obs)return;entry11Saved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson11={obs,date:new Date().toLocaleDateString('he-IL')};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('p11-saved').classList.remove('hidden');addLv(10);checkStep5();
+}
+function checkStep5(){if(insightSaved&&entry11Saved)document.getElementById('btn5').classList.remove('hidden');}
+const mascotLines={1:'ביג דאטה — נתונים שמדברים אחד עם השני',2:'3 גרפים — כל אחד לסיפור אחר',3:'Prospera — ישראל שמשנה חקלאות עולמית',4:'הגרף שלכם! נתוני השתיל האישי',5:'מדען נתונים — תובנה מהנתונים','6':'שיעור 11 הסתיים! AI מחכה ⭐'};
+function updateMascot(s){mascotSay(mascotLines[s]||'','🌱');}
+function mascotSay(msg,emoji){const m=document.getElementById('mascot'),b=document.getElementById('mascot-bubble');if(emoji)m.textContent=emoji;b.textContent=msg;b.classList.remove('hidden');m.classList.add('mascot-bounce');clearTimeout(mascotSay._t);mascotSay._t=setTimeout(()=>{b.classList.add('hidden');m.classList.remove('mascot-bounce');},5000);}
+function init(){
+  const d=document.getElementById('dots');for(let i=1;i<=STEPS;i++){const dot=document.createElement('div');dot.className='step-dot'+(i===1?' current':'');dot.title='שלב '+i;dot.onclick=()=>{if(i<=maxReached)goTo(i);};d.appendChild(dot);}
+  document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;updateHeader();loadChart();
+  try{const p=JSON.parse(localStorage.getItem('passport1')||'{}');if(p.lesson11)document.getElementById('p11-obs').value=p.lesson11.obs||'';if(p.lesson11Insight){document.getElementById('insight-text').value=p.lesson11Insight;insightSaved=true;}if(p.lesson11){entry11Saved=true;}checkStep5();}catch(e){}
+  mascotSay(mascotLines[1],'🌱');
+}
+init();
+</script>
+</body>
+</html>

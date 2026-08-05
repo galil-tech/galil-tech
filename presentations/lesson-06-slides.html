@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שיעור 6 – שקפים | גדלים למחר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/slides-core.css">
+</head>
+<body>
+
+<div id="deck-title">שיעור 6 – איך מדברים עם צמחים?</div>
+<div id="backdrop">
+
+  <!-- שקף 1 - ארדואינו + חיישנים (תבנית F) -->
+  <section class="slide active" data-name="שקף 1">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 6 · גדלים למחר</span>
+      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
+    </div>
+    <div class="stage-row" style="gap:4%;">
+      <div style="flex:1;">
+        <p class="h1">מה זה, לדעתכם?</p>
+        <p class="small" style="margin-top:14px;">קובץ: lesson-06-slide-1.jpg</p>
+      </div>
+      <div class="img-slot" style="flex:1; height:70%;">
+        <span class="ph-icon">🖼️</span>
+        <span class="ph-text">ארדואינו + חיישנים</span>
+      </div>
+    </div>
+    <div class="mascot">🌿</div>
+  </section>
+
+  <!-- שקף 2 - גוף אדם מול ארדואינו (תבנית D) -->
+  <section class="slide" data-name="שקף 2" data-steps="3">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 6 · גדלים למחר</span>
+      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
+    </div>
+    <div class="stage-row" style="gap:3%;">
+      <div class="rv card card-green" data-step="1" style="flex:1;">
+        <p class="label label-green" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🧑 גוף האדם</p>
+        <p class="h2" style="color:#374151;">5 חושים קבועים</p>
+      </div>
+      <div class="vs-badge pulse-at" data-step="2">VS</div>
+      <div class="rv card card-gold" data-step="3" style="flex:1;">
+        <p class="label label-gold" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🤖 ארדואינו</p>
+        <p class="h2" style="color:#374151;">כמה שרוצים חיישנים</p>
+      </div>
+    </div>
+    <div class="mascot">🌿</div>
+  </section>
+
+  <!-- שקף 3 - הלולאה: קרא-בדוק-פעל-חזור (תבנית C) -->
+  <section class="slide" data-name="שקף 3" data-steps="4">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 6 · גדלים למחר</span>
+      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:5%;">הלולאה הבסיסית</p>
+      <div style="display:flex; align-items:center; gap:1.6%;">
+        <div class="rv card card-green" data-step="1" style="flex:1;">
+          <p class="label label-green">1️⃣ קרא</p>
+          <p class="body" style="margin-top:8px;">חיישן מודד ערך</p>
+        </div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-lime" data-step="2" style="flex:1;">
+          <p class="label label-lime">2️⃣ בדוק</p>
+          <p class="body" style="margin-top:8px;">האם הערך תקין?</p>
+        </div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-amber" data-step="3" style="flex:1;">
+          <p class="label label-amber">3️⃣ פעל</p>
+          <p class="body" style="margin-top:8px;">מפעיל פעולה</p>
+        </div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-blue" data-step="4" style="flex:1;">
+          <p class="label label-blue">4️⃣ חזור</p>
+          <p class="body" style="margin-top:8px;">שוב מההתחלה</p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🌿</div>
+  </section>
+
+</div>
+
+<div id="controls">
+  <button class="navbtn" onclick="slidesGo(-1)">→</button>
+  <span id="counter">1 / 3</span>
+  <div id="dots"></div>
+  <button class="navbtn" onclick="slidesGo(1)">←</button>
+  <button class="navbtn" id="fsbtn" title="מסך מלא">⛶</button>
+</div>
+
+<script src="assets/slides-core.js"></script>
+</body>
+</html>

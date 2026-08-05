@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>עלים ולוח מנהיגות - חקלאי העתיד</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-green-50 dark:bg-gray-900">
+  <nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+      <div class="flex gap-4 text-sm">
+        <a href="index.html" class="hover:text-lime-300">🏠</a>
+        <a href="shop.html" class="hover:text-lime-300">🛒 חנות</a>
+        <a href="journey.html" class="hover:text-lime-300">📌 מסע</a>
+        <a href="wall.html" class="hover:text-lime-300">🛠 קיר</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <h1 class="text-5xl font-black text-center mb-2">🌿 העלים שלי</h1>
+    <p class="text-center text-gray-500 mb-10">רמות + חנות עלים בנפרד, ראו <a href="shop.html" class="text-green-700 underline">חנות העלים →</a></p>
+
+    <div class="bg-white rounded-3xl shadow-2xl p-10 text-center">
+      <div id="earned-count" class="text-7xl font-bold text-green-600 mb-2">0</div>
+      <p class="text-xl text-gray-500 mb-1">עלים שנצברו בסך הכל (לא יורד לעולם)</p>
+      <p id="level-label" class="text-2xl font-black text-lime-700 mt-4">רמה: 🌱 זרע</p>
+
+      <div class="mt-6 bg-gray-100 rounded-full h-5 overflow-hidden">
+        <div id="level-bar" class="bg-lime-500 h-5 rounded-full" style="width:0%"></div>
+      </div>
+      <p id="level-progress-text" class="text-sm text-gray-400 mt-2"></p>
+
+      <div class="mt-8 bg-lime-50 border border-lime-200 rounded-2xl p-5 inline-block">
+        <p class="text-sm text-gray-500">יתרה פנויה לחנות (יורדת בקנייה, לא משפיעה על הרמה)</p>
+        <p id="balance-count" class="text-4xl font-black text-lime-700">0</p>
+        <a href="shop.html" class="inline-block mt-3 bg-lime-600 hover:bg-lime-700 text-white px-6 py-3 rounded-xl font-bold">🛒 לחנות העלים</a>
+      </div>
+    </div>
+
+    <!-- GROUP LEADERBOARD -->
+    <div class="mt-14">
+      <h2 class="text-3xl font-bold mb-2">🏆 לוח מנהיגות – קבוצות הפרויקט</h2>
+      <p class="text-gray-500 mb-6">הלוח הוא <b>בין קבוצות הפרויקט הכיתתי</b> (לא בין תלמידים בודדים) וכיתתי בלבד עד שיעור 10. שיתוף בין כיתות/בתי ספר מתוכנן לעתיד.</p>
+
+      <div id="leaderboard" class="space-y-3"></div>
+
+      <div class="mt-6 bg-white rounded-2xl shadow p-5 grid md:grid-cols-3 gap-3">
+        <input id="group-name" type="text" placeholder="שם קבוצה (לדוגמה: קבוצה א')" class="border-2 rounded-xl p-3 md:col-span-1">
+        <input id="group-add-leaves" type="number" placeholder="עלים להוספה" class="border-2 rounded-xl p-3 md:col-span-1">
+        <button onclick="addToGroup()" class="bg-green-600 hover:bg-green-700 text-white rounded-xl p-3 font-bold md:col-span-1">➕ הוסף/עדכן קבוצה</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // leaves_earned = סכום כל ה-ls{N} (מצטבר, קובע רמה, לעולם לא יורד)
+    function getLeavesEarned(){
+      let total=0;
+      for(let i=1;i<=17;i++){ total+=parseInt(localStorage.getItem('ls'+i)||'0'); }
+      return total;
+    }
+    // leaves_balance = leaves_earned - leaves_spent (יורד בקנייה בחנות, לא משפיע על הרמה)
+    function getLeavesBalance(){
+      const spent=parseInt(localStorage.getItem('leaves_spent')||'0');
+      return Math.max(0, getLeavesEarned()-spent);
+    }
+
+    const LEVELS=[[0,'🌱 זרע'],[150,'🌿 שתיל'],[400,'🌳 צמח צעיר'],[700,'🌻 פורח'],[1050,'🏆 חקלאי העתיד']];
+
+    function renderLeaves(){
+      const earned=getLeavesEarned();
+      const balance=getLeavesBalance();
+      document.getElementById('earned-count').textContent=earned;
+      document.getElementById('balance-count').textContent=balance;
+
+      const idx=LEVELS.map(l=>l[0]).filter(t=>earned>=t).length-1;
+      const current=LEVELS[idx];
+      const next=LEVELS[idx+1];
+      document.getElementById('level-label').textContent='רמה: '+current[1];
+      if(next){
+        const pct=Math.min(100, Math.round((earned-current[0])/(next[0]-current[0])*100));
+        document.getElementById('level-bar').style.width=pct+'%';
+        document.getElementById('level-progress-text').textContent=`${earned-current[0]} / ${next[0]-current[0]} עלים לרמה הבאה (${next[1]})`;
+      } else {
+        document.getElementById('level-bar').style.width='100%';
+        document.getElementById('level-progress-text').textContent='הגעת לרמה המקסימלית! 🏆';
+      }
+    }
+
+    // ── GROUP LEADERBOARD (כיתתי, localStorage בלבד - שיתוף בין כיתות/בתי ספר מתוכנן לעתיד) ──
+    function getGroups(){
+      return JSON.parse(localStorage.getItem('groupLeaderboard')||'[]');
+    }
+    function saveGroups(groups){
+      localStorage.setItem('groupLeaderboard', JSON.stringify(groups));
+    }
+    function renderLeaderboard(){
+      const groups=getGroups().slice().sort((a,b)=>b.leaves-a.leaves);
+      const el=document.getElementById('leaderboard');
+      if(groups.length===0){
+        el.innerHTML='<p class="text-gray-400 text-center py-6">עדיין לא נוספו קבוצות. הוסיפו את הקבוצה הראשונה למטה!</p>';
+        return;
+      }
+      const medals=['🥇','🥈','🥉'];
+      el.innerHTML=groups.map((g,i)=>`
+        <div class="bg-white rounded-2xl shadow p-5 flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">${medals[i]||'🌿'}</span>
+            <span class="text-lg font-bold">${g.name}</span>
+          </div>
+          <span class="text-2xl font-black text-green-600">${g.leaves} 🌿</span>
+        </div>`).join('');
+    }
+    function addToGroup(){
+      const name=document.getElementById('group-name').value.trim();
+      const add=parseInt(document.getElementById('group-add-leaves').value||'0');
+      if(!name || !add){ alert('הזינו שם קבוצה וכמות עלים'); return; }
+      const groups=getGroups();
+      const existing=groups.find(g=>g.name===name);
+      if(existing){ existing.leaves+=add; } else { groups.push({name, leaves:add}); }
+      saveGroups(groups);
+      document.getElementById('group-name').value='';
+      document.getElementById('group-add-leaves').value='';
+      renderLeaderboard();
+    }
+
+    renderLeaves();
+    renderLeaderboard();
+  </script>
+</body>
+</html>

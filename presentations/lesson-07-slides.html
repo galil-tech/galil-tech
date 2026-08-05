@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שיעור 7 – שקפים | גדלים למחר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/slides-core.css">
+</head>
+<body>
+
+<div id="deck-title">שיעור 7 – הצמח מפעיל מכונות!</div>
+<div id="backdrop">
+
+  <!-- שקף 1 - דיגיטלי מול אנלוגי (תבנית D) -->
+  <section class="slide active" data-name="שקף 1" data-steps="3">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 7 · גדלים למחר</span>
+      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
+    </div>
+    <div class="stage-row" style="gap:3%;">
+      <div class="rv card card-green" data-step="1" style="flex:1;">
+        <p class="label label-green" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🔘 דיגיטלי</p>
+        <p class="h2" style="color:#374151;">מתג: 0 או 1</p>
+      </div>
+      <div class="vs-badge pulse-at" data-step="2">VS</div>
+      <div class="rv card card-gold" data-step="3" style="flex:1;">
+        <p class="label label-gold" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🎚️ אנלוגי</p>
+        <p class="h2" style="color:#374151;">ווליום: 0 עד 1023</p>
+      </div>
+    </div>
+    <div class="mascot">🌿</div>
+  </section>
+
+  <!-- שקף 2 - פינים על הלוח (תבנית E) -->
+  <section class="slide" data-name="שקף 2" data-steps="5">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 7 · גדלים למחר</span>
+      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:4%;">הפינים על הלוח</p>
+      <div class="fw-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="rv fw-cell card-green" data-step="1">
+          <p class="label label-green">D9</p>
+          <p class="body" style="margin-top:6px;">LED אדום</p>
+        </div>
+        <div class="rv fw-cell" data-step="2" style="background:#f0fdf4; border:2px solid #bbf7d0;">
+          <p class="label" style="color:#166534;">D10</p>
+          <p class="body" style="margin-top:6px;">LED ירוק</p>
+        </div>
+        <div class="rv fw-cell card-purple" data-step="3">
+          <p class="label label-purple">A0</p>
+          <p class="body" style="margin-top:6px;">מד pH</p>
+        </div>
+        <div class="rv fw-cell" data-step="4" style="background:#f3f4f6; border:2px solid #d1d5db;">
+          <p class="label" style="color:#374151;">GND</p>
+          <p class="body" style="margin-top:6px;">הארקה משותפת</p>
+        </div>
+        <div class="rv fw-cell card-amber" data-step="5">
+          <p class="label label-amber">5V</p>
+          <p class="body" style="margin-top:6px;">מתח הזנה</p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🌿</div>
+  </section>
+
+</div>
+
+<div id="controls">
+  <button class="navbtn" onclick="slidesGo(-1)">→</button>
+  <span id="counter">1 / 2</span>
+  <div id="dots"></div>
+  <button class="navbtn" onclick="slidesGo(1)">←</button>
+  <button class="navbtn" id="fsbtn" title="מסך מלא">⛶</button>
+</div>
+
+<script src="assets/slides-core.js"></script>
+</body>
+</html>

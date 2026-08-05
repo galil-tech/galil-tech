@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 3 – פוקוס על הצמח: מה צמח צריך? | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;}
+    .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;border-radius:12px;}
+    .quiz-opt:hover:not([data-done]){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
+    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;}
+    .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;}
+    .reveal.show{display:block;animation:fadeUp .35s ease;}
+    .mascot{font-size:2.8rem;transition:all .4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .mascot-bounce{animation:bounce .6s ease 3;}
+    /* Drag drop */
+    .drag-item{cursor:grab;user-select:none;border:2px dashed #a7f3d0;background:white;border-radius:12px;transition:all .2s;text-align:center;}
+    .drag-item:hover{transform:scale(1.06);border-color:#10b981;}
+    .drag-item.used{opacity:.3;cursor:default;pointer-events:none;}
+    .drop-zone{border:2.5px dashed #6ee7b7;border-radius:14px;background:#f0fdf4;min-height:64px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-direction:column;}
+    .drop-zone.drag-over{border-color:#10b981;background:#d1fae5;transform:scale(1.04);}
+    .drop-zone.correct-drop{border-color:#16a34a;background:#dcfce7;border-style:solid;}
+    .drop-zone.wrong-drop{border-color:#dc2626;background:#fee2e2;animation:shake .3s;}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+    /* Symptom match */
+    .symptom-opt{cursor:pointer;border:2px solid #e5e7eb;transition:all .2s;border-radius:10px;}
+    .symptom-opt:hover:not([disabled]){border-color:#84cc16;background:#f0fdf4;}
+    .symptom-opt.s-correct{background:#dcfce7;border-color:#16a34a;font-weight:900;}
+    .symptom-opt.s-wrong{background:#fee2e2;border-color:#dc2626;}
+    /* Mission */
+    .mission-card{border:2px solid #d1fae5;cursor:pointer;transition:all .3s;border-radius:12px;}
+    .mission-card.done-card{border-color:#16a34a;background:#f0fdf4;opacity:.7;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-lime-50 min-h-screen">
+
+<!-- MASCOT -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="lesson-02.html" class="hover:text-lime-300">← שיעור 2</a>
+      <a href="../wall.html" class="hover:text-lime-300">🛠 קיר</a>
+      <a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-lime-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 1 – נביטה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 3 מתוך 17</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🌿 פוקוס על הצמח: מה צמח צריך?</h1>
+    <p class="text-green-200">פוטוסינתזה · 4 צרכים · Supplant · שתיל אישי</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 6</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: גשר + 4 צרכי הצמח ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <!-- Bridge -->
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-6">
+      <p class="font-bold text-amber-900 mb-1">🔁 Teaser מהשיעור הקודם:</p>
+      <p class="text-gray-700 text-sm">"המערכת ההידרופונית מוכנה — אבל היא עדיין ריקה. <b>מה היא צריכה כדי לגדל משהו?</b>"</p>
+      <p class="text-gray-600 text-sm mt-2">תשובה: צמח! ובשיעור הזה נבין בדיוק מה אותו צמח צריך מאיתנו.</p>
+    </div>
+
+    <div class="flex items-center gap-3 mb-6">
+      <span class="text-4xl">🌿</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">4 הצרכים הבסיסיים של צמח</h2>
+        <p class="text-gray-400 text-sm">השוו לבני אדם — מה דומה ומה שונה?</p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4">
+        <p class="font-black text-sky-800 text-lg mb-3">🌿 הצמח צריך:</p>
+        <ul class="space-y-2 text-sm text-gray-700">
+          <li class="flex gap-2 items-start"><span class="text-2xl">☀️</span><div><b>אור</b> – אנרגיה לפוטוסינתזה</div></li>
+          <li class="flex gap-2 items-start"><span class="text-2xl">💧</span><div><b>מים</b> – חומר גלם לפוטוסינתזה + הובלת מינרלים</div></li>
+          <li class="flex gap-2 items-start"><span class="text-2xl">🧪</span><div><b>דישון (מינרלים)</b> – חנקן, זרחן, אשלגן</div></li>
+          <li class="flex gap-2 items-start"><span class="text-2xl">🌬️</span><div><b>חמצן</b> – לנשימה (כן, גם צמחים נושמים!)</div></li>
+        </ul>
+      </div>
+      <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-4">
+        <p class="font-black text-orange-800 text-lg mb-3">👤 האדם צריך:</p>
+        <ul class="space-y-2 text-sm text-gray-700">
+          <li class="flex gap-2 items-start"><span class="text-2xl">🍎</span><div><b>אוכל</b> – אנרגיה (הצמח "מכין" אוכל בעצמו!)</div></li>
+          <li class="flex gap-2 items-start"><span class="text-2xl">💧</span><div><b>מים</b> – כמו הצמח</div></li>
+          <li class="flex gap-2 items-start"><span class="text-2xl">🥗</span><div><b>ויטמינים ומינרלים</b> – כמו דישון אצל צמח</div></li>
+          <li class="flex gap-2 items-start"><span class="text-2xl">🌬️</span><div><b>חמצן</b> – אותו דבר!</div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bg-lime-50 border-l-4 border-lime-500 rounded-xl p-4 mb-5 text-sm">
+      <b class="text-lime-800">🔗 גשר קדימה (שיעור 6):</b>
+      <span class="text-gray-700"> זכרו את 4 הצרכים האלה — בשיעור 6 נלמד את ה<b>מדדים</b> שנמדוד כדי לדעת אם הצרכים מסופקים (pH, EC, טמפרטורה, לחות, אור).</span>
+    </div>
+
+    <!-- Q -->
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה ההבדל הגדול ביותר בין הצמח לאדם מבחינת צרכי אנרגיה?</p>
+      <div class="grid gap-3" id="q-needs">
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-needs')">שניהם צריכים לאכול אוכל מוכן</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,true,'q-needs')" data-correct="true">הצמח מייצר את האנרגיה שלו מאור שמש (פוטוסינתזה) — האדם חייב לאכול</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-needs')">הצמח לא צריך מים בכלל</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-needs')">שניהם נושמים פחמן דו-חמצני</div>
+      </div>
+      <div id="fb-q-needs" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">פוטוסינתזה ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: פוטוסינתזה + גרירה ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">☀️</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">פוטוסינתזה – מפעל האנרגיה של הצמח</h2>
+        <p class="text-gray-400 text-sm">הסבר → גרירה → שאלה</p>
+      </div>
+    </div>
+
+    <div class="bg-yellow-50 border-r-4 border-yellow-400 rounded-2xl p-5 mb-5 text-gray-700">
+      <p class="text-lg font-black text-yellow-900 mb-3">☀️ + 💧 + CO₂ → 🍬 + O₂</p>
+      <p class="mb-2">פוטוסינתזה = "צילום אור" ביוונית. הצמח לוקח:</p>
+      <ul class="space-y-1 text-sm mr-4">
+        <li>• <b>אור שמש</b> — אנרגיה לתהליך</li>
+        <li>• <b>מים (H₂O)</b> — נספגים דרך השורשים</li>
+        <li>• <b>פחמן דו-חמצני (CO₂)</b> — מהאוויר דרך העלים</li>
+      </ul>
+      <p class="mt-2 text-sm">ומייצר: <b>סוכר</b> (מזון לצמח) + <b>חמצן</b> (O₂ — שאנחנו נושמים!).</p>
+      <p class="text-xs text-gray-500 mt-2">🔗 ההסבר הזה יחזור בשיעור 10 כשנשלב שרטוטים מכל השיעורים</p>
+    </div>
+
+    <!-- Drag game: complete the equation -->
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 text-center text-lg mb-4">🎮 השלם את משוואת הפוטוסינתזה!</h3>
+      <p class="text-center text-gray-500 text-sm mb-4">גרור כל חלק לתיבה הנכונה:</p>
+
+      <!-- Bank -->
+      <div class="flex flex-wrap justify-center gap-3 mb-5" id="photo-bank">
+        <div class="drag-item px-4 py-3 text-sm font-bold" draggable="true" data-val="co2">CO₂ (פחמן דו-חמצני)</div>
+        <div class="drag-item px-4 py-3 text-sm font-bold" draggable="true" data-val="sugar">🍬 סוכר</div>
+        <div class="drag-item px-4 py-3 text-sm font-bold" draggable="true" data-val="o2">O₂ (חמצן)</div>
+        <div class="drag-item px-4 py-3 text-sm font-bold" draggable="true" data-val="water">💧 מים (H₂O)</div>
+      </div>
+
+      <!-- Equation with slots -->
+      <div class="flex flex-wrap items-center justify-center gap-2 text-center text-lg font-black">
+        <div class="bg-yellow-100 rounded-xl px-4 py-3">☀️ אור</div>
+        <span class="text-2xl text-gray-400">+</span>
+        <div class="drop-zone w-36 h-14" data-correct="water" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
+        <span class="text-2xl text-gray-400">+</span>
+        <div class="drop-zone w-44 h-14" data-correct="co2" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
+        <span class="text-2xl text-green-600 font-black">→</span>
+        <div class="drop-zone w-36 h-14" data-correct="sugar" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
+        <span class="text-2xl text-gray-400">+</span>
+        <div class="drop-zone w-36 h-14" data-correct="o2" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
+      </div>
+
+      <div id="photo-done" class="hidden mt-4 text-center">
+        <p class="font-black text-lime-800 text-xl">✅ המשוואה מושלמת! +10 עלים 🌿</p>
+        <p class="text-gray-600 text-sm mt-1">הצמח שלנו עושה את זה כל יום, כל שניה שיש אור</p>
+      </div>
+    </div>
+
+    <!-- Q2 cascades after photo game -->
+    <div id="q-photo2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה כדאי לנו כבני אדם בכך שצמחים מייצרים חמצן?</p>
+      <div class="grid gap-3" id="q-photo2">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-photo2')">כלום — לא השפעה על בני אדם</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-photo2')" data-correct="true">אנחנו נושמים את החמצן שהם מייצרים — צמחים הם מנוע החמצן של כדור הארץ</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-photo2')">הצמחים מייצרים חמצן רק בלילה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-photo2')">רק צמחים גדולים מייצרים כמות משמעותית</div>
+      </div>
+      <div id="fb-q-photo2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3)">Supplant ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: Supplant ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🧪</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">Supplant – לדעת מה הצמח צריך</h2>
+        <p class="text-gray-400 text-sm">קראו → ענו</p>
+      </div>
+    </div>
+
+    <!-- Startup card -->
+    <div class="bg-gradient-to-br from-purple-700 to-indigo-600 text-white rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🇮🇱</span>
+        <div>
+          <h3 class="font-black text-xl">Supplant</h3>
+          <p class="text-purple-200 text-sm">ישראל, עפולה · 2012 · חקלאות מדויקת</p>
+        </div>
+      </div>
+      <p class="text-sm text-purple-100 mb-4">אם צמח יכול היה לדבר ולומר "אני צמא / אני רעב / אני קר" — Supplant היא המתרגמת. מערכת שממליצה לחקלאי בדיוק מתי ולכמה להשקות ולדשן — לפי מה שהצמח <b>עצמו</b> צריך עכשיו, לא לפי לוח זמנים קבוע מראש.</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">2012</b>שנת הקמה</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">$46M</b>גיוס מצטבר</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">2</b>מוצרים (חיישן / ללא)</div>
+      </div>
+    </div>
+
+    <div class="bg-purple-50 border-r-4 border-purple-400 rounded-2xl p-5 mb-5 text-gray-700 text-sm leading-relaxed">
+      <p class="mb-2"><b>שני מוצרים:</b></p>
+      <p class="mb-1">📡 <b>עם חיישנים בשטח</b> — מד לחות, טמפרטורה, EC בקרקע, נותן המלצה בזמן אמת</p>
+      <p>📊 <b>ללא חיישנים</b> — מסד נתונים ענק של צמחים, AI שמנחש מה הצמח צריך לפי נתוני מזג האוויר והסוג</p>
+      <p class="mt-3 text-purple-800 font-bold">💡 ההבדל מהחקלאות הרגילה: מהשקיה "לפי ירח" (כל שלישי, כמות קבועה) לעבר "לפי צמח" (כשהוא צריך, כמה שצריך).</p>
+    </div>
+
+    <!-- Q1 -->
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-4">❓ מה ההבדל בין השקיה "לפי לוח זמנים" ל"לפי Supplant"?</p>
+      <div class="grid gap-3" id="q-sup1">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sup1')">Supplant משקה יותר מים כי זה בטוח יותר</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-sup1')" data-correct="true">Supplant משקה לפי מה שהצמח צריך עכשיו — לא לפי ימים קבועים, ולכן חוסכת מים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sup1')">Supplant גם היא מספקת לוח זמנים קבוע, רק יותר תכוף</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sup1')">Supplant עובדת רק בשדות ענק, לא בגינות קטנות</div>
+      </div>
+      <div id="fb-q-sup1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <!-- Q2 cascades -->
+    <div id="q-sup2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ ממה Supplant יכולה לדעת שהצמח "צמא"?</p>
+      <div class="grid gap-3" id="q-sup2">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sup2')">מהצבע של עלי הצמח בלבד</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sup2')">מלוח זמנים קבוע שנקבע מראש לפי הסוג</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-sup2')" data-correct="true">מחיישנים בקרקע (לחות, EC) ו/או מנתוני מזג אוויר ומסד נתונים של צמחים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sup2')">מאיש מקצוע שמגיע לשדה בכל יום</div>
+      </div>
+      <div id="fb-q-sup2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)">סימפטומים ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: סימפטומים – זיווג ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🔍</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">מה הצמח מנסה לספר לנו?</h2>
+        <p class="text-gray-400 text-sm">כל סימפטום = צורך חסר. זווגו נכון!</p>
+      </div>
+    </div>
+
+    <p class="text-gray-600 mb-4 text-sm">לכל סימפטום — בחרו את <b>הצורך החסר</b> שגרם לו:</p>
+
+    <div class="space-y-4 mb-5" id="symptom-zone"></div>
+
+    <div id="symptom-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-4 text-center">
+      <p class="font-black text-lime-800 text-xl">✅ כל הסימפטומים זווגו!</p>
+      <p class="text-gray-600 text-sm mt-1">כשתסיירו ותראו שתיל שנראה "עצוב" — תוכלו לאבחן מה חסר לו</p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)">שתילה ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: שתילת השתיל האישי ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🌱</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">הרגע הגדול – השתיל האישי שלי</h2>
+        <p class="text-gray-400 text-sm">מהיום ועד תערוכת האבטיפוסים — השתיל הזה הוא שלך</p>
+      </div>
+    </div>
+
+    <div class="bg-green-50 border-2 border-green-300 rounded-2xl p-5 mb-5 text-center">
+      <p class="text-4xl mb-2">🌱🌿🌳</p>
+      <p class="font-black text-green-900 text-xl mb-2">השתיל שלי = אחריות מתמשכת</p>
+      <p class="text-gray-600 text-sm">בכל שיעור תמדדו, תצלמו, ותרשמו בדרכון. השתיל הזה הוא שלכם — <b>אישי</b>, לא של הקבוצה.</p>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-lime-900 mb-3">📋 משימות השתילה</h3>
+      <div class="space-y-2" id="plant-missions">
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkPlant(this,0)">
+          <span class="plant-icon text-2xl">⬜</span> א. קיבלתי שתיל אישי + תווית שם
+        </div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkPlant(this,1)">
+          <span class="plant-icon text-2xl">⬜</span> ב. שתלתי בעדינות — אצבעות פתוחות, לא לוחצים על השורשים
+        </div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkPlant(this,2)">
+          <span class="plant-icon text-2xl">⬜</span> ג. השתיל יושב ישר ויציב במצע
+        </div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkPlant(this,3)">
+          <span class="plant-icon text-2xl">⬜</span> ד. צילמנו את השתיל "ביום הולדתו" (אופציונלי)
+        </div>
+      </div>
+      <div id="plant-done" class="hidden mt-3 bg-lime-100 rounded-xl p-3 text-center font-bold text-lime-800">
+        🌱 נשתל! +25 עלים 🌿 + באדג' "השתלן" 🌱
+      </div>
+    </div>
+
+    <!-- Passport for lesson 3 -->
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+      <h3 class="font-black text-green-900 mb-3">📔 דרכון חקלאי – שיעור 3</h3>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-sm text-gray-700 mb-1 font-bold">🌱 שם השתיל שלי:</label>
+          <input id="plant-name" type="text" maxlength="30" placeholder="שם מגניב לשתיל..." class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none focus:border-green-500">
+        </div>
+        <div>
+          <label class="block text-sm text-gray-700 mb-1 font-bold">📝 תיאור ראשוני (גובה, מספר עלים, מראה כללי):</label>
+          <textarea id="plant-desc" rows="2" maxlength="150" placeholder="השתיל שלי נראה..." class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+        </div>
+      </div>
+      <button onclick="savePlantEntry()" class="mt-4 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-xl font-black shadow transition-colors">📔 שמור רשומת שתיל</button>
+      <div id="plant-entry-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! +10 עלים 🌿</div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">סיכום ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: סיכום + כוכב הצפון ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🏁</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">סיכום + כוכב הצפון</h2>
+      </div>
+    </div>
+
+    <div class="bg-green-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3">📚 מה למדנו היום:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex gap-2"><span class="text-green-600">🌿</span> 4 צרכי הצמח: אור, מים, דישון, חמצן</li>
+        <li class="flex gap-2"><span class="text-green-600">☀️</span> פוטוסינתזה: אור + מים + CO₂ → סוכר + O₂</li>
+        <li class="flex gap-2"><span class="text-green-600">🧪</span> Supplant — AI שממליץ מתי ולכמה להשקות לפי צרכי הצמח בפועל</li>
+        <li class="flex gap-2"><span class="text-green-600">🌱</span> השתיל האישי שלכם שתול! מהיום הוא תלוי בכם</li>
+      </ul>
+    </div>
+
+    <!-- North star -->
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">⭐</span>
+        <h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3>
+      </div>
+      <p class="text-gray-800 font-bold text-lg mb-3">"מה לדעתכם יקרה לשתיל שלכם בעוד חודש? בעוד חצי שנה? איך הפרויקט שתבנו בתערוכה יכול לעזור לשתיל הזה?"</p>
+      <textarea id="north-star" rows="2" placeholder="בעוד חצי שנה... הפרויקט שלנו יכול לעזור על ידי..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+
+    <!-- Teaser -->
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא (שיעור 4):</p>
+      <p class="font-black text-xl">"מדדתם ידנית היום. אבל מה אם המערכת הייתה מודדת בעצמה, כל הזמן, גם כשאתם לא בכיתה?"</p>
+      <p class="text-slate-400 text-sm mt-2">רמז: החקלאי הוא לא רק מגדל — הוא גם מנהל עסק...</p>
+    </div>
+
+    <!-- Leaves total -->
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים שנצברו בשיעור 3:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך מקסימום ~65 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4">
+    <a href="lesson-04.html" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">לשיעור 4 ←</a>
+  </div>
+</div>
+
+</div><!-- /max-w -->
+
+<script>
+// ── STATE ──
+const STEPS = 6;
+let cur = 1;
+let lv = parseInt(localStorage.getItem('ls3') || '0');
+let maxReached = 1;
+let photoOk = 0;
+let symptomDone = 0;
+let plantMissions = [];
+let plantLeaves = false;
+let plantEntrySaved = false;
+
+// ── NAVIGATION ──
+function goTo(n) {
+  if (n < 1 || n > STEPS) return;
+  document.getElementById('step-' + cur).classList.remove('active');
+  cur = n;
+  if (cur > maxReached) maxReached = cur;
+  document.getElementById('step-' + cur).classList.add('active');
+  renderDots();
+  updateHeader();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateMascot(cur);
+}
+
+function updateHeader() {
+  document.getElementById('plabel').textContent = 'שלב ' + cur + ' מתוך ' + STEPS;
+  document.getElementById('pbar').style.width = Math.round((cur / STEPS) * 100) + '%';
+}
+
+function renderDots() {
+  document.querySelectorAll('.step-dot').forEach((d, i) => {
+    d.className = 'step-dot' + (i + 1 < cur ? ' done' : '') + (i + 1 === cur ? ' current' : '');
+  });
+}
+
+// ── LEAVES ──
+function addLv(n) {
+  lv += n;
+  localStorage.setItem('ls3', lv);
+  document.getElementById('lc').textContent = lv;
+  document.getElementById('final-lv').textContent = lv;
+  leafBurst(n);
+}
+
+function leafBurst(n) {
+  for (let i = 0; i < Math.min(n, 8); i++) {
+    const el = document.createElement('div');
+    el.className = 'leaf-burst';
+    el.textContent = '🌿';
+    el.style.left = (20 + Math.random() * 60) + 'vw';
+    el.style.top = (15 + Math.random() * 50) + 'vh';
+    el.style.setProperty('--tx', (Math.random() * 120 - 60) + 'px');
+    el.style.setProperty('--ty', (-80 - Math.random() * 80) + 'px');
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 950);
+  }
+}
+
+// ── QUIZ ──
+function ansQ(el, correct, qid) {
+  const container = document.getElementById(qid);
+  if (!container || container.dataset.done) return;
+  container.dataset.done = '1';
+  container.querySelectorAll('.quiz-opt').forEach(o => o.style.pointerEvents = 'none');
+  el.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    const c = container.querySelector('[data-correct="true"]');
+    if (c) c.classList.add('correct');
+  }
+  const fb = document.getElementById('fb-' + qid);
+  if (fb) {
+    fb.className = 'mt-3 rounded-xl p-4 text-sm ' + (correct ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800');
+    fb.textContent = correct ? '✅ מצוין! +5 עלים 🌿' : '❌ לא בדיוק – תשובה נכונה מסומנת בירוק';
+    fb.classList.remove('hidden');
+  }
+  if (correct) addLv(5);
+
+  const cascades = {
+    'q-needs': () => { document.getElementById('btn1').classList.remove('hidden'); mascotSay('בדיוק! פוטוסינתזה = מפעל האנרגיה האישי של כל צמח', '🌿'); },
+    'q-photo2': () => { document.getElementById('btn2').classList.remove('hidden'); mascotSay('אנחנו נושמים הודות לצמחים!', '☀️'); },
+    'q-sup1': () => document.getElementById('q-sup2-wrap').classList.add('show'),
+    'q-sup2': () => { document.getElementById('btn3').classList.remove('hidden'); mascotSay('Supplant = "מתרגמת" של שפת הצמח', '🧪'); }
+  };
+  if (cascades[qid]) cascades[qid]();
+}
+
+// ── PHOTOSYNTHESIS DRAG ──
+let dragSrc = null;
+let touchSrc = null;
+
+document.addEventListener('dragstart', e => {
+  if (e.target.classList.contains('drag-item')) dragSrc = e.target;
+});
+
+function dropPhoto(e, zone) {
+  e.preventDefault();
+  zone.classList.remove('drag-over');
+  if (zone.dataset.filled) return;
+  const src = dragSrc || touchSrc;
+  if (!src) return;
+  const ok = src.dataset.val === zone.dataset.correct;
+  if (ok) {
+    zone.dataset.filled = '1';
+    zone.classList.add('correct-drop');
+    zone.innerHTML = '<span class="text-sm font-bold text-green-800">' + src.textContent + '</span>';
+    src.classList.add('used');
+    photoOk++;
+    if (photoOk === 4) {
+      document.getElementById('photo-done').classList.remove('hidden');
+      document.getElementById('q-photo2-wrap').classList.add('show');
+      addLv(10);
+      mascotSay('משוואת הפוטוסינתזה מושלמת! ☀️→🍬', '🌿');
+    }
+  } else {
+    zone.classList.add('wrong-drop');
+    setTimeout(() => zone.classList.remove('wrong-drop'), 400);
+  }
+  dragSrc = null; touchSrc = null;
+}
+
+// Touch drag for photo
+document.querySelectorAll('.drag-item').forEach(el => {
+  el.addEventListener('touchstart', e => { touchSrc = e.currentTarget; e.currentTarget.style.opacity = '0.6'; }, { passive: true });
+  el.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+    const found = document.elementFromPoint(t.clientX, t.clientY);
+    if (found) { const z = found.closest('.drop-zone'); if (z) z.classList.add('drag-over'); }
+  }, { passive: false });
+  el.addEventListener('touchend', e => {
+    if (el.style) el.style.opacity = '';
+    const t = e.changedTouches[0];
+    const found = document.elementFromPoint(t.clientX, t.clientY);
+    const zone = found ? found.closest('.drop-zone') : null;
+    if (zone) dropPhoto({ preventDefault: () => {} }, zone);
+    document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+  });
+});
+
+// ── SYMPTOM MATCHING ──
+const symptomData = [
+  { symptom: 'עלים צהובים', cause: 'מחסור בחנקן (דישון)', options: ['מחסור במים', 'מחסור בחנקן (דישון)', 'מחסור באור', 'עודף חמצן'] },
+  { symptom: 'גבעולים דקים ומתכופפים לכיוון האור', cause: 'מחסור באור', options: ['מחסור בחנקן (דישון)', 'עודף מים', 'מחסור באור', 'מחסור בחמצן'] },
+  { symptom: 'עלים נבולים / צמח נראה "עייף"', cause: 'מחסור במים', options: ['מחסור באור', 'מחסור במים', 'מחסור בחנקן (דישון)', 'עודף אור'] }
+];
+let symDone = 0;
+
+function buildSymptoms() {
+  const zone = document.getElementById('symptom-zone');
+  symptomData.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.id = 'sym-' + i;
+    div.className = 'bg-gray-50 rounded-2xl p-4';
+    div.innerHTML = `<p class="font-bold text-gray-800 mb-3 text-sm">🌿 סימפטום: "${item.symptom}" — מה חסר?</p>
+      <div class="grid grid-cols-2 gap-2">
+        ${item.options.map(opt => `<button class="symptom-opt p-3 text-sm" onclick="symAns(${i},this,'${opt}')">${opt}</button>`).join('')}
+      </div>
+      <div id="sym-fb-${i}" class="hidden mt-2 rounded-xl p-3 text-sm"></div>`;
+    zone.appendChild(div);
+  });
+}
+
+function symAns(i, el, ans) {
+  const row = document.getElementById('sym-' + i);
+  if (row.dataset.done) return;
+  row.dataset.done = '1';
+  row.querySelectorAll('.symptom-opt').forEach(b => b.disabled = true);
+  const ok = ans === symptomData[i].cause;
+  el.classList.add(ok ? 's-correct' : 's-wrong');
+  if (!ok) {
+    row.querySelectorAll('.symptom-opt').forEach(b => { if (b.textContent === symptomData[i].cause) b.classList.add('s-correct'); });
+  }
+  const fb = document.getElementById('sym-fb-' + i);
+  fb.className = 'mt-2 rounded-xl p-3 text-sm ' + (ok ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800');
+  fb.textContent = ok ? '✅ נכון!' : '❌ לא בדיוק — ' + symptomData[i].cause;
+  fb.classList.remove('hidden');
+  symDone++;
+  if (symDone === symptomData.length) {
+    document.getElementById('symptom-done').classList.remove('hidden');
+    document.getElementById('btn4').classList.remove('hidden');
+    mascotSay('מאבחנים כמו חוקרים! 🔍', '🌿');
+  }
+}
+
+// ── PLANT MISSIONS ──
+let plantDoneCount = 0;
+
+function checkPlant(el, idx) {
+  if (plantMissions.includes(idx)) return;
+  plantMissions.push(idx);
+  el.classList.add('done-card');
+  el.querySelector('.plant-icon').textContent = '✅';
+  plantDoneCount++;
+  if (plantDoneCount >= 3 && !plantLeaves) {
+    plantLeaves = true;
+    document.getElementById('plant-done').classList.remove('hidden');
+    addLv(25);
+    mascotSay('השתיל שלך מחכה לך כל שיעור! 🌱', '🌿');
+    checkStep5Done();
+  }
+}
+
+// ── PLANT PASSPORT ENTRY ──
+function savePlantEntry() {
+  if (plantEntrySaved) return;
+  const name = document.getElementById('plant-name').value.trim();
+  const desc = document.getElementById('plant-desc').value.trim();
+  if (!name && !desc) { mascotSay('תנו שם לשתיל ותארו אותו!', '📔'); return; }
+  const existing = JSON.parse(localStorage.getItem('passport1') || '{}');
+  existing.plantName = name || existing.plantName;
+  existing.lesson3 = { name, desc, date: new Date().toLocaleDateString('he-IL') };
+  localStorage.setItem('passport1', JSON.stringify(existing));
+  if (name) localStorage.setItem('plantName', name);
+  plantEntrySaved = true;
+  document.getElementById('plant-entry-saved').classList.remove('hidden');
+  addLv(10);
+  mascotSay('השתיל קיבל שם! ✨ ' + (name || ''), '📔');
+  checkStep5Done();
+}
+
+function checkStep5Done() {
+  if (plantLeaves && plantEntrySaved) {
+    document.getElementById('btn5').classList.remove('hidden');
+  }
+}
+
+// ── MASCOT ──
+const mascotLines = {
+  1: '4 צרכים — כמו בני אדם, רק הם מייצרים אנרגיה בעצמם!',
+  2: 'פוטוסינתזה — גרור את חלקי המשוואה!',
+  3: 'Supplant — AI שמבין שפת הצמח',
+  4: 'לאבחן לפי הסימפטומים — כמו רופא לצמחים',
+  5: 'הרגע הגדול — השתיל שלך מחכה!',
+  6: 'שיעור 3 הסתיים! יש לך שתיל חי שגדל בשבילך ⭐'
+};
+
+function updateMascot(s) { mascotSay(mascotLines[s] || '', '🌱'); }
+
+function mascotSay(msg, emoji) {
+  const m = document.getElementById('mascot');
+  const b = document.getElementById('mascot-bubble');
+  if (emoji) m.textContent = emoji;
+  b.textContent = msg;
+  b.classList.remove('hidden');
+  m.classList.add('mascot-bounce');
+  clearTimeout(mascotSay._t);
+  mascotSay._t = setTimeout(() => { b.classList.add('hidden'); m.classList.remove('mascot-bounce'); }, 5000);
+}
+
+// ── INIT ──
+function init() {
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= STEPS; i++) {
+    const d = document.createElement('div');
+    d.className = 'step-dot' + (i === 1 ? ' current' : '');
+    d.title = 'שלב ' + i;
+    d.onclick = () => { if (i <= maxReached) goTo(i); };
+    dotsEl.appendChild(d);
+  }
+  buildSymptoms();
+  document.getElementById('lc').textContent = lv;
+  document.getElementById('final-lv').textContent = lv;
+  updateHeader();
+
+  // Restore passport
+  try {
+    const p = JSON.parse(localStorage.getItem('passport1') || '{}');
+    if (p.lesson3) {
+      document.getElementById('plant-name').value = p.lesson3.name || '';
+      document.getElementById('plant-desc').value = p.lesson3.desc || '';
+    }
+  } catch(e) {}
+
+  mascotSay(mascotLines[1], '🌱');
+}
+
+init();
+</script>
+</body>
+</html>

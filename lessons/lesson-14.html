@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 14 – בניית אבטיפוס: יום א' | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;} .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;border-radius:12px;}
+    .quiz-opt:hover:not([data-done]){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
+    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;} .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;} .reveal.show{display:block;animation:fadeUp .35s ease;}
+    .mascot{font-size:2.8rem;transition:all .4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .mascot-bounce{animation:bounce .6s ease 3;}
+    .mission-card{border:2px solid #fde68a;cursor:pointer;transition:all .3s;border-radius:12px;}
+    .mission-card.done-card{border-color:#16a34a;background:#f0fdf4;opacity:.7;}
+    .canvas-cell{border:2px solid #fde68a;border-radius:10px;background:#fffbeb;min-height:80px;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-orange-50 to-red-50 min-h-screen">
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm"><a href="../index.html" class="hover:text-lime-300">🏠</a><a href="lesson-13.html" class="hover:text-lime-300">← שיעור 13</a><a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a></div>
+  </div>
+</nav>
+<div class="bg-red-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-red-400 text-red-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 4 – פירות</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 14 מתוך 17</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🛠️ בניית אבטיפוס: יום א'</h1>
+    <p class="text-red-200">Lean Canvas · MVP · Proof of Concept · לוג בנייה</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-red-300 mb-1"><span id="plabel">שלב 1 מתוך 6</span><span>🌿 <b id="lc">0</b> עלים</span></div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden"><div id="pbar" class="h-3 bg-red-400 rounded-full transition-all duration-500" style="width:0%"></div></div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- STEP 1 -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-4 mb-5 text-sm"><b>🔁 Teaser:</b> "יש רעיון. איך הופכים אותו לדבר שאפשר להחזיק ביד?"</div>
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🏗️</span><div><h2 class="text-3xl font-black text-red-900">MVP ו-Proof of Concept</h2></div></div>
+    <div class="bg-red-50 border-r-4 border-red-500 rounded-2xl p-5 mb-5 text-gray-700 text-sm">
+      <p class="mb-2"><b>Proof of Concept (PoC):</b> הוכחה שהרעיון בכלל עובד — לפני שמשקיעים בבנייה מלאה. זה מה שנבנה היום.</p>
+      <p><b>MVP (Minimum Viable Product):</b> הגרסה הפשוטה ביותר שעדיין פותרת את הבעיה הליבתית.</p>
+      <div class="grid grid-cols-2 gap-3 mt-3 text-center text-sm">
+        <div class="bg-white rounded-xl p-3"><b>PoC</b>: "זה אפשרי?"</div>
+        <div class="bg-white rounded-xl p-3"><b>MVP</b>: "זה עובד?"</div>
+      </div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה המטרה של PoC לפני MVP?</p>
+      <div class="grid gap-3" id="q-poc">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-poc')">לייצר גרסה מוגמרת לפני שמשקיעים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-poc')" data-correct="true">לוודא שהרעיון הבסיסי אפשרי לפני שמבזבזים זמן וכסף על גרסה מלאה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-poc')">לשכנע משקיעים עם מצגת יפה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-poc')">לגמור לפני שכולם</div>
+      </div>
+      <div id="fb-q-poc" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn1" class="hidden bg-red-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-red-600" onclick="goTo(2)">Lean Canvas ←</button></div>
+</div>
+
+<!-- STEP 2: Lean Canvas -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📋</span><div><h2 class="text-3xl font-black text-red-900">Lean Canvas – תכנון על דף אחד</h2></div></div>
+    <div class="bg-red-50 border-r-4 border-red-400 rounded-2xl p-4 mb-5 text-sm text-gray-700">
+      <b>Lean Canvas</b> = 9 תאים שמסכמים כל עסק/פרויקט בדף אחד. 3 תאים "מפתח" שנמלא כעת; שאר התאים — תוספת אחר כך.
+    </div>
+    <div class="space-y-4 mb-5">
+      <div class="canvas-cell p-4">
+        <label class="block font-black text-amber-800 mb-2 text-sm">🎯 בעיה (Problem)</label>
+        <textarea id="canvas-problem" rows="2" maxlength="120" class="w-full text-sm border-0 bg-transparent outline-none resize-none" placeholder="הבעיה שאנחנו פותרים: ..." oninput="autoSaveCanvas()"></textarea>
+      </div>
+      <div class="canvas-cell p-4">
+        <label class="block font-black text-amber-800 mb-2 text-sm">💡 פתרון (Solution)</label>
+        <textarea id="canvas-solution" rows="2" maxlength="120" class="w-full text-sm border-0 bg-transparent outline-none resize-none" placeholder="הפתרון שלנו: ..." oninput="autoSaveCanvas()"></textarea>
+      </div>
+      <div class="canvas-cell p-4">
+        <label class="block font-black text-amber-800 mb-2 text-sm">👤 לקוחות יעד (Customer Segment)</label>
+        <textarea id="canvas-customers" rows="2" maxlength="100" class="w-full text-sm border-0 bg-transparent outline-none resize-none" placeholder="מי ישתמש במוצר שלנו: ..." oninput="autoSaveCanvas()"></textarea>
+      </div>
+    </div>
+    <button onclick="saveCanvas()" class="w-full bg-red-700 hover:bg-red-600 text-white py-4 rounded-xl font-black">📋 שמור Canvas (+20 עלים)</button>
+    <div id="canvas-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ Canvas נשמר!</div>
+    <div id="q-canvas-wrap" class="reveal mt-4 bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ למה Lean Canvas שימושי יותר מתוכנית עסקית ארוכה?</p>
+      <div class="grid gap-3" id="q-canvas">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-canvas')">כי קל יותר להדפיס</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-canvas')" data-correct="true">כי בדף אחד רואים את כל ההנחות — וקל לשנות מהר כשמגלים שמשהו לא עובד</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-canvas')">כי אין צורך לחשוב הרבה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-canvas')">כי כולם כבר מכירים אותו</div>
+      </div>
+      <div id="fb-q-canvas" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn2" class="hidden bg-red-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-red-600" onclick="goTo(3)">הכנה לבנייה ←</button></div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📝</span><div><h2 class="text-3xl font-black text-red-900">הכנה לבנייה</h2></div></div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-4">❓ מה ה"PoC" של הפרויקט שלכם? (הגרסה הכי קטנה שמוכיחה שהרעיון עובד)</p>
+      <div class="grid gap-3" id="q-poc2">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-poc2')">להגיש מצגת על הרעיון</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-poc2')" data-correct="true">לבנות חלק אחד עובד — גם אם מפורמטרי/גס — שמוכיח שהרעיון אפשרי בכלל</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-poc2')">לשאול מורה אם זה יעבוד</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-poc2')">לחכות שיהיה זמן לעשות נכון</div>
+      </div>
+      <div id="fb-q-poc2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+    <div id="build-prep-wrap" class="reveal">
+      <label class="block font-bold text-gray-700 mb-2">🔧 רשימת חלקים — מה צריך לבנייה?</label>
+      <textarea id="parts-list" rows="3" maxlength="200" placeholder="נצטרך: קרטון, גוזמנינט, ארדואינו, מספריים, ..." class="w-full border-2 border-red-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-red-400 mb-3"></textarea>
+      <button onclick="saveParts()" class="w-full bg-red-700 text-white py-3 rounded-xl font-black">💾 שמור רשימה</button>
+      <div id="parts-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! עברו לבנות</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn3" class="hidden bg-red-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-red-600" onclick="goTo(4)">בנייה! ←</button></div>
+</div>
+
+<!-- STEP 4: Building checklist -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🔨</span><div><h2 class="text-3xl font-black text-red-900">בנייה פעילה</h2><p class="text-gray-400 text-sm">לא רק תכנון — גם חיתוך/הרכבה/קוד</p></div></div>
+    <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-5 text-sm text-red-800">
+      🎯 <b>המטרה:</b> לצאת עם PoC — גרסה שמוכיחה שהרעיון אפשרי. לא חייב להיות יפה. חייב לעבוד.
+    </div>
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-amber-900 mb-3">📋 לוג בנייה – תעדו כל שלב</h3>
+      <div class="space-y-2" id="build-missions">
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkBuild(this,0)"><span class="bm-icon text-2xl">⬜</span> א. התחלנו לבנות — פרס ראשון עלה</div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkBuild(this,1)"><span class="bm-icon text-2xl">⬜</span> ב. בדיקה ראשונה — ניסינו אם עובד</div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkBuild(this,2)"><span class="bm-icon text-2xl">⬜</span> ג. תיקון / שינוי על סמך מה שראינו</div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkBuild(this,3)"><span class="bm-icon text-2xl">⬜</span> ד. צילום "לפני ואחרי" לקיר (לוג בנייה)</div>
+      </div>
+      <div id="build-done" class="hidden mt-3 bg-lime-100 rounded-xl p-3 text-center font-bold text-lime-800">
+        🛠️ לוג בנייה הושלם! +30 עלים 🌿
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn4" class="hidden bg-red-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-red-600" onclick="goTo(5)">דרכון ←</button></div>
+</div>
+
+<!-- STEP 5: Passport -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📔</span><div><h2 class="text-3xl font-black text-red-900">דרכון + תכנון יום ב'</h2></div></div>
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3">📔 דרכון – שיעור 14</h3>
+      <div class="space-y-3">
+        <textarea id="p14-progress" rows="2" maxlength="150" placeholder="מה השגנו היום? מה עובד?" class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+        <textarea id="p14-missing" rows="2" maxlength="150" placeholder="מה חסר? מה נתקן מחר?" class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+      </div>
+      <button onclick="saveEntry14()" class="mt-3 w-full bg-green-700 text-white py-3 rounded-xl font-black">📔 שמור</button>
+      <div id="p14-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! +10 עלים 🌿</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn5" class="hidden bg-red-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-red-600" onclick="goTo(6)">סיכום ←</button></div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-red-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-red-900 mb-3">📚 יום א' הושלם!</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex gap-2"><span class="text-red-600">📋</span> Lean Canvas — 3 תאים מרכזיים</li>
+        <li class="flex gap-2"><span class="text-red-600">🛠️</span> PoC בנוי (גס אך עובד)</li>
+        <li class="flex gap-2"><span class="text-red-600">📸</span> לוג בנייה — תיעוד ויזואלי</li>
+      </ul>
+    </div>
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3"><span class="text-2xl">⭐</span><h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3></div>
+      <p class="text-gray-800 font-bold text-lg mb-3">"מה ה'רגע האמת' שיוכיח בתערוכה שהאבטיפוס שלכם עובד — ומה הכי חשוב שיעבוד?"</p>
+      <textarea id="north-star" rows="2" placeholder="הרגע האמת שלנו יהיה כש..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 מחר (שיעור 15):</p>
+      <p class="font-black text-xl">"בנינו. אבל מה אם זה לא עובד? Fail Fast — ותקנו."</p>
+    </div>
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים יום א':</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך מקסימום ~75 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4"><a href="lesson-15.html" class="bg-red-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-red-600">לשיעור 15 – יום ב' ←</a></div>
+</div>
+
+</div>
+<script>
+const STEPS=6;let cur=1,lv=parseInt(localStorage.getItem('ls14')||'0'),maxReached=1;
+let canvasSaved=false,partsSaved=false,buildMissions=[],buildLeaves=false,entry14Saved=false;
+
+function goTo(n){if(n<1||n>STEPS)return;document.getElementById('step-'+cur).classList.remove('active');cur=n;if(cur>maxReached)maxReached=cur;document.getElementById('step-'+cur).classList.add('active');renderDots();updateHeader();window.scrollTo({top:0,behavior:'smooth'});updateMascot(cur);}
+function updateHeader(){document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';}
+function renderDots(){document.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');});}
+function addLv(n){lv+=n;localStorage.setItem('ls14',lv);document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
+function leafBurst(n){for(let i=0;i<Math.min(n,8);i++){const el=document.createElement('div');el.className='leaf-burst';el.textContent='🌿';el.style.left=(20+Math.random()*60)+'vw';el.style.top=(15+Math.random()*50)+'vh';el.style.setProperty('--tx',(Math.random()*120-60)+'px');el.style.setProperty('--ty',(-80-Math.random()*80)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),950);}}
+function ansQ(el,correct,qid){
+  const c=document.getElementById(qid);if(!c||c.dataset.done)return;c.dataset.done='1';c.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');el.classList.add(correct?'correct':'wrong');if(!correct){const r=c.querySelector('[data-correct="true"]');if(r)r.classList.add('correct');}
+  const fb=document.getElementById('fb-'+qid);if(fb){fb.className='mt-3 rounded-xl p-4 text-sm '+(correct?'bg-green-50 text-green-800':'bg-red-50 text-red-800');fb.textContent=correct?'✅ מצוין! +5 עלים 🌿':'❌ לא בדיוק – תשובה נכונה מסומנת בירוק';fb.classList.remove('hidden');}if(correct)addLv(5);
+  const casc={'q-poc':()=>{document.getElementById('btn1').classList.remove('hidden');mascotSay('PoC = הוכחה מינימלית. עובד?','🏗️');},'q-canvas':()=>{document.getElementById('btn2').classList.remove('hidden');mascotSay('Lean = מהיר לשנות. חשוב!','📋');},'q-poc2':()=>{document.getElementById('build-prep-wrap').classList.add('show');mascotSay('בדיוק! חלק אחד עובד = PoC','📝');}};
+  if(casc[qid])casc[qid]();
+}
+// P3.1: Auto-save canvas fields as user types (no leaves, no flag change)
+let _autoSaveTimer = null;
+function autoSaveCanvas() {
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(() => {
+    const prob = document.getElementById('canvas-problem').value.trim();
+    const sol  = document.getElementById('canvas-solution').value.trim();
+    const cust = document.getElementById('canvas-customers').value.trim();
+    if (!prob && !sol) return;
+    const p = JSON.parse(localStorage.getItem('passport1')||'{}');
+    p.lesson14Canvas = { problem:prob, solution:sol, customers:cust };
+    localStorage.setItem('passport1', JSON.stringify(p));
+  }, 800); // 800ms debounce
+}
+function saveCanvas(){
+  if(canvasSaved)return;const prob=document.getElementById('canvas-problem').value.trim(),sol=document.getElementById('canvas-solution').value.trim(),cust=document.getElementById('canvas-customers').value.trim();
+  if(!prob||!sol){mascotSay('מלאו לפחות בעיה ופתרון!','📋');return;}canvasSaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson14Canvas={problem:prob,solution:sol,customers:cust};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('canvas-saved').classList.remove('hidden');addLv(20);document.getElementById('q-canvas-wrap').classList.add('show');mascotSay('Canvas נשמר! בסיס לאבטיפוס','📋');
+}
+function saveParts(){
+  const t=document.getElementById('parts-list').value.trim();if(!t)return;partsSaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson14Parts=t;localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('parts-saved').classList.remove('hidden');document.getElementById('btn3').classList.remove('hidden');
+}
+let buildCount=0;
+function checkBuild(el,idx){
+  if(buildMissions.includes(idx))return;buildMissions.push(idx);el.classList.add('done-card');el.querySelector('.bm-icon').textContent='✅';buildCount++;
+  if(buildCount>=3&&!buildLeaves){buildLeaves=true;const pb=JSON.parse(localStorage.getItem('passport1')||'{}');pb.lesson14BuildDone=true;localStorage.setItem('passport1',JSON.stringify(pb));document.getElementById('build-done').classList.remove('hidden');addLv(30);document.getElementById('btn4').classList.remove('hidden');mascotSay('לוג בנייה! +30 עלים 🏗️','🔨');}
+}
+function saveEntry14(){
+  if(entry14Saved)return;const prog=document.getElementById('p14-progress').value.trim();if(!prog)return;entry14Saved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson14={progress:prog,missing:document.getElementById('p14-missing').value.trim(),date:new Date().toLocaleDateString('he-IL')};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('p14-saved').classList.remove('hidden');addLv(10);document.getElementById('btn5').classList.remove('hidden');
+}
+const mascotLines={1:'PoC = הוכחה שהרעיון עובד, לפני בנייה מלאה',2:'Lean Canvas = כל הפרויקט בדף אחד',3:'רשימת חלקים — כדי שלא יחסר באמצע',4:'בונים! לוג בנייה = תיעוד כל שלב',5:'דרכון + תכנון ליום ב׳',6:'יום א׳ הסתיים! מחר — בדיקה ותיקון ⭐'};
+function updateMascot(s){mascotSay(mascotLines[s]||'','🌱');}
+function mascotSay(msg,emoji){const m=document.getElementById('mascot'),b=document.getElementById('mascot-bubble');if(emoji)m.textContent=emoji;b.textContent=msg;b.classList.remove('hidden');m.classList.add('mascot-bounce');clearTimeout(mascotSay._t);mascotSay._t=setTimeout(()=>{b.classList.add('hidden');m.classList.remove('mascot-bounce');},5000);}
+function init(){
+  const d=document.getElementById('dots');for(let i=1;i<=STEPS;i++){const dot=document.createElement('div');dot.className='step-dot'+(i===1?' current':'');dot.title='שלב '+i;dot.onclick=()=>{if(i<=maxReached)goTo(i);};d.appendChild(dot);}
+  document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;updateHeader();
+  try{const p=JSON.parse(localStorage.getItem('passport1')||'{}');
+    if(p.lesson14Canvas){document.getElementById('canvas-problem').value=p.lesson14Canvas.problem||'';document.getElementById('canvas-solution').value=p.lesson14Canvas.solution||'';document.getElementById('canvas-customers').value=p.lesson14Canvas.customers||'';canvasSaved=true;document.getElementById('q-canvas-wrap').classList.add('show');}
+    if(p.lesson14Parts){document.getElementById('parts-list').value=p.lesson14Parts;partsSaved=true;document.getElementById('build-prep-wrap').classList.add('show');document.getElementById('btn3').classList.remove('hidden');}
+    if(p.lesson14BuildDone){buildLeaves=true;buildCount=4;document.getElementById('build-done').classList.remove('hidden');document.getElementById('btn4').classList.remove('hidden');}
+    if(p.lesson14){document.getElementById('p14-progress').value=p.lesson14.progress||'';document.getElementById('p14-missing').value=p.lesson14.missing||'';entry14Saved=true;document.getElementById('btn5').classList.remove('hidden');}
+  }catch(e){}
+  mascotSay(mascotLines[1],'🌱');
+}
+init();
+</script>
+</body>
+</html>

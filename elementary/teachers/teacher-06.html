@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מערך שיעור 6 | מסלול יסודי | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>*{font-family:'Heebo',sans-serif;}</style>
+</head>
+<body class="bg-gray-50">
+
+<div id="content">
+
+<!-- TOP BAR -->
+<div class="bg-slate-800 text-white py-5 px-8 flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-lg gap-3">
+  <div>
+    <span class="text-xs text-slate-400">מערך שיעור · מסלול יסודי · גליל-טק</span>
+    <h1 class="text-2xl font-black">שיעור 6 – איך "מדברים" עם צמחים?</h1>
+  </div>
+  <div class="flex gap-3 flex-wrap">
+    <span class="bg-white/20 px-4 py-2 rounded-xl text-sm">⏱ 90 דקות</span>
+    <span class="bg-blue-500 px-4 py-2 rounded-xl text-sm font-bold">פאזה 2 – צמיחה</span>
+    <a href="teacher-05.html" class="bg-slate-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-slate-500">← שיעור 5</a>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-6 py-10 space-y-10">
+
+  <!-- GOALS -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-700 text-white p-6">
+      <h2 class="text-2xl font-black">🎯 מטרות השיעור</h2>
+      <p class="text-slate-300 text-sm">בסוף השיעור התלמיד...</p>
+    </div>
+    <div class="p-6 grid md:grid-cols-2 gap-6">
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">ידע ומושגים</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">✅ <span>מסביר מהו חיישן – "חוש" מלאכותי שמודד דבר אחד (חום, לחות, אור)</span></li>
+          <li class="flex gap-2">✅ <span>מסביר מהו ארדואינו – "מוח" קטן שמקבל מידע מהחיישנים ומחליט מה לעשות</span></li>
+          <li class="flex gap-2">✅ <span>מבין לוגיקה פשוטה: "אם קורה X → תעשה Y" (בלוקים, לא כתיבת קוד)</span></li>
+          <li class="flex gap-2">✅ <span>יודע בערך: לצמח נוח בטמפ' בין 15 ל-28 מעלות, לחות בינונית, ואור סביר</span></li>
+          <li class="flex gap-2">✅ <span>מכיר את Phytech – חיישן שמרגיש כשעץ "צמא" לפני שרואים בעיניים</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">מיומנויות מעשיות</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">🔧 <span>מחבר חיישן טמפרטורה/לחות וחיישן אור לארדואינו, לפי סכמה פשוטה (חיבורי "תקע" צבעוניים אם קיימים)</span></li>
+          <li class="flex gap-2">🔧 <span>קורא ערכים ראשוניים ואומר אם הם "נראים תקינים"</span></li>
+          <li class="flex gap-2">🔧 <span>מרכיב בלוק "אם...אז..." אחד פשוט בלומדה</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">חשיבה</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">💭 <span>מקשר בין המדידה הידנית של שיעור 5 לצורך במדידה כל הזמן</span></li>
+          <li class="flex gap-2">💭 <span>מסביר איך Phytech פותרת בעיה שהוא עצמו חווה בכיתה</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">גיימיפיקציה</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">🌿 <span>* טבלת הנקודות למטה היא שלד מתוכנן – יוטמע בלומדה כשתיבנה</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREP -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-teal-700 text-white p-6">
+      <h2 class="text-2xl font-black">🧰 הכנה לפני השיעור – חשוב מאוד!</h2>
+    </div>
+    <div class="p-6 grid md:grid-cols-3 gap-6 text-sm">
+      <div>
+        <h3 class="font-bold text-gray-800 mb-3">⚡ ציוד</h3>
+        <ul class="space-y-2 text-gray-600">
+          <li class="flex gap-2">📋 <span>ארדואינו × מספר קבוצות</span></li>
+          <li class="flex gap-2">📋 <span>חיישן טמפ'+לחות (DHT22) לכל קבוצה</span></li>
+          <li class="flex gap-2">📋 <span>חיישן אור (BH1750) לכל קבוצה</span></li>
+          <li class="bg-blue-50 text-blue-800 rounded-lg p-2 mt-2">💡 <b>מומלץ לגיל הזה:</b> אם יש אפשרות – חיבורי "תקע" מוכנים וצבעוניים (כמו ערכות Grove/Crowbit) עדיפים על breadboard וכבלי jumper בודדים, שקשים יותר לאצבעות קטנות. זו המלצת ציוד, לא חובה.</li>
+          <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ בדקו/העלו קוד יום לפני! אל תגלו ביום השיעור שמשהו לא עובד.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-800 mb-3">💻 מה המורה מכין (לא התלמידים)</h3>
+        <p class="text-gray-600 mb-2">התלמידים לא נוגעים בקוד טקסטואלי היום – רק גוררים בלוקים בלומדה. הקוד עצמו (קריאת חיישנים) מוכן מראש ומועלה ע"י המורה, בדיוק כמו בתוכנית לחטיבה.</p>
+        <div class="bg-slate-800 rounded-xl p-3 text-xs text-green-400">
+          <p class="text-slate-400">// לשימוש המורה בלבד</p>
+          <p>// אותו קוד כמו במערך הכללי (Arduino IDE)</p>
+          <p>// קורא DHT22 + BH1750, מדפיס כל 2 שניות</p>
+        </div>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-800 mb-3">🖥️ ציוד נוסף</h3>
+        <ul class="space-y-1 text-gray-600 text-xs">
+          <li>📋 מחשב/טאבלט לכל זוג (לומדה)</li>
+          <li>📋 מחשב אחד להעלאת קוד (המורה בלבד)</li>
+          <li>🧰 <b>ערכת חומרה רזרבית אחת לכיתה</b> (ארדואינו + חיישנים חלופיים)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-700 text-white p-6">
+      <h2 class="text-2xl font-black">⏱ לוח זמנים – 90 דקות</h2>
+    </div>
+    <div class="divide-y divide-gray-100">
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-green-100 text-green-800 font-black text-lg rounded-xl py-2">0–15</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎤</span><h3 class="text-xl font-black">פתיחה – לצמח אין פה, אז איך הוא "מדבר"?</h3><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">כל הכיתה</span></div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-3">
+            <p class="font-bold text-amber-900 mb-1">🔁 תזכורת משיעור 5:</p>
+            <p class="text-sm text-gray-700">"מדדתם ביד את המים של הצמח. אבל מה יקרה אם ה-pH ישתנה בשעה 2 בלילה, כשאף אחד לא בכיתה?" (תשובה: אף אחד לא ידע!)</p>
+          </div>
+          <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-3">
+            <p class="font-bold text-purple-900 mb-1">🪜 מדרגת כניסה למושג "חיישן" ו"ארדואינו":</p>
+            <p class="text-sm text-gray-700">"לגוף שלכם יש חושים – עיניים רואות, אוזניים שומעות, עור מרגיש חום. חיישן הוא בדיוק אותו רעיון, רק מלאכותי – מכשיר קטן שמרגיש דבר אחד (חום, אור, לחות). וה'מוח' הקטן שמקבל את כל המידע מהחיישנים ומחליט מה לעשות – נקרא <b>ארדואינו</b>."</p>
+          </div>
+          <ul class="text-sm text-gray-600 space-y-1">
+            <li>• <b>שקף 1:</b> תמונת ארדואינו עם חיישנים – "מה זה לדעתכם?"</li>
+            <li>• <b>שקף 2:</b> ציור גוף אדם עם 5 חושים, לצד ארדואינו עם כמה שרוצים "חושים"</li>
+          </ul>
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 mt-3 text-sm text-blue-900">
+            💡 הראו ארדואינו אמיתי, תנו לתלמיד/ה אחד/ת לגעת: "זה עלה בערך 50 ₪. Phytech בנו עליו חברה גדולה."
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-blue-100 text-blue-800 font-black text-lg rounded-xl py-2">15–30</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">💬</span><h3 class="text-xl font-black">דיון מבוסס בעיה</h3><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">קבוצות של 4</span></div>
+          <div class="space-y-4">
+            <div class="bg-amber-50 border border-amber-300 rounded-xl p-4">
+              <p class="font-bold text-amber-900 mb-2">🎯 שאלת הדיון המרכזית (10 דק׳)</p>
+              <p class="text-sm text-gray-600 mb-2">🔗 גשר משיעור 3: "בשיעור 3 אמרנו שלצמח יש 4 צרכים (אור, מים, מזון, אוויר). היום נבדוק איך <b>בודקים</b> אם הוא מקבל אותם."</p>
+              <p class="text-lg text-gray-800 font-bold mb-3">"אם יש לכם 5 דברים שאפשר למדוד אצל הצמח (מים, טמפרטורה, לחות, אור, מזון) – איזה חיישן צריך לכל אחד?"</p>
+              <div class="grid md:grid-cols-2 gap-3 text-sm">
+                <div class="bg-white rounded-lg p-3">
+                  <p class="font-bold mb-1">תשובות צפויות:</p>
+                  <ul class="text-gray-500 space-y-1">
+                    <li>מים/מזון → מד EC (משיעור 5)</li>
+                    <li>טמפרטורה + לחות → חיישן אחד (DHT22)</li>
+                    <li>אור → חיישן אור (BH1750)</li>
+                  </ul>
+                </div>
+                <div class="bg-white rounded-lg p-3">
+                  <p class="font-bold mb-1">גשר לשיעור:</p>
+                  <p class="text-gray-500">"בדיוק! ואת כולם אפשר לחבר לארדואינו אחד קטן. בואו נראה איך."</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-purple-100 text-purple-800 font-black text-lg rounded-xl py-2">30–55</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">📖</span><h3 class="text-xl font-black">לומדה – עבודה בזוגות</h3><span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">זוגות</span></div>
+          <div class="bg-slate-50 rounded-xl p-4 text-sm text-gray-600">
+            <p class="mb-2">📌 <b>מפרט ללומדה (`elementary/lessons/lesson-06.html`, תיבנה בהמשך):</b></p>
+            <ol class="space-y-1 list-decimal list-inside mr-4">
+              <li>מה זה חיישן – קריאה קצרה + שאלה</li>
+              <li>ארדואינו – קריאה + סרטון קצר + שאלה</li>
+              <li><b>🎮 סימולטור "אם...אז..." (סימולטור ויזואלי, בסגנון arduino-simulator.html הכללי אך מפושט):</b> רק 2 בלוקים לגרירה – "אם חם מדי" → "הפעל מאוורר", בלי כתיבת קוד ובלי שורות טקסט</li>
+              <li>🎮 סימולטור 3 חיישנים עם גרף פשוט (טמפ'/לחות/אור)</li>
+              <li>🎮 תרחיש אחד + Phytech</li>
+              <li>פרויקט (חיבור ומדידה)</li>
+              <li>נתונים + קיר</li>
+            </ol>
+            <p class="mt-2 text-xs text-gray-400">בלי הסבר טכני על "הזחה"/תחביר קוד – הכל ויזואלי-בלוקים.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-lime-100 text-lime-800 font-black text-lg rounded-xl py-2">55–85</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🔌</span><h3 class="text-xl font-black">פרויקט – חיבור ראשון</h3><span class="bg-lime-100 text-lime-700 px-3 py-1 rounded-full text-xs font-bold">קבוצות</span></div>
+          <div class="bg-lime-50 border border-lime-200 rounded-xl p-4 mb-4 text-sm">
+            <p class="font-bold text-lime-800 mb-2">📋 4 משימות:</p>
+            <div class="grid md:grid-cols-2 gap-2 text-xs">
+              <div class="bg-white rounded-lg p-2">א. חיבור חיישן טמפ'+לחות</div>
+              <div class="bg-white rounded-lg p-2">ב. חיבור חיישן אור</div>
+              <div class="bg-white rounded-lg p-2 border-2 border-green-200"><b>ג. קריאת ערכים ראשונים</b> (הקוד כבר הועלה ע"י המורה)</div>
+              <div class="bg-white rounded-lg p-2">ד. צילום הארדואינו לקיר</div>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
+              <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
+              <ul class="space-y-1 text-xs text-gray-600">
+                <li><b>ערך "לא תקין"/NaN:</b> קראו למורה – בדיקת חיבור</li>
+                <li><b>אור = 0:</b> קראו למורה – בדיקת חיבור</li>
+                <li><b>ארדואינו לא מזוהה:</b> נסו כבל USB אחר</li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm">
+              <p class="font-bold text-blue-800 mb-2">💡 להעמקה:</p>
+              <p class="text-xs text-gray-600">"מי מצא ערך שונה מקבוצה אחרת? למה לדעתכם?" → השוו חיישנים בפינות שונות של הכיתה.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-yellow-100 text-yellow-800 font-black text-lg rounded-xl py-2">85–90</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🏁</span><h3 class="text-xl font-black">נתונים + Teaser</h3></div>
+          <div class="grid md:grid-cols-3 gap-3 text-sm">
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 נתונים (2 דק')</p><p class="text-xs text-gray-500">כל קבוצה מדווחת. הצג ממוצע כיתתי.</p></div>
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🌿 עלים (1 דק')</p><p class="text-xs text-gray-500">מי מגיע לרמה חדשה?</p></div>
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-xs text-gray-700 font-medium">"הטמפרטורה עלתה יותר מדי – הארדואינו צריך להפעיל מאוורר. איך נגרום לו 'לדעת' לעשות את זה בעצמו?" ← אל תתנו תשובה, זה שיעור 7</p></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STARTUP -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-teal-800 text-white p-6">
+      <h2 class="text-2xl font-black">🇮🇱 Phytech – רקע למורה</h2>
+    </div>
+    <div class="p-6 grid md:grid-cols-2 gap-6 text-sm text-gray-600">
+      <div>
+        <h3 class="font-bold text-gray-800 mb-2">מי הם?</h3>
+        <p class="mb-2">חברה ישראלית שהוקמה בקיבוץ יד מרדכי. עוזרים לחקלאים לדעת מה קורה עם העצים והצמחים שלהם, בזמן אמת.</p>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-800 mb-2">הדנדרומטר – מה זה?</h3>
+        <p>חיישן קטן שנצמד לגזע העץ ומרגיש שינויים זעירים בעובי שלו. כשעץ "צמא" – הגזע מתכווץ טיפה. Phytech מגלים את זה לפני שרואים עלים צהובים.</p>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-800 mb-2">מספרים לדיון:</h3>
+        <ul class="space-y-1">
+          <li>🌊 500 מיליארד ליטר מים נחסכו בשנה אחת</li>
+          <li>🌳 43 מיליון עצים בניטור</li>
+          <li>🗺️ 18,000 שדות ביותר מ-20 מדינות</li>
+        </ul>
+        <p class="text-xs text-gray-400 mt-2">🔗 זוכרים את "מדרגות המספרים" משיעור 1? 500 מיליארד זה מספר ענק – אפשר לחזור לזה: "כמה זמן ייקח לספור עד 500 מיליארד?"</p>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-800 mb-2">שאלות לדיון בכיתה:</h3>
+        <ul class="space-y-1">
+          <li>"איך אפשר לדעת שעץ 'צמא' לפני שרואים בעיניים?"</li>
+          <li>"מה ההבדל בין מה שעשינו היום (מדידה ידנית) ל-Phytech?"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAMIFICATION -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-lime-600 text-white p-6">
+      <h2 class="text-2xl font-black">🌿 גיימיפיקציה – שיעור 6</h2>
+    </div>
+    <div class="p-6">
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-sm">
+        <span class="font-bold text-amber-800">📡 מכניקה בעלת שם: "לוח נתונים חי"</span> — כל קבוצה מדווחת בזמן אמת 2-3 ערכים ללוח כיתתי משותף.
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5 text-center text-sm">
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-slate-700">15</div><div class="text-gray-500">שאלות חיישן+ארדואינו</div></div>
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-slate-700">20</div><div class="text-gray-500">משחק "אם...אז..."</div></div>
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-slate-700">20</div><div class="text-gray-500">חיבור וקריאת חיישנים</div></div>
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-slate-700">10</div><div class="text-gray-500">רישום בדרכון חקלאי</div></div>
+      </div>
+      <div class="bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
+        <span class="text-2xl font-black text-lime-700">סה"כ מקסימום: ~65 עלים 🌿</span>
+        <span class="text-gray-500 text-sm block mt-1">* מספר זמני – יחושב סופית אחרי כל 17 מערכי המורה</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIFFERENTIATION -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-orange-600 text-white p-6">
+      <h2 class="text-2xl font-black">♿ התאמות ודיפרנציאציה</h2>
+    </div>
+    <div class="p-6 grid md:grid-cols-3 gap-6 text-sm">
+      <div>
+        <h3 class="font-bold text-red-700 mb-3">🐢 תלמידים שנתקעים</h3>
+        <ul class="space-y-2 text-gray-600">
+          <li>• "זה כמו כלל משחק – אם קורה X, עושים Y"</li>
+          <li>• תנו להם לעבוד עם שותף/ה</li>
+          <li>• שאלו: "מה הארדואינו צריך לדעת ראשון?"</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-blue-700 mb-3">🚀 תלמידים מתקדמים</h3>
+        <ul class="space-y-2 text-gray-600">
+          <li>• "איך תוסיפו כלל שני – גם אם קר מדי?"</li>
+          <li>• בקשו מהם להסביר לחבר/ה</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-orange-700 mb-3">🌍 ריבוי שפות</h3>
+        <ul class="space-y-2 text-gray-600">
+          <li>• חיישן = حساس (ח'אסס)</li>
+          <li>• תמונות ותרשימים ויזואליים לפני טקסט</li>
+        </ul>
+      </div>
+    </div>
+    <div class="px-6 pb-6">
+      <div class="bg-pink-50 border-2 border-pink-200 rounded-2xl p-5 text-sm">
+        <h3 class="font-bold text-pink-700 mb-3 text-base">🎈 התאמות לכיתות ג'-ד'</h3>
+        <ul class="space-y-2 text-gray-700">
+          <li>• <b>ארדואינו/חיישן:</b> הישארו רק על "חושים מלאכותיים" – ותרו על השם "ארדואינו" עצמו, קראו לו "הקופסה החכמה".</li>
+          <li>• <b>הבלוק "אם...אז...":</b> הדגמה קבוצתית של המורה בלבד על המסך המשותף – הזוגות רק בוחרים "מה יקרה?" מתוך 2 אפשרויות, לא בונים בלוק בעצמם.</li>
+          <li>• <b>החיבור הפיזי:</b> המורה מחבר, התלמידים "עוזרים להחזיק" ומזהים איזה חוט הולך לאן לפי צבע.</li>
+          <li>• <b>500 מיליארד ליטר:</b> ותרו על המספר המדויק – מספיק "כל כך הרבה מים שאי אפשר לספור".</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="bg-white rounded-3xl shadow-lg p-6">
+    <h2 class="text-2xl font-black text-gray-900 mb-4">📝 הערות שלי לשיעור</h2>
+    <textarea rows="5" placeholder="מה עבד, מה לשפר, ערכי חיישנים שנמדדו, בעיות טכניות..." class="w-full border-2 border-gray-200 rounded-2xl p-4 text-lg resize-none focus:border-slate-400 focus:outline-none" onchange="saveNotes(this.value)" id="notes-area"></textarea>
+    <p class="text-xs text-gray-400 mt-1">נשמר אוטומטית</p>
+  </div>
+
+</div><!-- max-w -->
+</div><!-- content -->
+
+<script>
+function load(){
+  const n=localStorage.getItem('el_t6notes');
+  if(n)document.getElementById('notes-area').value=n;
+}
+function saveNotes(v){localStorage.setItem('el_t6notes',v);}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>אג-טק 101: מהרעיון למיזם | גדלים למחר</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/core.css">
+<script src="../assets/core.js"></script>
+<script src="../assets/points.config.js"></script>
+<script src="config.js"></script>
+<style>
+  .phase-panel { display: none; animation: gc-fadeUp 0.4s ease; }
+  .phase-panel.active { display: block; }
+
+  .turn-card { border: 2px solid #a7f3d0; border-radius: 20px; background: #f0fdf4; }
+  .timer-ring {
+    width: 64px; height: 64px; border-radius: 50%; background: white; border: 3px solid #16a34a;
+    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.3rem; color: #166534;
+    flex-shrink: 0;
+  }
+  .timer-bar-wrap { height: 8px; border-radius: 4px; background: #d1fae5; overflow: hidden; }
+  .timer-bar { height: 100%; width: 100%; background: #84cc16; transition: width .2s linear, background .3s; }
+
+  .macro-clock {
+    display: inline-flex; align-items: center; gap: 8px; background: white; border: 2px solid #fde68a;
+    border-radius: 999px; padding: 8px 18px; font-weight: 900; color: #92400e; font-size: 1.1rem;
+  }
+
+  .diag-btn { border: 2px solid #e5e7eb; border-radius: 10px; padding: 8px 4px; font-size: .72rem; font-weight: 700; cursor: pointer; transition: all .15s; background: white; }
+  .diag-btn:hover { border-color: #a7f3d0; }
+  .diag-btn.sel-yes { background: #dcfce7; border-color: #16a34a; color: #166534; }
+  .diag-btn.sel-no  { background: #fee2e2; border-color: #dc2626; color: #991b1b; }
+  .diag-btn.sel-na  { background: #f3f4f6; border-color: #9ca3af; color: #4b5563; }
+
+  .eq-card { border: 2px solid #e5e7eb; border-radius: 16px; transition: all .2s; }
+  .eq-card.chosen  { border-color: #16a34a; background: #f0fdf4; }
+
+  .syn-card { border: 2px solid #fde68a; cursor: pointer; transition: all .3s; border-radius: 16px; }
+  .syn-card.done-card { border-color: #f59e0b; background: #fffbeb; opacity: .75; }
+
+  #cloud-banner { position: fixed; bottom: 14px; right: 14px; left: 14px; max-width: 420px; margin: 0 auto; z-index: 200; }
+
+  .pair-badge { background: #0e7490; color: white; }
+  .star-btn { cursor: pointer; background: none; border: none; line-height: 1; transition: transform .15s; }
+  .star-btn:hover { transform: scale(1.15); }
+</style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 to-lime-50 min-h-screen">
+
+<!-- MASCOT -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- CLOUD STATUS BANNER -->
+<div id="cloud-banner" class="hidden bg-red-600 text-white text-sm font-bold rounded-2xl px-4 py-3 shadow-xl text-center"></div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center flex-wrap gap-2">
+    <span class="text-xl font-bold">🌱 גדלים למחר</span>
+    <span class="text-xs text-lime-300">🌍💧☀️ אג-טק 101 · מהרעיון למיזם</span>
+  </div>
+</nav>
+
+<!-- PROGRESS HEADER -->
+<div id="progress-header" class="bg-gradient-to-l from-green-800 to-amber-700 text-white pt-6 pb-6 px-6 hidden">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex justify-between text-sm text-green-100 mb-1">
+      <span id="ph-label">🧠 ריענון ידע · 1/5</span>
+      <span>🌿 <b id="lc">0</b> עלים לזוג</span>
+    </div>
+    <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+      <div id="ph-bar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:10%"></div>
+    </div>
+    <p id="ph-title" class="text-lg font-black mt-2"></p>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ SETUP: זיהוי + שיבוץ ══ -->
+<div class="phase-panel active" id="panel-setup">
+  <div class="bg-white rounded-3xl shadow-lg p-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🌍💧☀️</span>
+      <div>
+        <h1 class="text-3xl font-black text-green-900">אג-טק 101: מהרעיון למיזם</h1>
+        <p class="text-gray-400 text-sm">45 דקות · ריענון ידע מהיר, ואז מפעילים אותו ישירות על הפרויקטים שלכם</p>
+      </div>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 mb-6 text-sm text-gray-700 leading-relaxed">
+      <p>היום ב"צמח" כבר בניתם גרסה ראשונית לרעיון של הקבוצה שלכם. עכשיו כל אחד/ת "מאמץ" זמנית את הרעיון של שותף/ה חדש/ה מקבוצה אחרת, ובוחן/ת אותו בעזרת מה שלמדתם בהרצאה. <b>עובדים בזוגות, מחשב אחד לזוג.</b></p>
+    </div>
+
+    <div id="pair-select-wrap" class="mb-5">
+      <label class="block font-bold text-gray-700 mb-2">🤝 בחרו את הזוג שלכם היום:</label>
+      <select id="pair-select" class="w-full border-2 border-lime-200 rounded-xl p-3 text-lg" onchange="onPairSelect()"></select>
+    </div>
+
+    <div id="no-pairing-warning" class="hidden bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 mb-5 text-sm text-amber-900">
+      ⚠️ לא נמצא שיבוץ שמור בענן. בקשו מהמורה להריץ את מסך ההכנה (<code>shuffle-teacher-setup.html</code>), או הזינו את השמות ידנית:
+    </div>
+    <div id="pair-manual" class="hidden grid md:grid-cols-2 gap-3 mb-5">
+      <input id="manual-a" type="text" maxlength="30" placeholder="שם תלמיד/ה ראשון/ה" class="border-2 border-gray-200 rounded-xl p-3">
+      <input id="manual-b" type="text" maxlength="30" placeholder="שם תלמיד/ה שני/ה" class="border-2 border-gray-200 rounded-xl p-3">
+    </div>
+
+    <div id="group-pickers" class="hidden space-y-4 mb-6">
+      <div>
+        <label class="block font-bold text-gray-700 mb-2">מה הייתה הקבוצה המקורית של <span id="g1-name" class="text-lime-700"></span>?</label>
+        <div class="flex gap-3" id="g1-btns"></div>
+      </div>
+      <div>
+        <label class="block font-bold text-gray-700 mb-2">מה הייתה הקבוצה המקורית של <span id="g2-name" class="text-lime-700"></span>?</label>
+        <div class="flex gap-3" id="g2-btns"></div>
+      </div>
+    </div>
+
+    <button id="start-btn" class="hidden w-full bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl text-lg font-black shadow-lg" onclick="confirmSetup()">בואו נתחיל! ←</button>
+  </div>
+</div>
+
+<!-- ══ K1: היסטוריה ══ -->
+<div class="phase-panel" id="panel-k1">
+  <div class="bg-white rounded-3xl shadow-lg p-8">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">⏳</span><div>
+      <h2 class="text-2xl font-black text-green-900">ריענון: היסטוריה של חקלאות</h2>
+      <p class="text-gray-400 text-sm">בקצרה — לא מלמדים מחדש, רק מזכירים</p>
+    </div></div>
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-4 mb-5 text-sm text-gray-700">
+      🏹 ציד ולקט ← 🌾 המהפכה החקלאית (12,000 שנה) ← 🧪 המהפכה הירוקה (מאה 20) ← 🤖 המהפכה הדיגיטלית (היום)
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה השתנה הכי דרמטית בין המהפכה הירוקה למהפכה הדיגיטלית של היום?</p>
+      <div class="grid gap-3" id="q-hist">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-hist')">היום אף אחד כבר לא עובד בשדה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-hist')" data-correct="true">לא רק לגדל יותר, אלא לדעת בדיוק כמה, איפה ומתי — בעזרת נתונים וחיישנים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-hist')">היום משתמשים רק בדשן טבעי, בלי כימיה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-hist')">אין הבדל אמיתי, זה אותו הדבר בשם אחר</div>
+      </div>
+      <div id="fb-q-hist" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+    <button id="k1-next" class="hidden w-full mt-5 bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl text-lg font-black shadow-lg" onclick="goPhase('k2')">מה צמח צריך ←</button>
+  </div>
+</div>
+
+<!-- ══ K2: מה צמח צריך ══ -->
+<div class="phase-panel" id="panel-k2">
+  <div class="bg-white rounded-3xl shadow-lg p-8">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🌱</span><div>
+      <h2 class="text-2xl font-black text-green-900">ריענון: מה צמח צריך?</h2>
+      <p class="text-gray-400 text-sm">4 צרכים בסיסיים</p>
+    </div></div>
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-4 mb-5 text-sm text-gray-700 flex flex-wrap gap-x-5 gap-y-1">
+      <span>💧 מים</span><span>☀️ אור</span><span>🌡️ טמפרטורה</span><span>🧪 מינרלים ו-pH</span>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ "העלים נבולים אחרי 3 ימים בלי השקיה" — מה חסר לצמח?</p>
+      <div class="grid grid-cols-2 gap-3" id="q-plant">
+        <div class="quiz-opt p-3 text-center" onclick="ansQ(this,true,'q-plant')" data-correct="true">💧 מים</div>
+        <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-plant')">☀️ אור</div>
+        <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-plant')">🌡️ טמפרטורה</div>
+        <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-plant')">🧪 מינרלים</div>
+      </div>
+      <div id="fb-q-plant" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+    <button id="k2-next" class="hidden w-full mt-5 bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl text-lg font-black shadow-lg" onclick="goPhase('k3')">מה חקלאי צריך ←</button>
+  </div>
+</div>
+
+<!-- ══ K3: מה חקלאי צריך ══ -->
+<div class="phase-panel" id="panel-k3">
+  <div class="bg-white rounded-3xl shadow-lg p-8">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">👨‍🌾</span><div>
+      <h2 class="text-2xl font-black text-green-900">ריענון: מה חקלאי צריך?</h2>
+      <p class="text-gray-400 text-sm">3 צרכים בסיסיים</p>
+    </div></div>
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 mb-5 text-sm text-gray-700 flex flex-wrap gap-x-5 gap-y-1">
+      <span>📊 מידע ונתונים</span><span>⏱️ תזמון מדויק</span><span>💰 ניהול כלכלי</span>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ "לא ידע שגל חום מגיע השבוע, והיבול נפגע קשות" — מה חסר לחקלאי?</p>
+      <div class="grid gap-3" id="q-farmer">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-farmer')" data-correct="true">📊 מידע ונתונים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-farmer')">⏱️ תזמון</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-farmer')">💰 ניהול כלכלי</div>
+      </div>
+      <div id="fb-q-farmer" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+    <button id="k3-next" class="hidden w-full mt-5 bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl text-lg font-black shadow-lg" onclick="goPhase('k4')">יותר עם פחות ←</button>
+  </div>
+</div>
+
+<!-- ══ K4: נטפים / יעילות ══ -->
+<div class="phase-panel" id="panel-k4">
+  <div class="bg-white rounded-3xl shadow-lg p-8">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">💧</span><div>
+      <h2 class="text-2xl font-black text-green-900">ריענון: נטפים — יותר עם פחות</h2>
+      <p class="text-gray-400 text-sm">🇮🇱 נטפים, 1965 — ממציאי הטפטוף המודרני</p>
+    </div></div>
+    <div class="grid md:grid-cols-2 gap-4 mb-5">
+      <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-4 text-center">
+        <p class="text-gray-600 text-xs mb-1">הצפה — לכל ק"ג חסה</p>
+        <p class="text-4xl font-black text-red-600">60</p>
+        <p class="text-gray-500 text-xs">ליטר מים</p>
+      </div>
+      <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-4 text-center">
+        <p class="text-gray-600 text-xs mb-1">טפטוף מדויק — אותה חסה</p>
+        <p class="text-4xl font-black text-green-600">6</p>
+        <p class="text-gray-500 text-xs">ליטר מים</p>
+      </div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ כמה אחוז מים חוסך טפטוף מדויק לעומת הצפה?</p>
+      <div class="grid grid-cols-4 gap-3" id="q-netafim">
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,false,'q-netafim')">30%</div>
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,false,'q-netafim')">50%</div>
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,true,'q-netafim')" data-correct="true">90%</div>
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,false,'q-netafim')">99%</div>
+      </div>
+      <div id="fb-q-netafim" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+    <button id="k4-next" class="hidden w-full mt-5 bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl text-lg font-black shadow-lg" onclick="goPhase('k5')">אגרו-וולטאיקה ←</button>
+  </div>
+</div>
+
+<!-- ══ K5: אגרו-וולטאיקה + Solargik ══ -->
+<div class="phase-panel" id="panel-k5">
+  <div class="bg-white rounded-3xl shadow-lg p-8">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">☀️</span><div>
+      <h2 class="text-2xl font-black text-green-900">ריענון: אגרו-וולטאיקה</h2>
+      <p class="text-gray-400 text-sm">אותה קרקע, פעמיים — לחצו על כל כרטיס</p>
+    </div></div>
+    <div class="grid md:grid-cols-3 gap-3 mb-4">
+      <div class="syn-card p-4 text-center" data-syn="sun" onclick="revealSynergy('sun')">
+        <div class="text-2xl mb-1">☀️</div><p class="font-black text-gray-800 text-sm">פאנלים סולאריים</p>
+      </div>
+      <div class="syn-card p-4 text-center" data-syn="shade" onclick="revealSynergy('shade')">
+        <div class="text-2xl mb-1">🌤️</div><p class="font-black text-gray-800 text-sm">צל מגן</p>
+      </div>
+      <div class="syn-card p-4 text-center" data-syn="crop" onclick="revealSynergy('crop')">
+        <div class="text-2xl mb-1">🌱</div><p class="font-black text-gray-800 text-sm">יבול חקלאי</p>
+      </div>
+    </div>
+    <div class="space-y-2 mb-5">
+      <div id="syn-sun" class="reveal bg-white border-2 border-amber-200 rounded-xl p-3 text-xs text-gray-700">☀️ הפאנלים מייצרים חשמל נקי מעל השדה — בלי לתפוס שטח נוסף.</div>
+      <div id="syn-shade" class="reveal bg-white border-2 border-amber-200 rounded-xl p-3 text-xs text-gray-700">🌤️ הצל החלקי מגן על היבול מקרינה קיצונית וממתן איבוד מים.</div>
+      <div id="syn-crop" class="reveal bg-white border-2 border-amber-200 rounded-xl p-3 text-xs text-gray-700">🌱 היבול ממשיך לגדול מתחת לפאנלים — חלק מהגידולים מייצרים יותר בצל חלקי.</div>
+    </div>
+    <div id="solargik-wrap" class="reveal">
+      <div class="bg-gradient-to-br from-amber-600 to-orange-500 text-white rounded-2xl p-4 mb-5">
+        <p class="font-black text-lg mb-1">🇮🇱 Solargik — ירושלים, 2021</p>
+        <p class="text-sm text-amber-50">טרקרים סולאריים לאגרו-וולטאיקה, ניתנים להתקנה על שיפועים עד 30% בלי פילוס קרקע.</p>
+      </div>
+      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+        <p class="font-bold text-lg mb-4">❓ מה היתרון המרכזי של אגרו-וולטאיקה לעומת "רק שדה סולארי" או "רק שדה חקלאי" בנפרד?</p>
+        <div class="grid gap-3" id="q-solar">
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-solar')">זה זול יותר להתקין מכל אפשרות אחרת</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-solar')" data-correct="true">אותה קרקע נותנת גם אנרגיה וגם מזון — יותר תפוקה משטח מוגבל</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-solar')">אין צורך יותר בחקלאים בכלל</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-solar')">זה מיועד רק לאזורים ללא שמש</div>
+        </div>
+        <div id="fb-q-solar" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+    </div>
+    <button id="k5-next" class="hidden w-full mt-5 bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl text-lg font-black shadow-lg" onclick="goPhase('p1')">לפרויקט! 🚀</button>
+  </div>
+</div>
+
+<!-- ══ P1: שיבוץ + הצגת התיק ══ -->
+<div class="phase-panel" id="panel-p1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🤝</span>
+      <div>
+        <h2 class="text-2xl font-black text-green-900">השותפים שלכם היום</h2>
+        <p class="text-gray-400 text-sm">כל אחד/ת מציג/ה לשני את הרעיון המקורי שלו/ה</p>
+      </div>
+    </div>
+    <div class="flex items-center justify-center gap-4 mb-6">
+      <span id="p1-name1" class="pair-badge px-5 py-2 rounded-full font-black text-lg"></span>
+      <span class="text-2xl">🤝</span>
+      <span id="p1-name2" class="pair-badge px-5 py-2 rounded-full font-black text-lg"></span>
+    </div>
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-4 mb-5 text-sm text-gray-700">
+      השותף/ה המקשיב/ה לא עונה כלום עכשיו — רק קולט/ת. פורמט קשיח, בדיוק כמו ב-Lean Canvas ב"צמח" — שחזור מהיר, לא כתיבה מאפס.
+    </div>
+    <div id="p1-card"></div>
+  </div>
+</div>
+
+<!-- ══ P2: אבחון עם בנק הידע ══ -->
+<div class="phase-panel" id="panel-p2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center justify-between items-start flex-wrap gap-3 mb-5">
+      <div class="flex items-center gap-3">
+        <span class="text-4xl">🔍</span>
+        <div>
+          <h2 class="text-2xl font-black text-green-900">אבחון עם בנק הידע</h2>
+          <p class="text-gray-400 text-sm">בדיוק מה שרעננתם הרגע — עכשיו מפעילים על הרעיונות</p>
+        </div>
+      </div>
+      <div class="macro-clock">⏱️ <span id="p2-clock">08:00</span></div>
+    </div>
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-4 mb-5 text-sm text-gray-700">
+      בזוג, עברו על 8 הכרטיסים ביחד ודונו: אילו מ-8 הצרכים הרעיון של <b>כל אחד מכם</b> כבר עונה עליו, ואילו עדיין לא.
+    </div>
+    <p id="p2-progress" class="text-xs text-gray-400 mb-3"></p>
+    <div id="diag-grid"></div>
+    <button class="w-full mt-4 bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl text-lg font-black shadow-lg" onclick="goPhase('p3')">שלוש שאלות היזם ←</button>
+  </div>
+</div>
+
+<!-- ══ P3: שלוש שאלות היזם + שרשרת אספקה ══ -->
+<div class="phase-panel" id="panel-p3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center justify-between items-start flex-wrap gap-3 mb-5">
+      <div class="flex items-center gap-3">
+        <span class="text-4xl">💡</span>
+        <div>
+          <h2 class="text-2xl font-black text-green-900">שלוש שאלות היזם + שרשרת אספקה</h2>
+          <p class="text-gray-400 text-sm">כלים שכבר הכרתם — עכשיו מפעילים אותם</p>
+        </div>
+      </div>
+      <div class="macro-clock">⏱️ <span id="p3-clock">09:00</span></div>
+    </div>
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-4 mb-5 text-sm text-gray-700">
+      בהתבסס על מה שסימנתם "לא מטופל", בחרו <b>1-2 מתוך 4 השאלות</b> הכי רלוונטיות לכל רעיון, וכתבו הצעת שדרוג קונקרטית.
+    </div>
+    <div id="eq-panels" class="space-y-8"></div>
+    <button class="w-full mt-6 bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl text-lg font-black shadow-lg" onclick="goPhase('p4')">חזרה וסיכום ←</button>
+  </div>
+</div>
+
+<!-- ══ P4: חזרה, תיעוד, וסבב שאלות שני ══ -->
+<div class="phase-panel" id="panel-p4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5" id="hb-wrap">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🎒</span>
+      <div>
+        <h2 class="text-2xl font-black text-green-900">חבילת החזרה</h2>
+        <p class="text-gray-400 text-sm">מה אתם לוקחים בחזרה לקבוצה המקורית שלכם?</p>
+      </div>
+    </div>
+    <div id="hb-card"></div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5 hidden" id="r2-wrap">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🌍</span>
+      <div>
+        <h2 class="text-2xl font-black text-green-900">סבב שני: השאלה הגדולה</h2>
+        <p class="text-gray-400 text-sm">איך הרעיון שלכם עוזר להאכיל 10 מיליארד אנשים — אחרי כל מה שגיליתם?</p>
+      </div>
+    </div>
+    <div id="r2-card"></div>
+  </div>
+
+  <div class="bg-slate-800 text-white rounded-3xl p-8 text-center hidden" id="final-wrap">
+    <p class="text-5xl mb-3">🎉</p>
+    <p class="text-2xl font-black mb-2">כל הכבוד!</p>
+    <p class="text-slate-300 text-sm mb-5">התובנות שאספתם היום יחכו לכם בסדנה הבאה, כשתחזרו לקבוצה המקורית שלכם.</p>
+    <p class="text-lime-300 text-4xl font-black" id="final-lv">0</p>
+    <p class="text-slate-400 text-sm mb-6">עלים שנצברו לזוג היום 🌿</p>
+
+    <div class="bg-slate-700 rounded-2xl p-5 text-right" id="feedback-block">
+      <p class="font-bold text-sm mb-2 text-center">🎤 כמה כוכבים לבוטקאמפ כולו?</p>
+      <div class="flex justify-center gap-2 mb-4" id="fb-stars">
+        <button class="star-btn text-3xl" data-val="1" onclick="rateFeedback(1)">☆</button>
+        <button class="star-btn text-3xl" data-val="2" onclick="rateFeedback(2)">☆</button>
+        <button class="star-btn text-3xl" data-val="3" onclick="rateFeedback(3)">☆</button>
+        <button class="star-btn text-3xl" data-val="4" onclick="rateFeedback(4)">☆</button>
+        <button class="star-btn text-3xl" data-val="5" onclick="rateFeedback(5)">☆</button>
+      </div>
+      <input id="fb-text" type="text" maxlength="120" placeholder="משהו שהכי עזר לכם היום? (רשות)" class="w-full border-2 border-slate-500 bg-slate-800 text-white placeholder-slate-400 rounded-xl p-2 text-sm mb-3">
+      <button class="w-full bg-sky-600 hover:bg-sky-500 text-white py-2.5 rounded-xl font-bold text-sm" onclick="submitFeedback()">📮 שלחו משוב</button>
+      <p id="fb-sent" class="hidden text-center text-xs font-bold text-lime-300 mt-2">✅ תודה!</p>
+    </div>
+
+    <button class="w-full mt-5 bg-amber-600 hover:bg-amber-500 text-white py-3 rounded-2xl font-black" onclick="shareToWall()">🧠 שתפו את התובנה הכי טובה שלכם עם הכיתה</button>
+    <p id="wall-sent" class="hidden text-center text-xs font-bold text-lime-300 mt-2">✅ נשלח לקיר!</p>
+    <div id="wall-list" class="mt-4 grid gap-2 text-right"></div>
+  </div>
+</div>
+
+</div><!-- /max-w -->
+
+<script>
+'use strict';
+
+// ── DATA ─────────────────────────────────────────────────────────────────
+const NEEDS = [
+  { key:'plant_1',  group:'plant',  icon:'☀️', title:'אור (PAR, 400-700nm)', desc:'הצמח ‘אוכל’ רק חלק מהאור; זו האנרגיה שמניעה פוטוסינתזה שהופכת CO₂ ומים לסוכר.' },
+  { key:'plant_2',  group:'plant',  icon:'💧', title:'מים בכמות ובעיתוי הנכונים', desc:'מעט מדי = כמש ומת, יותר מדי = שורשים נרקבים.' },
+  { key:'plant_3',  group:'plant',  icon:'🌡️', title:'טמפרטורה', desc:'לכל צמח טווח אופטימלי; קרינת חום (IR) מלחיצה את הצמח ופוגעת ביבול.' },
+  { key:'plant_4',  group:'plant',  icon:'⚗️', title:'מינרלים ו-pH מאוזן', desc:'חנקן (N) לעלים, זרחן (P) לשורשים, אשלגן (K) לפרי.' },
+  { key:'farmer_1', group:'farmer', icon:'📊', title:'מידע בזמן אמת', desc:'לדעת מה קורה בשדה עכשיו, בלי לבדוק כל צמח ביד.' },
+  { key:'farmer_2', group:'farmer', icon:'⏱️', title:'תזמון מדויק', desc:'יום אחד מאוחר יכול להרוס יבול שלם.' },
+  { key:'farmer_3', group:'farmer', icon:'💰', title:'רווחיות', desc:'טכנולוגיה חייבת להחזיר את עצמה כלכלית.' },
+  { key:'farmer_4', group:'farmer', icon:'📈', title:'יעילות', desc:'פחות מים/דשן/עבודה, יותר תפוקה.' },
+];
+
+const EQUESTIONS = [
+  { key:'add_value',    title:'איך אפשר להוסיף ערך למערכת קיימת?', example:'יריעת חממה + ציפוי ננו → i-EcoGuard' },
+  { key:'optimize',     title:'איך אפשר לייעל מערכת קיימת?', example:'השקיה בהצפה → טפטוף → נטפים' },
+  { key:'dual_use',     title:'האם אפשר לתת שימוש כפול לחלק ממנה? (Dual Use)', example:'שדה + פאנלים → agRE.tech' },
+  { key:'supply_chain', title:'איפה במסע (גידול ← קטיף ← אחסון ← הפצה ← צלחת) יש "דליפה" שלא חשבתם עליה?', example:null },
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────
+const STATE = { pair: null, answers: {}, diag: {}, diagCount: {} };
+
+function saveAnswer(student, field, val) {
+  STATE.answers[student + '|' + field] = val;
+  persistState();
+}
+function getAnswer(student, field) { return STATE.answers[student + '|' + field]; }
+function persistState() { try { localStorage.setItem('agtech101full_state', JSON.stringify(STATE)); } catch(e) {} }
+function restoreState() {
+  try { const raw = localStorage.getItem('agtech101full_state'); if (raw) Object.assign(STATE, JSON.parse(raw)); } catch(e) {}
+}
+
+function escapeHtml_(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function escapeAttr_(s) { return String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+// ── BACKEND: LOGGING + RETRY QUEUE ──────────────────────────────────────
+let pendingQueue = [];
+function logEvent(field, content, meta) {
+  const payload = Object.assign({ type: 'log', field, content }, meta);
+  sendPayload(payload);
+}
+function sendPayload(payload) {
+  if (!BOOTCAMP_API_URL) { showCloudBanner('⚠️ אין חיבור לענן מוגדר — התשובות נשמרות רק במחשב הזה. דווחו למורה.'); return; }
+  fetch(BOOTCAMP_API_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  }).then(() => { hideCloudBanner(); }).catch(() => { queuePayload(payload); });
+}
+function queuePayload(payload) {
+  pendingQueue.push(payload);
+  showCloudBanner('⚠️ ' + pendingQueue.length + ' תשובות לא נשלחו לגיליון — בודקים חיבור אוטומטית. אל תסגרו את הדף.');
+}
+setInterval(() => {
+  if (!pendingQueue.length || !BOOTCAMP_API_URL) return;
+  const retry = pendingQueue; pendingQueue = [];
+  retry.forEach(sendPayload);
+}, 12000);
+function showCloudBanner(msg) {
+  const el = document.getElementById('cloud-banner');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+function hideCloudBanner() {
+  if (pendingQueue.length) return;
+  document.getElementById('cloud-banner').classList.add('hidden');
+}
+
+async function fetchPairingList() {
+  if (!BOOTCAMP_API_URL) return [];
+  try {
+    const res = await fetch(BOOTCAMP_API_URL + '?action=pairing');
+    const data = await res.json();
+    return data.ok ? data.pairs : [];
+  } catch(e) { return []; }
+}
+async function fetchAnswerFromSheet(student, field) {
+  if (!BOOTCAMP_API_URL) return null;
+  try {
+    const res = await fetch(BOOTCAMP_API_URL + '?action=getAnswer&student=' + encodeURIComponent(student) + '&field=' + encodeURIComponent(field));
+    const data = await res.json();
+    return data.ok ? data.content : null;
+  } catch(e) { return null; }
+}
+async function getRoundOneAnswer(student) {
+  const local = getAnswer(student, 'big_q_round1');
+  if (local) return local;
+  const remote = await fetchAnswerFromSheet(student, 'big_q_round1');
+  if (remote) { saveAnswer(student, 'big_q_round1', remote); return remote; }
+  return null;
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────────────────
+const PHASE_INFO = {
+  k1: { macro: '🧠 ריענון ידע', sub: 1, total: 5 },
+  k2: { macro: '🧠 ריענון ידע', sub: 2, total: 5 },
+  k3: { macro: '🧠 ריענון ידע', sub: 3, total: 5 },
+  k4: { macro: '🧠 ריענון ידע', sub: 4, total: 5 },
+  k5: { macro: '🧠 ריענון ידע', sub: 5, total: 5 },
+  p1: { macro: '🚀 הפרויקט', sub: 1, total: 4 },
+  p2: { macro: '🚀 הפרויקט', sub: 2, total: 4 },
+  p3: { macro: '🚀 הפרויקט', sub: 3, total: 4 },
+  p4: { macro: '🚀 הפרויקט', sub: 4, total: 4 },
+};
+const startedPhases = {};
+
+function goPhase(id) {
+  document.querySelectorAll('.phase-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  const info = PHASE_INFO[id];
+  if (info) {
+    document.getElementById('progress-header').classList.remove('hidden');
+    document.getElementById('ph-label').textContent = info.macro + ' · ' + info.sub + '/' + info.total;
+    const globalIdx = (info.macro.indexOf('הפרויקט') > -1 ? 5 : 0) + info.sub;
+    document.getElementById('ph-bar').style.width = Math.round(globalIdx / 9 * 100) + '%';
+    GC.mascotSay(info.macro, '🌱');
+  }
+
+  if (!startedPhases[id]) {
+    startedPhases[id] = true;
+    if (id === 'p1') startP1();
+    if (id === 'p2') startP2();
+    if (id === 'p3') startP3();
+    if (id === 'p4') startP4();
+  }
+}
+
+// ── GENERIC SINGLE-FIELD TURN ENGINE (used by hb, r2) ────────────────────
+function createTurnEngine(dom) {
+  let queue = [], idx = 0, timerHandle = null, doneCb = null;
+
+  function render() {
+    const t = queue[idx];
+    dom.badge.textContent = '✍️ תור: ' + t.student;
+    dom.prompt.textContent = t.prompt;
+    if (dom.recallWrap) {
+      if (t.recallText !== undefined) {
+        dom.recallWrap.classList.remove('hidden');
+        dom.recallText.textContent = t.recallText || 'לא הצלחנו לטעון את התשובה הקודמת שלך — כתבו אותה כאן שוב בקצרה.';
+      } else {
+        dom.recallWrap.classList.add('hidden');
+      }
+    }
+    dom.textarea.value = '';
+    dom.textarea.maxLength = t.maxLen;
+    dom.textarea.placeholder = t.placeholder || '';
+    dom.textarea.disabled = false;
+    dom.submitBtn.disabled = false;
+    dom.submitBtn.classList.remove('opacity-50');
+    updateCounter();
+    dom.textarea.oninput = updateCounter;
+    dom.textarea.focus();
+    runTimer(t.seconds);
+  }
+
+  function updateCounter() {
+    const t = queue[idx];
+    dom.counter.textContent = dom.textarea.value.length + '/' + t.maxLen;
+  }
+
+  function runTimer(seconds) {
+    clearInterval(timerHandle);
+    let remain = seconds;
+    dom.timerNum.textContent = Math.ceil(remain);
+    dom.timerBar.style.width = '100%';
+    dom.timerBar.style.background = '#84cc16';
+    timerHandle = setInterval(() => {
+      remain -= 0.2;
+      if (remain <= 8 && remain > 0) dom.timerBar.style.background = '#dc2626';
+      if (remain <= 0) { clearInterval(timerHandle); dom.timerNum.textContent = '0'; dom.timerBar.style.width = '0%'; lockAndAdvance(true); return; }
+      dom.timerNum.textContent = Math.ceil(remain);
+      dom.timerBar.style.width = (remain / seconds * 100) + '%';
+    }, 200);
+  }
+
+  function lockAndAdvance(timedOut) {
+    clearInterval(timerHandle);
+    const t = queue[idx];
+    const val = dom.textarea.value.trim();
+    dom.textarea.disabled = true;
+    dom.submitBtn.disabled = true;
+    dom.submitBtn.classList.add('opacity-50');
+    if (val) {
+      saveAnswer(t.student, t.field, val);
+      logEvent(t.field, val, { student: t.student, group: t.group, step: t.step, partner: t.partner });
+      if (t.points) GC.addLeaves(t.points, t.axis || 'K');
+      if (t.onSave) t.onSave(val);
+      GC.mascotSay('נשמר! 🌿', '✅');
+    } else if (timedOut) {
+      GC.mascotSay('הזמן נגמר — עוברים הלאה', '⏱️');
+    }
+    idx++;
+    setTimeout(() => { if (idx < queue.length) render(); else finish(); }, val ? 500 : 900);
+  }
+
+  function finish() { if (doneCb) doneCb(); }
+
+  return {
+    run(q, onAllDone) { queue = q; idx = 0; doneCb = onAllDone; render(); },
+    submit() { lockAndAdvance(false); }
+  };
+}
+
+function buildTurnCardHTML(prefix, withRecall) {
+  return `
+    <div class="turn-card p-6">
+      <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <span id="${prefix}-badge" class="bg-green-700 text-white text-sm font-black px-4 py-2 rounded-full"></span>
+        <div class="flex items-center gap-3">
+          <div class="timer-bar-wrap w-28"><div id="${prefix}-bar" class="timer-bar"></div></div>
+          <div class="timer-ring"><span id="${prefix}-num">60</span></div>
+        </div>
+      </div>
+      ${withRecall ? `<div id="${prefix}-recall-wrap" class="hidden bg-white border-2 border-lime-200 rounded-xl p-3 mb-3">
+        <p class="text-xs font-bold text-lime-700 mb-1">התשובה הקודמת שלכם:</p>
+        <p id="${prefix}-recall-text" class="text-sm text-gray-600 italic"></p>
+      </div>` : ''}
+      <p id="${prefix}-prompt" class="font-black text-lg text-gray-800 mb-3"></p>
+      <textarea id="${prefix}-input" rows="3" class="w-full border-2 border-lime-300 rounded-xl p-3 text-sm outline-none resize-none focus:border-lime-500 bg-white"></textarea>
+      <div class="flex justify-between items-center mt-2">
+        <span id="${prefix}-counter" class="text-xs text-gray-400"></span>
+        <button id="${prefix}-submit" class="bg-lime-600 hover:bg-lime-500 text-white px-6 py-2 rounded-xl font-bold text-sm">💾 שמרו והמשיכו</button>
+      </div>
+    </div>`;
+}
+
+function wireTurnEngine(prefix, withRecall) {
+  const dom = {
+    badge: document.getElementById(prefix + '-badge'),
+    prompt: document.getElementById(prefix + '-prompt'),
+    textarea: document.getElementById(prefix + '-input'),
+    counter: document.getElementById(prefix + '-counter'),
+    submitBtn: document.getElementById(prefix + '-submit'),
+    timerNum: document.getElementById(prefix + '-num'),
+    timerBar: document.getElementById(prefix + '-bar'),
+    recallWrap: withRecall ? document.getElementById(prefix + '-recall-wrap') : null,
+    recallText: withRecall ? document.getElementById(prefix + '-recall-text') : null,
+  };
+  const engine = createTurnEngine(dom);
+  dom.submitBtn.onclick = () => engine.submit();
+  return engine;
+}
+
+// ── K5: SYNERGY MINI-GAME ─────────────────────────────────────────────────
+let synergyClicked = new Set();
+function revealSynergy(key) {
+  if (synergyClicked.has(key)) return;
+  synergyClicked.add(key);
+  document.getElementById('syn-' + key).classList.add('show');
+  document.querySelector('[data-syn="' + key + '"]').classList.add('done-card');
+  if (synergyClicked.size === 3) {
+    GC.addLeaves(10, 'K');
+    GC.reveal('solargik-wrap');
+    GC.mascotSay('אנרגיה וחקלאות ביחד — סינרגיה אמיתית!', '☀️');
+  }
+}
+
+// ── P1: שיבוץ + הצגת התיק (עם השאלה הגדולה, סבב 1) ───────────────────────
+let p1Engine;
+function createPitchEngine(dom) {
+  let queue = [], idx = 0, timerHandle = null, doneCb = null;
+
+  function render() {
+    const t = queue[idx];
+    dom.badge.textContent = '🎤 תור: ' + t.student + ' מציג/ה לפני ' + t.partner;
+    [dom.bigq, dom.problem, dom.solution, dom.audience].forEach(el => el.value = '');
+    [dom.bigq, dom.problem, dom.solution, dom.audience].forEach(el => {
+      el.disabled = false;
+      const counter = document.querySelector('.p1-counter[data-for="' + el.id + '"]');
+      const update = () => counter.textContent = el.value.length + '/' + el.maxLength;
+      el.oninput = update;
+      update();
+    });
+    dom.submitBtn.disabled = false;
+    dom.submitBtn.classList.remove('opacity-50');
+    dom.bigq.focus();
+    runTimer(75);
+  }
+  function runTimer(seconds) {
+    clearInterval(timerHandle);
+    let remain = seconds;
+    dom.timerNum.textContent = Math.ceil(remain);
+    dom.timerBar.style.width = '100%';
+    dom.timerBar.style.background = '#84cc16';
+    timerHandle = setInterval(() => {
+      remain -= 0.2;
+      if (remain <= 10 && remain > 0) dom.timerBar.style.background = '#dc2626';
+      if (remain <= 0) { clearInterval(timerHandle); dom.timerNum.textContent = '0'; dom.timerBar.style.width = '0%'; lockAndAdvance(); return; }
+      dom.timerNum.textContent = Math.ceil(remain);
+      dom.timerBar.style.width = (remain / seconds * 100) + '%';
+    }, 200);
+  }
+  function lockAndAdvance() {
+    clearInterval(timerHandle);
+    const t = queue[idx];
+    const vals = {
+      big_q_round1: dom.bigq.value.trim(),
+      pitch_problem: dom.problem.value.trim(),
+      pitch_solution: dom.solution.value.trim(),
+      pitch_audience: dom.audience.value.trim(),
+    };
+    [dom.bigq, dom.problem, dom.solution, dom.audience].forEach(el => el.disabled = true);
+    dom.submitBtn.disabled = true;
+    dom.submitBtn.classList.add('opacity-50');
+    let any = false;
+    Object.keys(vals).forEach(field => {
+      if (vals[field]) {
+        any = true;
+        saveAnswer(t.student, field, vals[field]);
+        logEvent(field, vals[field], { student: t.student, group: t.group, step: '1', partner: t.partner });
+      }
+    });
+    if (any) { GC.addLeaves(3, 'K'); GC.mascotSay('התיק הוצג! 🎒', '✅'); }
+    idx++;
+    setTimeout(() => { if (idx < queue.length) render(); else if (doneCb) doneCb(); }, 700);
+  }
+  return {
+    run(q, onAllDone) { queue = q; idx = 0; doneCb = onAllDone; render(); },
+    submit() { lockAndAdvance(); }
+  };
+}
+
+function startP1() {
+  const p = STATE.pair;
+  document.getElementById('p1-name1').textContent = p.name1;
+  document.getElementById('p1-name2').textContent = p.name2;
+  document.getElementById('p1-card').innerHTML = `
+    <div class="turn-card p-6">
+      <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <span id="p1-badge" class="bg-green-700 text-white text-sm font-black px-4 py-2 rounded-full"></span>
+        <div class="flex items-center gap-3">
+          <div class="timer-bar-wrap w-28"><div id="p1-bar" class="timer-bar"></div></div>
+          <div class="timer-ring"><span id="p1-num">75</span></div>
+        </div>
+      </div>
+      <div class="grid gap-3">
+        <div><label class="text-xs font-bold text-gray-500">איך זה עוזר להאכיל 10 מיליארד אנשים?</label><input id="p1-bigq" type="text" maxlength="90" class="w-full border-2 border-lime-300 rounded-xl p-2 text-sm bg-white"><span class="p1-counter text-xs text-gray-400" data-for="p1-bigq">0/90</span></div>
+        <div><label class="text-xs font-bold text-gray-500">בעיה:</label><input id="p1-problem" type="text" maxlength="90" class="w-full border-2 border-lime-300 rounded-xl p-2 text-sm bg-white"><span class="p1-counter text-xs text-gray-400" data-for="p1-problem">0/90</span></div>
+        <div><label class="text-xs font-bold text-gray-500">פתרון:</label><input id="p1-solution" type="text" maxlength="90" class="w-full border-2 border-lime-300 rounded-xl p-2 text-sm bg-white"><span class="p1-counter text-xs text-gray-400" data-for="p1-solution">0/90</span></div>
+        <div><label class="text-xs font-bold text-gray-500">למי זה מיועד:</label><input id="p1-audience" type="text" maxlength="90" class="w-full border-2 border-lime-300 rounded-xl p-2 text-sm bg-white"><span class="p1-counter text-xs text-gray-400" data-for="p1-audience">0/90</span></div>
+      </div>
+      <button id="p1-submit" class="mt-4 w-full bg-lime-600 hover:bg-lime-500 text-white py-3 rounded-xl font-bold">💾 סיימתי להציג</button>
+    </div>`;
+  const dom = {
+    badge: document.getElementById('p1-badge'), bigq: document.getElementById('p1-bigq'),
+    problem: document.getElementById('p1-problem'), solution: document.getElementById('p1-solution'), audience: document.getElementById('p1-audience'),
+    submitBtn: document.getElementById('p1-submit'), timerNum: document.getElementById('p1-num'), timerBar: document.getElementById('p1-bar'),
+  };
+  p1Engine = createPitchEngine(dom);
+  dom.submitBtn.onclick = () => p1Engine.submit();
+  p1Engine.run([
+    { student: p.name1, group: p.group1, partner: p.name2 },
+    { student: p.name2, group: p.group2, partner: p.name1 },
+  ], () => { GC.mascotSay('עכשיו בואו נאבחן את הרעיונות!', '🔍'); goPhase('p2'); });
+}
+
+// ── P2: אבחון עם בנק הידע ──────────────────────────────────────────────────
+function startP2() {
+  runMacroClock('p2-clock', 8 * 60);
+  buildDiagnosisGrid();
+}
+function buildDiagnosisGrid() {
+  const p = STATE.pair;
+  const container = document.getElementById('diag-grid');
+  container.innerHTML = NEEDS.map(n => `
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-4 mb-3">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-2xl">${n.icon}</span>
+        <div><p class="font-black">${escapeHtml_(n.title)}</p><p class="text-xs text-gray-500">${escapeHtml_(n.desc)}</p></div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-3">
+        ${diagRowHTML(n.key, p.name1, p.group1, p.name2)}
+        ${diagRowHTML(n.key, p.name2, p.group2, p.name1)}
+      </div>
+    </div>`).join('');
+  updateDiagProgress();
+}
+function diagRowHTML(needKey, student, group, partner) {
+  const a = escapeAttr_(needKey), s = escapeAttr_(student), g = escapeAttr_(group || ''), pt = escapeAttr_(partner);
+  return `<div class="bg-lime-50 rounded-xl p-3">
+    <p class="text-xs font-bold text-gray-600 mb-2">רעיון של ${escapeHtml_(student)}:</p>
+    <div class="flex gap-1">
+      <button type="button" class="diag-btn flex-1" data-need="${a}" data-student="${s}" data-group="${g}" data-partner="${pt}" data-val="yes">✅ מטופל</button>
+      <button type="button" class="diag-btn flex-1" data-need="${a}" data-student="${s}" data-group="${g}" data-partner="${pt}" data-val="no">❌ לא מטופל</button>
+      <button type="button" class="diag-btn flex-1" data-need="${a}" data-student="${s}" data-group="${g}" data-partner="${pt}" data-val="na">➖ לא רלוונטי</button>
+    </div>
+  </div>`;
+}
+document.getElementById('diag-grid').addEventListener('click', e => {
+  const btn = e.target.closest('.diag-btn');
+  if (!btn) return;
+  setDiag(btn.dataset.need, btn.dataset.student, btn.dataset.group, btn.dataset.partner, btn.dataset.val, btn);
+});
+function setDiag(needKey, student, group, partner, val, btnEl) {
+  const wrap = btnEl.parentElement;
+  wrap.querySelectorAll('.diag-btn').forEach(b => b.classList.remove('sel-yes', 'sel-no', 'sel-na'));
+  btnEl.classList.add(val === 'yes' ? 'sel-yes' : val === 'no' ? 'sel-no' : 'sel-na');
+  const label = val === 'yes' ? 'מטופל' : val === 'no' ? 'לא מטופל' : 'לא רלוונטי';
+  const key = student + '|' + needKey;
+  const isNew = !(key in STATE.diag);
+  STATE.diag[key] = val;
+  persistState();
+  logEvent('diagnosis_' + needKey, label, { student, group, step: '2', partner });
+  if (isNew) {
+    STATE.diagCount[student] = (STATE.diagCount[student] || 0) + 1;
+    if (STATE.diagCount[student] === NEEDS.length) {
+      GC.addLeaves(5, 'K');
+      GC.mascotSay('אבחון מלא ל' + student + '! 🌿', '🔍');
+    }
+    updateDiagProgress();
+  }
+}
+function updateDiagProgress() {
+  const p = STATE.pair;
+  const done = (STATE.diagCount[p.name1] || 0) + (STATE.diagCount[p.name2] || 0);
+  document.getElementById('p2-progress').textContent = done + ' / ' + (NEEDS.length * 2) + ' כרטיסים סומנו';
+}
+function getUnmet(student) {
+  return NEEDS.filter(n => STATE.diag[student + '|' + n.key] === 'no');
+}
+
+// ── P3: שלוש שאלות היזם ─────────────────────────────────────────────────────
+function startP3() {
+  runMacroClock('p3-clock', 9 * 60);
+  const p = STATE.pair;
+  const container = document.getElementById('eq-panels');
+  container.innerHTML = [
+    { name: p.name1, group: p.group1, partner: p.name2 },
+    { name: p.name2, group: p.group2, partner: p.name1 },
+  ].map(s => eqPanelHTML(s.name, s.group, s.partner)).join('');
+}
+function eqPanelHTML(student, group, partner) {
+  const unmet = getUnmet(student);
+  const s = escapeAttr_(student), g = escapeAttr_(group || ''), pt = escapeAttr_(partner);
+  const unmetHTML = unmet.length
+    ? `<p class="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-2 mb-3">🔎 תזכורת משלב האבחון — עדיין לא מטופל: ${unmet.map(n => escapeHtml_(n.title)).join(', ')}</p>`
+    : `<p class="text-xs text-lime-700 bg-lime-50 border border-lime-200 rounded-lg p-2 mb-3">✅ כל הצרכים סומנו כמטופלים באבחון — עדיין אפשר למצוא שדרוג נוסף!</p>`;
+  const cards = EQUESTIONS.map(q => `
+    <div class="eq-card p-4" data-eq="${escapeAttr_(q.key)}">
+      <div class="flex items-start gap-3 cursor-pointer eq-toggle" data-eq="${escapeAttr_(q.key)}" data-student="${s}" data-group="${g}" data-partner="${pt}">
+        <input type="checkbox" class="eq-chk mt-1 w-5 h-5">
+        <div>
+          <p class="font-bold text-sm">${escapeHtml_(q.title)}</p>
+          ${q.example ? `<p class="text-xs text-gray-400 mt-1">דוגמה: ${escapeHtml_(q.example)}</p>` : ''}
+        </div>
+      </div>
+      <div class="eq-body hidden mt-3">
+        <textarea rows="2" maxlength="150" placeholder="הצעת השדרוג הקונקרטית שלכם..." class="eq-input w-full border-2 border-green-300 rounded-xl p-2 text-sm bg-white outline-none focus:border-green-500"></textarea>
+        <div class="flex justify-between items-center mt-1">
+          <span class="eq-counter text-xs text-gray-400">0/150</span>
+          <button type="button" class="eq-save bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold" data-eq="${escapeAttr_(q.key)}" data-student="${s}" data-group="${g}" data-partner="${pt}">💾 שמרו הצעה</button>
+        </div>
+      </div>
+    </div>`).join('');
+  return `
+    <div>
+      <p class="font-black text-lg text-green-900 mb-2">💡 הרעיון של ${escapeHtml_(student)}</p>
+      ${unmetHTML}
+      <div class="grid md:grid-cols-2 gap-3">${cards}</div>
+    </div>`;
+}
+document.getElementById('eq-panels').addEventListener('click', e => {
+  const save = e.target.closest('.eq-save');
+  if (save) { saveEQ(save.dataset.eq, save.dataset.student, save.dataset.group, save.dataset.partner, save); return; }
+  const toggle = e.target.closest('.eq-toggle');
+  if (toggle) toggleEQ(toggle);
+});
+document.getElementById('eq-panels').addEventListener('input', e => {
+  if (!e.target.classList.contains('eq-input')) return;
+  const body = e.target.closest('.eq-body');
+  body.querySelector('.eq-counter').textContent = e.target.value.length + '/150';
+});
+function toggleEQ(toggleEl) {
+  const card = toggleEl.closest('.eq-card');
+  const chk = card.querySelector('.eq-chk');
+  const body = card.querySelector('.eq-body');
+  const willOpen = body.classList.contains('hidden');
+  chk.checked = willOpen;
+  body.classList.toggle('hidden', !willOpen);
+  card.classList.toggle('chosen', willOpen);
+  if (willOpen) card.querySelector('.eq-input').focus();
+}
+let eqSavedCount = {};
+function saveEQ(qkey, student, group, partner, btnEl) {
+  if ((eqSavedCount[student] || 0) >= 2) { GC.mascotSay('כבר שמרתם 2 הצעות לרעיון הזה — זה מספיק!', '✋'); return; }
+  const card = btnEl.closest('.eq-card');
+  const val = card.querySelector('.eq-input').value.trim();
+  if (!val) { GC.mascotSay('כתבו הצעה קצרה קודם', '💡'); return; }
+  eqSavedCount[student] = (eqSavedCount[student] || 0) + 1;
+  const field = 'upgrade_q' + eqSavedCount[student];
+  saveAnswer(student, field + '_' + qkey, val);
+  logEvent(field, val, { student, group, step: '3', partner });
+  GC.addLeaves(4, 'K');
+  btnEl.disabled = true; btnEl.textContent = '✅ נשמר'; btnEl.classList.add('opacity-60');
+  GC.mascotSay('הצעת שדרוג נשמרה! 🌿', '✅');
+}
+
+// ── P4: חזרה, תיעוד, וסבב שני ──────────────────────────────────────────────
+let hbEngine, r2Engine;
+function startP4() {
+  document.getElementById('hb-card').innerHTML = buildTurnCardHTML('hb', false);
+  hbEngine = wireTurnEngine('hb', false);
+  const p = STATE.pair;
+  const qa = [
+    { student: p.name1, group: p.group1, step: '4', field: 'handback_summary', partner: p.name2,
+      prompt: 'השדרוג הכי טוב שגיליתי לרעיון של ' + p.name2 + ':', maxLen: 150, seconds: 60, points: 5 },
+    { student: p.name2, group: p.group2, step: '4', field: 'handback_summary', partner: p.name1,
+      prompt: 'השדרוג הכי טוב שגיליתי לרעיון של ' + p.name1 + ':', maxLen: 150, seconds: 60, points: 5 },
+  ];
+  hbEngine.run(qa, () => {
+    document.getElementById('r2-wrap').classList.remove('hidden');
+    startR2();
+  });
+}
+async function startR2() {
+  window.scrollTo({ top: document.getElementById('r2-wrap').offsetTop - 80, behavior: 'smooth' });
+  const p = STATE.pair;
+  document.getElementById('r2-card').innerHTML = buildTurnCardHTML('r2', true);
+  r2Engine = wireTurnEngine('r2', true);
+
+  const r1a = await getRoundOneAnswer(p.name1);
+  const r1b = await getRoundOneAnswer(p.name2);
+
+  const qb = [
+    { student: p.name1, group: p.group1, step: '4', field: 'big_q_round2', partner: p.name2,
+      prompt: 'עכשיו, אחרי כל מה שגיליתם — איך הרעיון שלכם עוזר להאכיל 10 מיליארד אנשים?',
+      maxLen: 150, seconds: 75, points: 5, recallText: r1a,
+      onSave: (val) => bonusCheck(p.name1, r1a, val) },
+    { student: p.name2, group: p.group2, step: '4', field: 'big_q_round2', partner: p.name1,
+      prompt: 'עכשיו, אחרי כל מה שגיליתם — איך הרעיון שלכם עוזר להאכיל 10 מיליארד אנשים?',
+      maxLen: 150, seconds: 75, points: 5, recallText: r1b,
+      onSave: (val) => bonusCheck(p.name2, r1b, val) },
+  ];
+  r2Engine.run(qb, () => finishLomda());
+}
+function bonusCheck(student, round1, round2) {
+  if (!round1) return;
+  const w1 = round1.trim().split(/\s+/).length;
+  const w2 = round2.trim().split(/\s+/).length;
+  if (w2 >= w1 + 4 || round2.length >= round1.length * 1.3) {
+    GC.addLeaves(5, 'M');
+    GC.mascotSay('תשובה שנייה משמעותית יותר! בונוס 🌿', '🚀');
+  }
+}
+function finishLomda() {
+  document.getElementById('final-wrap').classList.remove('hidden');
+  window.scrollTo({ top: document.getElementById('final-wrap').offsetTop - 80, behavior: 'smooth' });
+  GC.mascotSay('סיימתם! ספרו למורה שאתם מוכנים לחזור לקבוצה', '🎉');
+}
+
+// ── FINAL: FEEDBACK + WALL (reuses existing Ideas/Feedback sheet tabs) ────
+let fbStars = 0;
+function rateFeedback(n) {
+  fbStars = n;
+  document.querySelectorAll('#fb-stars .star-btn').forEach((btn, i) => btn.textContent = i < n ? '⭐' : '☆');
+}
+let feedbackSent = false;
+function submitFeedback() {
+  if (feedbackSent) return;
+  if (!fbStars) { GC.mascotSay('בחרו כוכבים קודם', '⭐'); return; }
+  feedbackSent = true;
+  const p = STATE.pair;
+  const pairName = p.name1 + ' + ' + p.name2;
+  const text = document.getElementById('fb-text').value.trim();
+  sendPayload({ type: 'feedback', pairName, lectureStars: fbStars, lomdaStars: fbStars, best: text, unclear: '' });
+  document.getElementById('fb-sent').classList.remove('hidden');
+}
+let wallShared = false;
+function shareToWall() {
+  const p = STATE.pair;
+  const pairName = p.name1 + ' + ' + p.name2;
+  if (!wallShared) {
+    wallShared = true;
+    [[p.name1, p.name2], [p.name2, p.name1]].forEach(([student, partner]) => {
+      const summary = getAnswer(student, 'handback_summary');
+      if (summary) sendPayload({ type: 'idea', pairName, step: 'שיבוץ מחדש — השדרוג הכי טוב', idea: student + ' על הרעיון של ' + partner + ': ' + summary });
+    });
+    document.getElementById('wall-sent').classList.remove('hidden');
+  }
+  loadWall();
+}
+async function loadWall() {
+  const el = document.getElementById('wall-list');
+  if (!BOOTCAMP_API_URL) { el.innerHTML = '<p class="text-slate-400 text-sm text-center">אין חיבור לענן מוגדר.</p>'; return; }
+  el.innerHTML = '<p class="text-slate-400 text-sm text-center">טוען...</p>';
+  try {
+    const res = await fetch(BOOTCAMP_API_URL);
+    const data = await res.json();
+    if (!data.ok || !data.ideas.length) { el.innerHTML = '<p class="text-slate-400 text-sm text-center">עדיין אין רעיונות בקיר...</p>'; return; }
+    el.innerHTML = data.ideas.slice(0, 20).map(i => `
+      <div class="bg-slate-700 rounded-xl p-3 text-sm">
+        <p class="font-bold text-lime-300">${escapeHtml_(i.pairName || 'זוג')}</p>
+        <p class="text-slate-200 mt-1">${escapeHtml_(i.idea)}</p>
+      </div>`).join('');
+  } catch(e) { el.innerHTML = '<p class="text-red-400 text-sm text-center">לא הצלחנו לטעון את הקיר כרגע.</p>'; }
+}
+
+// ── MACRO CLOCK (p2 / p3) ───────────────────────────────────────────────
+function runMacroClock(elId, totalSeconds) {
+  const el = document.getElementById(elId);
+  let remain = totalSeconds;
+  const fmt = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  el.textContent = fmt(remain);
+  const handle = setInterval(() => {
+    remain--;
+    if (remain <= 0) {
+      clearInterval(handle);
+      el.textContent = '0:00';
+      el.parentElement.style.background = '#fee2e2';
+      GC.mascotSay('הזמן לשלב הזה נגמר — אפשר להמשיך כשמוכנים', '⏱️');
+      return;
+    }
+    el.textContent = fmt(remain);
+  }, 1000);
+}
+
+// ── SETUP SCREEN ─────────────────────────────────────────────────────────
+let PAIRING_LIST = [];
+let selectedPair = null;
+
+async function initSetupScreen() {
+  restoreState();
+  PAIRING_LIST = await fetchPairingList();
+  const sel = document.getElementById('pair-select');
+  if (PAIRING_LIST.length) {
+    sel.innerHTML = '<option value="">— בחרו את הזוג שלכם —</option>' +
+      PAIRING_LIST.map((p, i) => `<option value="${i}">${escapeHtml_(p.a)} 🤝 ${escapeHtml_(p.b)}</option>`).join('');
+  } else {
+    document.getElementById('pair-select-wrap').classList.add('hidden');
+    document.getElementById('no-pairing-warning').classList.remove('hidden');
+    document.getElementById('pair-manual').classList.remove('hidden');
+    document.getElementById('manual-a').oninput = checkManual;
+    document.getElementById('manual-b').oninput = checkManual;
+  }
+}
+function onPairSelect() {
+  const sel = document.getElementById('pair-select');
+  if (sel.value === '') { selectedPair = null; hideGroupPickers(); return; }
+  selectedPair = PAIRING_LIST[parseInt(sel.value)];
+  showGroupPickers(selectedPair.a, selectedPair.b);
+}
+function checkManual() {
+  const a = document.getElementById('manual-a').value.trim();
+  const b = document.getElementById('manual-b').value.trim();
+  if (a && b) { selectedPair = { a, b }; showGroupPickers(a, b); }
+  else hideGroupPickers();
+}
+function showGroupPickers(nameA, nameB) {
+  picked = { 1: null, 2: null };
+  document.getElementById('g1-name').textContent = nameA;
+  document.getElementById('g2-name').textContent = nameB;
+  document.getElementById('g1-btns').innerHTML = groupBtnsHTML(1);
+  document.getElementById('g2-btns').innerHTML = groupBtnsHTML(2);
+  document.getElementById('group-pickers').classList.remove('hidden');
+  checkStartReady();
+}
+function hideGroupPickers() {
+  document.getElementById('group-pickers').classList.add('hidden');
+  document.getElementById('start-btn').classList.add('hidden');
+}
+function groupBtnsHTML(n) {
+  return ['A', 'B', 'C'].map(g => `<button type="button" class="group-btn flex-1 border-2 border-lime-200 rounded-xl py-3 font-black text-lg" onclick="pickGroup(${n},'${g}',this)">${g}</button>`).join('');
+}
+let picked = { 1: null, 2: null };
+function pickGroup(n, g, btnEl) {
+  picked[n] = g;
+  btnEl.parentElement.querySelectorAll('.group-btn').forEach(b => b.classList.remove('bg-lime-600', 'text-white', 'border-lime-600'));
+  btnEl.classList.add('bg-lime-600', 'text-white', 'border-lime-600');
+  checkStartReady();
+}
+function checkStartReady() {
+  document.getElementById('start-btn').classList.toggle('hidden', !(picked[1] && picked[2]));
+}
+function confirmSetup() {
+  STATE.pair = { name1: selectedPair.a, group1: picked[1], name2: selectedPair.b, group2: picked[2] };
+  persistState();
+  goPhase('k1');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────
+GC.initLesson({ lessonId: 'agtech101full', mascotMessages: {} });
+
+// K1-K5 CASCADES (reveal "continue" after quiz answered) — must be
+// registered AFTER initLesson, which resets GC._cascades to {}.
+GC.registerCascades({
+  'q-hist':    () => GC.showBtn('k1-next'),
+  'q-plant':   () => GC.showBtn('k2-next'),
+  'q-farmer':  () => GC.showBtn('k3-next'),
+  'q-netafim': () => GC.showBtn('k4-next'),
+  'q-solar':   () => GC.showBtn('k5-next'),
+});
+
+initSetupScreen();
+</script>
+</body>
+</html>

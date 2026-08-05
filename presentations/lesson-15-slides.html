@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שיעור 15 – שקפים | גדלים למחר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/slides-core.css">
+</head>
+<body>
+
+<div id="deck-title">שיעור 15 – בניית אבטיפוס: Prototype Sprint יום ב'</div>
+<div id="backdrop">
+
+  <!-- שקף 1 - כשלון מהיר (תבנית E, רעיוני - אין דוגמה קונקרטית במקור) -->
+  <section class="slide active" data-name="שקף 1" data-steps="2">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 15 · גדלים למחר</span>
+      <span class="phase-chip">🍎 פאזה 4 – פירות</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:4%;">כשלון מהיר = תיקון זול</p>
+      <div class="fw-grid">
+        <div class="rv fw-cell card-green" data-step="1">
+          <p class="label label-green">✅ מגלים בעיה עכשיו</p>
+          <p class="body" style="margin-top:6px;">תיקון קטן, מהיר, זול</p>
+        </div>
+        <div class="rv fw-cell" data-step="2" style="background:#fef2f2; border:2px solid #fecaca;">
+          <p class="label" style="color:#b91c1c;">❌ מגלים בעיה מאוחר</p>
+          <p class="body" style="margin-top:6px;">תיקון גדול, יקר, מלחיץ</p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🍎</div>
+  </section>
+
+  <!-- שקף 2 - בדיקה מול הצגה (תבנית D) -->
+  <section class="slide" data-name="שקף 2" data-steps="3">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 15 · גדלים למחר</span>
+      <span class="phase-chip">🍎 פאזה 4 – פירות</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:4%; text-align:center;">"זה אמור לעבוד" מול "בדקתי וזה עבד"</p>
+      <div style="display:flex; align-items:center; gap:3%; padding:0 5%;">
+        <div class="rv card card-blue" data-step="1" style="flex:1;">
+          <p class="label label-blue" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🔍 בדיקה</p>
+          <p class="h2" style="color:#374151;">לעצמכם, לפני</p>
+        </div>
+        <div class="vs-badge pulse-at" data-step="2">VS</div>
+        <div class="rv card card-gold" data-step="3" style="flex:1;">
+          <p class="label label-gold" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🎤 הצגה</p>
+          <p class="h2" style="color:#374151;">לאחרים, אחרי</p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🍎</div>
+  </section>
+
+</div>
+
+<div id="controls">
+  <button class="navbtn" onclick="slidesGo(-1)">→</button>
+  <span id="counter">1 / 2</span>
+  <div id="dots"></div>
+  <button class="navbtn" onclick="slidesGo(1)">←</button>
+  <button class="navbtn" id="fsbtn" title="מסך מלא">⛶</button>
+</div>
+
+<script src="assets/slides-core.js"></script>
+</body>
+</html>

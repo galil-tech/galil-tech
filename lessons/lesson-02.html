@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 2 – מהי חקלאות? מפרמה-קולצ'ר לחקלאות המחר | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;}
+    .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;border-radius:12px;}
+    .quiz-opt:hover:not([data-done]){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
+    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;}
+    .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;}
+    .reveal.show{display:block;animation:fadeUp .35s ease;}
+    .mascot{font-size:2.8rem;transition:all .4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .mascot-bounce{animation:bounce .6s ease 3;}
+    /* Timeline drag */
+    .timeline-card{cursor:grab;user-select:none;border:2px dashed #a7f3d0;background:white;border-radius:12px;transition:all .2s;text-align:center;}
+    .timeline-card:hover{transform:scale(1.04);border-color:#10b981;}
+    .timeline-card.used{opacity:.3;cursor:default;pointer-events:none;}
+    .timeline-slot{border:2.5px dashed #6ee7b7;border-radius:14px;background:#f0fdf4;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .2s;gap:2px;}
+    .timeline-slot.drag-over{border-color:#10b981;background:#d1fae5;transform:scale(1.04);}
+    .timeline-slot.correct-drop{border-color:#16a34a;background:#dcfce7;border-style:solid;}
+    .timeline-slot.wrong-drop{border-color:#dc2626;background:#fee2e2;animation:shake .3s;}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+    /* Drip diagram */
+    .drip-step{border-left:3px solid #6ee7b7;padding-right:16px;position:relative;}
+    .drip-step::before{content:'';position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:12px;height:12px;border-radius:50%;background:#16a34a;}
+    /* Mission */
+    .mission-card{border:2px solid #d1fae5;cursor:pointer;transition:all .3s;border-radius:12px;}
+    .mission-card.done-card{border-color:#16a34a;background:#f0fdf4;opacity:.7;}
+    /* Calc */
+    .calc-opt{cursor:pointer;border:2px solid #e5e7eb;transition:all .2s;border-radius:12px;}
+    .calc-opt:hover:not([disabled]){border-color:#84cc16;background:#f0fdf4;}
+    .calc-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .calc-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-lime-50 min-h-screen">
+
+<!-- MASCOT -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="lesson-01.html" class="hover:text-lime-300">← שיעור 1</a>
+      <a href="../wall.html" class="hover:text-lime-300">🛠 קיר</a>
+      <a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-lime-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 1 – נביטה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 2 מתוך 17</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">💧 מהי חקלאות? מפרמה-קולצ'ר לחקלאות המחר</h1>
+    <p class="text-green-200">ציר-ידע · נטפים · טפטוף ישראלי · מהפכה חקלאית</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 6</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: גשר + פרמה-קולצ'ר ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <!-- Bridge -->
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-6">
+      <p class="font-bold text-amber-900 mb-1">🔁 זוכרים את ה-Teaser מהשיעור הקודם?</p>
+      <p class="text-gray-700 text-sm">"אם הכל התחיל בחקלאות מסורתית – איך בכלל הגענו למכולות גידול בתוך העיר?" — היום מתחיל להיות ברור. הכל מתחיל בשאלה אחת: <b>מהי חקלאות בכלל?</b></p>
+    </div>
+
+    <div class="flex items-center gap-3 mb-6">
+      <span class="text-4xl">🌿</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">פרמה-קולצ'ר – חקלאות שמחזירה</h2>
+        <p class="text-gray-400 text-sm">ידע עתיק שעדיין רלוונטי היום</p>
+      </div>
+    </div>
+
+    <div class="bg-green-50 border-r-4 border-green-500 rounded-2xl p-6 mb-5 text-gray-700 leading-relaxed">
+      <p class="mb-3"><b>פרמה-קולצ'ר (Permaculture)</b> = חקלאות שמחזירה לטבע מה שלוקחת ממנו. לא לנצל, אלא לשתף פעולה עם הטבע.</p>
+      <p class="mb-3">שתי דוגמאות לידע חקלאי עתיק שעדיין בשימוש:</p>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl p-4 border border-green-100">
+          <p class="font-black text-green-800 mb-1">🌽 גינת 3 האחיות</p>
+          <p class="text-sm">תרבות אינדיאנית: תירס + שעועית + דלעת גדלים יחד. התירס תומך, השעועית מדשנת, הדלעת מצלה. כל צמח עוזר לשאר — אפס דשן חיצוני!</p>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-green-100">
+          <p class="font-black text-green-800 mb-1">🫒 זיתי הדרוזים בגליל המערבי</p>
+          <p class="text-sm">שיטות טיפול שעברו מדור לדור באזור שלנו בדיוק — עיבוד ידני, אוסף שמן מסורתי. ידע של מאות שנים שנשמר חי.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Discussion Q -->
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה ההגדרה הטובה ביותר של פרמה-קולצ'ר?</p>
+      <div class="grid gap-3" id="q-perm">
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-perm')">חקלאות שמשתמשת בכמה שיותר כימיקלים כדי להשיג יבול גבוה</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,true,'q-perm')" data-correct="true">חקלאות שעובדת עם הטבע, מחזירה מה שלוקחת, ומשתמשת בסינרגיה בין צמחים</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-perm')">גידול ירקות רק בתוך בית חממה</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-perm')">חקלאות אורגנית שאינה מוכרת מוצרים</div>
+      </div>
+      <div id="fb-q-perm" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">ציר-ידע ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: ציר-ידע (timeline drag) ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">⏳</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">ציר-ידע – אבני הדרך של החקלאות</h2>
+        <p class="text-gray-400 text-sm">גררו כל חידוש לעמדה הנכונה בציר הזמן</p>
+      </div>
+    </div>
+
+    <p class="text-gray-600 mb-4 text-sm">ארבע אבני דרך בהיסטוריה של החקלאות — מהראשון (**①**) לאחרון (**④**):</p>
+
+    <!-- Card bank -->
+    <div class="flex flex-wrap justify-center gap-3 mb-6" id="timeline-bank">
+      <div class="timeline-card px-4 py-3 text-sm font-bold" draggable="true" data-val="auto">🤖 אוטומציה חכמה + AI<br><span class="text-xs font-normal text-gray-400">היום</span></div>
+      <div class="timeline-card px-4 py-3 text-sm font-bold" draggable="true" data-val="drip">💧 המצאת הטפטוף – נטפים<br><span class="text-xs font-normal text-gray-400">שנות ה-60, ישראל</span></div>
+      <div class="timeline-card px-4 py-3 text-sm font-bold" draggable="true" data-val="perm">🌿 פרמה-קולצ'ר / 3 אחיות<br><span class="text-xs font-normal text-gray-400">ידע עתיק</span></div>
+      <div class="timeline-card px-4 py-3 text-sm font-bold" draggable="true" data-val="flood">🌊 השקיה בהצפה – מסופוטמיה<br><span class="text-xs font-normal text-gray-400">~6,000 שנה לפנה"ס</span></div>
+    </div>
+
+    <!-- Timeline slots -->
+    <div class="relative mb-6">
+      <!-- Horizontal line -->
+      <div class="absolute top-1/2 left-0 right-0 h-1 bg-lime-300 rounded-full" style="top:50%;transform:translateY(-50%);z-index:0;margin:0 24px;"></div>
+      <div class="grid grid-cols-4 gap-3 relative z-10">
+        <div class="flex flex-col items-center gap-2">
+          <div class="timeline-slot w-full p-2 text-center" data-correct="flood" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropTimeline(event,this)"><span class="text-gray-400 text-xs font-bold">① קדום</span></div>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="timeline-slot w-full p-2 text-center" data-correct="perm" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropTimeline(event,this)"><span class="text-gray-400 text-xs font-bold">② עתיק</span></div>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="timeline-slot w-full p-2 text-center" data-correct="drip" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropTimeline(event,this)"><span class="text-gray-400 text-xs font-bold">③ מודרני</span></div>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="timeline-slot w-full p-2 text-center" data-correct="auto" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropTimeline(event,this)"><span class="text-gray-400 text-xs font-bold">④ היום</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="timeline-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="font-black text-xl text-lime-800 mb-2">🗺️ ציר-ידע הושלם! +10 עלים 🌿</p>
+      <p class="text-gray-600 text-sm">כל קפיצה טכנולוגית בנויה על הקודמת. נטפים לא היו קיימים בלי ההשקיה הקדומה.</p>
+    </div>
+
+    <!-- Second discussion Q after timeline -->
+    <div id="tl-q2-wrap" class="reveal mt-4 bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה ה"קפיצה הגדולה ביותר" שרואים בציר הזמן?</p>
+      <div class="grid gap-3" id="q-tl2">
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-tl2')">מעבר מגידול בשדה לגידול בבית חממה</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,true,'q-tl2')" data-correct="true">מהשקיה ידנית/הצפה להשקיה מדויקת – מ"כמה שיותר מים" ל"בדיוק כמה שצריך"</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-tl2')">המצאת הדשן הכימי</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-tl2')">השימוש בחיות עבודה במקום ידיים</div>
+      </div>
+      <div id="fb-q-tl2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3)">נטפים ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: נטפים + טפטפת מבפנים ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">💧</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">נטפים – ההמצאה שחסכה מיליארדי ליטרים</h2>
+        <p class="text-gray-400 text-sm">קראו → למדו מבפנים → ענו</p>
+      </div>
+    </div>
+
+    <!-- Netafim startup card -->
+    <div class="bg-gradient-to-br from-blue-700 to-cyan-600 text-white rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🇮🇱</span>
+        <div>
+          <h3 class="font-black text-xl">נטפים (Netafim)</h3>
+          <p class="text-blue-200 text-sm">ישראל, 1965 · ממציאי הטפטוף המודרני</p>
+        </div>
+      </div>
+      <p class="text-sm text-blue-100 mb-4">נוסדה בקיבוץ חצרים בנגב — ממציאות השקיית הטפטוף המודרנית. כיום בבעלות מלאה של Orbia הבינלאומית (הושלם 2018), פועלת במאות מדינות.</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">1965</b>שנת הקמה</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">325M</b>ליטר נחסכו (Amazon India)</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">#1</b>בעולם בהשקיה מדויקת</div>
+      </div>
+    </div>
+
+    <!-- Video placeholder -->
+    <div class="bg-gray-100 rounded-2xl p-6 text-center mb-5">
+      <p class="text-2xl mb-2">🎬</p>
+      <p class="text-gray-500 font-bold">סרטון נטפים / טפטוף</p>
+      <p class="text-gray-400 text-xs mt-1">📋 המורה יציג תמונות/סרטון קצר על נטפים ואיך עובד הטפטוף</p>
+    </div>
+
+    <!-- Drip emitter "מבפנים" diagram -->
+    <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-blue-900 text-lg mb-4 text-center">💧 הטפטפת מבפנים – איך היא עובדת?</h3>
+      <div class="space-y-3">
+        <div class="drip-step mr-4">
+          <div class="bg-white rounded-xl p-3 text-sm">
+            <p class="font-black text-blue-800">① צינור מים ראשי</p>
+            <p class="text-gray-600">מים בלחץ גבוה זורמים בצינור</p>
+          </div>
+        </div>
+        <div class="drip-step mr-4">
+          <div class="bg-white rounded-xl p-3 text-sm">
+            <p class="font-black text-blue-800">② מפחית לחץ (הלב של הטפטפת)</p>
+            <p class="text-gray-600">ההמצאה של נטפים: מנגנון שמוריד את הלחץ בדיוק לרמה שנותנת <b>טיפה אחת בפעם</b>, לא סילון</p>
+          </div>
+        </div>
+        <div class="drip-step mr-4">
+          <div class="bg-white rounded-xl p-3 text-sm">
+            <p class="font-black text-blue-800">③ פתח קטן → טיפה</p>
+            <p class="text-gray-600">טיפה אחת, כל כמה שניות, ישירות לשורש</p>
+          </div>
+        </div>
+        <div class="drip-step mr-4">
+          <div class="bg-white rounded-xl p-3 text-sm">
+            <p class="font-black text-green-800">④ שורש הצמח סופג ישירות</p>
+            <p class="text-gray-600">אפס בזבוז – המים הולכים בדיוק לאן שצריך, לא לאוויר ולא לאדמה שמסביב</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-4">❓ מה "הסוד" של הטפטפת שהפך אותה למהפכה?</p>
+      <div class="grid gap-3" id="q-drip1">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-drip1')">שהיא מסוגלת להשקות שדה שלם בשנייה אחת</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-drip1')" data-correct="true">מנגנון שמוריד לחץ ונותן טיפה אחת ישירות לשורש, בלי בזבוז לסביבה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-drip1')">שהיא פועלת רק בלילה, כשהטמפרטורה נמוכה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-drip1')">שהיא משתמשת בקיטור במקום במים נוזלים</div>
+      </div>
+      <div id="fb-q-drip1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <!-- Q2 cascades -->
+    <div id="q-drip2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ למה דווקא בקיבוץ בנגב הומצא הטפטוף?</p>
+      <div class="grid gap-3" id="q-drip2">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-drip2')">כי שם יש הכי הרבה גשמים בישראל</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-drip2')">כי האוניברסיטה הקרובה ביותר נמצאת שם</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-drip2')" data-correct="true">כי הנגב יבש מאוד – הכרח הוא אם המצאה. כשאין מים, חייבים להשתמש בהם בצורה מדויקת</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-drip2')">כי הממשלה שלחה לשם את הטובים ביותר</div>
+      </div>
+      <div id="fb-q-drip2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)">חיסכון מים ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: חיסכון מים – חישוב ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🧮</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">חישוב חיסכון המים</h2>
+        <p class="text-gray-400 text-sm">מספרים אמיתיים – כמה חוסכת השקיה מדויקת?</p>
+      </div>
+    </div>
+
+    <!-- Data cards -->
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-5 text-center">
+        <p class="text-gray-600 text-sm mb-2">חסה בשדה – <b>השקיה בהצפה</b></p>
+        <p class="text-5xl font-black text-red-600">60</p>
+        <p class="text-gray-500 text-sm">ליטר מים לכל ק"ג</p>
+      </div>
+      <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 text-center">
+        <p class="text-gray-600 text-sm mb-2">חסה בהידרופוניקה – <b>טפטוף מדויק</b></p>
+        <p class="text-5xl font-black text-green-600">6</p>
+        <p class="text-gray-500 text-sm">ליטר מים לכל ק"ג</p>
+      </div>
+    </div>
+
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 mb-5">
+      <p class="font-bold text-amber-900 mb-3">🧮 חשבו ביחד: מה אחוז החיסכון?</p>
+      <p class="text-gray-700 text-sm mb-2">הנוסחה: (60 − 6) ÷ 60 × 100 = ?</p>
+      <p class="text-gray-500 text-xs">נסו לחשב לפני שבוחרים תשובה...</p>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ כמה אחוז מים חוסכת השקיית טפטוף לעומת הצפה בגידול חסה?</p>
+      <div class="grid grid-cols-4 gap-3" id="q-calc">
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,false,'q-calc')">30%</div>
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,false,'q-calc')">50%</div>
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,true,'q-calc')" data-correct="true">90%</div>
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,false,'q-calc')">99%</div>
+      </div>
+      <div id="fb-q-calc" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="calc-reveal" class="reveal mt-4 bg-green-50 border-2 border-green-300 rounded-2xl p-5">
+      <p class="font-black text-green-900 text-xl mb-2">💡 (60-6) ÷ 60 × 100 = <span class="text-3xl text-lime-600">90%</span></p>
+      <p class="text-gray-700 text-sm">מה שנחסך בטפטוף יכול להשקות 10 שדות נוספים. לכן נטפים "חסכה" מיליארדי ליטרים ברחבי העולם.</p>
+      <p class="text-gray-500 text-xs mt-2">🔗 המספרים האלה ישמשו אתכם בשיעור 5 כשנמדוד pH ו-EC — כי מים מדויקים = ניטור מדויק</p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)">פרויקט ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: פרויקט + דרכון ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🔧</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">פרויקט – הכרת המערכת</h2>
+        <p class="text-gray-400 text-sm">המערכת הותקנה ע"י מתקין מקצועי. משימתכם: ללמוד אותה.</p>
+      </div>
+    </div>
+
+    <div class="bg-blue-50 border-r-4 border-blue-500 rounded-2xl p-4 mb-5 text-sm text-blue-800">
+      🧑‍🔧 המערכת ההידרופונית <b>כבר מותקנת</b> ע"י מתקין מקצועי — לא הרכבה מחדש. תפקידכם: לסייר, להבין, ולבצע חלק אחד סימבולי.
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-lime-900 mb-3">📋 משימות הקבוצה</h3>
+      <div class="space-y-2" id="missions">
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkMission(this,0)">
+          <span class="mission-icon text-2xl">⬜</span> א. סיור – זיהינו משאבה, מאגר מים, טפטפות, מצע
+        </div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkMission(this,1)">
+          <span class="mission-icon text-2xl">⬜</span> ב. ביצענו חלק סימבולי (חיבור טפטפת / הצבת מצע)
+        </div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkMission(this,2)">
+          <span class="mission-icon text-2xl">⬜</span> ג. קיבלנו "אזור אחריות" קבוצתי לשיעורים הקרובים
+        </div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkMission(this,3)">
+          <span class="mission-icon text-2xl">⬜</span> ד. צפינו בזרימת מים ראשונה דרך הטפטפות
+        </div>
+      </div>
+      <div id="mission-done" class="hidden mt-3 bg-lime-100 rounded-xl p-3 text-center font-bold text-lime-800">
+        🏆 כל המשימות הושלמו! +20 עלים 🌿
+      </div>
+    </div>
+
+    <!-- Passport entry for lesson 2 -->
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+      <h3 class="font-black text-green-900 mb-3">📔 דרכון חקלאי – שיעור 2</h3>
+      <label class="block text-sm text-gray-700 mb-2 font-bold">מה ראיתם במערכת? (תיאור קצר)</label>
+      <textarea id="passport-2" rows="2" maxlength="200" placeholder="המערכת שלנו נראית כך: ..." class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+      <button onclick="saveEntry()" class="mt-3 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-xl font-black shadow transition-colors">📔 שמור רשומה</button>
+      <div id="entry-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! +10 עלים 🌿</div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">סיכום ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: סיכום + כוכב הצפון ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🏁</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">סיכום + כוכב הצפון</h2>
+      </div>
+    </div>
+
+    <div class="bg-green-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3">📚 מה למדנו היום:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex gap-2"><span class="text-green-600">🌿</span> פרמה-קולצ'ר – חקלאות שעובדת עם הטבע, לא נגדו. ידע עתיק שעדיין רלוונטי</li>
+        <li class="flex gap-2"><span class="text-green-600">⏳</span> ציר הזמן: מהצפה (6000 שנה) ← טפטוף (1965, ישראל) ← אוטומציה (היום)</li>
+        <li class="flex gap-2"><span class="text-green-600">💧</span> נטפים המציאה את הטפטוף המודרני — 90% חיסכון במים לעומת הצפה</li>
+        <li class="flex gap-2"><span class="text-green-600">🔧</span> המערכת שלנו בכיתה משתמשת באותו עיקרון שנטפים פיתחה</li>
+      </ul>
+    </div>
+
+    <!-- North star -->
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">⭐</span>
+        <h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3>
+      </div>
+      <p class="text-gray-800 font-bold text-lg mb-3">"החקלאות עברה ממים בשפע לחיסכון מדויק. הפרויקט שלכם בתערוכה — איך יכול לשרת את אותו עיקרון?"</p>
+      <textarea id="north-star" rows="2" placeholder="הפרויקט שלנו קשור לזה כי..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+
+    <!-- Teaser -->
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא (שיעור 3):</p>
+      <p class="font-black text-xl">"המערכת מוכנה – אבל היא עדיין ריקה. מה היא בעצם צריכה כדי לגדל משהו?"</p>
+      <p class="text-slate-400 text-sm mt-2">רמז: בשיעור 3 תשתלו משהו אישי שיגדל איתכם כל השנה...</p>
+    </div>
+
+    <!-- Leaves total -->
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים שנצברו בשיעור 2:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך מקסימום ~65 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4">
+    <a href="lesson-03.html" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">לשיעור 3 ←</a>
+  </div>
+</div>
+
+</div><!-- /max-w -->
+
+<script>
+// ── STATE ──
+const STEPS = 6;
+let cur = 1;
+let lv = parseInt(localStorage.getItem('ls2') || '0');
+let maxReached = 1;
+let timelineOk = 0;
+let missionsDone = [];
+let missionLeaves = false;
+let entrySaved = false;
+
+// ── NAVIGATION ──
+function goTo(n) {
+  if (n < 1 || n > STEPS) return;
+  document.getElementById('step-' + cur).classList.remove('active');
+  cur = n;
+  if (cur > maxReached) maxReached = cur;
+  document.getElementById('step-' + cur).classList.add('active');
+  renderDots();
+  updateHeader();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateMascot(cur);
+}
+
+function updateHeader() {
+  document.getElementById('plabel').textContent = 'שלב ' + cur + ' מתוך ' + STEPS;
+  document.getElementById('pbar').style.width = Math.round((cur / STEPS) * 100) + '%';
+}
+
+function renderDots() {
+  document.querySelectorAll('.step-dot').forEach((d, i) => {
+    d.className = 'step-dot' + (i + 1 < cur ? ' done' : '') + (i + 1 === cur ? ' current' : '');
+  });
+}
+
+// ── LEAVES ──
+function addLv(n) {
+  lv += n;
+  localStorage.setItem('ls2', lv);
+  document.getElementById('lc').textContent = lv;
+  document.getElementById('final-lv').textContent = lv;
+  leafBurst(n);
+}
+
+function leafBurst(n) {
+  for (let i = 0; i < Math.min(n, 8); i++) {
+    const el = document.createElement('div');
+    el.className = 'leaf-burst';
+    el.textContent = '🌿';
+    el.style.left = (20 + Math.random() * 60) + 'vw';
+    el.style.top = (15 + Math.random() * 50) + 'vh';
+    el.style.setProperty('--tx', (Math.random() * 120 - 60) + 'px');
+    el.style.setProperty('--ty', (-80 - Math.random() * 80) + 'px');
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 950);
+  }
+}
+
+// ── QUIZ ──
+function ansQ(el, correct, qid) {
+  const container = document.getElementById(qid);
+  if (!container || container.dataset.done) return;
+  container.dataset.done = '1';
+  container.querySelectorAll('.quiz-opt').forEach(o => o.style.pointerEvents = 'none');
+  el.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    const c = container.querySelector('[data-correct="true"]');
+    if (c) c.classList.add('correct');
+  }
+  const fb = document.getElementById('fb-' + qid);
+  if (fb) {
+    fb.className = 'mt-3 rounded-xl p-4 text-sm ' + (correct ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800');
+    fb.textContent = correct ? '✅ מצוין! +5 עלים 🌿' : '❌ לא בדיוק – תשובה נכונה מסומנת בירוק';
+    fb.classList.remove('hidden');
+  }
+  if (correct) addLv(5);
+
+  const cascades = {
+    'q-perm': () => { document.getElementById('btn1').classList.remove('hidden'); mascotSay('בדיוק! לשתף פעולה עם הטבע, לא נגדו', '🌿'); },
+    'q-drip1': () => document.getElementById('q-drip2-wrap').classList.add('show'),
+    'q-drip2': () => { document.getElementById('btn3').classList.remove('hidden'); mascotSay('נכון! הכרח הוא אם המצאה — בנגב היבש לא הייתה ברירה', '💧'); },
+    'q-tl2': () => { document.getElementById('btn2').classList.remove('hidden'); mascotSay('בדיוק – מ"כמה שיותר" ל"בדיוק כמה שצריך"', '⏳'); },
+    'q-calc': () => { document.getElementById('calc-reveal').classList.add('show'); document.getElementById('btn4').classList.remove('hidden'); mascotSay('90%! זה עצום. כל ליטר חשוב', '🧮'); }
+  };
+  if (cascades[qid]) cascades[qid]();
+}
+
+// ── TIMELINE DRAG ──
+let dragSrc = null;
+let touchSrc = null;
+
+document.addEventListener('dragstart', e => {
+  if (e.target.classList.contains('timeline-card')) dragSrc = e.target;
+});
+
+function dropTimeline(e, zone) {
+  e.preventDefault();
+  zone.classList.remove('drag-over');
+  if (zone.dataset.filled) return;
+  const src = dragSrc || touchSrc;
+  if (!src) return;
+  const ok = src.dataset.val === zone.dataset.correct;
+  if (ok) {
+    zone.dataset.filled = '1';
+    zone.classList.add('correct-drop');
+    zone.innerHTML = src.innerHTML;
+    zone.style.fontSize = '0.72rem';
+    src.classList.add('used');
+    timelineOk++;
+    if (timelineOk === 4) {
+      document.getElementById('timeline-done').classList.remove('hidden');
+      document.getElementById('tl-q2-wrap').classList.add('show');
+      addLv(10);
+      mascotSay('ציר-ידע מושלם! 4 עידנים בחקלאות 🗺️', '⏳');
+    }
+  } else {
+    zone.classList.add('wrong-drop');
+    setTimeout(() => zone.classList.remove('wrong-drop'), 400);
+  }
+  dragSrc = null; touchSrc = null;
+}
+
+// Touch drag for timeline
+document.querySelectorAll('.timeline-card').forEach(el => {
+  el.addEventListener('touchstart', e => { touchSrc = e.currentTarget; e.currentTarget.style.opacity = '0.6'; }, { passive: true });
+  el.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    document.querySelectorAll('.timeline-slot').forEach(z => z.classList.remove('drag-over'));
+    const found = document.elementFromPoint(t.clientX, t.clientY);
+    if (found) { const z = found.closest('.timeline-slot'); if (z) z.classList.add('drag-over'); }
+  }, { passive: false });
+  el.addEventListener('touchend', e => {
+    if (el.style) el.style.opacity = '';
+    const t = e.changedTouches[0];
+    const found = document.elementFromPoint(t.clientX, t.clientY);
+    const zone = found ? found.closest('.timeline-slot') : null;
+    if (zone) dropTimeline({ preventDefault: () => {} }, zone);
+    document.querySelectorAll('.timeline-slot').forEach(z => z.classList.remove('drag-over'));
+  });
+});
+
+// ── MISSIONS ──
+let doneCount = 0;
+
+function checkMission(el, idx) {
+  if (missionsDone.includes(idx)) return;
+  missionsDone.push(idx);
+  el.classList.add('done-card');
+  el.querySelector('.mission-icon').textContent = '✅';
+  doneCount++;
+  if (doneCount >= 3 && !missionLeaves) {
+    missionLeaves = true;
+    document.getElementById('mission-done').classList.remove('hidden');
+    addLv(20);
+    mascotSay('מעולה! סיירתם, נגעתם, הבנתם 🔧', '🌱');
+    checkStep5Done();
+  }
+}
+
+// ── PASSPORT ENTRY ──
+function saveEntry() {
+  if (entrySaved) return;
+  const text = document.getElementById('passport-2').value.trim();
+  if (!text) { mascotSay('כתבו משהו שראיתם!', '📔'); return; }
+  const existing = JSON.parse(localStorage.getItem('passport1') || '{}');
+  existing.lesson2 = { text, date: new Date().toLocaleDateString('he-IL') };
+  localStorage.setItem('passport1', JSON.stringify(existing));
+  entrySaved = true;
+  document.getElementById('entry-saved').classList.remove('hidden');
+  addLv(10);
+  mascotSay('תיעוד מעולה! הדרכון גדל 📔', '🌱');
+  checkStep5Done();
+}
+
+function checkStep5Done() {
+  if (missionLeaves && entrySaved) {
+    document.getElementById('btn5').classList.remove('hidden');
+  }
+}
+
+// ── MASCOT ──
+const mascotLines = {
+  1: 'שיעור 2! הסוד של הטפטוף מתחיל להתגלות...',
+  2: 'גררו את אבני הדרך לציר הזמן!',
+  3: 'נטפים שינתה את החקלאות העולמית מקיבוץ אחד בנגב',
+  4: '90% חיסכון – זה לא קסם, זה פיזיקה + הנדסה',
+  5: 'שלב המעשי! גשו למערכת בעצמכם',
+  6: 'שיעור 2 הסתיים! בשיעור 3 תשתלו משהו אישי ⭐'
+};
+
+function updateMascot(step) { mascotSay(mascotLines[step] || '', '🌱'); }
+
+function mascotSay(msg, emoji) {
+  const m = document.getElementById('mascot');
+  const b = document.getElementById('mascot-bubble');
+  if (emoji) m.textContent = emoji;
+  b.textContent = msg;
+  b.classList.remove('hidden');
+  m.classList.add('mascot-bounce');
+  clearTimeout(mascotSay._t);
+  mascotSay._t = setTimeout(() => { b.classList.add('hidden'); m.classList.remove('mascot-bounce'); }, 5000);
+}
+
+// ── INIT ──
+function init() {
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= STEPS; i++) {
+    const d = document.createElement('div');
+    d.className = 'step-dot' + (i === 1 ? ' current' : '');
+    d.title = 'שלב ' + i;
+    d.onclick = () => { if (i <= maxReached) goTo(i); };
+    dotsEl.appendChild(d);
+  }
+  document.getElementById('lc').textContent = lv;
+  document.getElementById('final-lv').textContent = lv;
+  updateHeader();
+
+  // Restore passport entry if exists
+  try {
+    const p = JSON.parse(localStorage.getItem('passport1') || '{}');
+    if (p.lesson2) document.getElementById('passport-2').value = p.lesson2.text || '';
+  } catch(e) {}
+
+  mascotSay(mascotLines[1], '🌱');
+}
+
+init();
+</script>
+</body>
+</html>

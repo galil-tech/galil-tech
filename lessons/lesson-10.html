@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 10 – רובוטים בחקלאות | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;} .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;border-radius:12px;}
+    .quiz-opt:hover:not([data-done]){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
+    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;} .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;} .reveal.show{display:block;animation:fadeUp .35s ease;}
+    .mascot{font-size:2.8rem;transition:all .4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .mascot-bounce{animation:bounce .6s ease 3;}
+    .debate-btn{border:3px solid #e5e7eb;cursor:pointer;transition:all .2s;border-radius:16px;font-size:1.1rem;font-weight:900;}
+    .debate-btn:hover:not([disabled]){transform:scale(1.04);}
+    .debate-btn.yes{border-color:#16a34a;background:#dcfce7;}
+    .debate-btn.no{border-color:#dc2626;background:#fee2e2;}
+    /* Graph */
+    .graph-bar{transition:height .5s;border-radius:4px 4px 0 0;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-cyan-50 min-h-screen">
+
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="lesson-09.html" class="hover:text-lime-300">← שיעור 9</a>
+      <a href="../wall.html" class="hover:text-lime-300">🛠 קיר</a>
+      <a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<div class="bg-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-sky-400 text-sky-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 3 – פריחה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 10 מתוך 17</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🤖 רובוטים בחקלאות: העתיד כבר פה?</h1>
+    <p class="text-green-200">דיון-קרב · Tevel Tech · שרטוטים משולבים · גרף נתונים ראשון</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 6</span><span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden"><div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div></div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- STEP 1: גשר + רובוטים -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-6">
+      <p class="font-bold text-amber-900 mb-1">🔁 Teaser מהשיעור הקודם:</p>
+      <p class="text-gray-700 text-sm">"ראינו מלמעלה — GIS ורחפנים. עכשיו: מה קורה כשנשלח רובוט <em>לתוך</em> השדה עצמו?"</p>
+    </div>
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🤖</span><div><h2 class="text-3xl font-black text-green-900">רובוטים בחקלאות</h2><p class="text-gray-400 text-sm">לא רק ב-Science Fiction — כבר בשדות האמיתיים</p></div></div>
+    <div class="bg-cyan-50 border-r-4 border-cyan-500 rounded-2xl p-5 mb-5 text-gray-700 text-sm">
+      <p class="mb-2">רובוטים חקלאיים עושים דברים שידיים אנושיות לא יכולות (או לא כדאיות):</p>
+      <ul class="space-y-1 mr-4">
+        <li>🍎 <b>קטיף מדויק</b> — פרי אחד בכל פעם, בלי לפצוע שכנים</li>
+        <li>💧 <b>השקיה נקודתית</b> — סנטימטרים מהשורש, לא שדה שלם</li>
+        <li>🔍 <b>ניטור שורה-שורה</b> — מצלמת AI שמזהה מחלות בזמן אמת</li>
+      </ul>
+      <p class="mt-2 text-xs">🔗 זכרו את השרשרת מ-<b>שיעור 1</b>: גידול→אריזה→שילוח... הרובוט יכול להיכנס לכל שלב!</p>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ באיזה שלב בשרשרת האספקה (שיעור 1) הרובוט הכי שימושי?</p>
+      <div class="grid gap-3" id="q-robot1">
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-robot1')">שלב השיווק — פרסום מוצרים</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,true,'q-robot1')" data-correct="true">קטיף — דורש דיוק גדול, עבודה רצופה 24/7, ולא יפצע פרי</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-robot1')">הובלה ימית — כי ים זה נוח לרובוט</div>
+        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-robot1')">מכירה בחנות — כי רובוטים אוהבים לדבר עם קונים</div>
+      </div>
+      <div id="fb-q-robot1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">Tevel Tech ←</button></div>
+</div>
+
+<!-- STEP 2: Tevel Tech -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🍎</span><div><h2 class="text-3xl font-black text-green-900">Tevel Tech – רובוט שקוטף פירות</h2></div></div>
+    <div class="bg-gradient-to-br from-red-700 to-orange-600 text-white rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-3 mb-3"><span class="text-3xl">🇮🇱</span><div><h3 class="font-black text-xl">Tevel Tech</h3><p class="text-red-200 text-sm">ישראל · רובוטים לקטיף פירות</p></div></div>
+      <p class="text-sm text-red-100 mb-4">רובוטים עצמאיים שתלויים מרחפת ומסוגלים לקטוף עגבניות, תפוחים ופירות אחרים — כל אחד בנפרד, ב-24/7, בלי הפסקות. AI שמזהה בשלות ומחליט מי לקטוף ומי לחכות.</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">24/7</b>פעולה רציפה</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">🤖</b>קטיף מדויק</div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">🍅🍎</b>פירות וירקות</div>
+      </div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-4">❓ מה הבעיה שTevel Tech פותרת?</p>
+      <div class="grid gap-3" id="q-tevel1">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tevel1')">מחיר הפירות גבוה מדי</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-tevel1')" data-correct="true">מחסור בעובדים לקטיף + קטיף יד אינו מדויק מספיק — רובוט עובד 24/7 ומזהה בשלות</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tevel1')">פירות מתקלקלים בשינוע</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tevel1')">מערכת GIS לא עובדת בפרדסים</div>
+      </div>
+      <div id="fb-q-tevel1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+    <div id="q-tevel2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ איך הרובוט של Tevel יודע איזה פרי לקטוף ואיזה לחכות?</p>
+      <div class="grid gap-3" id="q-tevel2">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tevel2')">חקלאי מסמן ידנית כל פרי</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-tevel2')" data-correct="true">מצלמת AI מנתחת צבע, גודל ומיקום — ומחליטה לפי קריטריונים של בשלות</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tevel2')">הוא קוטף הכל ואחר כך ממיין</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tevel2')">רק פירות שנפלו</div>
+      </div>
+      <div id="fb-q-tevel2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3)">דיון-קרב ←</button></div>
+</div>
+
+<!-- STEP 3: דיון-קרב -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">⚔️</span><div><h2 class="text-3xl font-black text-green-900">דיון-קרב</h2><p class="text-gray-400 text-sm">הכיתה מתפצלת. כל צד מגן על העמדה שלו!</p></div></div>
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-2xl font-black mb-2">"רובוטים יחליפו חקלאים לחלוטין תוך 20 שנה"</p>
+      <p class="text-slate-300 text-sm">בחרו צד וכתבו נימוק אחד חזק:</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4 mb-5">
+      <button class="debate-btn p-6" onclick="takeSide('yes',this)" id="side-yes">
+        <p class="text-3xl mb-2">✅</p><p class="text-xl">כן — יחליפו</p>
+        <p class="text-sm font-normal text-gray-600 mt-2">24/7, לא עייפים, מדויקים</p>
+      </button>
+      <button class="debate-btn p-6" onclick="takeSide('no',this)" id="side-no">
+        <p class="text-3xl mb-2">❌</p><p class="text-xl">לא — משלימים</p>
+        <p class="text-sm font-normal text-gray-600 mt-2">שיפוט אנושי, יצירתיות, ניסיון</p>
+      </button>
+    </div>
+    <div id="debate-reason-wrap" class="hidden">
+      <label class="block font-bold text-gray-700 mb-2">💬 הנימוק שלכם (משפט אחד):</label>
+      <input id="debate-reason" type="text" maxlength="120" placeholder="אנחנו בצד '___' כי..." class="w-full border-2 border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-green-400">
+      <button onclick="submitDebate()" class="mt-3 bg-green-700 text-white px-8 py-3 rounded-xl font-black">שלח נימוק (+5 עלים)</button>
+    </div>
+    <div id="debate-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-4 text-center mt-3">
+      <p class="font-black text-lime-800">✅ הנימוק נשלח! אין תשובה נכונה — שני הצדדים נכונים בהיבטים שונים</p>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)">שרטוטים ←</button></div>
+</div>
+
+<!-- STEP 4: שרטוטים משולבים -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🗺️</span><div><h2 class="text-3xl font-black text-green-900">איפה הרובוט נכנס — לפי השרטוטים שלנו</h2></div></div>
+    <div class="bg-green-50 border-r-4 border-green-500 rounded-2xl p-5 mb-5 text-sm text-gray-700">
+      <p class="mb-2">בשיעורים הקודמים ציירתם ושרטטתם דברים שכדאי עכשיו לחבר:</p>
+      <div class="grid md:grid-cols-2 gap-3 mt-3">
+        <div class="bg-white rounded-xl p-3"><b class="text-green-800">שיעור 1:</b> שרשרת האספקה (גידול→בית)</div>
+        <div class="bg-white rounded-xl p-3"><b class="text-green-800">שיעור 3:</b> פוטוסינתזה + הסבר מאויר</div>
+        <div class="bg-white rounded-xl p-3"><b class="text-green-800">שיעור 5:</b> מעגל החנקן באקוופוניקה</div>
+        <div class="bg-white rounded-xl p-3"><b class="text-green-800">שיעור 8:</b> מפת סינרגיה (אקוו+סולאר+הידרו)</div>
+        <div class="bg-white rounded-xl p-3 md:col-span-2"><b class="text-green-800">שיעור 9:</b> ציור-מאקרו של הכיתה מלמעלה</div>
+      </div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3">📝 כתבו: באיזה <em>שלב ספציפי</em> מהשרטוטים שלכם רובוט יכול לשפר משהו?</p>
+      <textarea id="robot-place" rows="2" maxlength="150" placeholder="בשרטוט של שיעור ___, ב-___, רובוט יכול לעשות ___ כי..." class="w-full border-2 border-gray-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-400"></textarea>
+      <button onclick="saveRobotPlace()" class="mt-3 bg-green-700 text-white px-8 py-3 rounded-xl font-black">שמור רעיון (+10 עלים)</button>
+      <div id="robot-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! רעיון זה יכול להיות בסיס לפרויקט הסופי 🎯</div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה ה"גרף" שייצרנו לאורך השיעורים יכול לעזור לרובוט?</p>
+      <div class="grid gap-3" id="q-graph">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-graph')">כלום — רובוט לא קורא גרפים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-graph')" data-correct="true">נתוני גובה/עלים/pH לאורך זמן עוזרים לרובוט לדעת מה "תקין" ומה חריג</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-graph')">רק אם הגרף בצבע אדום</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-graph')">הגרף שימושי רק לבני אדם, לא לרובוטים</div>
+      </div>
+      <div id="fb-q-graph" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)">גרף נתונים ←</button></div>
+</div>
+
+<!-- STEP 5: גרף נתונים ראשון + דרכון -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📊</span><div><h2 class="text-3xl font-black text-green-900">גרף נתונים ראשון</h2><p class="text-gray-400 text-sm">הזינו את מדידת השתיל להיום — נבנה גרף צמיחה</p></div></div>
+    <div class="bg-blue-50 border-r-4 border-blue-400 rounded-2xl p-4 mb-5 text-sm text-blue-800">
+      🔗 הגרף הזה יהיה הבסיס לשיעור 11 (ביג דאטה) — בו נלמד לנתח ולהסיק תובנות מהנתונים שאספנו.
+    </div>
+    <div class="grid md:grid-cols-2 gap-5 mb-5">
+      <div class="bg-gray-50 rounded-2xl p-5">
+        <label class="block font-bold text-gray-700 mb-2">📏 גובה השתיל היום (ס"מ):</label>
+        <input id="height-today" type="number" min="0" max="100" placeholder="0" class="w-full border-2 border-gray-200 rounded-xl p-3 text-2xl font-black outline-none focus:border-green-400">
+        <label class="block font-bold text-gray-700 mt-3 mb-2">🔢 מספר עלים:</label>
+        <input id="leaves-today" type="number" min="0" max="50" placeholder="0" class="w-full border-2 border-gray-200 rounded-xl p-3 text-xl outline-none focus:border-green-400">
+        <button onclick="saveGraph()" class="mt-3 w-full bg-green-700 text-white py-3 rounded-xl font-black">📊 עדכן גרף (+5 עלים)</button>
+        <div id="graph-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נתון נשמר בדרכון!</div>
+      </div>
+      <div class="bg-white rounded-2xl border-2 border-gray-200 p-4">
+        <p class="font-bold text-gray-700 mb-3 text-center text-sm">גרף צמיחה (ס"מ)</p>
+        <div class="flex items-end gap-2 h-32 justify-center" id="growth-chart">
+          <div class="text-center text-xs text-gray-400">נתונים יופיעו אחרי שמירה</div>
+        </div>
+      </div>
+    </div>
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+      <h3 class="font-black text-green-900 mb-2">📔 דרכון – שיעור 10</h3>
+      <textarea id="p10-obs" rows="2" maxlength="150" placeholder="גובה: ___ ס'מ · עלים: ___ · תצפית: ..." class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+      <button onclick="saveEntry10()" class="mt-3 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-xl font-black">📔 שמור רשומה</button>
+      <div id="p10-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! +10 עלים 🌿</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">סיכום ←</button></div>
+</div>
+
+<!-- STEP 6: סיכום -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-green-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3">📚 מה למדנו היום:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex gap-2"><span class="text-green-600">🤖</span> רובוטים חקלאיים = קטיף, ניטור, השקיה — 24/7 בלי עייפות</li>
+        <li class="flex gap-2"><span class="text-green-600">🍎</span> Tevel Tech: רובוט שמזהה בשלות ועובד 24/7</li>
+        <li class="flex gap-2"><span class="text-green-600">⚔️</span> הדיון-קרב: רובוטים לא יחליפו — ישנו את התפקיד של החקלאי</li>
+        <li class="flex gap-2"><span class="text-green-600">📊</span> גרף נתוני הצמח מתחיל לצבור — בשיעור 11 ננתח אותו</li>
+      </ul>
+    </div>
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3"><span class="text-2xl">⭐</span><h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3></div>
+      <p class="text-gray-800 font-bold text-lg mb-3">"אם היה רובוט בכיתה שלנו — באיזה שלב הייתם מכניסים אותו, ומה הוא היה עושה בדיוק?"</p>
+      <textarea id="north-star" rows="2" placeholder="הייתי מכניס רובוט ב... הוא היה עושה..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא (שיעור 11):</p>
+      <p class="font-black text-xl">"יש לנו נתונים — גובה, עלים, pH, EC. אבל מה <em>אומרים</em> הנתונים האלה? ביג דאטה בחקלאות."</p>
+    </div>
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים שנצברו בשיעור 10:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך מקסימום ~50 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4"><a href="lesson-11.html" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">לשיעור 11 ←</a></div>
+</div>
+
+</div>
+<script>
+const STEPS=6;let cur=1,lv=parseInt(localStorage.getItem('ls10')||'0'),maxReached=1;
+let debateDone=false,robotSaved=false,graphSaved=false,entry10Saved=false;
+
+function goTo(n){if(n<1||n>STEPS)return;document.getElementById('step-'+cur).classList.remove('active');cur=n;if(cur>maxReached)maxReached=cur;document.getElementById('step-'+cur).classList.add('active');renderDots();updateHeader();window.scrollTo({top:0,behavior:'smooth'});updateMascot(cur);}
+function updateHeader(){document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';}
+function renderDots(){document.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');});}
+function addLv(n){lv+=n;localStorage.setItem('ls10',lv);document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
+function leafBurst(n){for(let i=0;i<Math.min(n,8);i++){const el=document.createElement('div');el.className='leaf-burst';el.textContent='🌿';el.style.left=(20+Math.random()*60)+'vw';el.style.top=(15+Math.random()*50)+'vh';el.style.setProperty('--tx',(Math.random()*120-60)+'px');el.style.setProperty('--ty',(-80-Math.random()*80)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),950);}}
+function ansQ(el,correct,qid){
+  const c=document.getElementById(qid);if(!c||c.dataset.done)return;c.dataset.done='1';c.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');el.classList.add(correct?'correct':'wrong');if(!correct){const r=c.querySelector('[data-correct="true"]');if(r)r.classList.add('correct');}
+  const fb=document.getElementById('fb-'+qid);if(fb){fb.className='mt-3 rounded-xl p-4 text-sm '+(correct?'bg-green-50 text-green-800':'bg-red-50 text-red-800');fb.textContent=correct?'✅ מצוין! +5 עלים 🌿':'❌ לא בדיוק – תשובה נכונה מסומנת בירוק';fb.classList.remove('hidden');}
+  if(correct)addLv(5);
+  const casc={'q-robot1':()=>{document.getElementById('btn1').classList.remove('hidden');mascotSay('קטיף = הכי קשה לאוטומציה!','🤖');},'q-tevel1':()=>document.getElementById('q-tevel2-wrap').classList.add('show'),'q-tevel2':()=>{document.getElementById('btn2').classList.remove('hidden');mascotSay('AI לזיהוי בשלות = מהפכה!','🍎');},'q-graph':()=>{document.getElementById('btn4').classList.remove('hidden');mascotSay('נתונים + זמן = תבנית שAI יכול ללמוד','📊');}};
+  if(casc[qid])casc[qid]();
+}
+function takeSide(side,el){
+  if(debateDone)return;
+  document.getElementById('side-yes').classList.remove('yes','no');document.getElementById('side-no').classList.remove('yes','no');
+  el.classList.add(side);document.getElementById('debate-reason-wrap').classList.remove('hidden');
+  mascotSay('בחרתם! עכשיו נמקו','⚔️');
+}
+function submitDebate(){
+  if(debateDone)return;const r=document.getElementById('debate-reason').value.trim();
+  if(!r){mascotSay('כתבו נימוק אחד!','⚔️');return;}debateDone=true;
+  document.getElementById('side-yes').disabled=true;document.getElementById('side-no').disabled=true;
+  document.getElementById('debate-done').classList.remove('hidden');addLv(5);document.getElementById('btn3').classList.remove('hidden');
+  mascotSay('דיון-קרב הסתיים! שני הצדדים נכונים','⚔️');
+  // P3.1: 30-second "change opinion" window
+  let secsLeft=30;
+  const cw=document.createElement('div');cw.style.cssText='text-align:center;margin-top:10px;';
+  cw.innerHTML='<button id="co-btn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:8px;padding:5px 14px;font-size:.8rem;cursor:pointer;color:#6b7280;">🔄 שנה דעה (<span id="co-cd">30</span>s)</button>';
+  document.getElementById('debate-done').after(cw);
+  document.getElementById('co-btn').onclick=function(){
+    debateDone=false;clearInterval(ct);cw.remove();
+    document.getElementById('side-yes').disabled=false;document.getElementById('side-no').disabled=false;
+    document.getElementById('side-yes').classList.remove('yes','no');document.getElementById('side-no').classList.remove('yes','no');
+    document.getElementById('debate-reason').value='';
+    document.getElementById('debate-done').classList.add('hidden');document.getElementById('btn3').classList.add('hidden');
+    mascotSay('בחרו מחדש! אחרי הדיון אפשר לשנות דעה','🔄');
+  };
+  const ct=setInterval(()=>{secsLeft--;const el=document.getElementById('co-cd');if(el)el.textContent=secsLeft;if(secsLeft<=0){clearInterval(ct);if(cw.parentNode)cw.remove();}},1000);
+}
+function saveRobotPlace(){
+  if(robotSaved)return;const t=document.getElementById('robot-place').value.trim();if(!t){mascotSay('כתבו איפה הרובוט נכנס!','🗺️');return;}
+  robotSaved=true;document.getElementById('robot-saved').classList.remove('hidden');addLv(10);mascotSay('רעיון מצוין לפרויקט!','🤖');
+}
+function saveGraph(){
+  const h=document.getElementById('height-today').value,l=document.getElementById('leaves-today').value;
+  if(!h&&!l){mascotSay('הזינו לפחות גובה!','📊');return;}
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');
+  const entries=p.growthData||[];entries.push({lesson:10,height:parseInt(h)||0,leaves:parseInt(l)||0,date:new Date().toLocaleDateString('he-IL')});
+  p.growthData=entries;localStorage.setItem('passport1',JSON.stringify(p));
+  renderChart(entries);if(!graphSaved){graphSaved=true;addLv(5);document.getElementById('graph-saved').classList.remove('hidden');mascotSay('נתון נשמר! בשיעור 11 ננתח','📊');}
+  checkStep5Done();
+}
+function renderChart(data){
+  const c=document.getElementById('growth-chart');c.innerHTML='';const max=Math.max(...data.map(d=>d.height),10);
+  data.forEach((d,i)=>{const bar=document.createElement('div');bar.className='flex flex-col items-center gap-1';bar.innerHTML=`<span class="text-xs font-bold text-green-700">${d.height}</span><div class="graph-bar bg-green-500 w-8" style="height:${Math.round((d.height/max)*96)}px"></div><span class="text-xs text-gray-400">${10+i}</span>`;c.appendChild(bar);});
+}
+function saveEntry10(){
+  if(entry10Saved)return;const obs=document.getElementById('p10-obs').value.trim();if(!obs){mascotSay('כתבו משהו!','📔');return;}
+  entry10Saved=true;const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson10={obs,date:new Date().toLocaleDateString('he-IL')};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('p10-saved').classList.remove('hidden');addLv(10);checkStep5Done();
+}
+function checkStep5Done(){if(graphSaved&&entry10Saved)document.getElementById('btn5').classList.remove('hidden');}
+
+const mascotLines={1:'רובוטים חקלאיים — לא Science Fiction, כבר היום!',2:'Tevel Tech — רובוט שלא עייף, לא טועה, 24/7',3:'דיון-קרב: כן vs לא — שני הצדדים נכונים!',4:'השרטוטים שלכם מתחברים!',5:'גרף ראשון! בשיעור 11 ננתח',6:'שיעור 10 הסתיים! ביג דאטה מחכה ⭐'};
+function updateMascot(s){mascotSay(mascotLines[s]||'','🌱');}
+function mascotSay(msg,emoji){const m=document.getElementById('mascot'),b=document.getElementById('mascot-bubble');if(emoji)m.textContent=emoji;b.textContent=msg;b.classList.remove('hidden');m.classList.add('mascot-bounce');clearTimeout(mascotSay._t);mascotSay._t=setTimeout(()=>{b.classList.add('hidden');m.classList.remove('mascot-bounce');},5000);}
+function init(){
+  const d=document.getElementById('dots');for(let i=1;i<=STEPS;i++){const dot=document.createElement('div');dot.className='step-dot'+(i===1?' current':'');dot.title='שלב '+i;dot.onclick=()=>{if(i<=maxReached)goTo(i);};d.appendChild(dot);}
+  document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;updateHeader();
+  try{const p=JSON.parse(localStorage.getItem('passport1')||'{}');if(p.growthData)renderChart(p.growthData);if(p.lesson10)document.getElementById('p10-obs').value=p.lesson10.obs||'';}catch(e){}
+  mascotSay(mascotLines[1],'🌱');
+}
+init();
+</script>
+</body>
+</html>

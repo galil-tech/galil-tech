@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שיעור 8 – שקפים | גדלים למחר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/slides-core.css">
+</head>
+<body>
+
+<div id="deck-title">שיעור 8 – בין-תחומי: סינרגיה בין מערכות חקלאיות</div>
+<div id="backdrop">
+
+  <!-- שקף 1 - סינרגיה: דגים-חיידקים-צמחים (תבנית C) -->
+  <section class="slide active" data-name="שקף 1" data-steps="3">
+    <div class="topbar">
+      <span class="eyebrow">שיעור 8 · גדלים למחר</span>
+      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:5%;">מעגל הסינרגיה באקוופוניקה</p>
+      <div style="display:flex; align-items:center; gap:1.6%;">
+        <div class="rv card card-blue" data-step="1" style="flex:1;">
+          <p class="label label-blue">🐟 דגים</p>
+          <p class="body" style="margin-top:8px;">מייצרים פסולת</p>
+        </div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-lime" data-step="2" style="flex:1;">
+          <p class="label label-lime">🦠 חיידקים</p>
+          <p class="body" style="margin-top:8px;">מפרקים לחנקן</p>
+        </div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-green" data-step="3" style="flex:1;">
+          <p class="label label-green">🌱 צמחים</p>
+          <p class="body" style="margin-top:8px;">סופגים ומנקים מים</p>
+        </div>
+      </div>
+      <p class="small rv" data-step="3" style="text-align:center; margin-top:16px;">והמים הנקיים חוזרים לדגים ⟲</p>
+    </div>
+    <div class="mascot">🌿</div>
+  </section>
+
+  <!-- שקף 2 - מעגל בקרה שלם (תבנית B) -->
+  <section class="slide" data-name="שקף 2" style="background:linear-gradient(160deg,#f0fdf4 0%, #ecfccb 100%);">
+    <div class="topbar transparent">
+      <span class="eyebrow">שיעור 8 · גדלים למחר</span>
+      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
+    </div>
+    <div class="stage-center">
+      <div>
+        <p class="h1">היום נבנה מעגל בקרה שלם</p>
+        <p class="h2" style="color:#ca8a04; margin-top:20px; font-weight:800;">חיישן ← בקר ← ברז / הודעה</p>
+      </div>
+    </div>
+    <div class="mascot">🌿</div>
+  </section>
+
+</div>
+
+<div id="controls">
+  <button class="navbtn" onclick="slidesGo(-1)">→</button>
+  <span id="counter">1 / 2</span>
+  <div id="dots"></div>
+  <button class="navbtn" onclick="slidesGo(1)">←</button>
+  <button class="navbtn" id="fsbtn" title="מסך מלא">⛶</button>
+</div>
+
+<script src="assets/slides-core.js"></script>
+</body>
+</html>

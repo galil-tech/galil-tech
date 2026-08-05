@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>אגטק 101 – בוטקאמפ אגרו-וולטאיקה | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="config.js"></script>
+  <style>
+    /* ── סגנונות ייחודיים ללומדת הבוטקאמפ ── */
+    .bet-btn { border:2px solid #fde68a; cursor:pointer; transition:all .2s; border-radius:16px; background:white; }
+    .bet-btn:hover:not([disabled]) { border-color:#f59e0b; background:#fffbeb; }
+    .bet-btn.chosen  { border-color:#b45309; background:#fef3c7; font-weight:900; }
+    .bet-btn.correct { background:#dcfce7 !important; border-color:#16a34a !important; }
+    .bet-btn.wrong   { background:#fee2e2 !important; border-color:#dc2626 !important; }
+    .bet-btn[disabled] { cursor:default; }
+
+    .timeline-card { cursor:grab; user-select:none; border:2px dashed #a7f3d0; background:white; border-radius:12px; transition:all .2s; text-align:center; }
+    .timeline-card:hover { transform:scale(1.04); border-color:#10b981; }
+    .timeline-card.used  { opacity:.3; cursor:default; pointer-events:none; }
+    .timeline-slot { border:2.5px dashed #6ee7b7; border-radius:14px; background:#f0fdf4; min-height:84px; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:all .2s; gap:2px; }
+    .timeline-slot.drag-over    { border-color:#10b981; background:#d1fae5; transform:scale(1.04); }
+    .timeline-slot.correct-drop { border-color:#16a34a; background:#dcfce7; border-style:solid; }
+    .timeline-slot.wrong-drop   { border-color:#dc2626; background:#fee2e2; animation:gc-shake .3s; }
+
+    .syn-card { border:2px solid #fde68a; cursor:pointer; transition:all .3s; border-radius:16px; }
+    .syn-card.done-card { border-color:#f59e0b; background:#fffbeb; opacity:.75; }
+
+    .media-slot { border:2.5px dashed #d1d5db; border-radius:16px; background:#f9fafb; }
+
+    .star-btn { cursor:pointer; background:none; border:none; line-height:1; transition:transform .15s; }
+    .star-btn:hover { transform:scale(1.15); }
+
+    .idea-box { border:2px dashed #a7f3d0; border-radius:16px; background:#f0fdf4; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 to-lime-50 min-h-screen">
+
+<!-- MASCOT -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <span class="text-xl font-bold">🌱 גדלים למחר</span>
+    <span class="text-xs text-lime-300">בוטקאמפ אגרו-וולטאיקה</span>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-gradient-to-l from-green-800 to-amber-700 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-lime-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">🌞 בוטקאמפ אגרו-וולטאיקה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">אגטק 101 · לומדה עצמאית · 45 דק'</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🌍💧☀️ אגטק 101</h1>
+    <p class="text-green-100">האתגר הגדול · היסטוריה · הצמח והחקלאי · יותר עם פחות · אגרו-וולטאיקה</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-100 mb-1">
+        <span id="plabel">שלב 1 מתוך 8</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3 flex-wrap" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: פתיחה + הימור האתגר הגדול ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-lime-900 text-xl mb-3">👋 ברוכים הבאים לבוטקאמפ!</h3>
+      <ul class="text-sm text-gray-700 space-y-2">
+        <li>📋 <b>עובדים בזוגות</b> – מחשב אחד לשני תלמידים</li>
+        <li>🌿 כל תשובה נכונה ופעילות מרוויחה <b>עלים 🌿</b></li>
+        <li>💡 בכל שלב תמצאו <b>שאלת רעיון יזמי</b> – היא תגיע בסוף לקיר סיעור מוחות משותף לכל הכיתה</li>
+        <li>⭐ בסוף — משוב קצר וקיר הרעיונות</li>
+      </ul>
+    </div>
+
+    <div class="bg-white border-2 border-lime-200 rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-3">
+      <label class="font-bold text-gray-700 text-sm whitespace-nowrap">✍️ שם הזוג/קבוצה שלכם:</label>
+      <input id="pair-name" type="text" maxlength="30" placeholder="למשל: הזוג הירוק" class="flex-1 min-w-[160px] border-2 border-lime-200 rounded-xl p-2 text-sm outline-none focus:border-lime-500" onchange="savePairName()">
+    </div>
+
+    <div class="flex items-center gap-3 mb-6">
+      <span class="text-4xl">🌍</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">האתגר הגדול: להאכיל את העולם</h2>
+        <p class="text-gray-400 text-sm">נחשו לפני שחושפים את התשובה</p>
+      </div>
+    </div>
+
+    <!-- Media placeholder: hero -->
+    <div class="media-slot aspect-video flex items-center justify-center mb-6">
+      <div class="text-center p-6 text-gray-400">
+        <div class="text-3xl mb-2">🖼️</div>
+        <div class="font-bold text-sm">מיקום לתמונה/סרטון פתיחה</div>
+        <div class="text-xs mt-1">שימו קובץ בשם <code>hero.jpg</code> (או <code>hero.mp4</code>) בתיקיית bootcamp-agtech101, והחליפו בלוק זה ב-&lt;img src="hero.jpg" ...&gt; (למקומי) או ב-.yt-wrap עם iframe youtube-nocookie (ליוטיוב)</div>
+      </div>
+    </div>
+
+    <p class="text-lg text-gray-700 mb-4 font-bold">עד 2050 יחיו על כדור הארץ עוד כ-2 מיליארד בני אדם. מה יקרה לכמות הקרקע החקלאית הזמינה <em>לכל אדם</em>?</p>
+    <div class="grid grid-cols-3 gap-3 mb-5" id="bet-zone">
+      <button class="bet-btn p-4 text-lg font-black" onclick="placeBet(this)">תישאר יותר</button>
+      <button class="bet-btn p-4 text-lg font-black" onclick="placeBet(this)" data-correct="true">תהיה פחות</button>
+      <button class="bet-btn p-4 text-lg font-black" onclick="placeBet(this)">תישאר בערך אותו דבר</button>
+    </div>
+
+    <div id="reveal-bet" class="reveal">
+      <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 mb-6">
+        <p class="font-black text-2xl text-amber-900 mb-1">📉 נכון: <span class="text-lime-700">פחות קרקע לנפש</span></p>
+        <p class="text-gray-600 text-sm">יותר אנשים, אותה כמות קרקע (ואפילו פחות, בגלל ערים מתרחבות והתחממות). המסקנה: צריך לגדל <b>יותר עם פחות</b>. זה האתגר שנעסוק בו היום — דרך שתי נקודות מבט: מה הצמח צריך, ומה החקלאי צריך.</p>
+      </div>
+
+      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+        <p class="font-bold text-lg mb-4">❓ מה הכיוון המרכזי לפתרון האתגר?</p>
+        <div class="grid gap-3" id="q1">
+          <div class="quiz-opt p-4" onclick="ansQ(this,false,'q1')">להפסיק לגדל ולעבור לייבוא מלא ממדינות אחרות</div>
+          <div class="quiz-opt p-4" onclick="ansQ(this,true,'q1')" data-correct="true">טכנולוגיה שמאפשרת לייצר יותר מזון ואנרגיה מאותה קרקע, ביעילות גבוהה יותר</div>
+          <div class="quiz-opt p-4" onclick="ansQ(this,false,'q1')">להמתין שהאוכלוסייה תפסיק לגדול מעצמה</div>
+          <div class="quiz-opt p-4" onclick="ansQ(this,false,'q1')">אין באמת פתרון – זו בעיה בלתי פתירה</div>
+        </div>
+        <div id="fb-q1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+
+      <div id="idea1-wrap" class="reveal idea-box p-5 mt-5">
+        <p class="font-bold text-gray-700 mb-2">💡 רעיון יזמי: איך אתגר "יותר עם פחות" יכול להשפיע על הפרויקט שתבנו כאן היום?</p>
+        <textarea id="idea-1" rows="2" placeholder="הרעיון שלנו..." class="w-full border-2 border-lime-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-lime-500"></textarea>
+        <button id="idea-1-btn" onclick="saveIdea('האתגר הגדול','idea-1')" class="mt-2 bg-lime-600 hover:bg-lime-500 text-white px-5 py-2 rounded-xl font-bold text-sm">💾 שמרו רעיון</button>
+        <span id="idea-1-saved" class="hidden mr-2 text-sm font-bold text-lime-700">✅ נשמר! יופיע בקיר בסוף</span>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">היסטוריה של חקלאות ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: ציר-ידע – 4 קפיצות בהיסטוריה של החקלאות ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">⏳</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">12,000 שנה של חקלאות – ב-4 קפיצות</h2>
+        <p class="text-gray-400 text-sm">קראו את התיאורים, ואז גררו כל תקופה לעמדה הנכונה</p>
+      </div>
+    </div>
+
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-6 text-gray-700 text-sm leading-relaxed space-y-1">
+      <p>🏹 <b>ציד ולקט</b> — בני אדם נודדים אחרי מקורות מזון, בלי גידול קבוע.</p>
+      <p>🌾 <b>המהפכה החקלאית</b> — ביות צמחים וחיות, יישוב קבע — לראשונה אפשר לתכנן קדימה.</p>
+      <p>🧪 <b>המהפכה הירוקה</b> — זנים משופרים, דשן כימי, מכון — קפיצה עצומה בתפוקה למאכיל מיליארדים.</p>
+      <p>🤖 <b>המהפכה הדיגיטלית</b> — חיישנים, נתונים, רובוטיקה — לא "עוד" אלא "בדיוק כמה שצריך".</p>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-3 mb-6" id="era-bank">
+      <div class="timeline-card px-4 py-3 text-sm font-bold" draggable="true" data-val="digital">🤖 המהפכה הדיגיטלית – אגטק<br><span class="text-xs font-normal text-gray-400">היום</span></div>
+      <div class="timeline-card px-4 py-3 text-sm font-bold" draggable="true" data-val="green">🧪 המהפכה הירוקה<br><span class="text-xs font-normal text-gray-400">המאה ה-20</span></div>
+      <div class="timeline-card px-4 py-3 text-sm font-bold" draggable="true" data-val="farm">🌾 המהפכה החקלאית<br><span class="text-xs font-normal text-gray-400">לפני כ-12,000 שנה</span></div>
+      <div class="timeline-card px-4 py-3 text-sm font-bold" draggable="true" data-val="hunt">🏹 ציד ולקט<br><span class="text-xs font-normal text-gray-400">לפני 12,000+ שנה</span></div>
+    </div>
+
+    <div class="relative mb-6">
+      <div class="absolute top-1/2 left-0 right-0 h-1 bg-lime-300 rounded-full" style="transform:translateY(-50%);z-index:0;margin:0 24px;"></div>
+      <div class="grid grid-cols-4 gap-3 relative z-10">
+        <div class="timeline-slot w-full p-2 text-center" data-correct="hunt"   ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropEra(event,this)"><span class="text-gray-400 text-xs font-bold">① ראשון</span></div>
+        <div class="timeline-slot w-full p-2 text-center" data-correct="farm"   ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropEra(event,this)"><span class="text-gray-400 text-xs font-bold">②</span></div>
+        <div class="timeline-slot w-full p-2 text-center" data-correct="green"  ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropEra(event,this)"><span class="text-gray-400 text-xs font-bold">③</span></div>
+        <div class="timeline-slot w-full p-2 text-center" data-correct="digital" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropEra(event,this)"><span class="text-gray-400 text-xs font-bold">④ אחרון</span></div>
+      </div>
+    </div>
+
+    <div id="era-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center mb-4">
+      <p class="font-black text-xl text-lime-800 mb-2">🗺️ ציר-הזמן הושלם! +10 עלים 🌿</p>
+      <p class="text-gray-600 text-sm">כל קפיצה נבנתה על הקודמת. אגרו-וולטאיקה שנפגוש בהמשך היא הקפיצה הבאה.</p>
+    </div>
+
+    <div id="era-q-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה השתנה הכי דרמטית בין המהפכה הירוקה למהפכה הדיגיטלית של היום?</p>
+      <div class="grid gap-3" id="q-era">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-era')">היום אף אחד כבר לא עובד בשדה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-era')" data-correct="true">לא רק לגדל יותר, אלא לדעת בדיוק כמה, איפה ומתי – בעזרת נתונים וחיישנים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-era')">היום משתמשים רק בדשן טבעי, בלי כימיה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-era')">אין הבדל אמיתי, זה אותו הדבר בשם אחר</div>
+      </div>
+      <div id="fb-q-era" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="idea2-wrap" class="reveal idea-box p-5 mt-5">
+      <p class="font-bold text-gray-700 mb-2">💡 רעיון יזמי: אם הייתם ממציאים את "הקפיצה החמישית" בהיסטוריה של החקלאות — מה היא הייתה?</p>
+      <textarea id="idea-2" rows="2" placeholder="הרעיון שלנו..." class="w-full border-2 border-lime-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-lime-500"></textarea>
+      <button id="idea-2-btn" onclick="saveIdea('היסטוריה של חקלאות','idea-2')" class="mt-2 bg-lime-600 hover:bg-lime-500 text-white px-5 py-2 rounded-xl font-bold text-sm">💾 שמרו רעיון</button>
+      <span id="idea-2-saved" class="hidden mr-2 text-sm font-bold text-lime-700">✅ נשמר! יופיע בקיר בסוף</span>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3)">מה צמח צריך ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: מה צמח צריך ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🌱</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">מה צמח צריך?</h2>
+        <p class="text-gray-400 text-sm">4 צרכים · פוטוסינתזה · אבחון</p>
+      </div>
+    </div>
+
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 mb-6">
+      <p class="font-black text-green-900 mb-3">🌱 4 הצרכים של הצמח</p>
+      <ul class="text-sm text-gray-700 space-y-2">
+        <li>💧 <b>מים</b> — נספגים דרך השורשים, מובילים מינרלים לכל התא, וגם חומר גלם לפוטוסינתזה עצמה.</li>
+        <li>☀️ <b>אור</b> — מקור האנרגיה לפוטוסינתזה; בלי מספיק אור הצמח "רעב" גם אם יש לו הכל אחר.</li>
+        <li>🌡️ <b>טמפרטורה מתאימה</b> — לכל סוג צמח טווח אידיאלי; קור או חום קיצוניים מאטים או עוצרים צמיחה.</li>
+        <li>🧪 <b>רכיבי תזונה בקרקע</b> (חנקן, זרחן, אשלגן ועוד) — כמו ויטמינים לצמח; בלעדיהם הוא חלש וצהוב.</li>
+      </ul>
+    </div>
+
+    <!-- Photosynthesis explainer + drag game -->
+    <div class="bg-yellow-50 border-r-4 border-yellow-400 rounded-2xl p-5 mb-5 text-gray-700">
+      <p class="text-lg font-black text-yellow-900 mb-3">☀️ + 💧 + CO₂ → 🍬 + O₂</p>
+      <p class="text-sm">פוטוסינתזה = "צילום אור" ביוונית. הצמח לוקח <b>אור שמש</b> (אנרגיה), <b>מים</b> (מהשורשים) ו-<b>פחמן דו-חמצני</b> (מהאוויר, דרך העלים) — ומייצר <b>סוכר</b> (מזון לצמח עצמו) ו-<b>חמצן</b> (O₂ — שאנחנו נושמים!).</p>
+    </div>
+
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 text-center text-lg mb-4">🎮 השלימו את משוואת הפוטוסינתזה!</h3>
+      <div class="flex flex-wrap justify-center gap-3 mb-5" id="photo-bank">
+        <div class="drag-item px-4 py-3 text-sm font-bold" draggable="true" data-val="co2">CO₂ (פחמן דו-חמצני)</div>
+        <div class="drag-item px-4 py-3 text-sm font-bold" draggable="true" data-val="sugar">🍬 סוכר</div>
+        <div class="drag-item px-4 py-3 text-sm font-bold" draggable="true" data-val="o2">O₂ (חמצן)</div>
+        <div class="drag-item px-4 py-3 text-sm font-bold" draggable="true" data-val="water">💧 מים (H₂O)</div>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-2 text-center text-lg font-black">
+        <div class="bg-yellow-100 rounded-xl px-4 py-3">☀️ אור</div>
+        <span class="text-2xl text-gray-400">+</span>
+        <div class="drop-zone w-36 h-14" data-correct="water" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
+        <span class="text-2xl text-gray-400">+</span>
+        <div class="drop-zone w-44 h-14" data-correct="co2" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
+        <span class="text-2xl text-green-600 font-black">→</span>
+        <div class="drop-zone w-36 h-14" data-correct="sugar" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
+        <span class="text-2xl text-gray-400">+</span>
+        <div class="drop-zone w-36 h-14" data-correct="o2" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
+      </div>
+      <div id="photo-done" class="hidden mt-4 text-center">
+        <p class="font-black text-lime-800 text-xl">✅ המשוואה מושלמת! +10 עלים 🌿</p>
+      </div>
+    </div>
+
+    <div id="q-photo-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-4">❓ מה כדאי לנו כבני אדם בכך שצמחים מייצרים חמצן?</p>
+      <div class="grid gap-3" id="q-photo">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-photo')">כלום — אין השפעה על בני אדם</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-photo')" data-correct="true">אנחנו נושמים את החמצן שהם מייצרים — צמחים הם מנוע החמצן של כדור הארץ</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-photo')">הצמחים מייצרים חמצן רק בלילה</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-photo')">רק צמחים גדולים מייצרים כמות משמעותית</div>
+      </div>
+      <div id="fb-q-photo" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <!-- Diagnostic scenarios among the 4 plant needs -->
+    <div id="diag-p-wrap" class="reveal">
+      <p class="text-gray-600 mb-3 text-sm font-bold">🔍 אבחון: לכל תרחיש — <b>איזה מ-4 הצרכים</b> חסר לצמח?</p>
+
+      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+        <p class="font-bold mb-4">"העלים נבולים אחרי 3 ימים בלי השקיה"</p>
+        <div class="grid grid-cols-2 gap-3" id="q-dp1">
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,true,'q-dp1')" data-correct="true">💧 מים</div>
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-dp1')">☀️ אור</div>
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-dp1')">🌡️ טמפרטורה</div>
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-dp1')">🧪 רכיבי תזונה</div>
+        </div>
+        <div id="fb-q-dp1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+
+      <div id="q-dp2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+        <p class="font-bold mb-4">"הצמח גדל בפינה חשוכה בבית, הגבעולים ארוכים וחיוורים"</p>
+        <div class="grid grid-cols-2 gap-3" id="q-dp2">
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-dp2')">💧 מים</div>
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,true,'q-dp2')" data-correct="true">☀️ אור</div>
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-dp2')">🌡️ טמפרטורה</div>
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-dp2')">🧪 רכיבי תזונה</div>
+        </div>
+        <div id="fb-q-dp2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+
+      <div id="q-dp3-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+        <p class="font-bold mb-4">"השקיה סדירה, אור טוב, טמפרטורה נעימה — ובכל זאת הצמח צהוב וחלש"</p>
+        <div class="grid grid-cols-2 gap-3" id="q-dp3">
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-dp3')">💧 מים</div>
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-dp3')">☀️ אור</div>
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,false,'q-dp3')">🌡️ טמפרטורה</div>
+          <div class="quiz-opt p-3 text-center" onclick="ansQ(this,true,'q-dp3')" data-correct="true">🧪 רכיבי תזונה</div>
+        </div>
+        <div id="fb-q-dp3" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+
+      <div id="q-think-wrap" class="reveal bg-white border-2 border-amber-200 rounded-2xl p-5 mb-4">
+        <p class="font-bold mb-4">🧠 חשיבה עצמאית: אור וחום שניהם מגיעים מהשמש — אז למה חילקנו אותם לשני צרכים נפרדים?</p>
+        <div class="grid gap-3" id="q-think">
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-think')" data-correct="true">כי צמח יכול לקבל הרבה אור אבל בטמפרטורה לא מתאימה (למשל קור) — ואז הפוטוסינתזה עדיין נפגעת</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-think')">אין באמת הבדל — זה אותו דבר בשני שמות</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-think')">כי אור מגיע רק ביום וחום רק בלילה</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-think')">כי צמחים לא באמת צריכים חום, רק אור</div>
+        </div>
+        <div id="fb-q-think" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+    </div>
+
+    <div id="idea3-wrap" class="reveal idea-box p-5 mt-5">
+      <p class="font-bold text-gray-700 mb-2">💡 רעיון יזמי: אילו הייתם בונים חיישן שמנטר את 4 צרכי הצמח בבת אחת — איך הוא היה מזהיר את החקלאי?</p>
+      <textarea id="idea-3" rows="2" placeholder="הרעיון שלנו..." class="w-full border-2 border-lime-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-lime-500"></textarea>
+      <button id="idea-3-btn" onclick="saveIdea('מה צמח צריך','idea-3')" class="mt-2 bg-lime-600 hover:bg-lime-500 text-white px-5 py-2 rounded-xl font-bold text-sm">💾 שמרו רעיון</button>
+      <span id="idea-3-saved" class="hidden mr-2 text-sm font-bold text-lime-700">✅ נשמר! יופיע בקיר בסוף</span>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)">מה חקלאי צריך ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: מה חקלאי צריך ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">👨‍🌾</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">מה חקלאי צריך?</h2>
+        <p class="text-gray-400 text-sm">3 צרכים · רווח נוסף · אבחון</p>
+      </div>
+    </div>
+
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 mb-5">
+      <p class="font-black text-amber-900 mb-3">👨‍🌾 3 הצרכים של החקלאי</p>
+      <ul class="text-sm text-gray-700 space-y-2">
+        <li>📊 <b>מידע ונתונים</b> — מזג אוויר, מחירי שוק, מצב הקרקע והצמחים. בלי מידע, כל החלטה היא ניחוש.</li>
+        <li>⏱️ <b>תזמון נכון</b> — מתי להשקות, לדשן, לקטוף, למכור. תזמון טוב = פחות בזבוז ויותר רווח.</li>
+        <li>💰 <b>ניהול כלכלי</b> — הוצאות (מים, דשן, עובדים) מול הכנסות (מכירת היבול). חקלאי הוא גם איש עסקים.</li>
+      </ul>
+    </div>
+
+    <div class="bg-orange-50 border-r-4 border-orange-400 rounded-2xl p-5 mb-5 text-gray-700 text-sm leading-relaxed">
+      <p class="font-black text-orange-900 mb-2">💰 ומה עם רווח נוסף?</p>
+      <p class="mb-2">מעבר לגידול עצמו, חקלאי תמיד שואל: "איך אני מרוויח יותר מהמשאבים שכבר יש לי — הקרקע, המים, השמש?" לפעמים התשובה היא לא לגדל <em>יותר</em>, אלא למצוא <b>שימוש נוסף</b> לאותם משאבים: אגרו-תיירות, מכירת נתוני חקלאות, או — ייצור אנרגיה על אותה קרקע.</p>
+      <p class="text-orange-800 font-bold">🔗 בהמשך הבוטקאמפ נכיר דוגמה ישראלית קונקרטית לרעיון הזה.</p>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-5">
+      <p class="font-bold text-lg mb-4">❓ איזה מהבאים הוא דוגמה ל"שימוש נוסף בקרקע להגברת רווחים", ולא רק שיפור הגידול עצמו?</p>
+      <div class="grid gap-3" id="q-extra">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-extra')" data-correct="true">השכרת חלק מהשטח לפאנלים סולאריים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-extra')">השקיה מדויקת יותר</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-extra')">דישון נכון יותר</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-extra')">בחירת זן איכותי יותר</div>
+      </div>
+      <div id="fb-q-extra" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="diag-f-wrap" class="reveal">
+      <p class="text-gray-600 mb-3 text-sm font-bold">🔍 אבחון: לכל תרחיש — <b>איזה מ-3 הצרכים</b> חסר לחקלאי?</p>
+
+      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+        <p class="font-bold mb-4">"לא ידע שגל חום מגיע השבוע, והיבול נפגע קשות מהחום"</p>
+        <div class="grid gap-3" id="q-df1">
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-df1')" data-correct="true">📊 מידע ונתונים</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-df1')">⏱️ תזמון</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-df1')">💰 ניהול כלכלי</div>
+        </div>
+        <div id="fb-q-df1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+
+      <div id="q-df2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+        <p class="font-bold mb-4">"קטף שבוע מוקדם מדי, לפני שהפרי הבשיל לגמרי, ופספס את המחיר הטוב בשוק"</p>
+        <div class="grid gap-3" id="q-df2">
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-df2')">📊 מידע ונתונים</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-df2')" data-correct="true">⏱️ תזמון</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-df2')">💰 ניהול כלכלי</div>
+        </div>
+        <div id="fb-q-df2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+
+      <div id="q-df3-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+        <p class="font-bold mb-4">"הוציא הרבה כסף על דשן יקר, בלי לבדוק אם זה בכלל משתלם ביחס למחיר המכירה"</p>
+        <div class="grid gap-3" id="q-df3">
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-df3')">📊 מידע ונתונים</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-df3')">⏱️ תזמון</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-df3')" data-correct="true">💰 ניהול כלכלי</div>
+        </div>
+        <div id="fb-q-df3" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+    </div>
+
+    <div id="idea4-wrap" class="reveal idea-box p-5 mt-5">
+      <p class="font-bold text-gray-700 mb-2">💡 רעיון יזמי: מה עוד יכול חקלאי לעשות עם הקרקע/המים/השמש שלו כדי להרוויח יותר, מעבר לגידול עצמו?</p>
+      <textarea id="idea-4" rows="2" placeholder="הרעיון שלנו..." class="w-full border-2 border-lime-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-lime-500"></textarea>
+      <button id="idea-4-btn" onclick="saveIdea('מה חקלאי צריך','idea-4')" class="mt-2 bg-lime-600 hover:bg-lime-500 text-white px-5 py-2 rounded-xl font-bold text-sm">💾 שמרו רעיון</button>
+      <span id="idea-4-saved" class="hidden mr-2 text-sm font-bold text-lime-700">✅ נשמר! יופיע בקיר בסוף</span>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)">איך אגטק עונה על זה ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: איך אגטק עונה על האתגר – יותר עם פחות ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">💡</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">איך אגטק עונה על "יותר עם פחות"</h2>
+        <p class="text-gray-400 text-sm">דוגמה מדויקת אחת, ואז עוד שתיים</p>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-blue-700 to-cyan-600 text-white rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🇮🇱</span>
+        <div>
+          <h3 class="font-black text-xl">נטפים (Netafim)</h3>
+          <p class="text-blue-200 text-sm">ישראל, 1965 · ממציאי הטפטוף המודרני</p>
+        </div>
+      </div>
+      <p class="text-sm text-blue-100">נוסדה בקיבוץ חצרים בנגב. במקום להציף שדה שלם במים, טיפה אחת ישירות לשורש — בדיוק כמה שצריך, לא יותר.</p>
+    </div>
+
+    <!-- Media placeholder: netafim drip -->
+    <div class="media-slot aspect-video flex items-center justify-center mb-5">
+      <div class="text-center p-6 text-gray-400">
+        <div class="text-3xl mb-2">🎬</div>
+        <div class="font-bold text-sm">מיקום לתמונה/סרטון טפטוף</div>
+        <div class="text-xs mt-1">קובץ מקומי: <code>netafim-drip.jpg</code> / <code>.mp4</code> באותה תיקייה, או הטמעת YouTube דרך <code>.yt-wrap</code></div>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-5 text-center">
+        <p class="text-gray-600 text-sm mb-2">חסה בשדה – <b>השקיה בהצפה</b></p>
+        <p class="text-5xl font-black text-red-600">60</p>
+        <p class="text-gray-500 text-sm">ליטר מים לכל ק"ג</p>
+      </div>
+      <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 text-center">
+        <p class="text-gray-600 text-sm mb-2">אותה חסה – <b>טפטוף מדויק</b></p>
+        <p class="text-5xl font-black text-green-600">6</p>
+        <p class="text-gray-500 text-sm">ליטר מים לכל ק"ג</p>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ כמה אחוז מים חוסך טפטוף מדויק לעומת הצפה?</p>
+      <div class="grid grid-cols-4 gap-3" id="q-calc">
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,false,'q-calc')">30%</div>
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,false,'q-calc')">50%</div>
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,true,'q-calc')" data-correct="true">90%</div>
+        <div class="quiz-opt p-4 text-center text-xl font-black" onclick="ansQ(this,false,'q-calc')">99%</div>
+      </div>
+      <div id="fb-q-calc" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="calc-reveal" class="reveal mt-4">
+      <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 mb-6">
+        <p class="font-black text-amber-900 text-xl mb-2">💡 (60-6) ÷ 60 × 100 = <span class="text-3xl text-lime-600">90%</span></p>
+        <p class="text-gray-700 text-sm">זה עונה גם לצמח (בדיוק המים שהוא צריך) וגם לחקלאי (פחות בזבוז = פחות עלות = יותר רווח). הנה עוד שתי דוגמאות באותו עיקרון:</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div class="syn-card p-5 text-center" data-syn="sensor" onclick="revealTech('sensor')">
+          <div class="text-3xl mb-2">📡</div>
+          <p class="font-black text-gray-800">חיישנים חכמים</p>
+          <p class="text-xs text-gray-400 mt-1">לחצו לגילוי</p>
+        </div>
+        <div class="syn-card p-5 text-center" data-syn="data" onclick="revealTech('data')">
+          <div class="text-3xl mb-2">🛰️</div>
+          <p class="font-black text-gray-800">ניתוח נתונים ותחזיות</p>
+          <p class="text-xs text-gray-400 mt-1">לחצו לגילוי</p>
+        </div>
+      </div>
+
+      <div class="space-y-3 mb-6">
+        <div id="tech-sensor" class="reveal bg-white border-2 border-amber-200 rounded-xl p-4 text-sm text-gray-700">📡 <b>חיישנים חכמים</b> (כמו Supplant משיעור אחר בתוכנית) — עונים לצמח: תזונה ומים מדויקים, בדיוק כשצריך. עונים לחקלאי: מידע אמיתי במקום ניחוש.</div>
+        <div id="tech-data" class="reveal bg-white border-2 border-amber-200 rounded-xl p-4 text-sm text-gray-700">🛰️ <b>ניתוח נתונים ותחזיות</b> — עונה לחקלאי: תזמון נכון להשקיה, לדישון ולקטיף — לא לפי לוח שנה קבוע, אלא לפי המציאות בשטח.</div>
+      </div>
+
+      <div id="tech-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center mb-4">
+        <p class="font-black text-xl text-lime-800">💡 +10 עלים 🌿</p>
+      </div>
+
+      <div id="q-tech-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+        <p class="font-bold text-lg mb-4">❓ מה משותף לטפטוף, לחיישנים ולניתוח הנתונים?</p>
+        <div class="grid gap-3" id="q-tech">
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-tech')" data-correct="true">כולן מחליפות ניחוש או הרגל קבוע בהחלטה מבוססת נתונים — גם לטובת הצמח וגם לטובת החקלאי</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tech')">כולן דורשות הרבה יותר עובדים בשטח</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tech')">כולן עובדות רק בגידולים אקזוטיים</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-tech')">אין דבר משותף, כל אחת נפרדת לגמרי</div>
+        </div>
+        <div id="fb-q-tech" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+
+      <div id="idea5-wrap" class="reveal idea-box p-5 mt-5">
+        <p class="font-bold text-gray-700 mb-2">💡 רעיון יזמי: איזו טכנולוגיה הייתם ממציאים כדי לענות גם על צורך של הצמח וגם על צורך של החקלאי בו-זמנית?</p>
+        <textarea id="idea-5" rows="2" placeholder="הרעיון שלנו..." class="w-full border-2 border-lime-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-lime-500"></textarea>
+        <button id="idea-5-btn" onclick="saveIdea('איך אגטק עונה על האתגר','idea-5')" class="mt-2 bg-lime-600 hover:bg-lime-500 text-white px-5 py-2 rounded-xl font-bold text-sm">💾 שמרו רעיון</button>
+        <span id="idea-5-saved" class="hidden mr-2 text-sm font-bold text-lime-700">✅ נשמר! יופיע בקיר בסוף</span>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">אגרו-וולטאיקה ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: אגרו-וולטאיקה + Solargik ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">☀️</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">אגרו-וולטאיקה: אותה קרקע, פעמיים</h2>
+        <p class="text-gray-400 text-sm">הכוכב של הבוטקאמפ שלכם</p>
+      </div>
+    </div>
+
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-6 text-gray-700 text-sm leading-relaxed">
+      זוכרים את "שימוש נוסף להגברת רווחים" שדיברנו עליו כשדיברנו על צרכי החקלאי? הנה דוגמה ממשית: מה אם אפשר לייצר <b>גם חשמל וגם אוכל</b> על אותה חלקת קרקע, בו-זמנית? זו אגרו-וולטאיקה — לחצו על כל כרטיס כדי לגלות למה זו לא סתם "עוד רעיון", אלא סינרגיה אמיתית.
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4 mb-4">
+      <div class="syn-card p-5 text-center" data-syn="sun" onclick="revealSynergy('sun')">
+        <div class="text-3xl mb-2">☀️</div>
+        <p class="font-black text-gray-800">פאנלים סולאריים</p>
+        <p class="text-xs text-gray-400 mt-1">לחצו לגילוי</p>
+      </div>
+      <div class="syn-card p-5 text-center" data-syn="shade" onclick="revealSynergy('shade')">
+        <div class="text-3xl mb-2">🌤️</div>
+        <p class="font-black text-gray-800">צל מגן</p>
+        <p class="text-xs text-gray-400 mt-1">לחצו לגילוי</p>
+      </div>
+      <div class="syn-card p-5 text-center" data-syn="crop" onclick="revealSynergy('crop')">
+        <div class="text-3xl mb-2">🌱</div>
+        <p class="font-black text-gray-800">יבול חקלאי</p>
+        <p class="text-xs text-gray-400 mt-1">לחצו לגילוי</p>
+      </div>
+    </div>
+
+    <div class="space-y-3 mb-6">
+      <div id="syn-sun" class="reveal bg-white border-2 border-amber-200 rounded-xl p-4 text-sm text-gray-700">☀️ <b>הפאנלים</b> מייצרים חשמל נקי מעל השדה — בלי לתפוס שטח נוסף בנפרד מהחקלאות.</div>
+      <div id="syn-shade" class="reveal bg-white border-2 border-amber-200 rounded-xl p-4 text-sm text-gray-700">🌤️ <b>הצל החלקי</b> מגן על היבול מקרינת שמש קיצונית וממתן איבוד מים מהקרקע (פחות התאדות).</div>
+      <div id="syn-crop" class="reveal bg-white border-2 border-amber-200 rounded-xl p-4 text-sm text-gray-700">🌱 <b>היבול</b> ממשיך לגדול מתחת לפאנלים — חלק מהגידולים אפילו מייצרים יותר בצל חלקי.</div>
+    </div>
+
+    <div id="synergy-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center mb-6">
+      <p class="font-black text-xl text-lime-800">☀️🌱 זו סינרגיה אמיתית! +10 עלים 🌿</p>
+      <p class="text-gray-600 text-sm mt-1">אנרגיה וחקלאות, לא במקום זו את זו — ביחד, על אותה קרקע. בדיוק ה"שימוש הנוסף" שדיברנו עליו.</p>
+    </div>
+
+    <div id="solargik-wrap" class="reveal">
+      <div class="bg-gradient-to-br from-amber-600 to-orange-500 text-white rounded-2xl p-6 mb-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-3xl">🇮🇱</span>
+          <div>
+            <h3 class="font-black text-xl">Solargik</h3>
+            <p class="text-amber-100 text-sm">ישראל, ירושלים · טרקרים סולאריים לאגרו-וולטאיקה</p>
+          </div>
+        </div>
+        <p class="text-sm text-amber-50 mb-4">הוקמה ב-2021 ע"י ותיקי תעשיית האנרגיה הסולארית. פיתחה עם חברת SolarEdge הישראלית (2023) מערכת טרקר סולארי ייעודית לאגרו-וולטאיקה — קלה, מודולרית, וניתנת להתקנה על שטחים לא-שטוחים בלי לפגוע בקרקע החקלאית.</p>
+        <div class="grid grid-cols-2 gap-3 text-center text-sm">
+          <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">2021</b>שנת הקמה, ירושלים</div>
+          <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">30%</b>שיפוע קרקע בלי פילוס</div>
+          <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">100+</b>עובדים</div>
+          <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">🌍</b>פעילות: ארה"ב, איטליה, הודו, ברזיל</div>
+        </div>
+      </div>
+
+      <!-- Media placeholder: agrivoltaics / Solargik -->
+      <div class="media-slot aspect-video flex items-center justify-center mb-5">
+        <div class="text-center p-6 text-gray-400">
+          <div class="text-3xl mb-2">🎬</div>
+          <div class="font-bold text-sm">מיקום לתמונה/סרטון אגרו-וולטאיקה / Solargik</div>
+          <div class="text-xs mt-1">קובץ מקומי: <code>agrivoltaics.jpg</code> / <code>solargik.mp4</code> באותה תיקייה, או הטמעת YouTube דרך <code>.yt-wrap</code></div>
+        </div>
+      </div>
+
+      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+        <p class="font-bold text-lg mb-4">❓ למה חשוב שהטרקר יתקין על שיפוע 30% בלי לפלס את הקרקע?</p>
+        <div class="grid gap-3" id="q-sg1">
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sg1')">כדי שהפאנלים יראו יפה יותר מלמעלה</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-sg1')" data-correct="true">כדי לא לפגוע בקרקע החקלאית ולחסוך את עלות פילוס השטח מראש</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sg1')">כי שטח שטוח מייצר פחות חשמל</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sg1')">זה לא ממש חשוב, זה שיווקי בלבד</div>
+        </div>
+        <div id="fb-q-sg1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+
+      <div id="q-sg2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-6">
+        <p class="font-bold text-lg mb-4">❓ מה היתרון המרכזי של אגרו-וולטאיקה לעומת "רק שדה סולארי" או "רק שדה חקלאי" בנפרד?</p>
+        <div class="grid gap-3" id="q-sg2">
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sg2')">זה זול יותר להתקין מכל אפשרות אחרת</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-sg2')" data-correct="true">אותה קרקע נותנת גם אנרגיה וגם מזון — יותר תפוקה משטח מוגבל</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sg2')">אין צורך יותר בחקלאים בכלל</div>
+          <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-sg2')">זה מיועד רק לאזורים ללא שמש</div>
+        </div>
+        <div id="fb-q-sg2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+
+      <div id="design-wrap" class="reveal bg-amber-50 border-2 border-amber-300 rounded-2xl p-6">
+        <h3 class="font-black text-amber-900 text-lg mb-4">✏️ התכנון שלכם (הרעיון היזמי של השלב הזה)</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block font-bold text-gray-700 mb-2">🌱 איזה יבול הייתם שותלים מתחת לפאנלים הסולאריים?</label>
+            <input id="d-crop" type="text" maxlength="80" placeholder="למשל: עלים ירוקים, תותים..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-lg outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block font-bold text-gray-700 mb-2">💡 מה היתרון הכי גדול שזה נותן, לדעתכם?</label>
+            <input id="d-benefit" type="text" maxlength="120" placeholder="כי..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-lg outline-none focus:border-amber-500">
+          </div>
+        </div>
+        <button onclick="saveDesign()" class="mt-5 w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-2xl font-black text-lg shadow-lg transition-colors">☀️ שמרו את הרעיון</button>
+        <div id="design-saved" class="hidden mt-4 bg-lime-50 border-2 border-lime-300 rounded-xl p-4 text-center">
+          <p class="font-black text-lime-800">רעיון נשמר! +15 עלים 🌿 · יופיע בקיר בסוף</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn6" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(7)">משוב קצר ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 7: משוב ══ -->
+<div class="step-panel" id="step-7">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">⭐</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">רגע לפני שממשיכים לקיר...</h2>
+        <p class="text-gray-400 text-sm">משוב קצר על ההרצאה ועל הלומדה</p>
+      </div>
+    </div>
+
+    <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-6 mb-5 space-y-5">
+      <div>
+        <p class="font-bold text-gray-700 mb-2">🎤 כמה כוכבים לחלק הפרונטלי (ההרצאה)?</p>
+        <div class="flex gap-2" id="lecture-stars">
+          <button class="star-btn text-3xl" data-val="1" onclick="rateLecture(1)">☆</button>
+          <button class="star-btn text-3xl" data-val="2" onclick="rateLecture(2)">☆</button>
+          <button class="star-btn text-3xl" data-val="3" onclick="rateLecture(3)">☆</button>
+          <button class="star-btn text-3xl" data-val="4" onclick="rateLecture(4)">☆</button>
+          <button class="star-btn text-3xl" data-val="5" onclick="rateLecture(5)">☆</button>
+        </div>
+      </div>
+      <div>
+        <p class="font-bold text-gray-700 mb-2">💻 כמה כוכבים ללומדה שעברתם עכשיו?</p>
+        <div class="flex gap-2" id="lomda-stars">
+          <button class="star-btn text-3xl" data-val="1" onclick="rateLomda(1)">☆</button>
+          <button class="star-btn text-3xl" data-val="2" onclick="rateLomda(2)">☆</button>
+          <button class="star-btn text-3xl" data-val="3" onclick="rateLomda(3)">☆</button>
+          <button class="star-btn text-3xl" data-val="4" onclick="rateLomda(4)">☆</button>
+          <button class="star-btn text-3xl" data-val="5" onclick="rateLomda(5)">☆</button>
+        </div>
+      </div>
+      <div>
+        <label class="block font-bold text-gray-700 mb-1 text-sm">✨ מה היה הכי מעניין?</label>
+        <input id="fb-best" type="text" maxlength="120" placeholder="הכי מעניין היה..." class="w-full border-2 border-sky-200 rounded-xl p-2 outline-none focus:border-sky-400">
+      </div>
+      <div>
+        <label class="block font-bold text-gray-700 mb-1 text-sm">🤔 מה היה הכי פחות ברור?</label>
+        <input id="fb-unclear" type="text" maxlength="120" placeholder="פחות ברור היה..." class="w-full border-2 border-sky-200 rounded-xl p-2 outline-none focus:border-sky-400">
+      </div>
+      <button onclick="saveFeedback()" class="w-full bg-sky-600 hover:bg-sky-500 text-white py-3 rounded-xl font-black shadow transition-colors">📮 שלחו משוב</button>
+      <div id="feedback-saved" class="hidden text-center text-sm font-bold text-lime-700">✅ תודה על המשוב!</div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn7" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goToWall()">קיר סיעור מוחות ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 8: קיר סיעור מוחות ══ -->
+<div class="step-panel" id="step-8">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🧠</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">קיר סיעור המוחות</h2>
+        <p class="text-gray-400 text-sm">כל הרעיונות שכתבתם — פתוחים לכל הכיתה</p>
+      </div>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-5">
+      <p class="font-bold text-lime-900 mb-3">הרעיונות שלכם לאורך הבוטקאמפ:</p>
+      <div id="ideas-recap" class="space-y-2"></div>
+    </div>
+
+    <div class="bg-white border-2 border-lime-200 rounded-2xl p-4 mb-5 flex flex-wrap items-center gap-3">
+      <label class="font-bold text-gray-700 text-sm whitespace-nowrap">✍️ שם הזוג/קבוצה:</label>
+      <input id="wall-pair-name" type="text" maxlength="30" placeholder="למשל: הזוג הירוק" class="flex-1 min-w-[160px] border-2 border-lime-200 rounded-xl p-2 text-sm outline-none focus:border-lime-500">
+    </div>
+
+    <button onclick="submitIdeasToWall()" class="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-2xl font-black text-lg shadow-lg transition-colors mb-3">🚀 שלחו את הרעיונות לקיר</button>
+    <div id="wall-submitted" class="hidden text-center text-sm font-bold text-lime-700 mb-5">✅ נשלח! +5 עלים 🌿</div>
+
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <p class="font-black text-amber-900 text-lg">🧠 קיר הכיתה — כל הרעיונות מכל הזוגות</p>
+        <button onclick="loadWall()" class="text-xs bg-white border-2 border-amber-300 rounded-full px-3 py-1 font-bold hover:bg-amber-100">🔄 רענון</button>
+      </div>
+      <div id="wall-list" class="grid md:grid-cols-2 gap-3">
+        <p class="text-gray-400 text-sm text-center col-span-2">לחצו "שלחו את הרעיונות לקיר" כדי לראות את כל הכיתה</p>
+      </div>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center mb-5">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים שנצברו היום:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🚀 עכשיו תורכם:</p>
+      <p class="font-black text-xl">לכו לבנות!</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /max-w -->
+
+<script>
+// ── STATE ייחודי ללומדה זו ──
+let betPlaced = false;
+let eraOk = 0;
+let photoOk = 0;
+let synergyClicked = new Set();
+let techClicked = new Set();
+let designSaved = false;
+let feedbackSaved = false;
+let lectureStars = 0, lomdaStars = 0;
+let localIdeas = [];
+let ideasSubmitted = false;
+
+// ── PAIR NAME ──
+function savePairName() {
+  const val = document.getElementById('pair-name').value.trim();
+  if (val) GC.savePassport('pairName', val);
+}
+
+// ── BET MECHANIC ──
+function placeBet(el) {
+  if (betPlaced) return;
+  betPlaced = true;
+  const zone = document.getElementById('bet-zone');
+  zone.querySelectorAll('.bet-btn').forEach(b => b.disabled = true);
+  const correct = el.dataset.correct === 'true';
+  el.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    const c = zone.querySelector('[data-correct="true"]');
+    if (c) c.classList.add('correct');
+  }
+  GC.addLeaves(5, 'K');
+  GC.reveal('reveal-bet');
+  mascotSay('פחות קרקע לנפש — זה האתגר שלנו היום', '🌍');
+}
+
+// ── ERA TIMELINE DRAG ──
+function dropEra(e, zone) {
+  GC.handleDrop(e, zone, zone.dataset.correct, (src, z) => {
+    z.innerHTML = src.innerHTML;
+    z.style.fontSize = '0.7rem';
+    eraOk++;
+    if (eraOk === 4) {
+      document.getElementById('era-done').classList.remove('hidden');
+      GC.addLeaves(10, 'K');
+      GC.reveal('era-q-wrap');
+      mascotSay('ציר הזמן הושלם! 12,000 שנה בקליק', '⏳');
+    }
+  });
+}
+
+// ── PHOTOSYNTHESIS DRAG ──
+function dropPhoto(e, zone) {
+  GC.handleDrop(e, zone, zone.dataset.correct, (src, z) => {
+    z.innerHTML = src.innerHTML;
+    z.style.fontSize = '0.75rem';
+    photoOk++;
+    if (photoOk === 4) {
+      document.getElementById('photo-done').classList.remove('hidden');
+      GC.addLeaves(10, 'K');
+      GC.reveal('q-photo-wrap');
+      mascotSay('משוואת הפוטוסינתזה מושלמת! ☀️→🍬', '🌿');
+    }
+  });
+}
+
+// ── SYNERGY MAP (agrivoltaics) ──
+function revealSynergy(key) {
+  if (synergyClicked.has(key)) return;
+  synergyClicked.add(key);
+  document.getElementById('syn-' + key).classList.add('show');
+  document.querySelector('[data-syn="' + key + '"]').classList.add('done-card');
+  if (synergyClicked.size === 3) {
+    document.getElementById('synergy-done').classList.remove('hidden');
+    GC.addLeaves(10, 'K');
+    GC.reveal('solargik-wrap');
+    mascotSay('אנרגיה וחקלאות ביחד — סינרגיה אמיתית!', '☀️');
+  }
+}
+
+// ── TECH GALLERY (step 5) ──
+function revealTech(key) {
+  if (techClicked.has(key)) return;
+  techClicked.add(key);
+  document.getElementById('tech-' + key).classList.add('show');
+  document.querySelector('[data-syn="' + key + '"]').classList.add('done-card');
+  if (techClicked.size === 2) {
+    document.getElementById('tech-done').classList.remove('hidden');
+    GC.addLeaves(10, 'K');
+    GC.reveal('q-tech-wrap');
+    mascotSay('שלוש דוגמאות, אותו עיקרון', '💡');
+  }
+}
+
+// ── DESIGN TASK (step 6) ──
+function saveDesign() {
+  if (designSaved) return;
+  const crop = document.getElementById('d-crop').value.trim();
+  const benefit = document.getElementById('d-benefit').value.trim();
+  if (!crop && !benefit) { mascotSay('כתבו לפחות רעיון אחד!', '☀️'); return; }
+  designSaved = true;
+  localIdeas.push({ step: 'אגרו-וולטאיקה', idea: `יבול: ${crop || '—'} | יתרון: ${benefit || '—'}` });
+  GC.savePassport('agtech101_ideas', localIdeas);
+  GC.savePassport('agtech101_design', { crop, benefit, date: new Date().toLocaleDateString('he-IL') });
+  document.getElementById('design-saved').classList.remove('hidden');
+  GC.showBtn('btn6');
+  GC.addLeaves(15, 'M');
+  mascotSay('רעיון מעולה! בדיוק החשיבה של אגרו-וולטאיקה', '☀️');
+}
+
+// ── ENTREPRENEURIAL IDEAS (steps 1,2,3,4,5) ──
+function saveIdea(stepLabel, taId) {
+  const btn = document.getElementById(taId + '-btn');
+  if (btn.disabled) return;
+  const val = document.getElementById(taId).value.trim();
+  if (!val) { mascotSay('כתבו רעיון אחד לפחות!', '💡'); return; }
+  localIdeas.push({ step: stepLabel, idea: val });
+  GC.savePassport('agtech101_ideas', localIdeas);
+  document.getElementById(taId + '-saved').classList.remove('hidden');
+  btn.disabled = true;
+  btn.classList.add('opacity-50');
+  GC.addLeaves(10, 'M');
+  mascotSay('רעיון נשמר! יופיע בקיר בסוף הבוטקאמפ', '💡');
+}
+
+// ── FEEDBACK (step 7) ──
+function renderStars(containerId, n) {
+  document.querySelectorAll('#' + containerId + ' .star-btn').forEach((btn, i) => {
+    btn.textContent = i < n ? '⭐' : '☆';
+  });
+}
+function rateLecture(n) { lectureStars = n; renderStars('lecture-stars', n); }
+function rateLomda(n)   { lomdaStars = n; renderStars('lomda-stars', n); }
+
+function saveFeedback() {
+  if (feedbackSaved) return;
+  if (!lectureStars || !lomdaStars) { mascotSay('דרגו את שניהם לפני שממשיכים!', '⭐'); return; }
+  const best = document.getElementById('fb-best').value.trim();
+  const unclear = document.getElementById('fb-unclear').value.trim();
+  feedbackSaved = true;
+  const pairName = GC.getPassport('pairName') || '';
+  postToBackend({ type: 'feedback', pairName, lectureStars, lomdaStars, best, unclear });
+  GC.savePassport('agtech101_feedback', { lectureStars, lomdaStars, best, unclear });
+  document.getElementById('feedback-saved').classList.remove('hidden');
+  GC.showBtn('btn7');
+  GC.addLeaves(5, 'M');
+  mascotSay('תודה על המשוב!', '⭐');
+}
+
+// ── WALL (step 8) ──
+function goToWall() {
+  renderIdeasRecap();
+  const pn = GC.getPassport('pairName');
+  if (pn) document.getElementById('wall-pair-name').value = pn;
+  goTo(8);
+}
+
+function renderIdeasRecap() {
+  const el = document.getElementById('ideas-recap');
+  if (!localIdeas.length) {
+    el.innerHTML = '<p class="text-gray-400 text-sm">עדיין לא שמרתם רעיונות לאורך הבוטקאמפ.</p>';
+    return;
+  }
+  el.innerHTML = localIdeas.map(it =>
+    `<div class="bg-white border border-lime-200 rounded-xl p-3 text-sm"><b class="text-lime-800">${escapeHtml_(it.step)}:</b> <span class="text-gray-700">${escapeHtml_(it.idea)}</span></div>`
+  ).join('');
+}
+
+async function submitIdeasToWall() {
+  if (ideasSubmitted) return;
+  const pairName = document.getElementById('wall-pair-name').value.trim() || GC.getPassport('pairName') || 'קבוצה';
+  GC.savePassport('pairName', pairName);
+  ideasSubmitted = true;
+  for (const it of localIdeas) {
+    postToBackend({ type: 'idea', pairName, step: it.step, idea: it.idea });
+  }
+  document.getElementById('wall-submitted').classList.remove('hidden');
+  GC.addLeaves(5, 'M');
+  mascotSay('הרעיונות שלכם בדרך לקיר!', '🧠');
+  setTimeout(loadWall, 1200);
+}
+
+async function loadWall() {
+  const wallEl = document.getElementById('wall-list');
+  if (!BOOTCAMP_API_URL) {
+    wallEl.innerHTML = '<p class="text-gray-400 text-sm text-center col-span-2">חיבור לענן טרם הוגדר על ידי המורה — הרעיונות נשמרים רק במחשב הזה</p>';
+    return;
+  }
+  wallEl.innerHTML = '<p class="text-gray-400 text-sm text-center col-span-2">טוען...</p>';
+  try {
+    const res = await fetch(BOOTCAMP_API_URL);
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'שגיאה');
+    if (!data.ideas.length) {
+      wallEl.innerHTML = '<p class="text-gray-400 text-sm text-center col-span-2">עדיין אין רעיונות בקיר...</p>';
+      return;
+    }
+    wallEl.innerHTML = data.ideas.map(i => `
+      <div class="bg-white border-2 border-amber-200 rounded-xl p-4 text-sm">
+        <p class="font-bold text-amber-900">${escapeHtml_(i.pairName || 'קבוצה')} <span class="text-gray-400 font-normal text-xs">· ${escapeHtml_(i.step || '')}</span></p>
+        <p class="text-gray-700 mt-1">${escapeHtml_(i.idea)}</p>
+      </div>`).join('');
+  } catch (err) {
+    wallEl.innerHTML = '<p class="text-red-400 text-sm text-center col-span-2">לא הצלחנו לטעון את הקיר כרגע. המורה יכול להציג את הגיליון ישירות.</p>';
+  }
+}
+
+// ── BACKEND HELPERS ──
+function postToBackend(payload) {
+  if (!BOOTCAMP_API_URL) return Promise.resolve(false);
+  return fetch(BOOTCAMP_API_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  }).then(() => true).catch(() => false);
+}
+
+function escapeHtml_(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+// ── INIT ──
+function init() {
+  GC.initLesson({
+    lessonId: 'boot101',
+    steps: 8,
+    mascotMessages: {
+      1: 'שלום! אני גרגיר 🌱 – נחשו לפני שמגלים!',
+      2: 'ציר הזמן: מציד ולקט ועד אגטק דיגיטלי',
+      3: 'בואו נכיר את הצמח מבפנים – כולל פוטוסינתזה!',
+      4: 'עכשיו תורו של החקלאי – הוא צריך יותר מסתם לגדל',
+      5: 'הנה איך טכנולוגיה עונה על כל זה, בפועל',
+      6: 'אגרו-וולטאיקה – אותה קרקע, גם אנרגיה וגם מזון',
+      7: 'רגע לפני שממשיכים – ספרו לנו איך היה',
+      8: 'קיר סיעור המוחות שלכם – פתוח לכולם!'
+    }
+  });
+
+  GC.registerCascades({
+    'q1':      () => { GC.reveal('idea1-wrap'); GC.showBtn('btn1'); },
+    'q-era':   () => { GC.reveal('idea2-wrap'); GC.showBtn('btn2'); mascotSay('בדיוק! נתונים הם ההבדל הכי גדול', '⏳'); },
+    'q-photo': () => GC.reveal('diag-p-wrap'),
+    'q-dp1':   () => GC.reveal('q-dp2-wrap'),
+    'q-dp2':   () => GC.reveal('q-dp3-wrap'),
+    'q-dp3':   () => GC.reveal('q-think-wrap'),
+    'q-think': () => { GC.reveal('idea3-wrap'); GC.showBtn('btn3'); mascotSay('חשיבה מצוינת!', '🌱'); },
+    'q-extra': () => GC.reveal('diag-f-wrap'),
+    'q-df1':   () => GC.reveal('q-df2-wrap'),
+    'q-df2':   () => GC.reveal('q-df3-wrap'),
+    'q-df3':   () => { GC.reveal('idea4-wrap'); GC.showBtn('btn4'); mascotSay('שלושה צרכים, שלושה תרחישים!', '👨‍🌾'); },
+    'q-calc':  () => { GC.reveal('calc-reveal'); mascotSay('90%! זה עצום. אותו עיקרון יעבוד על קרקע', '🧮'); },
+    'q-tech':  () => { GC.reveal('idea5-wrap'); GC.showBtn('btn5'); },
+    'q-sg1':   () => GC.reveal('q-sg2-wrap'),
+    'q-sg2':   () => { GC.reveal('design-wrap'); mascotSay('עכשיו התכנון שלכם!', '✏️'); }
+  });
+
+  GC.initTouch('.timeline-card', '.timeline-slot', dropEra);
+  GC.initTouch('.drag-item', '.drop-zone', dropPhoto);
+
+  // שחזור שם זוג + רעיונות שנשמרו קודם
+  const pn = GC.getPassport('pairName');
+  if (pn) document.getElementById('pair-name').value = pn;
+  const savedIdeas = GC.getPassport('agtech101_ideas');
+  if (Array.isArray(savedIdeas)) localIdeas = savedIdeas;
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 13 – Design Thinking | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;} .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;border-radius:12px;}
+    .quiz-opt:hover:not([data-done]){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
+    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;} .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;} .reveal.show{display:block;animation:fadeUp .35s ease;}
+    .mascot{font-size:2.8rem;transition:all .4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .mascot-bounce{animation:bounce .6s ease 3;}
+    .idea-card{border:2px solid #fde68a;border-radius:10px;background:#fffbeb;}
+    @keyframes timer{from{width:100%}to{width:0%}}
+    .timer-bar{animation:timer 60s linear forwards;height:8px;background:#f59e0b;border-radius:4px;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-orange-50 to-amber-50 min-h-screen">
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="lesson-12.html" class="hover:text-lime-300">← שיעור 12</a>
+      <a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+<div class="bg-amber-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 4 – פירות</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 13 מתוך 17</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">💡 סיעור מוחות: בחירת בעיה</h1>
+    <p class="text-amber-200">Design Thinking · Empathize → Define → Ideate · כמה רעיונות בדקה?</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-amber-300 mb-1"><span id="plabel">שלב 1 מתוך 6</span><span>🌿 <b id="lc">0</b> עלים</span></div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden"><div id="pbar" class="h-3 bg-amber-400 rounded-full transition-all duration-500" style="width:0%"></div></div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- STEP 1: Design Thinking intro -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-4 mb-5 text-sm"><b class="text-amber-900">🎉 ברוכים לפאזה 4 – פירות!</b> שיעורים 1-12 נתנו לנו ידע + כלים. עכשיו — נבנה משהו אמיתי.</div>
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🎨</span><div><h2 class="text-3xl font-black text-amber-900">Design Thinking – מה זה?</h2></div></div>
+    <div class="bg-orange-50 border-r-4 border-orange-500 rounded-2xl p-5 mb-5 text-gray-700 text-sm">
+      <p class="mb-2">תהליך Design Thinking = 5 שלבים: <b>Empathize → Define → Ideate → Prototype → Test</b></p>
+      <p>היום: שלבים 1-3 (נבין בעיה, ננסח אותה, נייצר רעיונות). שלבים 4-5 = שיעורים 14-15.</p>
+      <div class="grid grid-cols-3 gap-3 mt-3 text-center text-xs">
+        <div class="bg-white rounded-xl p-2"><b class="text-xl block">😊</b><b>Empathize</b><p class="text-gray-500">הבן את המשתמש</p></div>
+        <div class="bg-white rounded-xl p-2"><b class="text-xl block">📌</b><b>Define</b><p class="text-gray-500">נסח את הבעיה</p></div>
+        <div class="bg-white rounded-xl p-2"><b class="text-xl block">💡</b><b>Ideate</b><p class="text-gray-500">ייצר רעיונות</p></div>
+      </div>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ למה Design Thinking מתחיל ב-Empathize ולא ישר בפתרון?</p>
+      <div class="grid gap-3" id="q-dt1">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-dt1')">כי זה שלב קל יותר להתחיל בו</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-dt1')" data-correct="true">כי פתרון שלא מבין את הבעיה הוא לא פתרון — הוא "אמפתיה" שמונעת פתרון לבעיה לא קיימת</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-dt1')">כי "Empathize" הוא אנגלית</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-dt1')">כי כולם עושים ככה</div>
+      </div>
+      <div id="fb-q-dt1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn1" class="hidden bg-amber-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-amber-600" onclick="goTo(2)">Empathize ←</button></div>
+</div>
+
+<!-- STEP 2: Empathize -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">😊</span><div><h2 class="text-3xl font-black text-amber-900">Empathize – להבין את הבעיה</h2></div></div>
+    <div class="bg-orange-50 border-r-4 border-orange-400 rounded-2xl p-5 mb-5 text-gray-700 text-sm">
+      <p class="font-bold mb-2">👁️ תצפית: בשיעורים האחרונים ראיתם הרבה בעיות חקלאיות.</p>
+      <ul class="space-y-1 mr-4">
+        <li>💧 pH שיוצא מאיזון בלילה — אין מי שיבדוק</li>
+        <li>🍎 קטיף לא בזמן — פרי מתקלקל</li>
+        <li>🌿 שתיל חולה שאף אחד לא הבחין בו עד שהיה מאוחר</li>
+        <li>📊 נתונים שנאספים אבל אף אחד לא מנתח אותם</li>
+      </ul>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ בשלב Empathize — מה נרצה להבין?</p>
+      <div class="grid gap-3" id="q-emp">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-emp')">מה הפתרון הטכנולוגי הכי מתקדם</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-emp')" data-correct="true">מי סובל מהבעיה? איך? מתי? ולמה הפתרונות הקיימים לא עוזרים לו?</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-emp')">כמה כסף ניתן להרוויח</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-emp')">מה אחרים כבר בנו</div>
+      </div>
+      <div id="fb-q-emp" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn2" class="hidden bg-amber-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-amber-600" onclick="goTo(3)">Define – POV ←</button></div>
+</div>
+
+<!-- STEP 3: Define – POV -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">📌</span><div><h2 class="text-3xl font-black text-amber-900">Define – נסח את ה-POV</h2></div></div>
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-5 text-sm text-gray-700">
+      <p class="mb-2"><b>POV (Point of View) Statement:</b> "<em>[מי]</em> צריך <em>[מה]</em> כי <em>[למה]</em>"</p>
+      <div class="bg-white rounded-xl p-3 font-bold text-amber-800">דוגמה: "חקלאי קיבוצניק שמגדל עגבניות <b>צריך</b> לדעת בזמן אמת שה-pH חרג <b>כי</b> בלי זה הוא מגלה רק כשהנזק כבר קרה."</div>
+    </div>
+    <div class="mb-5">
+      <label class="block font-bold text-gray-700 mb-2">✍️ כתבו את ה-POV של הקבוצה:</label>
+      <div class="bg-amber-50 rounded-xl p-3 mb-2">
+        <p class="text-sm text-amber-800">___ צריך ___ כי ___</p>
+      </div>
+      <input id="pov-who" type="text" maxlength="60" placeholder="מי? (חקלאי, תלמיד, צרכן...)" class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm mb-2 outline-none focus:border-amber-500">
+      <input id="pov-what" type="text" maxlength="80" placeholder="צריך מה? (לדעת, לקבל, לראות...)" class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm mb-2 outline-none focus:border-amber-500">
+      <input id="pov-why" type="text" maxlength="100" placeholder="כי... (בלעדי זה קורה...)" class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500">
+      <button onclick="savePOV()" class="mt-3 w-full bg-amber-700 hover:bg-amber-600 text-white py-4 rounded-xl font-black">📌 שמור POV (+15 עלים)</button>
+      <div id="pov-saved" class="hidden mt-2 text-center font-bold text-lime-700 text-sm">✅ POV נשמר! זה הבסיס לאבטיפוס שלכם 🎯</div>
+    </div>
+    <div id="q-pov-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה ה-POV Statement עושה שסתם "בעיה" לא עושה?</p>
+      <div class="grid gap-3" id="q-pov">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-pov')">הוא מרשים יותר בפגישות</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-pov')" data-correct="true">הוא קושר בין בעיית אדם ספציפי, הצורך שלו, ולמה הפתרון הנוכחי לא מספיק</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-pov')">הוא כתוב באנגלית</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-pov')">כלום — זה אותו דבר</div>
+      </div>
+      <div id="fb-q-pov" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn3" class="hidden bg-amber-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-amber-600" onclick="goTo(4)">כמה רעיונות בדקה? ←</button></div>
+</div>
+
+<!-- STEP 4: Ideate – brainstorm -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">⏱️</span><div><h2 class="text-3xl font-black text-amber-900">כמה רעיונות בדקה?</h2><p class="text-gray-400 text-sm">טיימר 60 שניות — כמה שיותר, גם הכי "טיפשים"</p></div></div>
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-4 mb-4 text-sm text-gray-700">
+      <b>כלל חשוב בסיעור מוחות:</b> אין רעיון שגוי! בשלב Ideate — כמות לפני איכות. הרעיון "הכי מטורף" יכול להיות הגרעין של הפתרון האמיתי.
+    </div>
+    <div id="timer-container" class="bg-gray-100 rounded-xl overflow-hidden mb-4 h-3"><div id="timer-bar" class="timer-bar hidden"></div></div>
+    <button onclick="startTimer()" id="start-btn" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-4 rounded-xl font-black text-xl mb-4">⏱️ התחילו! 60 שניות</button>
+    <div class="space-y-2 mb-4">
+      <input id="idea-1" type="text" maxlength="80" placeholder="רעיון 1..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500">
+      <input id="idea-2" type="text" maxlength="80" placeholder="רעיון 2..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500">
+      <input id="idea-3" type="text" maxlength="80" placeholder="רעיון 3..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500">
+      <input id="idea-4" type="text" maxlength="80" placeholder="רעיון 4 (בונוס!)..." class="w-full border-2 border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-gray-400">
+      <input id="idea-5" type="text" maxlength="80" placeholder="רעיון 5 (בונוס!)..." class="w-full border-2 border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-gray-400">
+    </div>
+    <button onclick="saveIdeas13()" class="w-full bg-amber-700 hover:bg-amber-600 text-white py-4 rounded-xl font-black">💡 שמור סיעור מוחות (+15 עלים)</button>
+    <div id="ideas13-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! עכשיו בחרו את הרעיון הכי מבטיח</div>
+  </div>
+  <div class="flex justify-end"><button id="btn4" class="hidden bg-amber-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-amber-600" onclick="goTo(5)">Beewise + בחירה ←</button></div>
+</div>
+
+<!-- STEP 5: Beewise + בחירת רעיון -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🐝</span><div><h2 class="text-3xl font-black text-amber-900">Beewise – סיפור כהשראה</h2></div></div>
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-5 text-gray-700 text-sm">
+      <p class="mb-2"><b>Beewise (שוב) — סיפור ה-POV שלהם:</b></p>
+      <p class="italic">"<em>חקלאים שמגדלים פרות על ידי האבקה</em> <em>צריכים</em> לדעת שהכוורת בריאה <em>כי</em> 30% מגידולי המזון תלויים בדבורים ובלי גישה לנתוני הכוורת בזמן אמת — הם גילו בעיה רק כשהכוורת מתה."</p>
+      <p class="mt-2">Beewise פתרה בדיוק ב-POV הזה. מה ה-POV שלכם?</p>
+    </div>
+    <div class="mb-5">
+      <label class="block font-bold text-gray-700 mb-2">🎯 בחרו רעיון אחד מהסיעור — ה"מנצח":</label>
+      <textarea id="final-idea" rows="3" maxlength="200" placeholder="הרעיון שבחרנו הוא: ... כי לדעתנו הוא הכי ..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-500"></textarea>
+      <button onclick="saveFinalIdea()" class="mt-3 w-full bg-amber-700 hover:bg-amber-600 text-white py-4 rounded-xl font-black">🎯 שמור רעיון הזוכה (+10 עלים)</button>
+      <div id="final-idea-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ רעיון נשמר! אל תמחקו — תצטרכו אותו בשיעור 14</div>
+    </div>
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+      <h3 class="font-black text-green-900 mb-2">📔 דרכון – שיעור 13</h3>
+      <textarea id="p13-obs" rows="2" maxlength="150" placeholder="ה-POV שלנו: ... הרעיון שבחרנו: ..." class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+      <button onclick="saveEntry13()" class="mt-3 w-full bg-green-700 text-white py-3 rounded-xl font-black">📔 שמור</button>
+      <div id="p13-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! +10 עלים 🌿</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn5" class="hidden bg-amber-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-amber-600" onclick="goTo(6)">סיכום ←</button></div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-amber-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-amber-900 mb-3">📚 מה עשינו היום:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex gap-2"><span class="text-amber-600">😊</span> Empathize: הבנו מי סובל ואיך</li>
+        <li class="flex gap-2"><span class="text-amber-600">📌</span> Define: כתבנו POV — בעיה + משתמש + למה הפתרונות לא מספיקים</li>
+        <li class="flex gap-2"><span class="text-amber-600">💡</span> Ideate: "כמה רעיונות בדקה" — כמות לפני איכות</li>
+        <li class="flex gap-2"><span class="text-amber-600">🎯</span> בחרנו רעיון אחד ל-Prototype בשיעורים 14-15</li>
+      </ul>
+    </div>
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3"><span class="text-2xl">⭐</span><h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3></div>
+      <p class="text-gray-800 font-bold text-lg mb-3">"כשתעמדו בתערוכה בפברואר — מי ה'משתמש' שאתם פותרים לו בעיה, ומה תגידו לו שהמוצר שלכם עושה?"</p>
+      <textarea id="north-star" rows="2" placeholder="המשתמש שלנו הוא... האבטיפוס שלנו פותר לו..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא (שיעור 14):</p>
+      <p class="font-black text-xl">"יש רעיון. איך הופכים אותו לדבר שאפשר להחזיק ביד?"</p>
+    </div>
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים שנצברו בשיעור 13:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך מקסימום ~65 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4"><a href="lesson-14.html" class="bg-amber-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-amber-600">לשיעור 14 ←</a></div>
+</div>
+
+</div>
+<script>
+const STEPS=6;let cur=1,lv=parseInt(localStorage.getItem('ls13')||'0'),maxReached=1;
+let povSaved=false,ideas13Saved=false,finalIdeaSaved=false,entry13Saved=false;
+
+function goTo(n){if(n<1||n>STEPS)return;document.getElementById('step-'+cur).classList.remove('active');cur=n;if(cur>maxReached)maxReached=cur;document.getElementById('step-'+cur).classList.add('active');renderDots();updateHeader();window.scrollTo({top:0,behavior:'smooth'});updateMascot(cur);}
+function updateHeader(){document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';}
+function renderDots(){document.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');});}
+function addLv(n){lv+=n;localStorage.setItem('ls13',lv);document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
+function leafBurst(n){for(let i=0;i<Math.min(n,8);i++){const el=document.createElement('div');el.className='leaf-burst';el.textContent='🌿';el.style.left=(20+Math.random()*60)+'vw';el.style.top=(15+Math.random()*50)+'vh';el.style.setProperty('--tx',(Math.random()*120-60)+'px');el.style.setProperty('--ty',(-80-Math.random()*80)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),950);}}
+function ansQ(el,correct,qid){
+  const c=document.getElementById(qid);if(!c||c.dataset.done)return;c.dataset.done='1';c.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');el.classList.add(correct?'correct':'wrong');if(!correct){const r=c.querySelector('[data-correct="true"]');if(r)r.classList.add('correct');}
+  const fb=document.getElementById('fb-'+qid);if(fb){fb.className='mt-3 rounded-xl p-4 text-sm '+(correct?'bg-green-50 text-green-800':'bg-red-50 text-red-800');fb.textContent=correct?'✅ מצוין! +5 עלים 🌿':'❌ לא בדיוק – תשובה נכונה מסומנת בירוק';fb.classList.remove('hidden');}if(correct)addLv(5);
+  const casc={'q-dt1':()=>{document.getElementById('btn1').classList.remove('hidden');mascotSay('Empathize ראשון — כי אחרת פותרים הבעיה הלא נכונה','🎨');},'q-emp':()=>{document.getElementById('btn2').classList.remove('hidden');mascotSay('בדיוק! להבין את האדם לפני הפתרון','😊');},'q-pov':()=>{document.getElementById('btn3').classList.remove('hidden');mascotSay('POV = מפה לאבטיפוס שלכם','📌');}};
+  if(casc[qid])casc[qid]();
+}
+function startTimer(){
+  document.getElementById('start-btn').disabled=true;document.getElementById('start-btn').textContent='⏱️ ריצה! כתבו מהר...';
+  const bar=document.getElementById('timer-bar');bar.classList.remove('hidden');bar.style.animation='none';bar.offsetHeight;bar.style.animation='timer 60s linear forwards';
+  setTimeout(()=>{document.getElementById('start-btn').textContent='⏰ זמן! ספרו כמה רעיונות יש לכם';},60000);
+}
+function savePOV(){
+  if(povSaved)return;const who=document.getElementById('pov-who').value.trim(),what=document.getElementById('pov-what').value.trim(),why=document.getElementById('pov-why').value.trim();
+  if(!who||!what){mascotSay('מלאו לפחות מי + צריך מה!','📌');return;}povSaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson13POV={who,what,why,date:new Date().toLocaleDateString('he-IL')};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('pov-saved').classList.remove('hidden');addLv(15);document.getElementById('q-pov-wrap').classList.add('show');mascotSay('POV נשמר! זה הבסיס לכל','📌');
+  if(window.GC)GC.completeSideQuest('sq-13-pov');
+}
+function saveIdeas13(){
+  if(ideas13Saved)return;const ideas=[1,2,3].map(i=>document.getElementById('idea-'+i).value.trim()).filter(Boolean);
+  if(ideas.length<2){mascotSay('כתבו לפחות 2 רעיונות!','💡');return;}ideas13Saved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson13Ideas=ideas.concat([document.getElementById('idea-4').value.trim(),document.getElementById('idea-5').value.trim()]).filter(Boolean);localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('ideas13-saved').classList.remove('hidden');addLv(15);document.getElementById('btn4').classList.remove('hidden');mascotSay(ideas.length+' רעיונות! כמות > איכות בשלב הזה','💡');
+}
+function saveFinalIdea(){
+  if(finalIdeaSaved)return;const t=document.getElementById('final-idea').value.trim();if(!t){mascotSay('כתבו את הרעיון הזוכה!','🎯');return;}finalIdeaSaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson13Final=t;localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('final-idea-saved').classList.remove('hidden');addLv(10);checkStep5();
+}
+function saveEntry13(){
+  if(entry13Saved)return;const obs=document.getElementById('p13-obs').value.trim();if(!obs)return;entry13Saved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson13={obs,date:new Date().toLocaleDateString('he-IL')};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('p13-saved').classList.remove('hidden');addLv(10);checkStep5();
+}
+function checkStep5(){if(finalIdeaSaved&&entry13Saved)document.getElementById('btn5').classList.remove('hidden');}
+const mascotLines={1:'פאזה 4 מתחילה! Design Thinking — צעד ראשון: להבין לפני לפתור',2:'Empathize = לנעול נעליים של האחר',3:'POV Statement = מפה לפרויקט',4:'כמה רעיונות בדקה? אל תחשבו — כתבו!',5:'Beewise = דוגמה לPOV שהפך לחברת $80M',6:'שיעור 13 הסתיים! עכשיו — לבנות! ⭐'};
+function updateMascot(s){mascotSay(mascotLines[s]||'','🌱');}
+function mascotSay(msg,emoji){const m=document.getElementById('mascot'),b=document.getElementById('mascot-bubble');if(emoji)m.textContent=emoji;b.textContent=msg;b.classList.remove('hidden');m.classList.add('mascot-bounce');clearTimeout(mascotSay._t);mascotSay._t=setTimeout(()=>{b.classList.add('hidden');m.classList.remove('mascot-bounce');},5000);}
+function init(){
+  const d=document.getElementById('dots');for(let i=1;i<=STEPS;i++){const dot=document.createElement('div');dot.className='step-dot'+(i===1?' current':'');dot.title='שלב '+i;dot.onclick=()=>{if(i<=maxReached)goTo(i);};d.appendChild(dot);}
+  document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;updateHeader();
+  try{const p=JSON.parse(localStorage.getItem('passport1')||'{}');
+    if(p.lesson13POV){document.getElementById('pov-who').value=p.lesson13POV.who||'';document.getElementById('pov-what').value=p.lesson13POV.what||'';document.getElementById('pov-why').value=p.lesson13POV.why||'';povSaved=true;document.getElementById('q-pov-wrap').classList.add('show');document.getElementById('btn3').classList.remove('hidden');}
+    if(p.lesson13Ideas&&p.lesson13Ideas.length>0){p.lesson13Ideas.forEach((idea,i)=>{const el=document.getElementById('idea-'+(i+1));if(el)el.value=idea;});ideas13Saved=true;document.getElementById('btn4').classList.remove('hidden');}
+    if(p.lesson13Final){document.getElementById('final-idea').value=p.lesson13Final;finalIdeaSaved=true;}
+    if(p.lesson13){document.getElementById('p13-obs').value=p.lesson13.obs||'';entry13Saved=true;}
+    checkStep5();
+  }catch(e){}
+  mascotSay(mascotLines[1],'🌱');
+}
+init();
+</script>
+</body>
+</html>

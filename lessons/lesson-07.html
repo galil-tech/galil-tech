@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 7 – הצמח מפעיל מכונות! | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;}
+    .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;}
+    .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;animation:fadeUp .35s ease;}
+    .reveal.show{display:block;}
+
+    /* quiz */
+    .qopt{cursor:pointer;border:2px solid #d1fae5;border-radius:12px;padding:14px;text-align:center;font-size:.9rem;transition:all .2s;background:white;}
+    .qopt:hover{border-color:#84cc16;background:#f0fdf4;}
+    .qopt.correct{background:#dcfce7!important;border-color:#16a34a!important;pointer-events:none;}
+    .qopt.wrong{background:#fee2e2!important;border-color:#dc2626!important;pointer-events:none;}
+    .qopt.locked{pointer-events:none;}
+
+    /* wiring guide */
+    .wire-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;margin-bottom:6px;}
+    .wire-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;border:2px solid rgba(0,0,0,.15);}
+
+    /* code fill-in */
+    .code-blank{display:inline-block;min-width:80px;border-bottom:2px solid #0ea5e9;background:#0f172a;color:#38bdf8;padding:2px 8px;border-radius:4px;font-family:monospace;font-size:.9rem;cursor:text;}
+    .code-blank:focus{outline:none;border-color:#7dd3fc;}
+    .code-blank.correct-fill{border-color:#16a34a;background:#0f2a1a;color:#4ade80;}
+    .code-blank.wrong-fill{border-color:#dc2626;background:#2a0f0f;color:#f87171;animation:shake .3s;}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+    /* code drag */
+    .code-block{cursor:grab;user-select:none;background:#1e293b;color:#7dd3fc;border:2px solid #334155;border-radius:12px;padding:10px 16px;font-family:monospace;font-size:.88rem;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
+    .code-block:hover{border-color:#0ea5e9;transform:scale(1.02);}
+    .code-block.used{opacity:.3;cursor:default;}
+    .code-slot{min-height:52px;border:2.5px dashed #334155;border-radius:12px;background:#0f172a;display:flex;align-items:center;padding:8px 12px;transition:all .2s;font-family:monospace;font-size:.85rem;color:#64748b;}
+    .code-slot.drag-over{border-color:#0ea5e9;background:#0c1e33;}
+    .code-slot.correct-slot{border-color:#16a34a!important;background:#0f2a1a;color:#4ade80;}
+    .code-slot.wrong-slot{border-color:#dc2626;animation:shake .3s;}
+
+    /* LED simulator */
+    .led-off{width:60px;height:60px;border-radius:50%;background:#374151;border:3px solid #4b5563;transition:all .5s;}
+    .led-on{width:60px;height:60px;border-radius:50%;background:#ef4444;border:3px solid #dc2626;box-shadow:0 0 20px #ef4444,0 0 40px #ef4444aa;transition:all .5s;}
+    .led-green-off{background:#374151;border-color:#4b5563;box-shadow:none;}
+    .led-green-on{background:#22c55e;border-color:#16a34a;box-shadow:0 0 20px #22c55e,0 0 40px #22c55eaa;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .led-blink{animation:blink .8s infinite;}
+
+    /* servo visual */
+    @keyframes rotate-open{from{transform:rotate(0deg)}to{transform:rotate(90deg)}}
+    @keyframes rotate-close{from{transform:rotate(90deg)}to{transform:rotate(0deg)}}
+    .valve-open{animation:rotate-open .5s ease forwards;}
+    .valve-close{animation:rotate-close .5s ease forwards;}
+
+    .mission-card{border:2px solid transparent;transition:all .3s;}
+    .mission-card.done{border-color:#16a34a;background:#f0fdf4;opacity:.65;}
+    textarea:focus,input:focus,select:focus{outline:2px solid #84cc16;}
+    .yt-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:16px;}
+    .yt-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-slate-50 min-h-screen">
+
+<!-- MASCOT -->
+<div class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" style="font-size:2.6rem">🌱</div>
+  <div id="mbubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+      <a href="lesson-06.html" class="hover:text-lime-300">← שיעור 6</a>
+      <a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-gradient-to-r from-green-800 to-slate-700 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="bg-lime-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 2</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 7 מתוך 17</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">← המשך משיעור 6</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">⚙️ הצמח מפעיל מכונות!</h1>
+    <p class="text-green-200 text-lg">חיבורים · if/else · LED · ברז אוטומטי · Beewise</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 8</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: גשר + Teaser ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🌱</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">הצמח מדבר – הארדואינו פועל!</h2>
+        <p class="text-gray-400 text-sm">← תשובה לשאלת הTeaser משיעור 6</p>
+      </div>
+    </div>
+
+    <div class="bg-lime-50 border-r-4 border-lime-500 rounded-2xl p-5 mb-5">
+      <p class="text-sm font-bold text-lime-700 mb-2">זוכרים את הTeaser משיעור 6?</p>
+      <p class="text-gray-700 text-lg font-bold">"הטמפרטורה עלתה מעל 30°C – איך תכתבו קוד שמפעיל מאוורר?"</p>
+      <p class="text-gray-500 text-sm mt-2">היום נבנה בדיוק את זה – ועוד יותר.</p>
+    </div>
+
+    <div class="bg-slate-50 border-r-4 border-slate-400 rounded-2xl p-6 mb-5 text-gray-700 leading-relaxed">
+      <p class="text-xl font-black mb-4">עד עכשיו: הצמח דיבר → אנחנו שמענו</p>
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div class="bg-white rounded-xl p-4 border">
+          <p class="font-bold text-gray-600 text-sm mb-2">שיעורים 5–6 ✅</p>
+          <p class="text-3xl mb-2">📡 → 👁️</p>
+          <p class="text-sm text-gray-500">חיישן קרא ערך → אנחנו ראינו על המסך → החלטנו מה לעשות</p>
+        </div>
+        <div class="bg-lime-50 rounded-xl p-4 border-2 border-lime-400">
+          <p class="font-bold text-lime-700 text-sm mb-2">שיעור 7 – חדש! 🔥</p>
+          <p class="text-3xl mb-2">📡 → 🧠 → ⚙️</p>
+          <p class="text-sm text-gray-600">חיישן קרא ערך → הארדואינו מחליט → <b>מפעיל ציוד אוטומטית!</b></p>
+        </div>
+      </div>
+      <div class="bg-green-800 text-white rounded-xl p-4 text-center">
+        <p class="text-xl font-black">🎯 המטרה של היום:</p>
+        <p class="text-green-200">pH יצא מהטווח → LED אדום נדלק → ברז מים נפתח אוטומטית</p>
+        <p class="text-lime-300 font-bold mt-1">הצמח שלכם מפעיל מכונות בלי שתגעו!</p>
+      </div>
+    </div>
+
+    <div class="bg-gray-50 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה ההבדל בין שיעור 6 לשיעור 7?</p>
+      <div class="grid grid-cols-2 gap-3" id="q-t1">
+        <div class="qopt" onclick="pickQ('t1',this,false)">בשיעור 7 יש יותר חיישנים</div>
+        <div class="qopt" onclick="pickQ('t1',this,true)">בשיעור 7 הארדואינו לא רק קורא – גם פועל ומפעיל ציוד</div>
+        <div class="qopt" onclick="pickQ('t1',this,false)">בשיעור 7 הקוד קשה יותר</div>
+        <div class="qopt" onclick="pickQ('t1',this,false)">אין הבדל – אותו דבר</div>
+      </div>
+      <div id="fb-t1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button onclick="goTo(2)" id="b1" class="hidden bg-green-700 hover:bg-green-600 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">מדריך חיבורים ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: מדריך חיבורים ויזואלי ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🔌</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">מדריך חיבורים – לפני שנוגעים!</h2>
+        <p class="text-gray-400 text-sm">🌿 עד 15 עלים · קרא הכל לפני שמחברים</p>
+      </div>
+    </div>
+
+    <!-- WARNING BOX -->
+    <div class="bg-red-50 border-2 border-red-400 rounded-2xl p-5 mb-6">
+      <p class="font-black text-red-800 text-lg mb-3">⚠️ 3 כללי זהב לפני חיבור ארדואינו:</p>
+      <div class="space-y-2 text-sm text-gray-700">
+        <div class="flex gap-3 bg-white rounded-xl p-3"><span class="text-red-500 font-black">1.</span><span><b>תמיד נתק חשמל לפני שמחבר/מנתק כבלים.</b> ארדואינו מחובר = לא נוגעים בפינים.</span></div>
+        <div class="flex gap-3 bg-white rounded-xl p-3"><span class="text-red-500 font-black">2.</span><span><b>אסור לחבר 5V ישירות ל-GND.</b> זה ישרוף את הארדואינו מיד. תמיד דרך נגד.</span></div>
+        <div class="flex gap-3 bg-white rounded-xl p-3"><span class="text-red-500 font-black">3.</span><span><b>בדוק פעמיים לפני שמחבר חשמל.</b> כבל אחד הפוך = חיישן מת.</span></div>
+      </div>
+    </div>
+
+    <!-- LED WIRING -->
+    <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-5 mb-5">
+      <h3 class="text-xl font-black text-yellow-900 mb-4">💡 חיבור LED (נורית)</h3>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div>
+          <p class="font-bold text-gray-700 mb-3 text-sm">סכמת חיבור:</p>
+          <div class="space-y-2">
+            <div class="wire-row bg-white border border-gray-200">
+              <div class="wire-dot" style="background:#ef4444"></div>
+              <div><p class="font-bold text-sm">רגל ארוכה (+) של LED</p><p class="text-xs text-gray-400">→ נגד 220Ω → פין 9</p></div>
+            </div>
+            <div class="wire-row bg-white border border-gray-200">
+              <div class="wire-dot" style="background:#1f2937"></div>
+              <div><p class="font-bold text-sm">רגל קצרה (–) של LED</p><p class="text-xs text-gray-400">→ GND (פין שחור)</p></div>
+            </div>
+          </div>
+          <div class="mt-3 bg-orange-50 rounded-xl p-3 text-sm text-orange-800">
+            ⚡ <b>למה נגד?</b> LED ללא נגד = זרם גדול מדי = LED שרוף תוך שניות. הנגד מגביל את הזרם.
+          </div>
+        </div>
+        <div class="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400 leading-loose">
+          <p class="text-slate-400 text-xs mb-2">// הגדרה בקוד:</p>
+          <p><span class="text-blue-300">int</span> ledPin = <span class="text-yellow-300">9</span>;</p>
+          <p><span class="text-blue-300">void</span> setup() {'{'}</p>
+          <p>&nbsp;<span class="text-purple-300">pinMode</span>(ledPin, OUTPUT);</p>
+          <p>{'}'}</p>
+          <p class="mt-2">// הדלקה:</p>
+          <p><span class="text-purple-300">digitalWrite</span>(ledPin, <span class="text-yellow-300">HIGH</span>);</p>
+          <p>// כיבוי:</p>
+          <p><span class="text-purple-300">digitalWrite</span>(ledPin, <span class="text-yellow-300">LOW</span>);</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVO WIRING (BONUS) -->
+    <div class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-5 mb-5">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-black text-blue-900">🔧 חיבור Servo (ברז אוטומטי)</h3>
+        <span class="bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">בונוס!</span>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div>
+          <p class="font-bold text-gray-700 mb-3 text-sm">3 כבלים בלבד – לפי צבע:</p>
+          <div class="space-y-2">
+            <div class="wire-row bg-white border border-gray-200">
+              <div class="wire-dot" style="background:#dc2626"></div>
+              <div><p class="font-bold text-sm">כבל אדום (VCC)</p><p class="text-xs text-gray-400">→ 5V</p></div>
+            </div>
+            <div class="wire-row bg-white border border-gray-200">
+              <div class="wire-dot" style="background:#1f2937"></div>
+              <div><p class="font-bold text-sm">כבל חום/שחור (GND)</p><p class="text-xs text-gray-400">→ GND</p></div>
+            </div>
+            <div class="wire-row bg-white border border-gray-200">
+              <div class="wire-dot" style="background:#f59e0b"></div>
+              <div><p class="font-bold text-sm">כבל כתום/צהוב (Signal)</p><p class="text-xs text-gray-400">→ פין 6</p></div>
+            </div>
+          </div>
+          <div class="mt-3 bg-green-50 rounded-xl p-3 text-sm text-green-800">
+            ✅ <b>Servo בטוח!</b> אין צורך בנגד. ה-Servo מגביל זרם לבד.
+          </div>
+        </div>
+        <div class="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400 leading-loose">
+          <p class="text-slate-400 text-xs mb-2">// קוד Servo:</p>
+          <p><span class="text-yellow-300">#include</span> &lt;Servo.h&gt;</p>
+          <p><span class="text-blue-300">Servo</span> valve;</p>
+          <p><span class="text-blue-300">void</span> setup() {'{'}</p>
+          <p>&nbsp;valve.<span class="text-purple-300">attach</span>(<span class="text-yellow-300">6</span>);</p>
+          <p>{'}'}</p>
+          <p class="mt-2">// פתיחת ברז:</p>
+          <p>valve.<span class="text-purple-300">write</span>(<span class="text-yellow-300">90</span>);</p>
+          <p>// סגירה:</p>
+          <p>valve.<span class="text-purple-300">write</span>(<span class="text-yellow-300">0</span>);</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div class="bg-green-50 border-2 border-green-300 rounded-2xl p-5">
+      <p class="font-black text-green-800 mb-3">✅ רשימת בדיקה לפני הדלקה:</p>
+      <div class="grid md:grid-cols-2 gap-2 text-sm" id="wiring-checklist">
+        <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> רגל ארוכה LED → נגד → פין 9</label>
+        <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> רגל קצרה LED → GND</label>
+        <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> אין כבלים מתוחים</label>
+        <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> ארדואינו מנותק מחשמל בזמן חיבור</label>
+      </div>
+      <div id="wiring-done" class="hidden mt-3 bg-lime-50 border border-lime-300 rounded-xl p-3 text-center font-bold text-lime-700">
+        🎉 +15 עלים! מוכן לחיבור בטוח!
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="goTo(1)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="goTo(3)" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">if/else ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: if/else לוגיקה ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🤔</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">if / else – הארדואינו מחליט</h2>
+        <p class="text-gray-400 text-sm">🌿 עד 20 עלים</p>
+      </div>
+    </div>
+
+    <div class="bg-slate-50 border-r-4 border-slate-400 rounded-2xl p-6 mb-5 text-gray-700 leading-relaxed">
+      <p class="text-lg mb-4">בשיעור 6 למדתם <code class="bg-slate-200 px-2 rounded text-sm">if</code>. עכשיו מוסיפים <code class="bg-slate-200 px-2 rounded text-sm">else</code> – "אחרת":</p>
+      <div dir="ltr" class="bg-slate-900 rounded-2xl p-5 font-mono text-sm leading-loose mb-4">
+        <p><span class="text-blue-300">float</span> ph = readSensor();</p>
+        <p class="mt-2"><span class="text-yellow-300">if</span> (ph &lt; 5.5) {'{'}  <span class="text-slate-500">// אם pH נמוך מדי</span></p>
+        <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledRed, <span class="text-red-400">HIGH</span>); <span class="text-slate-500">// נורה אדומה דולקת</span></p>
+        <p>&nbsp;&nbsp;valve.<span class="text-purple-300">write</span>(<span class="text-yellow-300">90</span>);  <span class="text-slate-500">// ברז נפתח</span></p>
+        <p>{'}'} <span class="text-yellow-300">else if</span> (ph &gt; 6.5) {'{'} <span class="text-slate-500">// אם בסיסי מדי</span></p>
+        <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledRed, <span class="text-red-400">HIGH</span>);</p>
+        <p>&nbsp;&nbsp;valve.<span class="text-purple-300">write</span>(<span class="text-yellow-300">0</span>); <span class="text-slate-500">// ברז סגור</span></p>
+        <p>{'}'} <span class="text-yellow-300">else</span> {'{'} <span class="text-slate-500">// הכל תקין</span></p>
+        <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledRed, <span class="text-red-400">LOW</span>); <span class="text-slate-500">// נורה כבויה</span></p>
+        <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledGreen, <span class="text-green-400">HIGH</span>); <span class="text-slate-500">// נורה ירוקה</span></p>
+        <p>{'}'}</p>
+      </div>
+    </div>
+
+    <!-- DRAG: BUILD THE if/else -->
+    <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-5 mb-4">
+      <h3 class="text-xl font-black text-orange-900 mb-4">🎮 בנו את הקוד: גררו 6 בלוקים לסדר הנכון</h3>
+      <p class="text-sm text-gray-600 mb-4">המטרה: אם ה-pH מחוץ לטווח – הדלק אדום ופתח ברז. אחרת – הדלק ירוק.</p>
+      <div id="code-bank" class="flex flex-wrap gap-3 mb-5 p-4 bg-slate-100 rounded-2xl">
+        <div class="code-block" draggable="true" data-val="read">📡 ph = קרא_חיישן()</div>
+        <div class="code-block" draggable="true" data-val="if">🤔 אם ph מחוץ לטווח 5.5–6.5:</div>
+        <div class="code-block" draggable="true" data-val="red">🔴 הדלק LED אדום</div>
+        <div class="code-block" draggable="true" data-val="valve">🚿 פתח ברז</div>
+        <div class="code-block" draggable="true" data-val="else">🔁 אחרת:</div>
+        <div class="code-block" draggable="true" data-val="green">💚 הדלק LED ירוק + סגור ברז</div>
+      </div>
+      <div class="bg-slate-900 rounded-2xl p-5 space-y-2">
+        <div class="flex gap-3 items-center">
+          <span class="text-slate-500 font-mono text-sm w-5">1</span>
+          <div class="code-slot flex-1 rounded-xl" id="cs1" data-answer="read">גרור לכאן...</div>
+        </div>
+        <div class="flex gap-3 items-center">
+          <span class="text-slate-500 font-mono text-sm w-5">2</span>
+          <div class="code-slot flex-1 rounded-xl" id="cs2" data-answer="if">גרור לכאן...</div>
+        </div>
+        <div class="flex gap-3 items-center mr-6">
+          <span class="text-slate-500 font-mono text-sm w-5">3</span>
+          <div class="code-slot flex-1 rounded-xl" id="cs3" data-answer="red">גרור לכאן (בתוך ה-if)...</div>
+        </div>
+        <div class="flex gap-3 items-center mr-6">
+          <span class="text-slate-500 font-mono text-sm w-5">4</span>
+          <div class="code-slot flex-1 rounded-xl" id="cs4" data-answer="valve">גרור לכאן (בתוך ה-if)...</div>
+        </div>
+        <div class="flex gap-3 items-center">
+          <span class="text-slate-500 font-mono text-sm w-5">5</span>
+          <div class="code-slot flex-1 rounded-xl" id="cs5" data-answer="else">גרור לכאן...</div>
+        </div>
+        <div class="flex gap-3 items-center mr-6">
+          <span class="text-slate-500 font-mono text-sm w-5">6</span>
+          <div class="code-slot flex-1 rounded-xl" id="cs6" data-answer="green">גרור לכאן (בתוך ה-else)...</div>
+        </div>
+      </div>
+      <div id="code-msg" class="hidden text-center font-bold text-red-500 text-sm mt-3"></div>
+      <div id="code-done" class="hidden mt-4 bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
+        <p class="text-xl font-black text-lime-700">💻 +20 עלים! בניתם if/else שלם!</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="goTo(2)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="goTo(4)" id="b3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">השלם קוד ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: השלמת קוד ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">✍️</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">השלם את החורים בקוד!</h2>
+        <p class="text-gray-400 text-sm">🌿 עד 30 עלים · לחץ Enter אחרי כל תשובה</p>
+      </div>
+    </div>
+
+    <div class="bg-slate-800 rounded-2xl p-4 mb-5 text-sm text-slate-300">
+      🎯 <b class="text-white">המשימה:</b> קוד שבודק EC ומפעיל LED אדום אם נמוך מ-1.2 או ירוק אם תקין
+    </div>
+
+    <div class="bg-slate-900 rounded-2xl p-5 font-mono text-sm leading-loose" dir="ltr">
+      <p><span class="text-blue-300">float</span> ec = readEC();</p>
+      <p class="mt-2"><span class="text-yellow-300">if</span> (ec <span id="blank1-wrap">&lt;</span> <input type="text" class="code-blank w-16" id="blank1" placeholder="?" onkeydown="checkBlank(event,'blank1','1.2')"> ) {'{'}</p>
+      <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(<span id="blank2-wrap"><input type="text" class="code-blank w-20" id="blank2" placeholder="?" onkeydown="checkBlank(event,'blank2','ledRed')"></span>, HIGH);</p>
+      <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledGreen, <span id="blank3-wrap"><input type="text" class="code-blank w-16" id="blank3" placeholder="?" onkeydown="checkBlank(event,'blank3','LOW')"></span>);</p>
+      <p>{'}'} <span class="text-yellow-300">else</span> {'{'}</p>
+      <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledRed, LOW);</p>
+      <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(<span id="blank4-wrap"><input type="text" class="code-blank w-24" id="blank4" placeholder="?" onkeydown="checkBlank(event,'blank4','ledGreen')"></span>, <span id="blank5-wrap"><input type="text" class="code-blank w-16" id="blank5" placeholder="?" onkeydown="checkBlank(event,'blank5','HIGH')"></span>);</p>
+      <p>{'}'}</p>
+    </div>
+
+    <div class="mt-4 bg-blue-50 rounded-xl p-3 text-sm text-blue-800">
+      💡 <b>רמז:</b> המשתנים הם: <code>ledRed</code>, <code>ledGreen</code>, ערכים: <code>HIGH</code> / <code>LOW</code>, סף EC: <code>1.2</code>
+    </div>
+
+    <div id="blanks-progress" class="mt-3 text-sm text-gray-500">0 מתוך 5 נכונים ✓</div>
+    <div id="blanks-done" class="hidden mt-4 bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
+      <p class="text-xl font-black text-lime-700">💻 +30 עלים! כתבת קוד אמיתי!</p>
+      <p class="text-sm text-gray-500 mt-1">זה בדיוק הקוד שרץ על הארדואינו שלכם עכשיו</p>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="goTo(3)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="goTo(5)" id="b4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">סימולטור LED ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: LED + SERVO SIMULATOR ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">💡</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">סימולטור – ראה את הארדואינו פועל!</h2>
+        <p class="text-gray-400 text-sm">🌿 עד 15 עלים · הזז ערכים – ראה מה נדלק</p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+      <!-- controls -->
+      <div class="space-y-5">
+        <div>
+          <div class="flex justify-between mb-2">
+            <label class="font-bold text-gray-700">⚗️ pH</label>
+            <span class="font-black text-xl" id="sim-ph">6.0</span>
+          </div>
+          <input type="range" min="30" max="90" value="60" id="sim-ph-sl" oninput="updateLED()" class="w-full">
+          <div class="flex justify-between text-xs text-gray-400 mt-1"><span>3.0</span><span class="text-green-600 font-bold">5.5–6.5 ✅</span><span>9.0</span></div>
+        </div>
+        <div>
+          <div class="flex justify-between mb-2">
+            <label class="font-bold text-gray-700">⚡ EC (mS/cm)</label>
+            <span class="font-black text-xl" id="sim-ec">1.6</span>
+          </div>
+          <input type="range" min="0" max="50" value="16" id="sim-ec-sl" oninput="updateLED()" class="w-full">
+          <div class="flex justify-between text-xs text-gray-400 mt-1"><span>0</span><span class="text-green-600 font-bold">1.2–2.0 ✅</span><span>5.0</span></div>
+        </div>
+        <div>
+          <div class="flex justify-between mb-2">
+            <label class="font-bold text-gray-700">🌡️ טמפרטורה</label>
+            <span class="font-black text-xl" id="sim-temp">22°C</span>
+          </div>
+          <input type="range" min="5" max="45" value="22" id="sim-temp-sl" oninput="updateLED()" class="w-full">
+        </div>
+      </div>
+
+      <!-- output panel -->
+      <div class="bg-slate-900 rounded-2xl p-6 text-center">
+        <p class="text-slate-400 text-sm mb-4">פלטי הארדואינו:</p>
+
+        <!-- LEDs -->
+        <div class="flex justify-center gap-8 mb-5">
+          <div class="text-center">
+            <div class="led-off mx-auto mb-2" id="led-red"></div>
+            <p class="text-white text-sm font-bold">LED אדום</p>
+            <p class="text-slate-400 text-xs" id="led-red-status">כבוי</p>
+          </div>
+          <div class="text-center">
+            <div class="led-off led-green-off mx-auto mb-2" id="led-green"></div>
+            <p class="text-white text-sm font-bold">LED ירוק</p>
+            <p class="text-slate-400 text-xs" id="led-green-status">כבוי</p>
+          </div>
+        </div>
+
+        <!-- Servo/valve -->
+        <div class="bg-slate-800 rounded-xl p-4 mb-4">
+          <p class="text-slate-400 text-xs mb-2">🔧 Servo (ברז):</p>
+          <div class="flex justify-center items-center gap-4">
+            <div class="text-4xl" id="valve-emoji">🚫</div>
+            <div>
+              <p class="text-white font-bold" id="valve-status">סגור</p>
+              <p class="text-slate-400 text-xs" id="valve-angle">0°</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- decision -->
+        <div class="bg-slate-700 rounded-xl p-3 text-left" dir="ltr">
+          <p class="text-slate-400 text-xs mb-1 font-mono">// Arduino decision:</p>
+          <div class="text-green-400 font-mono text-xs" id="led-decision">✅ All OK</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sim-led-done" class="hidden bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
+      <p class="text-xl font-black text-lime-700">⚡ +15 עלים! הפעלת את ה-LED!</p>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="goTo(4)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="goTo(6)" id="b5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">Beewise ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: BEEWISE ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🐝</span>
+      <div>
+        <h2 class="text-3xl font-black text-gray-900">Beewise – הכוורת האוטומטית</h2>
+        <p class="text-gray-400 text-sm">🌿 עד 20 עלים · סטארטאפ ישראלי של השיעור</p>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-amber-800 to-yellow-700 text-white rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-4xl">🇮🇱</span>
+        <div>
+          <p class="text-yellow-300 text-xs font-bold uppercase">סטארטאפ ישראלי של השיעור</p>
+          <h3 class="text-2xl font-black">Beewise</h3>
+          <p class="text-yellow-200 text-sm">Beer Sheva · Autonomous Beehives</p>
+        </div>
+      </div>
+
+      <div class="bg-white/10 rounded-xl p-4 mb-4 text-yellow-100 text-sm leading-relaxed">
+        <p class="mb-3">Beewise בנו <b class="text-white">כוורת רובוטית אוטומטית לחלוטין.</b> בדיוק כמו שאנחנו בנינו היום: חיישנים → ארדואינו → פעולה. רק שאצלם:</p>
+        <div class="grid md:grid-cols-3 gap-3 text-xs">
+          <div class="bg-white/10 rounded-xl p-3 text-center">
+            <p class="text-2xl mb-1">🌡️</p>
+            <p class="font-bold">חיישן טמפ'</p>
+            <p class="text-yellow-300">→ מערכת חימום/קירור</p>
+          </div>
+          <div class="bg-white/10 rounded-xl p-3 text-center">
+            <p class="text-2xl mb-1">🐛</p>
+            <p class="font-bold">חיישן מזיקים</p>
+            <p class="text-yellow-300">→ טיפול אוטומטי</p>
+          </div>
+          <div class="bg-white/10 rounded-xl p-3 text-center">
+            <p class="text-2xl mb-1">🍯</p>
+            <p class="font-bold">חיישן דבש</p>
+            <p class="text-yellow-300">→ קציר אוטומטי</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-center text-sm">
+        <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-yellow-300">80%</div><div class="text-xs text-yellow-200">פחות אבדות דבורים</div></div>
+        <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-yellow-300">$80M</div><div class="text-xs text-yellow-200">גיוס</div></div>
+        <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-yellow-300">24/7</div><div class="text-xs text-yellow-200">ניטור אוטומטי</div></div>
+        <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-yellow-300">🌍</div><div class="text-xs text-yellow-200">ארה"ב, ישראל</div></div>
+      </div>
+
+      <div class="bg-amber-400/20 border border-amber-400/40 rounded-xl p-4">
+        <p class="font-bold text-yellow-300 mb-2">💭 חיבור לשיעור:</p>
+        <p class="text-white text-sm">מה שבנינו היום (חיישן → if/else → LED/ברז) <b>זה בדיוק</b> מה ש-Beewise עשו – רק הם עשו את זה לדבורים ב-$80M. <b>מה היית מוסיף לכוורת האוטומטית שלהם?</b></p>
+        <textarea id="beewise-ans" rows="2" class="mt-3 w-full bg-white/10 border border-amber-400/30 rounded-xl p-3 text-sm text-white resize-none placeholder-yellow-300" placeholder="רעיון לחיישן או פעולה חדשה..."></textarea>
+        <button onclick="submitBeewise(this)" class="mt-2 bg-amber-500 hover:bg-amber-400 text-white px-6 py-2 rounded-xl font-bold text-sm">שלח +10 עלים 🌿</button>
+      </div>
+    </div>
+
+    <!-- quiz -->
+    <div id="bw-quiz" class="reveal bg-gray-50 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ מה ההבדל בין מה שבנינו לבין Beewise?</p>
+      <div class="grid grid-cols-2 gap-3" id="q-bw1">
+        <div class="qopt" onclick="pickQ('bw1',this,false)">Beewise משתמשים בקוד אחר לגמרי</div>
+        <div class="qopt" onclick="pickQ('bw1',this,true)">אותה לוגיקה – חיישן+if/else+פעולה – רק ב-scale גדול יותר</div>
+        <div class="qopt" onclick="pickQ('bw1',this,false)">Beewise לא משתמשים בארדואינו</div>
+        <div class="qopt" onclick="pickQ('bw1',this,false)">לא ניתן להשוות</div>
+      </div>
+      <div id="fb-bw1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-between">
+    <button onclick="goTo(5)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
+    <button onclick="goTo(7)" id="b6" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">לפרויקט! ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 7: PROJECT ══ -->
+<div class="step-panel" id="step-7">
+  <div class="bg-green-800 text-white rounded-3xl shadow-xl p-8 mb-5 text-center">
+    <div class="text-6xl mb-3">⚙️</div>
+    <h2 class="text-4xl font-black mb-2">עכשיו לפרויקט!</h2>
+    <p class="text-green-200 text-xl mb-2">גרמו לצמח להפעיל LED אמיתי!</p>
+    <p class="text-green-300 text-sm mb-5">השאר את המחשב – קח את הרשימה</p>
+
+    <div class="bg-white/10 rounded-2xl p-5 text-right mb-5 space-y-3">
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m1">
+        <div class="text-2xl">🔌</div>
+        <div class="flex-1"><p class="font-bold">א. חבר LED אדום לפין 9 דרך נגד 220Ω</p><p class="text-green-300 text-xs">רגל ארוכה → נגד → פין 9 | רגל קצרה → GND</p></div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(1)">
+      </div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m2">
+        <div class="text-2xl">💚</div>
+        <div class="flex-1"><p class="font-bold">ב. חבר LED ירוק לפין 10 דרך נגד 220Ω</p><p class="text-green-300 text-xs">אותו חיבור, פין אחר</p></div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(2)">
+      </div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m3">
+        <div class="text-2xl">📺</div>
+        <div class="flex-1"><p class="font-bold">ג. בקש מהמורה להעלות קוד</p><p class="text-green-300 text-xs">קוד עם if/else לפי pH ו-EC</p></div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(3)">
+      </div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m4">
+        <div class="text-2xl">🔴</div>
+        <div class="flex-1"><p class="font-bold">ד. גרום ל-LED האדום להידלק</p><p class="text-green-300 text-xs">הזז את pH מחוץ לטווח (שנה ב-simulator או בדיקה ידנית)</p></div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(4)">
+      </div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m5">
+        <div class="text-2xl">💚</div>
+        <div class="flex-1"><p class="font-bold">ה. גרום ל-LED הירוק להידלק</p><p class="text-green-300 text-xs">החזר ערכים לטווח תקין</p></div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(5)">
+      </div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m6">
+        <div class="text-2xl">📸</div>
+        <div class="flex-1"><p class="font-bold">ו. צלם: LED דולק + מסך ארדואינו</p></div>
+        <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(6)">
+      </div>
+    </div>
+
+    <div id="bonus-m" class="hidden bg-yellow-400/20 border border-yellow-300 rounded-2xl p-4 mb-5 text-right">
+      <p class="font-bold text-yellow-200">⭐ בונוס Servo (+20 עלים)</p>
+      <p class="text-white text-sm">אם יש Servo זמין – חבר אותו לפין 6 ובדוק שהוא נע כש-pH יוצא מהטווח</p>
+    </div>
+    <p id="mp" class="text-green-200 mb-4">0 מתוך 6 ✓</p>
+    <button onclick="goTo(8)" id="bm" class="hidden bg-lime-400 hover:bg-lime-300 text-green-900 px-12 py-5 rounded-2xl text-2xl font-black shadow-2xl">✅ הצמח פועל! ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 8: DATA + SUMMARY ══ -->
+<div class="step-panel" id="step-8">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <h2 class="text-3xl font-black text-gray-900 mb-6">📊 נתונים + קיר הכיתה</h2>
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+      <div class="space-y-4">
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">⚗️ pH שנמדד</label><input type="number" id="d-ph" step="0.1" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="6.1"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">⚡ EC שנמדד</label><input type="number" id="d-ec" step="0.1" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="1.7"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">💡 מה ה-LED עשה?</label>
+          <select id="d-led" class="w-full border-2 border-gray-200 rounded-xl p-4 text-lg">
+            <option value="">בחר...</option>
+            <option value="green">ירוק – הכל תקין ✅</option>
+            <option value="red">אדום – בעיה ❌</option>
+            <option value="both">שניהם – בדיקה מלאה</option>
+          </select>
+        </div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">💬 הערה</label><textarea id="d-obs" rows="2" class="w-full border-2 border-gray-200 rounded-xl p-4 resize-none"></textarea></div>
+        <button onclick="submitData()" class="w-full bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg">🌿 שלח נתונים!</button>
+        <div id="dfb" class="hidden p-4 rounded-xl text-sm"></div>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-700 text-lg mb-3">🛠 קיר הכיתה</h3>
+        <div id="feed" class="space-y-3 max-h-72 overflow-y-auto mb-3"></div>
+        <a href="../wall.html" class="block text-center border-2 border-green-600 text-green-700 py-3 rounded-2xl font-bold text-sm">לקיר המלא →</a>
+      </div>
+    </div>
+    <div class="bg-gray-50 rounded-2xl p-5 mb-6"><h3 class="font-bold mb-3">🏆 לידרבורד</h3><div id="lb"></div></div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="bg-white rounded-3xl shadow-lg p-8 text-center">
+    <div class="text-6xl mb-2">🏆</div>
+    <h2 class="text-4xl font-black text-gray-900 mb-2">סיימת שיעור 7!</h2>
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-6 mb-5 inline-block">
+      <div class="text-4xl font-black text-lime-700" id="fl">🌿 0</div>
+      <p class="text-gray-500 text-sm mt-1">עלים הרווחת</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6 text-xs">
+      <div class="bg-yellow-50 rounded-xl p-3"><p class="text-xl">⚠️</p><p class="font-bold">חיבורים בטוחים</p></div>
+      <div class="bg-blue-50 rounded-xl p-3"><p class="text-xl">🤔</p><p class="font-bold">if/else</p></div>
+      <div class="bg-slate-50 rounded-xl p-3"><p class="text-xl">✍️</p><p class="font-bold">השלמת קוד</p></div>
+      <div class="bg-red-50 rounded-xl p-3"><p class="text-xl">💡</p><p class="font-bold">LED אמיתי</p></div>
+      <div class="bg-amber-50 rounded-xl p-3"><p class="text-xl">🐝</p><p class="font-bold">Beewise</p></div>
+    </div>
+    <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 mb-5 text-right">
+      <p class="font-bold text-amber-900">🎯 כוכב הצפון: היום הקוד שלכם קיבל "ידיים" – יכולת לפעול, לא רק לדווח. זה בדיוק מה שיהיה בלב האבטיפוס שלכם. <b>איך זה רלוונטי לפרויקט שלי?</b></p>
+    </div>
+    <div class="bg-green-800 text-white rounded-2xl p-5 mb-4 text-right">
+      <p class="font-bold mb-1">🔮 שיעור 8: "סינרגיה – כשהמערכות מדברות ביניהן"</p>
+      <p class="text-green-200 text-sm">חיבור ה-pH, EC, חיישנים וה-LED לתוכנית אחת אחודה</p>
+    </div>
+    <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-5 mb-5">
+      <p class="font-bold text-yellow-900">✍️ Teaser: <b>אם pH וגם EC יוצאים מהטווח בו-זמנית – מה הארדואינו צריך לעשות קודם?</b></p>
+    </div>
+    <div class="flex gap-4 justify-center">
+      <a href="../wall.html" class="bg-green-700 text-white px-8 py-4 rounded-2xl font-bold">📸 קיר</a>
+      <a href="../index.html#lessons-section" class="border-2 border-green-700 text-green-700 px-8 py-4 rounded-2xl font-bold">שיעורים</a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const TOTAL=8;
+let cur=1;
+let lv=parseInt(localStorage.getItem('ls7')||'0');
+const sName=localStorage.getItem('studentName')||'תלמיד';
+let qDone={},wiringChecked=0,blanksOk=0,simLEDDone=false,mcCnt=0;
+
+function addLv(n){
+  lv+=n;localStorage.setItem('ls7',lv);
+  document.getElementById('lc').textContent=lv;
+  document.getElementById('fl').textContent='🌿 '+lv;
+  for(let i=0;i<7;i++){
+    const e=document.createElement('div');e.className='leaf-burst';
+    e.style.cssText='left:'+(15+Math.random()*70)+'%;top:'+(15+Math.random()*70)+'%;--tx:'+(Math.random()-.5)*200+'px;--ty:'+(-50-Math.random()*130)+'px;';
+    e.textContent='🌿';document.body.appendChild(e);setTimeout(()=>e.remove(),950);
+  }
+}
+
+function goTo(n){
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur=n;document.getElementById('step-'+cur).classList.add('active');
+  document.getElementById('pbar').style.width=((n-1)/TOTAL*100)+'%';
+  document.getElementById('plabel').textContent='שלב '+n+' מתוך '+TOTAL;
+  buildDots();window.scrollTo({top:0,behavior:'smooth'});
+}
+function buildDots(){
+  const c=document.getElementById('dots');c.innerHTML='';
+  for(let i=1;i<=TOTAL;i++){
+    const d=document.createElement('div');
+    d.className='step-dot'+(i<cur?' done':i===cur?' current':'');
+    if(i<cur)d.onclick=()=>goTo(i);c.appendChild(d);
+  }
+}
+
+// ── quiz ──
+function pickQ(qid,el,correct){
+  if(qDone[qid])return;qDone[qid]=true;
+  const grid=document.getElementById('q-'+qid);
+  grid.querySelectorAll('.qopt').forEach(o=>o.classList.add('locked'));
+  el.classList.add(correct?'correct':'wrong');
+  if(!correct)grid.querySelectorAll('.qopt').forEach(o=>{if(o.onclick&&o.onclick.toString().indexOf('true')>-1)o.classList.add('correct');});
+  const fbMap={
+    t1:{ok:'✅ נכון! שיעור 7 = הארדואינו פועל ומפעיל ציוד, לא רק קורא.',fail:'💡 ההבדל הגדול: שיעור 7 הארדואינו מפעיל LED/ברז – לא רק מדדים.',lv:10},
+    bw1:{ok:'✅ נכון! אותה לוגיקה – חיישן→if/else→פעולה. Beewise עשו זאת בגדול.',fail:'💡 הלוגיקה זהה! חיישן→if/else→פעולה. ההבדל הוא רק ה-scale.',lv:10},
+  };
+  const d=fbMap[qid];if(!d)return;
+  const fb=document.getElementById('fb-'+qid);
+  fb.classList.remove('hidden');
+  fb.className=correct?'mt-3 rounded-xl p-4 text-sm bg-green-50 border border-green-300':'mt-3 rounded-xl p-4 text-sm bg-orange-50 border border-orange-300';
+  fb.textContent=correct?d.ok:d.fail;
+  if(correct)addLv(d.lv);
+  if(qid==='t1')document.getElementById('b1').classList.remove('hidden');
+  if(qid==='bw1')document.getElementById('b6').classList.remove('hidden');
+}
+
+// ── wiring checklist ──
+function wiringCheck(){
+  const boxes=document.getElementById('wiring-checklist').querySelectorAll('input[type=checkbox]');
+  const checked=[...boxes].filter(b=>b.checked).length;
+  if(checked===4&&wiringChecked<4){wiringChecked=4;addLv(15);document.getElementById('wiring-done').classList.remove('hidden');}
+}
+
+// ── code drag: build the if/else ──
+let dragging=null,codeOk=0;
+document.querySelectorAll('.code-block').forEach(el=>{
+  el.addEventListener('dragstart',e=>{dragging=el;e.dataTransfer.setData('text/plain',el.dataset.val);});
+  el.addEventListener('dragend',()=>{dragging=null;});
+  let tc=null;
+  el.addEventListener('touchstart',e=>{
+    if(el.classList.contains('used'))return;
+    dragging=el;
+    tc=el.cloneNode(true);
+    tc.style.cssText='position:fixed;opacity:.8;pointer-events:none;z-index:9999;font-family:monospace;background:#1e293b;color:#7dd3fc;border:2px solid #334155;border-radius:12px;padding:10px 16px;font-size:.88rem;';
+    document.body.appendChild(tc);
+  },{passive:true});
+  el.addEventListener('touchmove',e=>{
+    if(!tc)return;e.preventDefault();
+    const t=e.touches[0];tc.style.left=(t.clientX-60)+'px';tc.style.top=(t.clientY-20)+'px';
+  },{passive:false});
+  el.addEventListener('touchend',e=>{
+    if(!tc)return;tc.remove();tc=null;
+    const t=e.changedTouches[0];
+    const tgt=document.elementFromPoint(t.clientX,t.clientY);
+    const slot=tgt&&tgt.classList.contains('code-slot')?tgt:tgt&&tgt.closest('.code-slot');
+    if(slot&&dragging)dropOnSlot(slot,dragging.dataset.val);
+    dragging=null;
+  });
+});
+document.querySelectorAll('.code-slot').forEach(slot=>{
+  slot.addEventListener('dragover',e=>{e.preventDefault();slot.classList.add('drag-over');});
+  slot.addEventListener('dragleave',()=>slot.classList.remove('drag-over'));
+  slot.addEventListener('drop',e=>{
+    e.preventDefault();slot.classList.remove('drag-over');
+    if(!dragging)return;dropOnSlot(slot,e.dataTransfer.getData('text/plain'));
+  });
+});
+const codeLabels={read:'📡 ph = קרא_חיישן()',if:'🤔 אם ph מחוץ לטווח 5.5–6.5:',red:'🔴 הדלק LED אדום',valve:'🚿 פתח ברז',else:'🔁 אחרת:',green:'💚 הדלק LED ירוק + סגור ברז'};
+const codePts={read:3,if:3,red:3,valve:3,else:3,green:5};
+function dropOnSlot(slot,val){
+  if(slot.dataset.filled)return;
+  if(val===slot.dataset.answer){
+    slot.textContent=codeLabels[val]||val;
+    slot.classList.add('correct-slot');slot.dataset.filled='true';
+    document.querySelectorAll('.code-block').forEach(b=>{if(b.dataset.val===val)b.classList.add('used');});
+    codeOk++;addLv(codePts[val]||3);
+    if(codeOk===6){
+      document.getElementById('code-done').classList.remove('hidden');document.getElementById('b3').classList.remove('hidden');
+      // P3.1: save code completion to passport1 so lesson-08 can reference it
+      if(window.GC)GC.savePassport('lesson7Code',{done:true,ts:Date.now()});
+    }
+  } else {
+    slot.classList.add('wrong-slot');setTimeout(()=>slot.classList.remove('wrong-slot'),500);
+    const m=document.getElementById('code-msg');m.classList.remove('hidden');m.textContent='לא הסדר הנכון – נסה שוב!';
+    setTimeout(()=>m.classList.add('hidden'),1500);
+  }
+}
+
+// ── code blanks ──
+const blanksAnswers={blank1:'1.2',blank2:'ledRed',blank3:'LOW',blank4:'ledGreen',blank5:'HIGH'};
+function checkBlank(e,id,answer){
+  if(e.key!=='Enter')return;
+  const inp=document.getElementById(id);
+  const val=inp.value.trim();
+  if(val===answer){
+    inp.className='code-blank correct-fill';inp.readOnly=true;
+    blanksOk++;
+    document.getElementById('blanks-progress').textContent=blanksOk+' מתוך 5 נכונים ✓';
+    if(blanksOk===5){addLv(30);document.getElementById('blanks-done').classList.remove('hidden');document.getElementById('b4').classList.remove('hidden');}
+  } else {
+    inp.className='code-blank wrong-fill';
+    setTimeout(()=>inp.className='code-blank',600);
+  }
+}
+
+// ── LED simulator ──
+let simLEDTriggered=false;
+function updateLED(){
+  const ph=parseInt(document.getElementById('sim-ph-sl').value)/10;
+  const ec=parseInt(document.getElementById('sim-ec-sl').value)/10;
+  const t=parseInt(document.getElementById('sim-temp-sl').value);
+  document.getElementById('sim-ph').textContent=ph.toFixed(1);
+  document.getElementById('sim-ec').textContent=ec.toFixed(1);
+  document.getElementById('sim-temp').textContent=t+'°C';
+
+  const phBad=ph<5.5||ph>6.5;
+  const ecBad=ec<1.2||ec>2.5;
+  const tBad=t>28;
+  const anyBad=phBad||ecBad||tBad;
+
+  const rLed=document.getElementById('led-red');
+  const gLed=document.getElementById('led-green');
+  const valve=document.getElementById('valve-emoji');
+  const dec=document.getElementById('led-decision');
+
+  if(anyBad){
+    rLed.className='led-off mx-auto mb-2 led-blink';
+    rLed.style.background='#ef4444';rLed.style.borderColor='#dc2626';
+    rLed.style.boxShadow='0 0 20px #ef4444,0 0 40px #ef4444aa';
+    gLed.className='led-off led-green-off mx-auto mb-2';
+    gLed.style='';
+    document.getElementById('led-red-status').textContent='דולק 🔴';
+    document.getElementById('led-green-status').textContent='כבוי';
+    const reasons=[];
+    if(phBad)reasons.push('pH='+ph.toFixed(1));
+    if(ecBad)reasons.push('EC='+ec.toFixed(1));
+    if(tBad)reasons.push('טמפ\'='+t+'°C');
+    valve.textContent='💧';
+    document.getElementById('valve-status').textContent='ברז פתוח!';
+    document.getElementById('valve-angle').textContent='90°';
+    dec.innerHTML='<span style="color:#f87171">if ('+reasons.join(' || ')+') → ledRed=HIGH, valve.write(90)</span>';
+
+    if(!simLEDTriggered){simLEDTriggered=true;addLv(15);document.getElementById('sim-led-done').classList.remove('hidden');document.getElementById('b5').classList.remove('hidden');}
+  } else {
+    rLed.className='led-off mx-auto mb-2';rLed.style='';
+    document.getElementById('led-red-status').textContent='כבוי';
+    const g=document.getElementById('led-green');
+    g.className='led-off led-green-off mx-auto mb-2';
+    g.style.background='#22c55e';g.style.borderColor='#16a34a';
+    g.style.boxShadow='0 0 20px #22c55e,0 0 40px #22c55eaa';
+    document.getElementById('led-green-status').textContent='דולק 💚';
+    valve.textContent='🚫';
+    document.getElementById('valve-status').textContent='סגור';
+    document.getElementById('valve-angle').textContent='0°';
+    dec.innerHTML='<span style="color:#4ade80">else → ledGreen=HIGH, valve.write(0)</span>';
+    if(simLEDTriggered)document.getElementById('b5').classList.remove('hidden');
+  }
+}
+
+// ── beewise ──
+function submitBeewise(btn){
+  if(!document.getElementById('beewise-ans').value.trim()){alert('כתוב רעיון קודם!');return;}
+  addLv(10);
+  document.getElementById('beewise-ans').disabled=true;
+  btn.textContent='✅ נשלח!';
+  document.getElementById('bw-quiz').classList.add('show');
+}
+
+// ── missions ──
+function mc(n){
+  mcCnt++;document.getElementById('m'+n).classList.add('done');addLv(7);
+  document.getElementById('mp').textContent=mcCnt+' מתוך 6 ✓';
+  if(mcCnt===3)document.getElementById('bonus-m').classList.remove('hidden');
+  if(mcCnt===6){addLv(10);document.getElementById('bm').classList.remove('hidden');}
+}
+
+// ── data ──
+function submitData(){
+  const ph=document.getElementById('d-ph').value;
+  const ec=document.getElementById('d-ec').value;
+  const led=document.getElementById('d-led').value;
+  if(!ph||!ec||!led){alert('מלא את כל השדות');return;}
+  addLv(20);
+  const rec={name:sName,ph,ec,led,obs:document.getElementById('d-obs').value,ts:Date.now()};
+  let all=JSON.parse(localStorage.getItem('cls7')||'[]');
+  all=all.filter(r=>r.name!==sName);all.push(rec);localStorage.setItem('cls7',JSON.stringify(all));
+  if(window.GC) GC.pushPassport('measurements',{lesson:7,ph:parseFloat(ph)||0,ec:parseFloat(ec)||0,led,obs:rec.obs,ts:rec.ts});
+  let msg='<p class="font-bold text-green-800 text-lg mb-1">✅ נתונים נשמרו! +20 עלים 🌿</p>';
+  if(parseFloat(ph)<5.5||parseFloat(ph)>6.5)msg+='<p class="text-red-600">⚠️ pH מחוץ לטווח – LED אדום אמור לדלוק!</p>';
+  else msg+='<p class="text-green-600">pH תקין 🌱</p>';
+  const fb=document.getElementById('dfb');fb.classList.remove('hidden');
+  fb.className='p-4 rounded-xl bg-lime-50 border border-lime-200 text-sm';fb.innerHTML=msg;
+  renderFeed();renderLB();
+}
+function renderFeed(){
+  const data=JSON.parse(localStorage.getItem('cls7')||'[]');
+  const feed=document.getElementById('feed');
+  const icons={green:'💚',red:'🔴',both:'💡💚'};
+  if(!data.length){feed.innerHTML='<p class="text-gray-400 text-center py-4 text-sm">עדיין אין נתונים</p>';return;}
+  feed.innerHTML=data.slice(-5).reverse().map(r=>`<div class="bg-gray-50 rounded-xl p-3 border"><p class="font-bold text-sm">${r.name} ${icons[r.led]||''}</p><p class="text-xs text-gray-500">pH:${r.ph} · EC:${r.ec}</p>${r.obs?'<p class="text-xs text-gray-400 italic">"'+r.obs+'"</p>':''}</div>`).join('');
+}
+function renderLB(){
+  const s=JSON.parse(localStorage.getItem('alv7')||'{}');
+  s[sName]=Math.max(s[sName]||0,lv);localStorage.setItem('alv7',JSON.stringify(s));
+  const sorted=Object.entries(s).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const m=['🥇','🥈','🥉','4.','5.'];
+  document.getElementById('lb').innerHTML=sorted.map(([n,l],i)=>`<div class="flex justify-between py-2 px-3 ${n===sName?'bg-lime-50 rounded-xl font-bold':''}"><span>${m[i]} ${n}</span><span class="text-green-700 font-bold">${l} 🌿</span></div>`).join('');
+}
+
+// init
+document.getElementById('lc').textContent=lv;
+document.getElementById('fl').textContent='🌿 '+lv;
+buildDots();renderFeed();renderLB();updateLED();
+</script>
+</body>
+</html>

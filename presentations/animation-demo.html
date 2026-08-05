@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>דמו אנימציות | גדלים למחר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box; margin:0; padding:0; font-family:'Heebo',sans-serif;}
+html,body{height:100%; background:#e5e7eb;}
+#backdrop{width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; position:relative;}
+
+.slide{
+  width:min(94vw, 177.7vh); aspect-ratio:16/9;
+  position:absolute; inset:0; margin:auto;
+  border-radius:14px; overflow:hidden; background:#fff;
+  box-shadow:0 30px 70px -20px rgba(0,0,0,.35);
+  opacity:0; transform:translateY(14px) scale(.98); pointer-events:none;
+  transition:opacity .45s cubic-bezier(.2,.8,.3,1), transform .45s cubic-bezier(.2,.8,.3,1);
+}
+.slide.active{opacity:1; transform:translateY(0) scale(1); pointer-events:auto;}
+
+.topbar{background:#166534; color:#fff; display:flex; justify-content:space-between; align-items:center;
+  padding:clamp(10px,2%,22px) clamp(16px,3.2%,34px);}
+.eyebrow{font-size:clamp(.6rem,.95vw,.85rem); color:#bbf7d0; opacity:.85;}
+.phase-chip{background:#a3e635; color:#14532d; border-radius:999px; font-weight:900;
+  font-size:clamp(.62rem,1vw,.9rem); padding:clamp(4px,.7%,8px) clamp(10px,1.6%,18px);}
+
+.h1{font-size:clamp(1.4rem,2.9vw,2.7rem); font-weight:900; color:#14532d; line-height:1.3;}
+.h2{font-size:clamp(1rem,1.9vw,1.8rem); font-weight:700;}
+.body{font-size:clamp(.78rem,1.35vw,1.3rem); font-weight:400; color:#4b5563;}
+.label{font-size:clamp(.62rem,1vw,.85rem); font-weight:900;}
+
+/* ── reveal steps ── */
+.rv{opacity:0; transform:translateY(14px); transition:opacity .45s ease, transform .45s ease;}
+.rv.shown{opacity:1; transform:translateY(0);}
+
+/* ── emphasis pulse ── */
+@keyframes pulseglow{0%,100%{box-shadow:0 0 0 0 rgba(163,230,53,.6);} 50%{box-shadow:0 0 0 14px rgba(163,230,53,0);}}
+.pulse{animation:pulseglow 1.4s ease-out 2;}
+
+/* ── counter ── */
+.counting{font-variant-numeric:tabular-nums;}
+
+/* ── draw line ── */
+.draw-path{stroke-dasharray:400; stroke-dashoffset:400; transition:stroke-dashoffset 1s ease;}
+.draw-path.go{stroke-dashoffset:0;}
+
+.mascot{position:absolute; left:clamp(10px,2%,22px); bottom:clamp(10px,2%,22px);
+  font-size:clamp(1.4rem,2.6vw,2.4rem); animation:bob 2.6s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg);} 50%{transform:translateY(-6px) rotate(4deg);}}
+
+.hint{position:absolute; bottom:clamp(12px,2%,22px); left:50%; transform:translateX(-50%);
+  font-size:clamp(.6rem,.95vw,.8rem); color:#9ca3af; background:#f9fafb; padding:5px 14px; border-radius:999px; border:1px solid #f0f0f0;}
+
+#controls{position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:16px; z-index:50;
+  background:#166534; padding:9px 18px; border-radius:999px; box-shadow:0 10px 30px -8px rgba(0,0,0,.4);}
+.navbtn{width:34px; height:34px; border-radius:999px; background:rgba(255,255,255,.15);
+  color:#fff; border:none; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center;}
+.navbtn:hover{background:rgba(255,255,255,.3);}
+#dots{display:flex; gap:7px;}
+.dot{width:7px; height:7px; border-radius:999px; background:rgba(255,255,255,.3); transition:.25s;}
+.dot.active{background:#a3e635; width:20px;}
+#counter{color:rgba(255,255,255,.65); font-size:.8rem; min-width:90px; text-align:center;}
+#label{position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:50;
+  color:#166534; font-weight:700; font-size:.85rem; background:#fff; padding:7px 18px; border-radius:999px; box-shadow:0 6px 18px -6px rgba(0,0,0,.2);}
+</style>
+</head>
+<body>
+
+<div id="label"></div>
+<div id="backdrop">
+
+  <!-- SLIDE 1 - בנייה מדורגת: דיון שלב-שלב (תבנית C) -->
+  <section class="slide active" data-name="1 · בנייה מדורגת - דיון שלב-שלב" data-steps="3">
+    <div class="topbar"><span class="eyebrow">דוגמה 1 · Click-to-Build</span><span class="phase-chip">🌱 נביטה</span></div>
+    <div style="height:calc(100% - 15%); display:flex; flex-direction:column; justify-content:center; padding:0 5%;">
+      <p class="h1" style="margin-bottom:5%;">מה החקלאי מחפש בשדה?</p>
+      <div style="display:flex; gap:1.6%;">
+        <div class="rv" data-step="1" style="flex:1; background:#f0fdf4; border:2px solid #bbf7d0; border-radius:18px; padding:5% 4%; text-align:center;">
+          <p class="label" style="color:#166534;">💧 מים</p>
+          <p class="body" style="margin-top:8px;">האם יש מספיק?</p>
+        </div>
+        <div class="rv" data-step="2" style="flex:1; background:#ecfccb; border:2px solid #d9f99d; border-radius:18px; padding:5% 4%; text-align:center;">
+          <p class="label" style="color:#4d7c0f;">🐛 מזיקים</p>
+          <p class="body" style="margin-top:8px;">סימנים מוקדמים</p>
+        </div>
+        <div class="rv" data-step="3" style="flex:1; background:#fefce8; border:2px solid #fef08a; border-radius:18px; padding:5% 4%; text-align:center;">
+          <p class="label" style="color:#a16207;">🌡️ מזג אוויר</p>
+          <p class="body" style="margin-top:8px;">קור, חום, רוח</p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🌱</div>
+    <div class="hint">לחצו ← / רווח כדי לחשוף כל תשובה בנפרד</div>
+  </section>
+
+  <!-- SLIDE 2 - השוואה נבנית + VS מודגש (תבנית D + Emphasis) -->
+  <section class="slide" data-name="2 · השוואה נבנית + הדגשת VS" data-steps="3">
+    <div class="topbar"><span class="eyebrow">דוגמה 2 · Build + Emphasis</span><span class="phase-chip">🌸 פריחה</span></div>
+    <div style="height:calc(100% - 15%); display:flex; align-items:center; padding:0 5%; gap:3%;">
+      <div class="rv" data-step="1" style="flex:1; background:#f0fdf4; border:2px solid #bbf7d0; border-radius:18px; padding:6% 5%; text-align:center;">
+        <p class="label" style="color:#166534; font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🌻 גינת הסבתא</p>
+        <p class="h2" style="color:#374151;">גדלה בשביל כיף</p>
+      </div>
+      <div id="vsbadge" class="rv" data-step="2" style="width:64px; height:64px; border-radius:999px; background:#166534; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; flex-shrink:0;">VS</div>
+      <div class="rv" data-step="3" style="flex:1; background:#fffbeb; border:2px solid #fde68a; border-radius:18px; padding:6% 5%; text-align:center;">
+        <p class="label" style="color:#92400e; font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🌾 חקלאי מקצועי</p>
+        <p class="h2" style="color:#374151;">כל שתיל = כסף</p>
+      </div>
+    </div>
+    <div class="mascot">🌸</div>
+    <div class="hint">שני הצדדים נבנים בנפרד; ה-VS "דופק" ברגע שהוא מופיע</div>
+  </section>
+
+  <!-- SLIDE 3 - גרף שמצייר את עצמו + מונה עולה (Draw + Counter) -->
+  <section class="slide" data-name="3 · גרף מצויר + מונה עולה" data-steps="0">
+    <div class="topbar"><span class="eyebrow">דוגמה 3 · Draw-on + Counting</span><span class="phase-chip">🌱 נביטה</span></div>
+    <div style="height:calc(100% - 15%); display:flex; align-items:center; padding:0 5%; gap:5%;">
+      <div style="flex:0 0 34%;">
+        <p class="h1">גידול אוכלוסיית העולם</p>
+        <p class="body" style="margin-top:12px;">מ-<span id="cnt" class="counting" style="font-weight:900; color:#166534;">0</span> מיליארד עד 2050</p>
+      </div>
+      <div style="flex:1; height:58%; display:flex; align-items:flex-end; gap:clamp(10px,2.2vw,28px); border-bottom:3px solid #f0fdf4;">
+        <div class="growbar" style="flex:1; height:0%; background:#dcfce7; border-radius:10px 10px 0 0; transition:height 1s ease .1s;"></div>
+        <div class="growbar" style="flex:1; height:0%; background:#bbf7d0; border-radius:10px 10px 0 0; transition:height 1s ease .25s;"></div>
+        <div class="growbar" style="flex:1; height:0%; background:#86efac; border-radius:10px 10px 0 0; transition:height 1s ease .4s;"></div>
+        <div class="growbar" style="flex:1; height:0%; background:#4ade80; border-radius:10px 10px 0 0; transition:height 1s ease .55s;"></div>
+        <div class="growbar" style="flex:1; height:0%; background:#a3e635; border-radius:10px 10px 0 0; transition:height 1s ease .7s;"></div>
+      </div>
+    </div>
+    <div class="mascot">🌱</div>
+    <div class="hint">מופעל אוטומטית עם כניסה לשקף - בלי צורך בלחיצה</div>
+  </section>
+
+  <!-- SLIDE 4 - הדגשת מילה בקו נמתח (Emphasis underline) -->
+  <section class="slide" data-name="4 · הדגשת מושג בקו נמתח" data-steps="1">
+    <div class="topbar" style="background:transparent;"></div>
+    <div style="height:calc(100% - 15%); display:flex; align-items:center; justify-content:center; text-align:center; padding:0 8%; background:linear-gradient(160deg,#f0fdf4 0%, #ecfccb 100%); position:absolute; inset:0; top:15%;">
+      <div>
+        <p class="h1">כל <span style="position:relative; display:inline-block;">טיפת מים<svg class="underline-svg" width="100%" height="14" viewBox="0 0 200 14" style="position:absolute; bottom:-6px; right:0; overflow:visible;"><path class="draw-path" d="M2,8 Q100,-4 198,8" stroke="#a3e635" stroke-width="6" fill="none" stroke-linecap="round"/></svg></span> מגיעה ישירות לשורש</p>
+      </div>
+    </div>
+    <div class="mascot">🌿</div>
+    <div class="hint">לחצו ← כדי "לצייר" את הקו מתחת למושג המרכזי</div>
+  </section>
+
+</div>
+
+<div id="controls">
+  <button class="navbtn" onclick="go(-1)">→</button>
+  <span id="counter">1 / 4</span>
+  <div id="dots"></div>
+  <button class="navbtn" onclick="go(1)">←</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+const labelEl = document.getElementById('label');
+let i = 0, step = 0;
+
+slides.forEach((_,idx)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(idx===0?' active':'');
+  d.onclick=()=>{i=idx; step=0; render(true);};
+  dotsEl.appendChild(d);
+});
+
+function maxSteps(idx){ return parseInt(slides[idx].dataset.steps||'0'); }
+
+function render(reset){
+  slides.forEach((s,idx)=>s.classList.toggle('active', idx===i));
+  document.querySelectorAll('.dot').forEach((d,idx)=>d.classList.toggle('active', idx===i));
+  document.getElementById('counter').textContent = (i+1)+' / '+slides.length+ (maxSteps(i)? '  ·  שלב '+step+'/'+maxSteps(i) : '');
+  labelEl.textContent = slides[i].dataset.name;
+
+  // reveal steps within current slide
+  slides[i].querySelectorAll('.rv').forEach(el=>{
+    const st = parseInt(el.dataset.step);
+    el.classList.toggle('shown', st<=step);
+  });
+  if(i===1 && step>=2){ document.getElementById('vsbadge').classList.add('pulse'); }
+  else if(i===1){ document.getElementById('vsbadge').classList.remove('pulse'); }
+
+  if(i===3){
+    slides[3].querySelectorAll('.draw-path').forEach(p=>p.classList.toggle('go', step>=1));
+  }
+
+  // slide 3 auto animations on entering
+  if(i===2 && reset){
+    slides[2].querySelectorAll('.growbar').forEach(b=>b.style.height='0%');
+    let n=0; clearInterval(window._cnt);
+    setTimeout(()=>{
+      slides[2].querySelectorAll('.growbar').forEach((b,idx)=>{
+        const targets=[28,46,64,84,100];
+        b.style.height = targets[idx]+'%';
+      });
+    }, 50);
+    window._cnt = setInterval(()=>{ n++; document.getElementById('cnt').textContent=n; if(n>=10) clearInterval(window._cnt); }, 90);
+  }
+}
+
+function go(dir){
+  const ms = maxSteps(i);
+  if(dir>0){
+    if(step < ms){ step++; render(false); return; }
+    i = (i+1) % slides.length; step = 0; render(true);
+  } else {
+    if(step > 0){ step--; render(false); return; }
+    i = (i-1+slides.length) % slides.length; step = maxSteps(i); render(true);
+  }
+}
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowLeft' || e.key===' ') go(1);
+  if(e.key==='ArrowRight') go(-1);
+});
+render(true);
+</script>
+
+</body>
+</html>

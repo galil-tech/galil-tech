@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '🔍 תזכורת: קובץ נערך. אם זה שיעור/מורה - שקול להריץ /lesson-review ובדיקת sequence-checker לפני שמראים למשתמש. אם נוסף סטארטאפ או נתון עובדתי חדש - ודא שעבר אימות (verify-startup).'"
+          }
+        ]
+      }
+    ]
+  }
+}

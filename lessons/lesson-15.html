@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 15 – בניית אבטיפוס: יום ב' | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/points.config.js"></script>
+  <script src="../assets/questions.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;} .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;border-radius:12px;}
+    .quiz-opt:hover:not([data-done]){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
+    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
+    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#84cc16;} .step-dot.current{background:#166534;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;} .reveal.show{display:block;animation:fadeUp .35s ease;}
+    .mascot{font-size:2.8rem;transition:all .4s;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .mascot-bounce{animation:bounce .6s ease 3;}
+    .mission-card{border:2px solid #fde68a;cursor:pointer;transition:all .3s;border-radius:12px;}
+    .mission-card.done-card{border-color:#16a34a;background:#f0fdf4;opacity:.7;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-orange-50 to-rose-50 min-h-screen">
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm"><a href="../index.html" class="hover:text-lime-300">🏠</a><a href="lesson-14.html" class="hover:text-lime-300">← שיעור 14</a><a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a></div>
+  </div>
+</nav>
+<div class="bg-rose-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-rose-400 text-rose-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 4 – פירות</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 15 מתוך 17</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🔧 בניית אבטיפוס: יום ב'</h1>
+    <p class="text-rose-200">Fail Fast · בדיקה ותיקון · שיפור מהיר · באדג' "בנאי האבטיפוס"</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-rose-300 mb-1"><span id="plabel">שלב 1 מתוך 6</span><span>🌿 <b id="lc">0</b> עלים</span></div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden"><div id="pbar" class="h-3 bg-rose-400 rounded-full transition-all duration-500" style="width:0%"></div></div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- STEP 1 -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-4 mb-5 text-sm"><b>⚠️ חריגה מכוונת:</b> הלומדה היום קצרה (10 דק') כדי לפנות 45+ דק' לבנייה ובדיקה אמיתית. שיעור 16 = הצגה, לא בנייה — <b>לסיים היום.</b></div>
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">💥</span><div><h2 class="text-3xl font-black text-rose-900">Fail Fast – כישלון מהיר = למידה</h2></div></div>
+    <div class="bg-rose-50 border-r-4 border-rose-500 rounded-2xl p-5 mb-5 text-gray-700 text-sm">
+      <p class="mb-2">"Fail Fast" = עדיף לגלות שמשהו לא עובד מוקדם, תקן, ונסה שוב — מאשר לגלות בתערוכה.</p>
+      <p>ההבדל בין בדיקה ל-הצגה: <b>בדיקה</b> = לשבור בכוונה ולראות מה קורה. <b>הצגה</b> = להראות שעובד. היום = בדיקה.</p>
+    </div>
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-4">❓ למה "Fail Fast" הוא עיקרון חיובי?</p>
+      <div class="grid gap-3" id="q-ff">
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-ff')">כי להפסיד זה מגניב</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-ff')" data-correct="true">כי גילוי בעיה מוקדם = תיקון זול. גילוי בתערוכה = אסון שלא ניתן לתקן</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-ff')">כי אנשים אוהבים להיות שלמים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-ff')">כי אין זמן לבדיקה מלאה</div>
+      </div>
+      <div id="fb-q-ff" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn1" class="hidden bg-rose-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-rose-600" onclick="goTo(2)">מבחן הצלחה ←</button></div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🎯</span><div><h2 class="text-3xl font-black text-rose-900">הגדירו מבחן הצלחה</h2></div></div>
+    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-4 mb-5 text-sm text-gray-700">
+      לפני שבודקים — יש לדעת <b>מה "עובד" אומר</b>. בלי מבחן ברור = כל תוצאה יכולה להיחשב "הצלחה".
+    </div>
+    <div class="mb-5">
+      <label class="block font-bold text-gray-700 mb-2">✅ מבחן ההצלחה של הקבוצה שלנו:</label>
+      <p class="text-xs text-gray-400 mb-2">השלימו: "האבטיפוס שלנו הצליח אם..."</p>
+      <textarea id="success-test" rows="2" maxlength="150" placeholder="האבטיפוס הצליח אם: ..." class="w-full border-2 border-rose-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-rose-400"></textarea>
+      <button onclick="saveSuccessTest()" class="mt-3 w-full bg-rose-700 text-white py-3 rounded-xl font-black">🎯 שמור מבחן (+10 עלים)</button>
+      <div id="test-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ מבחן הצלחה נשמר!</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn2" class="hidden bg-rose-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-rose-600" onclick="goTo(3)">בדיקה ←</button></div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🔍</span><div><h2 class="text-3xl font-black text-rose-900">בדיקה + תיקון: שיפור מהיר</h2></div></div>
+    <div class="bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-lime-900 mb-3">📋 משימות הבדיקה</h3>
+      <div class="space-y-2" id="test-missions">
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkTest(this,0)"><span class="tm-icon text-2xl">⬜</span> א. הרצנו את "מבחן ההצלחה" — האם עבר?</div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkTest(this,1)"><span class="tm-icon text-2xl">⬜</span> ב. תיעדנו מה עבד ומה לא (טופס)</div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkTest(this,2)"><span class="tm-icon text-2xl">⬜</span> ג. תיקנו תיקון אחד לפחות</div>
+        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkTest(this,3)"><span class="tm-icon text-2xl">⬜</span> ד. בדקנו שוב אחרי התיקון</div>
+      </div>
+      <div id="test-done" class="hidden mt-3 bg-lime-100 rounded-xl p-4 text-center">
+        <p class="font-black text-xl text-lime-800 mb-1">🔧 שיפור מהיר הושלם! +20 עלים 🌿</p>
+      </div>
+    </div>
+    <div class="mb-4">
+      <label class="block font-bold text-gray-700 mb-2">📝 מה תיקנתם? (תיאור קצר):</label>
+      <textarea id="fix-desc" rows="2" maxlength="150" placeholder="תיקנו: ... כי: ..." class="w-full border-2 border-gray-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-rose-400"></textarea>
+      <button onclick="saveFix()" class="mt-3 w-full bg-rose-700 text-white py-3 rounded-xl font-black">💾 שמור תיקון (+10 עלים)</button>
+      <div id="fix-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ תיקון תועד!</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn3" class="hidden bg-rose-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-rose-600" onclick="goTo(4)">באדג' + דרכון ←</button></div>
+</div>
+
+<!-- STEP 4: Badge + passport -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5"><span class="text-4xl">🏅</span><div><h2 class="text-3xl font-black text-rose-900">באדג' + דרכון</h2></div></div>
+    <div id="badge-wrap" class="hidden bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-2xl p-6 mb-5 text-center">
+      <p class="text-5xl mb-2">🛠️</p>
+      <p class="font-black text-2xl mb-1">באדג' "בנאי האבטיפוס"</p>
+      <p class="text-orange-100 text-sm">בנינו, בדקנו, תיקנו — אבטיפוס עובד!</p>
+    </div>
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+      <h3 class="font-black text-green-900 mb-3">📔 דרכון – שיעור 15</h3>
+      <div class="space-y-3">
+        <textarea id="p15-result" rows="2" maxlength="150" placeholder="תוצאת מבחן ההצלחה: עבר / לא עבר / עבר חלקית. מה גילינו?" class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+        <textarea id="p15-next" rows="2" maxlength="150" placeholder="אם היה עוד זמן לשפר — מה הדבר הראשון שהיינו מוסיפים/משנים?" class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
+      </div>
+      <button onclick="saveEntry15()" class="mt-3 w-full bg-green-700 text-white py-3 rounded-xl font-black">📔 שמור</button>
+      <div id="p15-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! +10 עלים 🌿</div>
+    </div>
+  </div>
+  <div class="flex justify-end"><button id="btn4" class="hidden bg-rose-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-rose-600" onclick="goTo(5)">סיכום ←</button></div>
+</div>
+
+<!-- STEP 5: unused, redirect -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5 text-center">
+    <p class="text-4xl mb-3">✅</p>
+    <p class="font-black text-2xl text-rose-900 mb-3">שיעור 15 הושלם!</p>
+    <p class="text-gray-600 mb-5">האבטיפוס מוכן. בשיעור 16 — נלמד איך לספר עליו לעולם ב-3 דקות.</p>
+    <button onclick="goTo(6)" class="bg-rose-700 text-white px-10 py-4 rounded-2xl text-lg font-bold">לסיכום ←</button>
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
+    <div class="bg-rose-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-rose-900 mb-3">📚 מה עשינו:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li class="flex gap-2"><span class="text-rose-600">💥</span> Fail Fast — בדקנו בכוונה ותיקנו</li>
+        <li class="flex gap-2"><span class="text-rose-600">🎯</span> מבחן הצלחה — ידענו מה "עובד" אומר</li>
+        <li class="flex gap-2"><span class="text-rose-600">🏅</span> באדג' "בנאי האבטיפוס" — נצבר!</li>
+      </ul>
+    </div>
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3"><span class="text-2xl">⭐</span><h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3></div>
+      <p class="text-gray-800 font-bold text-lg mb-3">"האבטיפוס שלכם עובד. איך תתארו אותו לקהל שלא יודע כלום על הנושא — בשלוש שורות?"</p>
+      <textarea id="north-star" rows="2" placeholder="האבטיפוס שלנו הוא: ... הוא פותר: ... הוא מיוחד כי..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא (שיעור 16):</p>
+      <p class="font-black text-xl">"האבטיפוס עובד. עכשיו — איך מספרים עליו לעולם ב-3 דקות?"</p>
+    </div>
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים שנצברו בשיעור 15:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך מקסימום ~55 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4"><a href="lesson-16.html" class="bg-rose-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-rose-600">לשיעור 16 – פיצ'ינג ←</a></div>
+</div>
+
+</div>
+<script>
+const STEPS=6;let cur=1,lv=parseInt(localStorage.getItem('ls15')||'0'),maxReached=1;
+let testSaved=false,testMissions=[],testLeaves=false,fixSaved=false,entry15Saved=false;
+
+function goTo(n){if(n<1||n>STEPS)return;document.getElementById('step-'+cur).classList.remove('active');cur=n;if(cur>maxReached)maxReached=cur;document.getElementById('step-'+cur).classList.add('active');renderDots();updateHeader();window.scrollTo({top:0,behavior:'smooth'});updateMascot(cur);}
+function updateHeader(){document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';}
+function renderDots(){document.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');});}
+function addLv(n){lv+=n;localStorage.setItem('ls15',lv);document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
+function leafBurst(n){for(let i=0;i<Math.min(n,8);i++){const el=document.createElement('div');el.className='leaf-burst';el.textContent='🌿';el.style.left=(20+Math.random()*60)+'vw';el.style.top=(15+Math.random()*50)+'vh';el.style.setProperty('--tx',(Math.random()*120-60)+'px');el.style.setProperty('--ty',(-80-Math.random()*80)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),950);}}
+function ansQ(el,correct,qid){
+  const c=document.getElementById(qid);if(!c||c.dataset.done)return;c.dataset.done='1';c.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');el.classList.add(correct?'correct':'wrong');if(!correct){const r=c.querySelector('[data-correct="true"]');if(r)r.classList.add('correct');}
+  const fb=document.getElementById('fb-'+qid);if(fb){fb.className='mt-3 rounded-xl p-4 text-sm '+(correct?'bg-green-50 text-green-800':'bg-red-50 text-red-800');fb.textContent=correct?'✅ מצוין! +5 עלים 🌿':'❌ לא בדיוק – תשובה נכונה מסומנת בירוק';fb.classList.remove('hidden');}if(correct)addLv(5);
+  const casc={'q-ff':()=>{document.getElementById('btn1').classList.remove('hidden');mascotSay('מוקדם = זול לתקן!','💥');}};if(casc[qid])casc[qid]();
+}
+function saveSuccessTest(){
+  if(testSaved)return;const t=document.getElementById('success-test').value.trim();if(!t){mascotSay('הגדירו מה "עובד"!','🎯');return;}testSaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson15Test=t;localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('test-saved').classList.remove('hidden');addLv(10);document.getElementById('btn2').classList.remove('hidden');mascotSay('מבחן ברור = בדיקה אמיתית','🎯');
+}
+let testCount=0;
+function checkTest(el,idx){
+  if(testMissions.includes(idx))return;testMissions.push(idx);el.classList.add('done-card');el.querySelector('.tm-icon').textContent='✅';testCount++;
+  if(testCount>=3&&!testLeaves){testLeaves=true;const pb=JSON.parse(localStorage.getItem('passport1')||'{}');pb.lesson15TestDone=true;localStorage.setItem('passport1',JSON.stringify(pb));document.getElementById('test-done').classList.remove('hidden');addLv(20);mascotSay('שיפור מהיר! +20 עלים','🔍');checkBtn3();}
+}
+function saveFix(){
+  if(fixSaved)return;const t=document.getElementById('fix-desc').value.trim();if(!t)return;fixSaved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson15Fix=t;localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('fix-saved').classList.remove('hidden');addLv(10);checkBtn3();
+  if(window.GC)GC.completeSideQuest('sq-15-fix');
+}
+function checkBtn3(){if(testLeaves&&fixSaved)document.getElementById('btn3').classList.remove('hidden');}
+function saveEntry15(){
+  if(entry15Saved)return;const r=document.getElementById('p15-result').value.trim();if(!r)return;entry15Saved=true;
+  const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson15={result:r,next:document.getElementById('p15-next').value.trim(),date:new Date().toLocaleDateString('he-IL')};localStorage.setItem('passport1',JSON.stringify(p));
+  document.getElementById('p15-saved').classList.remove('hidden');addLv(10);document.getElementById('badge-wrap').classList.remove('hidden');document.getElementById('btn4').classList.remove('hidden');mascotSay('בנאי האבטיפוס! 🛠️','🏅');
+}
+const mascotLines={1:'Fail Fast = לגלות בזמן, לתקן בזמן',2:'מבחן הצלחה = להגדיר "עובד" לפני שמנסים',3:'בדיקה + תיקון = שיפור מהיר!',4:'באדג׳ "בנאי האבטיפוס" — מגיע!',5:'כמעט סיימנו!',6:'יום ב׳ הסתיים! פיצ׳ מחכה ⭐'};
+function updateMascot(s){mascotSay(mascotLines[s]||'','🌱');}
+function mascotSay(msg,emoji){const m=document.getElementById('mascot'),b=document.getElementById('mascot-bubble');if(emoji)m.textContent=emoji;b.textContent=msg;b.classList.remove('hidden');m.classList.add('mascot-bounce');clearTimeout(mascotSay._t);mascotSay._t=setTimeout(()=>{b.classList.add('hidden');m.classList.remove('mascot-bounce');},5000);}
+function init(){
+  const d=document.getElementById('dots');for(let i=1;i<=STEPS;i++){const dot=document.createElement('div');dot.className='step-dot'+(i===1?' current':'');dot.title='שלב '+i;dot.onclick=()=>{if(i<=maxReached)goTo(i);};d.appendChild(dot);}
+  document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;updateHeader();
+  try{const p=JSON.parse(localStorage.getItem('passport1')||'{}');
+    if(p.lesson15Test){document.getElementById('success-test').value=p.lesson15Test;testSaved=true;document.getElementById('btn2').classList.remove('hidden');}
+    if(p.lesson15Fix){document.getElementById('fix-desc').value=p.lesson15Fix;fixSaved=true;}
+    if(p.lesson15TestDone){testLeaves=true;document.getElementById('test-done').classList.remove('hidden');}
+    if(p.lesson15){document.getElementById('p15-result').value=p.lesson15.result||'';document.getElementById('p15-next').value=p.lesson15.next||'';entry15Saved=true;document.getElementById('btn4').classList.remove('hidden');}
+    checkBtn3();
+  }catch(e){}
+  mascotSay(mascotLines[1],'🌱');
+}
+init();
+</script>
+</body>
+</html>

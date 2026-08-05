@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>הכנת מורה — שיבוץ מחדש | אגטק 101</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/core.css">
+<script src="config.js"></script>
+<style>
+  input:focus { outline: 2px solid #84cc16; }
+  .pair-row { border: 2px solid #d1fae5; border-radius: 16px; }
+</style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 to-lime-50 min-h-screen">
+
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
+    <span class="text-xl font-bold">🌱 גדלים למחר</span>
+    <span class="text-xs text-lime-300">מסך הכנת מורה</span>
+  </div>
+</nav>
+
+<div class="max-w-3xl mx-auto px-4 py-8">
+
+  <div class="bg-gradient-to-l from-green-800 to-amber-700 text-white rounded-3xl p-6 mb-6">
+    <h1 class="text-3xl font-black mb-2">🔀 הכנת שיבוץ מחדש</h1>
+    <p class="text-green-100 text-sm">מסך זה מיועד <b>למורה בלבד</b>, לפני תחילת לומדת "שיבוץ מחדש" (Cross-Group Shuffle). הזינו כאן את 5 הזוגות החדשים — ודאו שכל זוג מערבב בין שתיים מתוך שלוש הקבוצות המקוריות (A/B/C), לא רק בין שתיים קבועות. השיבוץ נשמר בענן ונטען אוטומטית אצל כל התלמידים כשהם פותחים את הלומדה.</p>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <div id="pairs-wrap" class="space-y-4"></div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6 flex flex-wrap items-center gap-4 justify-between">
+    <button onclick="savePairing()" id="save-btn" class="bg-green-700 hover:bg-green-600 text-white px-8 py-4 rounded-2xl font-black text-lg shadow-lg">💾 שמרו שיבוץ בענן</button>
+    <div id="save-status" class="text-sm font-bold"></div>
+  </div>
+
+  <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 mb-6 text-sm text-gray-700">
+    <p class="font-black text-amber-900 mb-2">📋 לפני שמתחילים:</p>
+    <ul class="space-y-1 list-disc mr-5">
+      <li>ודאו ש-<code>BOOTCAMP_API_URL</code> בקובץ <code>config.js</code> מוגדר (ראו <code>backend/Code.gs</code> להוראות פריסה).</li>
+      <li>אם השדה למטה ריק — אין חיבור לענן, והתלמידים לא יוכלו לטעון שיבוץ. תקנו לפני השיעור.</li>
+      <li>אפשר לשמור שיבוץ חדש בכל רגע — הוא <b>דורס</b> את השיבוץ הקודם (התלמידים תמיד רואים את הגרסה העדכנית ביותר).</li>
+    </ul>
+  </div>
+
+  <div class="bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-10">
+    <p class="font-black text-lime-900 mb-3">🔎 השיבוץ השמור כרגע בענן:</p>
+    <div id="current-pairing" class="space-y-2 text-sm text-gray-700">
+      <p class="text-gray-400">טוען...</p>
+    </div>
+    <button onclick="loadCurrentPairing()" class="mt-3 text-xs bg-white border-2 border-lime-300 rounded-full px-3 py-1 font-bold hover:bg-lime-100">🔄 רענון</button>
+  </div>
+
+</div>
+
+<script>
+const N_PAIRS = 5;
+
+function buildForm() {
+  const wrap = document.getElementById('pairs-wrap');
+  let html = '';
+  for (let i = 1; i <= N_PAIRS; i++) {
+    html += `
+      <div class="pair-row p-4 flex flex-wrap items-center gap-3">
+        <span class="bg-green-700 text-white font-black rounded-full w-8 h-8 flex items-center justify-center text-sm">${i}</span>
+        <input id="p${i}a" type="text" maxlength="30" placeholder="שם תלמיד/ה ראשון/ה" class="flex-1 min-w-[140px] border-2 border-gray-200 rounded-xl p-3 text-sm">
+        <span class="text-lime-600 font-black">🤝</span>
+        <input id="p${i}b" type="text" maxlength="30" placeholder="שם תלמיד/ה שני/ה" class="flex-1 min-w-[140px] border-2 border-gray-200 rounded-xl p-3 text-sm">
+      </div>`;
+  }
+  wrap.innerHTML = html;
+}
+
+function readPairs() {
+  const pairs = [];
+  for (let i = 1; i <= N_PAIRS; i++) {
+    const a = document.getElementById('p' + i + 'a').value.trim();
+    const b = document.getElementById('p' + i + 'b').value.trim();
+    if (a && b) pairs.push({ a, b });
+  }
+  return pairs;
+}
+
+async function savePairing() {
+  const pairs = readPairs();
+  const status = document.getElementById('save-status');
+  if (pairs.length < N_PAIRS) {
+    status.className = 'text-sm font-bold text-red-600';
+    status.textContent = `⚠️ מולאו רק ${pairs.length} מתוך ${N_PAIRS} זוגות — השלימו את כולם לפני השמירה.`;
+    return;
+  }
+  if (!BOOTCAMP_API_URL) {
+    status.className = 'text-sm font-bold text-red-600';
+    status.textContent = '⚠️ אין חיבור לענן (BOOTCAMP_API_URL ריק ב-config.js) — לא ניתן לשמור.';
+    return;
+  }
+  status.className = 'text-sm font-bold text-gray-500';
+  status.textContent = '⏳ שולח...';
+  try {
+    await fetch(BOOTCAMP_API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ type: 'pairing', pairs })
+    });
+    status.className = 'text-sm font-bold text-lime-700';
+    status.textContent = '✅ נשלח לענן! (בגלל מגבלת דפדפן לא ניתן לאשר קבלה אוטומטית — לחצו "רענון" למטה תוך כמה שניות כדי לוודא שהשיבוץ אכן נשמר)';
+    setTimeout(loadCurrentPairing, 2500);
+  } catch (err) {
+    status.className = 'text-sm font-bold text-red-600';
+    status.textContent = '❌ השליחה נכשלה — בדקו חיבור לאינטרנט ונסו שוב.';
+  }
+}
+
+async function loadCurrentPairing() {
+  const el = document.getElementById('current-pairing');
+  if (!BOOTCAMP_API_URL) {
+    el.innerHTML = '<p class="text-red-500">אין חיבור לענן מוגדר.</p>';
+    return;
+  }
+  el.innerHTML = '<p class="text-gray-400">טוען...</p>';
+  try {
+    const res = await fetch(BOOTCAMP_API_URL + '?action=pairing');
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'שגיאה');
+    if (!data.pairs.length) {
+      el.innerHTML = '<p class="text-gray-400">עדיין לא נשמר שיבוץ.</p>';
+      return;
+    }
+    el.innerHTML = data.pairs.map((p, i) =>
+      `<div class="bg-white rounded-xl p-3 border border-lime-200"><b>זוג ${i + 1}:</b> ${escapeHtml_(p.a)} 🤝 ${escapeHtml_(p.b)}</div>`
+    ).join('');
+  } catch (err) {
+    el.innerHTML = '<p class="text-red-500">לא הצלחנו לטעון — נסו לרענן שוב בעוד רגע.</p>';
+  }
+}
+
+function escapeHtml_(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+buildForm();
+loadCurrentPairing();
+</script>
+</body>
+</html>
