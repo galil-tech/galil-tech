@@ -112,6 +112,12 @@ function _upsert(sh, fields, keyFields, body, buildRow) {
 }
 
 function doPost(e) {
+  // נעילה: שני doPost שמגיעים כמעט בו-זמנית (למשל שני תלמידים באותה קבוצה לוחצים "הוסף"
+  // יחד) יכולים לקרוא את הגיליון לפני ששניהם כתבו - בלי נעילה זה יוצר שתי שורות נפרדות
+  // באותו מפתח במקום שורה אחת מעודכנת (נצפה בפועל בבדיקה, שלב 9ה). הנעילה מבטיחה שרק
+  // doPost אחד בכל רגע נתון קורא+כותב לגיליון.
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
   try {
     const body = JSON.parse(e.postData.contents);
     if (body.token !== SHARED_SECRET) {
@@ -139,5 +145,7 @@ function doPost(e) {
     return _json({ ok: true });
   } catch (err) {
     return _json({ ok: false, error: String(err) });
+  } finally {
+    lock.releaseLock();
   }
 }
