@@ -2,7 +2,7 @@
 // כברירת מחדל enabled=false — שום דבר לא נשלח החוצה עד שממלאים url+token אחרי פריסת
 // data/apps-script/Code.gs כ-Web App (ראה הוראות בראש אותו קובץ).
 window.SHEETS_CONFIG = {
-  enabled: false,
-  url: '',   // ה-Web app URL שמתקבל מ-Deploy → New deployment
-  token: '', // אותה מחרוזת בדיוק כמו SHARED_SECRET בתוך Code.gs
+  enabled: true,
+  url: 'https://script.google.com/macros/s/AKfycbwZ1XmZKau7nylCd7YxkKVjMGnQpcvtm9b9Odoja6uIFbve9vebId5RIQ58g0RIt4Q/exec',
+  token: 'MITALAPOPITA2026',
 };

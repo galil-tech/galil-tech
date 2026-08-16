@@ -43,11 +43,17 @@
   // אחת בפועל אחרי 3 שניות שקט, כדי לא להציף את ה-Apps Script בכל תשובת quiz בודדת.
   GC_SYNC.scheduleSync = function () {
     clearTimeout(syncTimer);
-    syncTimer = setTimeout(GC_SYNC.pushNow, 3000);
+    syncTimer = setTimeout(function () { syncTimer = null; GC_SYNC.pushNow(); }, 3000);
   };
 
-  // ניסיון סנכרון אחרון בעזיבת הדף (sendBeacon לא מחכה לתשובה, לא חוסם ניווט)
+  // עזיבת דף (ניווט/רענון/סגירה) — מפנה מוקדם רק סנכרון שכבר היה ממתין (syncTimer פעיל),
+  // ולא יוצר שליחה חדשה משלו על כל עזיבת דף. חשוב: אם היינו שולחים תמיד, מצב-ביניים ישן
+  // שנתפס כאן עלול להגיע לשרת אחרי POST טרי יותר (sendBeacon לא מבטיח סדר הגעה) ולדרוס
+  // אותו — "כתיבה אחרונה מנצחת" בשרת. לכן שולחים כאן רק אם יש שינוי אמיתי שממתין.
   window.addEventListener('pagehide', function () {
+    if (!syncTimer) return;
+    clearTimeout(syncTimer);
+    syncTimer = null;
     const c = cfg();
     if (!c.enabled || !c.url) return;
     const payload = collectPayload();

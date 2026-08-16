@@ -692,7 +692,7 @@ let scDone=0;
 let mcCnt=0;
 
 function addLv(n){
-  lv+=n;localStorage.setItem('ls6',lv);
+  lv+=n;localStorage.setItem('ls6',lv);if(window.GC_SYNC)GC_SYNC.scheduleSync();
   document.getElementById('lc').textContent=lv;
   document.getElementById('fl').textContent='🌿 '+lv;
   for(let i=0;i<7;i++){

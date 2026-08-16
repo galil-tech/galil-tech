@@ -338,7 +338,7 @@ function goTo(n){
 }
 function updateHeader(){document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';}
 function renderDots(){document.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');});}
-function addLv(n){lv+=n;localStorage.setItem('ls9',lv);document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
+function addLv(n){lv+=n;localStorage.setItem('ls9',lv);if(window.GC_SYNC)GC_SYNC.scheduleSync();document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
 function leafBurst(n){for(let i=0;i<Math.min(n,8);i++){const el=document.createElement('div');el.className='leaf-burst';el.textContent='🌿';el.style.left=(20+Math.random()*60)+'vw';el.style.top=(15+Math.random()*50)+'vh';el.style.setProperty('--tx',(Math.random()*120-60)+'px');el.style.setProperty('--ty',(-80-Math.random()*80)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),950);}}
 function ansQ(el,correct,qid){
   const c=document.getElementById(qid);if(!c||c.dataset.done)return;

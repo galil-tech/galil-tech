@@ -696,7 +696,7 @@ let phWon=false,ecWon=false;
 const sName=localStorage.getItem('studentName')||'תלמיד';
 
 // ═══ LEAVES ═══
-function addLv(n){lv+=n;localStorage.setItem('ls5',lv);document.getElementById('lc').textContent=lv;document.getElementById('fl').textContent='🌿 '+lv;burst();}
+function addLv(n){lv+=n;localStorage.setItem('ls5',lv);if(window.GC_SYNC)GC_SYNC.scheduleSync();document.getElementById('lc').textContent=lv;document.getElementById('fl').textContent='🌿 '+lv;burst();}
 function burst(){for(let i=0;i<7;i++){const e=document.createElement('div');e.className='leaf-burst';e.style.cssText=`left:${15+Math.random()*70}%;top:${15+Math.random()*70}%;--tx:${(Math.random()-.5)*200}px;--ty:${-50-Math.random()*130}px;`;e.textContent='🌿';document.body.appendChild(e);setTimeout(()=>e.remove(),950);}}
 
 // ═══ MASCOT ═══

@@ -472,7 +472,7 @@ function renderDots() {
 
 function addLv(n) {
   lv += n;
-  localStorage.setItem('ls4', lv);
+  localStorage.setItem('ls4', lv);if(window.GC_SYNC)GC_SYNC.scheduleSync();
   document.getElementById('lc').textContent = lv;
   document.getElementById('final-lv').textContent = lv;
   leafBurst(n);

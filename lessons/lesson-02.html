@@ -500,7 +500,7 @@ function renderDots() {
 // ── LEAVES ──
 function addLv(n) {
   lv += n;
-  localStorage.setItem('ls2', lv);
+  localStorage.setItem('ls2', lv);if(window.GC_SYNC)GC_SYNC.scheduleSync();
   document.getElementById('lc').textContent = lv;
   document.getElementById('final-lv').textContent = lv;
   leafBurst(n);
