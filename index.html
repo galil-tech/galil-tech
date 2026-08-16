@@ -6,6 +6,7 @@
   <title>גדלים למחר – גליל-טק 🌱</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <script src="assets/identity.js"></script>
   <style>
     *{font-family:'Heebo',sans-serif;}
     .hero{background:linear-gradient(135deg,rgba(20,83,45,.93),rgba(22,101,52,.87)),url('https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=1600&q=80') center/cover;}
@@ -48,7 +49,7 @@
       <a href="#lessons-section" class="hover:text-lime-300">📋 מערכי שיעור</a>
       <a href="#sims-section" class="hover:text-lime-300">🎮 סימולטורים</a>
       <a href="#tools-section" class="hover:text-lime-300">🔧 כלים</a>
-      <div class="bg-yellow-500 text-green-900 px-3 py-1 rounded-xl text-xs font-black">👨‍🏫 מצב מורה</div>
+      <div class="bg-yellow-500 text-green-900 px-3 py-1 rounded-xl text-xs font-black">👨‍🏫 מצב מורה<span id="teacher-school-tag"></span></div>
       <button onclick="switchToStudent()" class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-xl text-xs">← חזור לתלמיד</button>
     </div>
   </div>
@@ -433,6 +434,11 @@ let teacherMode=false;
 function switchToTeacher(){
   document.getElementById('body').className='bg-gray-50 mode-teacher';
   teacherMode=true;sessionStorage.setItem('teacher','1');
+  if(window.GC_ID){
+    const t=GC_ID.ensureTeacherIdentity();
+    const tag=document.getElementById('teacher-school-tag');
+    if(tag) tag.textContent = t&&t.school ? (' · '+t.school) : '';
+  }
 }
 function switchToStudent(){
   document.getElementById('body').className='bg-gray-50 mode-student';
@@ -441,6 +447,8 @@ function switchToStudent(){
 
 // restore teacher mode if was logged in
 if(sessionStorage.getItem('teacher')==='1'){switchToTeacher();}
+// זיהוי תלמיד/קבוצה (שלב 9ג) - רק במצב תלמיד, לא מציק במצב מורה
+if(window.GC_ID && sessionStorage.getItem('teacher')!=='1'){ GC_ID.ensureStudentIdentity(); }
 
 // ── HERO LEAVES ──
 // leaves_earned = סכום כל ה-ls{N} (מצטבר, קובע רמה, לעולם לא יורד)
