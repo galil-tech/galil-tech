@@ -275,6 +275,7 @@ GC.savePassport = function(key, data) {
     p[key] = data;
     localStorage.setItem('passport1', JSON.stringify(p));
   } catch(e) {}
+  if (window.GC_SYNC) GC_SYNC.scheduleSync();
 };
 
 GC.getPassport = function(key) {
@@ -292,6 +293,7 @@ GC.pushPassport = function(key, entry) {
     p[key].push(entry);
     localStorage.setItem('passport1', JSON.stringify(p));
   } catch(e) {}
+  if (window.GC_SYNC) GC_SYNC.scheduleSync();
 };
 
 // ── STUDENT NAME ───────────────────────────────────────────────────────────
@@ -621,6 +623,7 @@ GC.addLeaves = function(n, axis) {
   GC._pulsePlantTwin();
   GC._checkAchievements();
   GC._lastInteraction = Date.now();
+  if (window.GC_SYNC) GC_SYNC.scheduleSync();
 };
 
 // ── AUTO-INIT P2 on DOMContentLoaded ──────────────────────────────────────

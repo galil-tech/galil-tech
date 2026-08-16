@@ -35,6 +35,7 @@
 
   // ── תג זיהוי קטן בפינת המסך (תלמיד) ──
   function renderBadge() {
+    if (!document.body) return; // נקרא לפעמים עוד לפני שה-<body> נטען (ensureStudentIdentity ב-<head>); DOMContentLoaded יקרא שוב בהמשך
     const old = document.getElementById('gc-id-badge');
     if (old) old.remove();
     const id = GC_ID.getIdentity();
