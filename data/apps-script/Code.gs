@@ -28,6 +28,11 @@ const FIELDS = [
 ];
 const KEY_FIELDS = ['track', 'school_id', 'class_id', 'code']; // מזהה ייחודי לשורה (upsert)
 
+// לוח מנהיגות בין-קבוצתי (שלב 9ה) — גיליון נפרד, כי זו רשומה לפי קבוצת-פרויקט ולא לפי תלמיד.
+const GROUPS_SHEET_NAME = 'groups';
+const GROUPS_FIELDS = ['school_id', 'class_id', 'group_name', 'leaves', 'last_updated'];
+const GROUPS_KEY_FIELDS = ['school_id', 'class_id', 'group_name'];
+
 function _sheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(SHEET_NAME);
@@ -36,6 +41,26 @@ function _sheet() {
     sh.appendRow(FIELDS);
   }
   return sh;
+}
+
+function _groupsSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(GROUPS_SHEET_NAME);
+  if (!sh) {
+    sh = ss.insertSheet(GROUPS_SHEET_NAME);
+    sh.appendRow(GROUPS_FIELDS);
+  }
+  return sh;
+}
+
+function _rowsAsObjects(sh) {
+  const data = sh.getDataRange().getValues();
+  const headers = data[0];
+  return data.slice(1).map((r) => {
+    const o = {};
+    headers.forEach((h, i) => (o[h] = r[i]));
+    return o;
+  });
 }
 
 function _json(obj) {
@@ -49,18 +74,41 @@ function doGet(e) {
   if (p.token !== SHARED_SECRET) {
     return _json({ ok: false, error: 'unauthorized' });
   }
-  const sh = _sheet();
-  const data = sh.getDataRange().getValues();
-  const headers = data[0];
-  let rows = data.slice(1).map((r) => {
-    const o = {};
-    headers.forEach((h, i) => (o[h] = r[i]));
-    return o;
-  });
+
+  if (p.type === 'groups') {
+    let rows = _rowsAsObjects(_groupsSheet());
+    if (p.school) rows = rows.filter((r) => String(r.school_id) === p.school);
+    if (p.class) rows = rows.filter((r) => String(r.class_id) === p.class);
+    return _json({ ok: true, rows: rows });
+  }
+
+  let rows = _rowsAsObjects(_sheet());
   if (p.school) rows = rows.filter((r) => String(r.school_id) === p.school);
   if (p.class) rows = rows.filter((r) => String(r.class_id) === p.class);
   if (p.track) rows = rows.filter((r) => String(r.track) === p.track);
+  if (p.code) rows = rows.filter((r) => String(r.code) === p.code);
   return _json({ ok: true, rows: rows });
+}
+
+function _upsert(sh, fields, keyFields, body, buildRow) {
+  const data = sh.getDataRange().getValues();
+  const headers = data[0];
+  const keyIdx = keyFields.map((k) => headers.indexOf(k));
+
+  let sheetRow = -1; // 1-based שורת גיליון, לא אינדקס מערך
+  let existing = null;
+  for (let i = 1; i < data.length; i++) {
+    const match = keyIdx.every((colIdx, j) => String(data[i][colIdx]) === String(body[keyFields[j]] || ''));
+    if (match) { sheetRow = i + 1; existing = data[i]; break; }
+  }
+
+  const rowValues = buildRow(headers, existing);
+  if (sheetRow === -1) {
+    sh.appendRow(rowValues);
+  } else {
+    sh.getRange(sheetRow, 1, 1, headers.length).setValues([rowValues]);
+  }
+  return rowValues;
 }
 
 function doPost(e) {
@@ -69,27 +117,25 @@ function doPost(e) {
     if (body.token !== SHARED_SECRET) {
       return _json({ ok: false, error: 'bad token' });
     }
-    const sh = _sheet();
-    const data = sh.getDataRange().getValues();
-    const headers = data[0];
-    const keyIdx = KEY_FIELDS.map((k) => headers.indexOf(k));
 
-    let sheetRow = -1; // 1-based שורת גיליון, לא אינדקס מערך
-    for (let i = 1; i < data.length; i++) {
-      const match = keyIdx.every((colIdx, j) => String(data[i][colIdx]) === String(body[KEY_FIELDS[j]] || ''));
-      if (match) { sheetRow = i + 1; break; }
+    if (body.type === 'group') {
+      // addLeaves מתווסף לסכום הקיים של הקבוצה (לא דורס) - תואם את addToGroup() ב-leaves.html
+      const add = Number(body.addLeaves) || 0;
+      const rowValues = _upsert(_groupsSheet(), GROUPS_FIELDS, GROUPS_KEY_FIELDS, body, (headers, existing) => {
+        const currentLeaves = existing ? Number(existing[headers.indexOf('leaves')]) || 0 : 0;
+        return headers.map((h) => {
+          if (h === 'last_updated') return new Date().toISOString();
+          if (h === 'leaves') return currentLeaves + add;
+          return body[h] !== undefined ? body[h] : '';
+        });
+      });
+      return _json({ ok: true, leaves: rowValues[GROUPS_FIELDS.indexOf('leaves')] });
     }
 
-    const rowValues = headers.map((h) => {
+    _upsert(_sheet(), FIELDS, KEY_FIELDS, body, (headers) => headers.map((h) => {
       if (h === 'last_updated') return new Date().toISOString();
       return body[h] !== undefined ? body[h] : '';
-    });
-
-    if (sheetRow === -1) {
-      sh.appendRow(rowValues);
-    } else {
-      sh.getRange(sheetRow, 1, 1, headers.length).setValues([rowValues]);
-    }
+    }));
     return _json({ ok: true });
   } catch (err) {
     return _json({ ok: false, error: String(err) });

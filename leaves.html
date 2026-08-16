@@ -8,6 +8,8 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <script src="assets/identity.js"></script>
   <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="data/sheets-config.js"></script>
+  <script src="assets/sheets-sync.js"></script>
 </head>
 <body class="bg-green-50 dark:bg-gray-900">
   <nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
@@ -93,22 +95,28 @@
       }
     }
 
-    // ── GROUP LEADERBOARD (כיתתי, localStorage בלבד - שיתוף בין כיתות/בתי ספר מתוכנן לעתיד) ──
+    // ── GROUP LEADERBOARD (כיתתי) ──
+    // שלב 9ה: כשהסנכרון פעיל, הלוח משותף באמת (נמשך מהגיליון, אותו לוח לכל תלמידי הכיתה).
+    // כשהסנכרון כבוי (למשל אין עדיין Apps Script פרוס), נופל חזרה ל-localStorage של המכשיר
+    // הזה בלבד - התנהגות ישנה, כדי שהעמוד ימשיך לעבוד גם בלי בק-אנד.
+    function syncEnabled(){
+      return !!(window.GC_SYNC && window.SHEETS_CONFIG && window.SHEETS_CONFIG.enabled);
+    }
     function getGroups(){
       return JSON.parse(localStorage.getItem('groupLeaderboard')||'[]');
     }
     function saveGroups(groups){
       localStorage.setItem('groupLeaderboard', JSON.stringify(groups));
     }
-    function renderLeaderboard(){
-      const groups=getGroups().slice().sort((a,b)=>b.leaves-a.leaves);
+    function renderGroupsList(groups){
+      const sorted=groups.slice().sort((a,b)=>b.leaves-a.leaves);
       const el=document.getElementById('leaderboard');
-      if(groups.length===0){
+      if(sorted.length===0){
         el.innerHTML='<p class="text-gray-400 text-center py-6">עדיין לא נוספו קבוצות. הוסיפו את הקבוצה הראשונה למטה!</p>';
         return;
       }
       const medals=['🥇','🥈','🥉'];
-      el.innerHTML=groups.map((g,i)=>`
+      el.innerHTML=sorted.map((g,i)=>`
         <div class="bg-white rounded-2xl shadow p-5 flex justify-between items-center">
           <div class="flex items-center gap-3">
             <span class="text-2xl">${medals[i]||'🌿'}</span>
@@ -117,20 +125,34 @@
           <span class="text-2xl font-black text-green-600">${g.leaves} 🌿</span>
         </div>`).join('');
     }
-    function addToGroup(){
+    async function renderLeaderboard(){
+      if(syncEnabled()){
+        const resp=await GC_SYNC.pullGroups();
+        const groups=(resp&&resp.ok&&resp.rows) ? resp.rows.map(r=>({name:r.group_name, leaves:Number(r.leaves)||0})) : getGroups();
+        renderGroupsList(groups);
+      } else {
+        renderGroupsList(getGroups());
+      }
+    }
+    async function addToGroup(){
       const name=document.getElementById('group-name').value.trim();
       const add=parseInt(document.getElementById('group-add-leaves').value||'0');
       if(!name || !add){ alert('הזינו שם קבוצה וכמות עלים'); return; }
-      const groups=getGroups();
-      const existing=groups.find(g=>g.name===name);
-      if(existing){ existing.leaves+=add; } else { groups.push({name, leaves:add}); }
-      saveGroups(groups);
+      if(syncEnabled()){
+        await GC_SYNC.pushGroup(name, add);
+      } else {
+        const groups=getGroups();
+        const existing=groups.find(g=>g.name===name);
+        if(existing){ existing.leaves+=add; } else { groups.push({name, leaves:add}); }
+        saveGroups(groups);
+      }
       document.getElementById('group-name').value='';
       document.getElementById('group-add-leaves').value='';
       renderLeaderboard();
     }
 
-    renderLeaves();
+    // שלב 9ה: למשוך התקדמות אישית אמיתית לפני שמציגים את המספרים
+    (window.GC_SYNC ? GC_SYNC.pullMine() : Promise.resolve()).finally(renderLeaves);
     renderLeaderboard();
   </script>
 </body>

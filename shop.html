@@ -8,6 +8,8 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <script src="assets/identity.js"></script>
   <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="data/sheets-config.js"></script>
+  <script src="assets/sheets-sync.js"></script>
 </head>
 <body class="bg-green-50 dark:bg-gray-900">
   <nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
@@ -79,13 +81,17 @@
       if(balance<item.price){ alert('אין מספיק עלים 😔'); return; }
       const spent=getLeavesSpent()+item.price;
       localStorage.setItem('leaves_spent', spent);
+      if(window.GC_SYNC) GC_SYNC.scheduleSync();
       renderBalance();
       renderCatalog();
       alert(`✅ קנית ${item.name}!`);
     }
 
-    renderBalance();
-    renderCatalog();
+    // שלב 9ה: למשוך יתרה אמיתית מהגיליון לפני הרינדור הראשון (אם הסנכרון פעיל)
+    (window.GC_SYNC ? GC_SYNC.pullMine() : Promise.resolve()).finally(()=>{
+      renderBalance();
+      renderCatalog();
+    });
   </script>
 </body>
 </html>

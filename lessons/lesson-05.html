@@ -807,19 +807,21 @@ initDrag(
 );
 
 // ═══ pH SLIDER ═══
-function updatePH(v){
+// isInit=true = רק סנכרון תצוגה בטעינת הדף (updatePH(70,true) למטה) - לא בדיקת "ניצחון",
+// כדי שלא יוענקו עלים אוטומטית בכל טעינה/רענון אם ערך ברירת המחדל נופל בטווח המנצח.
+function updatePH(v,isInit){
   const ph=(v/10).toFixed(1);
   document.getElementById('ph-val').textContent='pH: '+ph;
   const p=document.getElementById('ph-plant'),t=document.getElementById('ph-txt');
   const n=parseFloat(ph);
   if(n>=5.5&&n<=6.5){p.textContent='🌱😄';t.textContent='מושלם! הצמח ספוג מינרלים';p.style.transform='scale(1.2)';
-    if(!phWon){phWon=true;addLv(15);document.getElementById('ph-win').classList.remove('hidden');setTimeout(()=>document.getElementById('ph-q').classList.add('show'),600);}}
+    if(!isInit&&!phWon){phWon=true;addLv(15);document.getElementById('ph-win').classList.remove('hidden');setTimeout(()=>document.getElementById('ph-q').classList.add('show'),600);}}
   else if((n>=4&&n<5.5)||(n>6.5&&n<=8)){p.textContent='😐';t.textContent='לא אידיאלי – ספיגה חלקית';p.style.transform='scale(1)';}
   else{p.textContent='😵';t.textContent='סכנה! הצמח לא יכול לספוג';p.style.transform='scale(0.9)';}
 }
 
 // ═══ EC SLIDER ═══
-function updateEC(v){
+function updateEC(v,isInit){
   const ec=(v/10).toFixed(1);
   document.getElementById('ec-bar').style.width=(v/50*100)+'%';
   document.getElementById('ec-val').textContent=ec;
@@ -827,7 +829,7 @@ function updateEC(v){
   const n=parseFloat(ec);
   if(n<1.2){p.textContent='😢🌱';s.textContent='הצמח רעב!';a.textContent='הוסף דשן';}
   else if(n<=2.0){p.textContent='🌿😄';s.textContent='מושלם!';a.textContent='המשיכו כך';
-    if(!ecWon){ecWon=true;addLv(15);document.getElementById('ec-win').classList.remove('hidden');setTimeout(()=>document.getElementById('growee-q').classList.add('show'),600);}}
+    if(!isInit&&!ecWon){ecWon=true;addLv(15);document.getElementById('ec-win').classList.remove('hidden');setTimeout(()=>document.getElementById('growee-q').classList.add('show'),600);}}
   else if(n<=3){p.textContent='😰';s.textContent='קצת גבוה';a.textContent='דלל עם מים';}
   else{p.textContent='🔥😵';s.textContent='שריפה!';a.textContent='דלל מיד!';}
 }
@@ -876,7 +878,7 @@ function renderLB(){
 document.getElementById('lc').textContent=lv;
 document.getElementById('fl').textContent='🌿 '+lv;
 buildDots();renderFeed();renderLB();
-updatePH(70);updateEC(16);
+updatePH(70,true);updateEC(16,true);
 setTimeout(()=>showMascot(1),1200);
 </script>
 </body>

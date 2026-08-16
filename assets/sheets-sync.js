@@ -62,4 +62,76 @@
       navigator.sendBeacon(c.url, new Blob([JSON.stringify(payload)], { type: 'text/plain' }));
     } catch (e) {}
   });
+
+  // ── שלב 9ה: משיכת נתונים אמיתיים (לא רק שליחה) ──────────────────────────
+
+  // מושך את השורה האישית של התלמיד/ה (לפי school+class+code) ומאחד לתוך localStorage:
+  // per-lesson leaves = מקסימום בין המקומי לזה שבגיליון (אף פעם לא נסוג אחורה, גם אם
+  // המכשיר הזה "מפגר" אחרי מכשיר אחר של אותו תלמיד/זוג). passport1/achievements
+  // מאומצים מהגיליון רק אם המקומי עדיין ריק — כדי לא לדרוס עריכות טריות מהמכשיר הזה.
+  GC_SYNC.pullMine = function () {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ skipped: true, reason: 'sync disabled' });
+    const id = window.GC_ID && GC_ID.getIdentity();
+    if (!id) return Promise.resolve({ skipped: true, reason: 'no identity' });
+    const url = c.url + '?token=' + encodeURIComponent(c.token) +
+      '&school=' + encodeURIComponent(id.school || '') +
+      '&class=' + encodeURIComponent(id.className || '') +
+      '&code=' + encodeURIComponent(id.code || '');
+    return fetch(url).then((r) => r.json()).then((resp) => {
+      if (!resp.ok || !resp.rows || !resp.rows.length) return resp;
+      const row = resp.rows[0];
+      for (let i = 1; i <= 17; i++) {
+        const key = 'ls' + i;
+        const local = parseInt(localStorage.getItem(key) || '0');
+        const remote = parseInt(row[key] || 0);
+        if (remote > local) localStorage.setItem(key, remote);
+      }
+      const localSpent = parseInt(localStorage.getItem('leaves_spent') || '0');
+      const remoteSpent = parseInt(row.leaves_spent || 0);
+      if (remoteSpent > localSpent) localStorage.setItem('leaves_spent', remoteSpent);
+      const localPassport = localStorage.getItem('passport1');
+      if ((!localPassport || localPassport === '{}') && row.passport1 && row.passport1 !== '{}') {
+        localStorage.setItem('passport1', row.passport1);
+      }
+      const localAch = localStorage.getItem('gc_achievements');
+      if ((!localAch || localAch === '{}') && row.achievements && row.achievements !== '{}') {
+        localStorage.setItem('gc_achievements', row.achievements);
+      }
+      return resp;
+    }).catch((err) => ({ ok: false, error: String(err) }));
+  };
+
+  // מושך את לוח המנהיגות בין-קבוצתי (כל הקבוצות באותו school+class) — משותף אמיתי בין
+  // כל תלמידי הכיתה, לא רק מה שנשמר בדפדפן הזה.
+  GC_SYNC.pullGroups = function () {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, rows: [], skipped: true });
+    const id = window.GC_ID && GC_ID.getIdentity();
+    if (!id) return Promise.resolve({ ok: false, rows: [], skipped: true });
+    const url = c.url + '?token=' + encodeURIComponent(c.token) + '&type=groups' +
+      '&school=' + encodeURIComponent(id.school || '') +
+      '&class=' + encodeURIComponent(id.className || '');
+    return fetch(url).then((r) => r.json()).catch((err) => ({ ok: false, error: String(err), rows: [] }));
+  };
+
+  // מוסיף עלים לקבוצת-פרויקט (מצטבר בשרת, לא דורס) — תואם את addToGroup() ב-leaves.html
+  GC_SYNC.pushGroup = function (name, addLeaves) {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ skipped: true });
+    const id = window.GC_ID && GC_ID.getIdentity();
+    if (!id) return Promise.resolve({ skipped: true });
+    const payload = {
+      token: c.token, type: 'group',
+      school_id: id.school || '', class_id: id.className || '',
+      group_name: name, addLeaves: addLeaves,
+    };
+    return fetch(c.url, { method: 'POST', body: JSON.stringify(payload) })
+      .then((r) => r.json())
+      .catch((err) => ({ ok: false, error: String(err) }));
+  };
+
+  // הידרציה שקטה בטעינת כל דף שטוען את הקובץ הזה: אם יש זהות וסנכרון פעיל, למשוך את
+  // ההתקדמות האישית האמיתית (fire-and-forget - לא חוסם רינדור ראשוני של הדף).
+  if (window.GC_ID && GC_ID.getIdentity()) { GC_SYNC.pullMine(); }
 })();
