@@ -43,6 +43,12 @@ function _json(obj) {
 }
 
 function doGet(e) {
+  const p = (e && e.parameter) || {};
+  // הגנה: קריאה (לא רק כתיבה) דורשת ?token= תואם — בלי זה, כל מי שיש לו את ה-URL
+  // (ציבורי מטבעו, כי הצד-לקוח חייב אותו) יכול לקרוא את נתוני כל התלמידים בלי הרשאה.
+  if (p.token !== SHARED_SECRET) {
+    return _json({ ok: false, error: 'unauthorized' });
+  }
   const sh = _sheet();
   const data = sh.getDataRange().getValues();
   const headers = data[0];
@@ -51,7 +57,6 @@ function doGet(e) {
     headers.forEach((h, i) => (o[h] = r[i]));
     return o;
   });
-  const p = (e && e.parameter) || {};
   if (p.school) rows = rows.filter((r) => String(r.school_id) === p.school);
   if (p.class) rows = rows.filter((r) => String(r.class_id) === p.class);
   if (p.track) rows = rows.filter((r) => String(r.track) === p.track);
