@@ -93,16 +93,27 @@
         </ul>
       </div>
       <div>
-        <h3 class="font-bold mb-3">💻 קוד לארדואינו</h3>
+        <h3 class="font-bold mb-3">💻 קוד לארדואינו (מלא, אפשר להעתיק כמו שהוא)</h3>
         <div class="bg-slate-800 rounded-xl p-4 font-mono text-xs text-green-400 leading-relaxed">
           <p class="text-slate-400">// סגירת מעגל: חיישן → בקר → ברז+הודעה</p>
-          <p>int moisture = analogRead(A0);</p>
-          <p>if (moisture &lt; 400) {'{'}</p>
-          <p>&nbsp;valve.write(90); <span class="text-slate-500">// פותח ברז</span></p>
-          <p>&nbsp;digitalWrite(buzzer, HIGH); <span class="text-slate-500">// הודעה</span></p>
-          <p>{'}'} else {'{'}</p>
-          <p>&nbsp;valve.write(0);</p>
-          <p>&nbsp;digitalWrite(buzzer, LOW);</p>
+          <p>#include &lt;Servo.h&gt;</p>
+          <p>Servo valve;</p>
+          <p>const int buzzer = 8;</p>
+          <p>&nbsp;</p>
+          <p>void setup() {'{'}</p>
+          <p>&nbsp;valve.attach(9); <span class="text-slate-500">// פין ה-Servo</span></p>
+          <p>&nbsp;pinMode(buzzer, OUTPUT);</p>
+          <p>{'}'}</p>
+          <p>&nbsp;</p>
+          <p>void loop() {'{'}</p>
+          <p>&nbsp;int moisture = analogRead(A0);</p>
+          <p>&nbsp;if (moisture &lt; 400) {'{'}</p>
+          <p>&nbsp;&nbsp;valve.write(90); <span class="text-slate-500">// פותח ברז</span></p>
+          <p>&nbsp;&nbsp;digitalWrite(buzzer, HIGH); <span class="text-slate-500">// הודעה</span></p>
+          <p>&nbsp;{'}'} else {'{'}</p>
+          <p>&nbsp;&nbsp;valve.write(0);</p>
+          <p>&nbsp;&nbsp;digitalWrite(buzzer, LOW);</p>
+          <p>&nbsp;{'}'}</p>
           <p>{'}'}</p>
         </div>
       </div>

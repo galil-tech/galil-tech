@@ -83,7 +83,7 @@
       '<input id="gc-id-existing-code" maxlength="4" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2rem;text-align:center;letter-spacing:6px;box-sizing:border-box;" placeholder="1234">' +
       '<button id="gc-id-existing-go" style="width:100%;margin-top:8px;background:#166534;color:white;border:none;padding:10px;border-radius:10px;font-weight:800;cursor:pointer;">המשך/י</button>' +
       '</div>' +
-      '<button id="gc-id-skip" style="width:100%;background:none;border:none;color:#999;font-size:.75rem;cursor:pointer;padding:6px;">המשך/י בלי שמירת פרטים (לבדיקה בלבד)</button>' +
+      '<button id="gc-id-skip" style="width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;color:#555;font-size:.8rem;font-weight:700;cursor:pointer;padding:9px;">⏭ אין זמן עכשיו — דלג/י והתחל/י ישר (אפשר למלא בפעם הבאה)</button>' +
       '</div>';
     document.body.appendChild(overlay);
 
