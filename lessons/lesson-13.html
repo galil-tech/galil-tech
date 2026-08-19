@@ -244,7 +244,7 @@ let povSaved=false,ideas13Saved=false,finalIdeaSaved=false,entry13Saved=false;
 function goTo(n){if(n<1||n>STEPS)return;document.getElementById('step-'+cur).classList.remove('active');cur=n;if(cur>maxReached)maxReached=cur;document.getElementById('step-'+cur).classList.add('active');renderDots();updateHeader();window.scrollTo({top:0,behavior:'smooth'});updateMascot(cur);}
 function updateHeader(){document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';}
 function renderDots(){document.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');});}
-function addLv(n){lv+=n;localStorage.setItem('ls13',lv);if(window.GC_SYNC)GC_SYNC.scheduleSync();document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
+function addLv(n){lv+=n;localStorage.setItem('ls13',lv);if(window.GC_SYNC)GC_SYNC.scheduleSync();document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);GC._lid=13;GC._lv=lv;GC.playSound('leaf');GC._pulsePlantTwin();GC._checkAchievements();lv=parseInt(localStorage.getItem('ls13')||'0');document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;}
 function leafBurst(n){for(let i=0;i<Math.min(n,8);i++){const el=document.createElement('div');el.className='leaf-burst';el.textContent='🌿';el.style.left=(20+Math.random()*60)+'vw';el.style.top=(15+Math.random()*50)+'vh';el.style.setProperty('--tx',(Math.random()*120-60)+'px');el.style.setProperty('--ty',(-80-Math.random()*80)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),950);}}
 function ansQ(el,correct,qid){
   const c=document.getElementById(qid);if(!c||c.dataset.done)return;c.dataset.done='1';c.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');el.classList.add(correct?'correct':'wrong');if(!correct){const r=c.querySelector('[data-correct="true"]');if(r)r.classList.add('correct');}
@@ -252,6 +252,18 @@ function ansQ(el,correct,qid){
   const casc={'q-dt1':()=>{document.getElementById('btn1').classList.remove('hidden');mascotSay('Empathize ראשון — כי אחרת פותרים הבעיה הלא נכונה','🎨');},'q-emp':()=>{document.getElementById('btn2').classList.remove('hidden');mascotSay('בדיוק! להבין את האדם לפני הפתרון','😊');},'q-pov':()=>{document.getElementById('btn3').classList.remove('hidden');mascotSay('POV = מפה לאבטיפוס שלכם','📌');}};
   if(casc[qid])casc[qid]();
 }
+const _localAnsQ = ansQ;
+ansQ = function(el, correct, qid) {
+  const _before = lv;
+  if (correct) { GC._combo = (GC._combo||0) + 1; } else { GC._combo = 0; }
+  _localAnsQ(el, correct, qid);
+  const _awarded = lv - _before;
+  if (correct && _awarded > 0 && GC._combo >= 3) {
+    const mult = GC._comboMult();
+    const bonus = Math.round(_awarded * mult) - _awarded;
+    if (bonus > 0) { addLv(bonus); GC._showComboToast(GC._combo, mult); }
+  }
+};
 function startTimer(){
   document.getElementById('start-btn').disabled=true;document.getElementById('start-btn').textContent='⏱️ ריצה! כתבו מהר...';
   const bar=document.getElementById('timer-bar');bar.classList.remove('hidden');bar.style.animation='none';bar.offsetHeight;bar.style.animation='timer 60s linear forwards';
@@ -262,7 +274,14 @@ function savePOV(){
   if(!who||!what){mascotSay('מלאו לפחות מי + צריך מה!','📌');return;}povSaved=true;
   const p=JSON.parse(localStorage.getItem('passport1')||'{}');p.lesson13POV={who,what,why,date:new Date().toLocaleDateString('he-IL')};localStorage.setItem('passport1',JSON.stringify(p));
   document.getElementById('pov-saved').classList.remove('hidden');addLv(15);document.getElementById('q-pov-wrap').classList.add('show');mascotSay('POV נשמר! זה הבסיס לכל','📌');
-  if(window.GC)GC.completeSideQuest('sq-13-pov');
+  if(window.GC){
+    GC.completeSideQuest('sq-13-pov');
+    // completeSideQuest awards leaves through GC.addLeaves (core.js), which updates
+    // GC._lv independently of this page's local `lv` variable — resync so the next
+    // local addLv() call doesn't overwrite localStorage with a stale (lower) total.
+    lv=parseInt(localStorage.getItem('ls13')||'0');
+    document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;
+  }
 }
 function saveIdeas13(){
   if(ideas13Saved)return;const ideas=[1,2,3].map(i=>document.getElementById('idea-'+i).value.trim()).filter(Boolean);
@@ -281,12 +300,16 @@ function saveEntry13(){
   document.getElementById('p13-saved').classList.remove('hidden');addLv(10);checkStep5();
 }
 function checkStep5(){if(finalIdeaSaved&&entry13Saved)document.getElementById('btn5').classList.remove('hidden');}
-const mascotLines={1:'פאזה 4 מתחילה! Design Thinking — צעד ראשון: להבין לפני לפתור',2:'Empathize = לנעול נעליים של האחר',3:'POV Statement = מפה לפרויקט',4:'כמה רעיונות בדקה? אל תחשבו — כתבו!',5:'Beewise = דוגמה לPOV שהפך לחברת $80M',6:'שיעור 13 הסתיים! עכשיו — לבנות! ⭐'};
+const mascotLines={1:'פאזה 4 מתחילה! Design Thinking — צעד ראשון: להבין לפני לפתור',2:'Empathize = לנעול נעליים של האחר',3:'POV Statement = מפה לפרויקט',4:'כמה רעיונות בדקה? אל תחשבו — כתבו!',5:'Beewise = דוגמה לPOV שהפך לחברת $170M+',6:'שיעור 13 הסתיים! עכשיו — לבנות! ⭐'};
 function updateMascot(s){mascotSay(mascotLines[s]||'','🌱');}
 function mascotSay(msg,emoji){const m=document.getElementById('mascot'),b=document.getElementById('mascot-bubble');if(emoji)m.textContent=emoji;b.textContent=msg;b.classList.remove('hidden');m.classList.add('mascot-bounce');clearTimeout(mascotSay._t);mascotSay._t=setTimeout(()=>{b.classList.add('hidden');m.classList.remove('mascot-bounce');},5000);}
 function init(){
   const d=document.getElementById('dots');for(let i=1;i<=STEPS;i++){const dot=document.createElement('div');dot.className='step-dot'+(i===1?' current':'');dot.title='שלב '+i;dot.onclick=()=>{if(i<=maxReached)goTo(i);};d.appendChild(dot);}
   document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;updateHeader();
+  // Register this lesson's Side Quest (sq-13-pov) so GC.completeSideQuest() can find its
+  // config and actually pay out the reward — this page uses a local init(), not
+  // GC.initLesson(), so core.js's auto-register hook never fires on its own.
+  if(window.GC&&typeof GC._autoRegisterSideQuest==='function')GC._autoRegisterSideQuest(13);
   try{const p=JSON.parse(localStorage.getItem('passport1')||'{}');
     if(p.lesson13POV){document.getElementById('pov-who').value=p.lesson13POV.who||'';document.getElementById('pov-what').value=p.lesson13POV.what||'';document.getElementById('pov-why').value=p.lesson13POV.why||'';povSaved=true;document.getElementById('q-pov-wrap').classList.add('show');document.getElementById('btn3').classList.remove('hidden');}
     if(p.lesson13Ideas&&p.lesson13Ideas.length>0){p.lesson13Ideas.forEach((idea,i)=>{const el=document.getElementById('idea-'+(i+1));if(el)el.value=idea;});ideas13Saved=true;document.getElementById('btn4').classList.remove('hidden');}
@@ -297,6 +320,9 @@ function init(){
   mascotSay(mascotLines[1],'🌱');
 }
 init();
+GC._initPlantTwin();
+GC._initSoundBtn();
+setTimeout(() => { if (typeof GC._initA11y === 'function') GC._initA11y(); }, 200);
 </script>
 </body>
 </html>

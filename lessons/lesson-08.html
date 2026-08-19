@@ -285,7 +285,7 @@
       </div>
     </div>
 
-    <div class="bg-slate-800 rounded-2xl p-5 mb-5 font-mono text-sm text-green-400 leading-relaxed">
+    <div dir="ltr" class="bg-slate-800 rounded-2xl p-5 mb-5 font-mono text-sm text-green-400 leading-relaxed">
       <p class="text-slate-400 mb-2">// מטרה: אם לחות &lt; 400, פתח ברז + שלח הודעה</p>
       <p>int moisture = analogRead(A0);</p>
       <p>if (moisture <span id="blank1" class="code-blank" onclick="fillBlank('blank1')">___</span> 400) {'{'}</p>
@@ -322,7 +322,7 @@
 
     <div id="code-done" class="reveal bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
       <p class="font-black text-lime-800 text-xl mb-2">✅ הקוד שלם! זה בדיוק מה שנבנה בפרויקט היום</p>
-      <div class="bg-slate-800 rounded-xl p-4 font-mono text-sm text-green-400 mt-3 text-right">
+      <div dir="ltr" class="bg-slate-800 rounded-xl p-4 font-mono text-sm text-green-400 mt-3 text-right">
         <p>if (moisture <b class="text-lime-400">&lt;</b> 400) {'{'}</p>
         <p>&nbsp;valve.write(90); &nbsp;// פתוח</p>
         <p>{'}'} else {'{'}</p>
@@ -461,6 +461,10 @@ function addLv(n){
   document.getElementById('lc').textContent=lv;
   document.getElementById('final-lv').textContent=lv;
   leafBurst(n);
+  GC._lid=8;GC._lv=lv;GC.playSound('leaf');GC._pulsePlantTwin();GC._checkAchievements();
+  // resync — GC._checkStreak() may have written a streak bonus straight to localStorage
+  const _synced=parseInt(localStorage.getItem('ls8')||'0');
+  if(_synced!==lv){lv=_synced;document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;}
 }
 function leafBurst(n){
   for(let i=0;i<Math.min(n,8);i++){
@@ -495,6 +499,20 @@ function ansQ(el,correct,qid){
   };
   if(cascades[qid]) cascades[qid]();
 }
+
+const _localAnsQ = ansQ;
+ansQ = function(el, correct, qid) {
+  const _before = lv;
+  if (correct) { GC._combo = (GC._combo||0) + 1; } else { GC._combo = 0; }
+  _localAnsQ(el, correct, qid);
+  const _awarded = lv - _before;
+  if (correct && _awarded > 0 && GC._combo >= 3) {
+    const mult = GC._comboMult();
+    const bonus = Math.round(_awarded * mult) - _awarded;
+    if (bonus > 0) { addLv(bonus); GC._showComboToast(GC._combo, mult); }
+  }
+};
+
 function checkCodeDone(){
   if(code1Ok&&code2Ok){
     document.getElementById('code-done').classList.add('show');
@@ -566,6 +584,9 @@ function init(){
   mascotSay(mascotLines[1],'🌱');
 }
 init();
+GC._initPlantTwin();
+GC._initSoundBtn();
+setTimeout(() => { if (typeof GC._initA11y === 'function') GC._initA11y(); }, 200);
 </script>
 </body>
 </html>

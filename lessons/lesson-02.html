@@ -504,6 +504,10 @@ function addLv(n) {
   document.getElementById('lc').textContent = lv;
   document.getElementById('final-lv').textContent = lv;
   leafBurst(n);
+  GC._lid=2;GC._lv=lv;GC.playSound('leaf');GC._pulsePlantTwin();GC._checkAchievements();
+  // resync — GC._checkStreak() may have written a streak bonus straight to localStorage
+  const _synced = parseInt(localStorage.getItem('ls2') || '0');
+  if (_synced !== lv) { lv = _synced; document.getElementById('lc').textContent = lv; document.getElementById('final-lv').textContent = lv; }
 }
 
 function leafBurst(n) {
@@ -548,6 +552,19 @@ function ansQ(el, correct, qid) {
   };
   if (cascades[qid]) cascades[qid]();
 }
+
+const _localAnsQ = ansQ;
+ansQ = function(el, correct, qid) {
+  const _before = lv;
+  if (correct) { GC._combo = (GC._combo||0) + 1; } else { GC._combo = 0; }
+  _localAnsQ(el, correct, qid);
+  const _awarded = lv - _before;
+  if (correct && _awarded > 0 && GC._combo >= 3) {
+    const mult = GC._comboMult();
+    const bonus = Math.round(_awarded * mult) - _awarded;
+    if (bonus > 0) { addLv(bonus); GC._showComboToast(GC._combo, mult); }
+  }
+};
 
 // ── TIMELINE DRAG ──
 let dragSrc = null;
@@ -687,6 +704,10 @@ function init() {
   } catch(e) {}
 
   mascotSay(mascotLines[1], '🌱');
+
+  GC._initPlantTwin();
+  GC._initSoundBtn();
+  setTimeout(() => { if (typeof GC._initA11y === 'function') GC._initA11y(); }, 200);
 }
 
 init();

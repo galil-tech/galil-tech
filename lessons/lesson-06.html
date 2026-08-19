@@ -125,8 +125,9 @@
 
     <!-- bridge -->
     <div class="bg-lime-50 border-r-4 border-lime-500 rounded-2xl p-4 mb-5">
-      <p class="text-sm font-bold text-lime-700 mb-1">זוכרים משיעור 5?</p>
-      <p class="text-gray-700 text-sm">מדדתם pH ו-EC ידנית. אבל מה קורה בשעה 3 בלילה כש-pH נופל? <b>מי ישמור על הצמח?</b> התשובה טמונה בהבנת שפת הצמח עצמו.</p>
+      <p class="text-sm font-bold text-lime-700 mb-2">זוכרים את ה-Teaser משיעור 5?</p>
+      <p class="text-gray-700 text-lg font-bold">"אם הצמח לא מרגיש טוב – איך תדע לפני שרואים בעיניים?"</p>
+      <p class="text-gray-500 text-sm mt-2">מדדתם pH ו-EC ידנית בשיעור 5 — אבל מה קורה בשעה 3 בלילה כש-pH נופל ואף אחד לא שם? התשובה טמונה בהבנת שפת הצמח עצמו.</p>
     </div>
 
     <!-- main content -->
@@ -288,6 +289,7 @@
       </div>
       <div id="fb-s2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
     </div>
+    <div id="bonus-q-6"></div>
   </div>
   <div class="flex justify-between">
     <button onclick="goTo(1)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
@@ -701,6 +703,10 @@ function addLv(n){
     e.style.cssText='left:'+(15+Math.random()*70)+'%;top:'+(15+Math.random()*70)+'%;--tx:'+(Math.random()-.5)*200+'px;--ty:'+(-50-Math.random()*130)+'px;';
     e.textContent='🌿';document.body.appendChild(e);setTimeout(()=>e.remove(),950);
   }
+  GC._lid=6;GC._lv=lv;GC.playSound('leaf');GC._pulsePlantTwin();GC._checkAchievements();
+  // resync — GC._checkStreak() may have written a streak bonus straight to localStorage
+  const _synced=parseInt(localStorage.getItem('ls6')||'0');
+  if(_synced!==lv){lv=_synced;document.getElementById('lc').textContent=lv;document.getElementById('fl').textContent='🌿 '+lv;}
 }
 
 function goTo(n){
@@ -751,6 +757,19 @@ function pickQ(qid,el,correct){
   if(qid==='s1'){setTimeout(()=>document.getElementById('q2-reveal').classList.add('show'),400);document.getElementById('b2').classList.remove('hidden');}
   if(qid==='a1'){document.getElementById('b3').classList.remove('hidden');}
 }
+
+const _localPickQ = pickQ;
+pickQ = function(qid, el, correct) {
+  const _before = lv;
+  if (correct) { GC._combo = (GC._combo||0) + 1; } else { GC._combo = 0; }
+  _localPickQ(qid, el, correct);
+  const _awarded = lv - _before;
+  if (correct && _awarded > 0 && GC._combo >= 3) {
+    const mult = GC._comboMult();
+    const bonus = Math.round(_awarded * mult) - _awarded;
+    if (bonus > 0) { addLv(bonus); GC._showComboToast(GC._combo, mult); }
+  }
+};
 
 // ── CODE DRAG ──
 let dragging=null;
@@ -933,6 +952,10 @@ function renderLB(){
 document.getElementById('lc').textContent=lv;
 document.getElementById('fl').textContent='🌿 '+lv;
 buildDots();renderFeed();renderLB();
+GC._initPlantTwin();
+GC._initSoundBtn();
+setTimeout(() => { if (typeof GC._initA11y === 'function') GC._initA11y(); }, 200);
+if (typeof GC.injectBonusQuestions === 'function') GC.injectBonusQuestions(6, 'bonus-q-6');
 </script>
 </body>
 </html>

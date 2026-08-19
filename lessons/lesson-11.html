@@ -260,7 +260,7 @@ let insightSaved=false,entry11Saved=false;
 function goTo(n){if(n<1||n>STEPS)return;document.getElementById('step-'+cur).classList.remove('active');cur=n;if(cur>maxReached)maxReached=cur;document.getElementById('step-'+cur).classList.add('active');renderDots();updateHeader();window.scrollTo({top:0,behavior:'smooth'});updateMascot(cur);}
 function updateHeader(){document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';}
 function renderDots(){document.querySelectorAll('.step-dot').forEach((d,i)=>{d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');});}
-function addLv(n){lv+=n;localStorage.setItem('ls11',lv);if(window.GC_SYNC)GC_SYNC.scheduleSync();document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);}
+function addLv(n){lv+=n;localStorage.setItem('ls11',lv);if(window.GC_SYNC)GC_SYNC.scheduleSync();document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;leafBurst(n);GC._lid=11;GC._lv=lv;GC.playSound('leaf');GC._pulsePlantTwin();GC._checkAchievements();lv=parseInt(localStorage.getItem('ls11')||'0');document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;}
 function leafBurst(n){for(let i=0;i<Math.min(n,8);i++){const el=document.createElement('div');el.className='leaf-burst';el.textContent='🌿';el.style.left=(20+Math.random()*60)+'vw';el.style.top=(15+Math.random()*50)+'vh';el.style.setProperty('--tx',(Math.random()*120-60)+'px');el.style.setProperty('--ty',(-80-Math.random()*80)+'px');document.body.appendChild(el);setTimeout(()=>el.remove(),950);}}
 function ansQ(el,correct,qid){
   const c=document.getElementById(qid);if(!c||c.dataset.done)return;c.dataset.done='1';c.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');el.classList.add(correct?'correct':'wrong');if(!correct){const r=c.querySelector('[data-correct="true"]');if(r)r.classList.add('correct');}
@@ -268,6 +268,18 @@ function ansQ(el,correct,qid){
   const casc={'q-big1':()=>{document.getElementById('btn1').classList.remove('hidden');mascotSay('מיליוני נתונים — רק AI יכול!','📊');},'q-chart1':()=>{document.getElementById('btn2').classList.remove('hidden');mascotSay('גרף קווי = שינוי לאורך זמן','📈');},'q-prosp1':()=>document.getElementById('q-prosp2-wrap').classList.add('show'),'q-prosp2':()=>{document.getElementById('btn3').classList.remove('hidden');mascotSay('Prospera = AI שמוצא דפוסים!','🌾');},'q-mygraph':()=>{document.getElementById('btn4').classList.remove('hidden');mascotSay('גרף קווי לנתוני זמן','📈');}};
   if(casc[qid])casc[qid]();
 }
+const _localAnsQ = ansQ;
+ansQ = function(el, correct, qid) {
+  const _before = lv;
+  if (correct) { GC._combo = (GC._combo||0) + 1; } else { GC._combo = 0; }
+  _localAnsQ(el, correct, qid);
+  const _awarded = lv - _before;
+  if (correct && _awarded > 0 && GC._combo >= 3) {
+    const mult = GC._comboMult();
+    const bonus = Math.round(_awarded * mult) - _awarded;
+    if (bonus > 0) { addLv(bonus); GC._showComboToast(GC._combo, mult); }
+  }
+};
 function loadChart(){
   try{
     const p=JSON.parse(localStorage.getItem('passport1')||'{}');const data=p.growthData||[];
@@ -316,6 +328,9 @@ function init(){
   mascotSay(mascotLines[1],'🌱');
 }
 init();
+GC._initPlantTwin();
+GC._initSoundBtn();
+setTimeout(() => { if (typeof GC._initA11y === 'function') GC._initA11y(); }, 200);
 </script>
 </body>
 </html>

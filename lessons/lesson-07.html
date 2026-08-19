@@ -217,7 +217,7 @@
             ⚡ <b>למה נגד?</b> LED ללא נגד = זרם גדול מדי = LED שרוף תוך שניות. הנגד מגביל את הזרם.
           </div>
         </div>
-        <div class="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400 leading-loose">
+        <div dir="ltr" class="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400 leading-loose">
           <p class="text-slate-400 text-xs mb-2">// הגדרה בקוד:</p>
           <p><span class="text-blue-300">int</span> ledPin = <span class="text-yellow-300">9</span>;</p>
           <p><span class="text-blue-300">void</span> setup() {'{'}</p>
@@ -258,7 +258,7 @@
             ✅ <b>Servo בטוח!</b> אין צורך בנגד. ה-Servo מגביל זרם לבד.
           </div>
         </div>
-        <div class="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400 leading-loose">
+        <div dir="ltr" class="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400 leading-loose">
           <p class="text-slate-400 text-xs mb-2">// קוד Servo:</p>
           <p><span class="text-yellow-300">#include</span> &lt;Servo.h&gt;</p>
           <p><span class="text-blue-300">Servo</span> valve;</p>
@@ -406,6 +406,7 @@
       <p class="text-xl font-black text-lime-700">💻 +30 עלים! כתבת קוד אמיתי!</p>
       <p class="text-sm text-gray-500 mt-1">זה בדיוק הקוד שרץ על הארדואינו שלכם עכשיו</p>
     </div>
+    <div id="bonus-q-7"></div>
   </div>
   <div class="flex justify-between">
     <button onclick="goTo(3)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
@@ -544,14 +545,14 @@
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-center text-sm">
         <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-yellow-300">80%</div><div class="text-xs text-yellow-200">פחות אבדות דבורים</div></div>
-        <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-yellow-300">$80M</div><div class="text-xs text-yellow-200">גיוס</div></div>
+        <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-yellow-300">$170M</div><div class="text-xs text-yellow-200">גיוס מצטבר עד היום</div></div>
         <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-yellow-300">24/7</div><div class="text-xs text-yellow-200">ניטור אוטומטי</div></div>
         <div class="bg-white/10 rounded-xl p-3"><div class="font-black text-yellow-300">🌍</div><div class="text-xs text-yellow-200">ארה"ב, ישראל</div></div>
       </div>
 
       <div class="bg-amber-400/20 border border-amber-400/40 rounded-xl p-4">
         <p class="font-bold text-yellow-300 mb-2">💭 חיבור לשיעור:</p>
-        <p class="text-white text-sm">מה שבנינו היום (חיישן → if/else → LED/ברז) <b>זה בדיוק</b> מה ש-Beewise עשו – רק הם עשו את זה לדבורים ב-$80M. <b>מה היית מוסיף לכוורת האוטומטית שלהם?</b></p>
+        <p class="text-white text-sm">מה שבנינו היום (חיישן → if/else → LED/ברז) <b>זה בדיוק</b> מה ש-Beewise עשו – רק הם עשו את זה לדבורים, וגייסו על כך מעל $170 מיליון עד היום. <b>מה היית מוסיף לכוורת האוטומטית שלהם?</b></p>
         <textarea id="beewise-ans" rows="2" class="mt-3 w-full bg-white/10 border border-amber-400/30 rounded-xl p-3 text-sm text-white resize-none placeholder-yellow-300" placeholder="רעיון לחיישן או פעולה חדשה..."></textarea>
         <button onclick="submitBeewise(this)" class="mt-2 bg-amber-500 hover:bg-amber-400 text-white px-6 py-2 rounded-xl font-bold text-sm">שלח +10 עלים 🌿</button>
       </div>
@@ -705,6 +706,10 @@ function addLv(n){
     e.style.cssText='left:'+(15+Math.random()*70)+'%;top:'+(15+Math.random()*70)+'%;--tx:'+(Math.random()-.5)*200+'px;--ty:'+(-50-Math.random()*130)+'px;';
     e.textContent='🌿';document.body.appendChild(e);setTimeout(()=>e.remove(),950);
   }
+  GC._lid=7;GC._lv=lv;GC.playSound('leaf');GC._pulsePlantTwin();GC._checkAchievements();
+  // resync — GC._checkStreak() may have written a streak bonus straight to localStorage
+  const _synced=parseInt(localStorage.getItem('ls7')||'0');
+  if(_synced!==lv){lv=_synced;document.getElementById('lc').textContent=lv;document.getElementById('fl').textContent='🌿 '+lv;}
 }
 
 function goTo(n){
@@ -743,6 +748,19 @@ function pickQ(qid,el,correct){
   if(qid==='t1')document.getElementById('b1').classList.remove('hidden');
   if(qid==='bw1')document.getElementById('b6').classList.remove('hidden');
 }
+
+const _localPickQ = pickQ;
+pickQ = function(qid, el, correct) {
+  const _before = lv;
+  if (correct) { GC._combo = (GC._combo||0) + 1; } else { GC._combo = 0; }
+  _localPickQ(qid, el, correct);
+  const _awarded = lv - _before;
+  if (correct && _awarded > 0 && GC._combo >= 3) {
+    const mult = GC._comboMult();
+    const bonus = Math.round(_awarded * mult) - _awarded;
+    if (bonus > 0) { addLv(bonus); GC._showComboToast(GC._combo, mult); }
+  }
+};
 
 // ── wiring checklist ──
 function wiringCheck(){
@@ -931,6 +949,10 @@ function renderLB(){
 document.getElementById('lc').textContent=lv;
 document.getElementById('fl').textContent='🌿 '+lv;
 buildDots();renderFeed();renderLB();updateLED();
+GC._initPlantTwin();
+GC._initSoundBtn();
+setTimeout(() => { if (typeof GC._initA11y === 'function') GC._initA11y(); }, 200);
+if (typeof GC.injectBonusQuestions === 'function') GC.injectBonusQuestions(7, 'bonus-q-7');
 </script>
 </body>
 </html>
