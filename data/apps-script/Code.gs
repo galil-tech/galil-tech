@@ -82,11 +82,17 @@ function doGet(e) {
     return _json({ ok: true, rows: rows });
   }
 
+  // הגנת פרטיות: קריאת שורות תלמידים (לא לוח קבוצות) דורשת code ספציפי - בלעדיו זו
+  // הייתה מחזירה dump מלא של כל תלמידי כל בתי הספר (שמות, דרכונים, הישגים) לכל מי
+  // שקורא את ה-URL הציבורי. pullMine() בצד הלקוח כבר תמיד שולח code, אז זה לא שובר כלום.
+  if (!p.code) {
+    return _json({ ok: false, error: 'code parameter required' });
+  }
   let rows = _rowsAsObjects(_sheet());
+  rows = rows.filter((r) => String(r.code) === p.code);
   if (p.school) rows = rows.filter((r) => String(r.school_id) === p.school);
   if (p.class) rows = rows.filter((r) => String(r.class_id) === p.class);
   if (p.track) rows = rows.filter((r) => String(r.track) === p.track);
-  if (p.code) rows = rows.filter((r) => String(r.code) === p.code);
   return _json({ ok: true, rows: rows });
 }
 
@@ -138,8 +144,23 @@ function doPost(e) {
       return _json({ ok: true, leaves: rowValues[GROUPS_FIELDS.indexOf('leaves')] });
     }
 
-    _upsert(_sheet(), FIELDS, KEY_FIELDS, body, (headers) => headers.map((h) => {
+    // מיזוג בטוח בצד השרת - לא רק בצד הלקוח (pullMine): אם לתלמיד/זוג שני מכשירים ומכשיר
+    // "מפגר" שולח POST אחרי שמכשיר אחר כבר עדכן את השרת לערך גבוה יותר, בלי המיזוג הזה
+    // השורה הייתה נדרסת אחורה. נצפה כתרחיש אמיתי בבדיקת הפאנל - לא רק תיאורטי.
+    const LS_FIELDS = FIELDS.filter((h) => /^ls\d+$/.test(h)).concat(['leaves_spent']);
+    _upsert(_sheet(), FIELDS, KEY_FIELDS, body, (headers, existing) => headers.map((h, i) => {
       if (h === 'last_updated') return new Date().toISOString();
+      if (LS_FIELDS.indexOf(h) !== -1) {
+        const incoming = Number(body[h]) || 0;
+        const current = existing ? Number(existing[i]) || 0 : 0;
+        return Math.max(incoming, current);
+      }
+      if ((h === 'passport1' || h === 'achievements') && existing) {
+        const incoming = body[h];
+        const current = existing[i];
+        // לא דורסים בלוב תוכן קיים במשהו ריק/חסר שמגיע ממכשיר שעוד לא הספיק להתעדכן
+        if ((incoming === undefined || incoming === '' || incoming === '{}') && current) return current;
+      }
       return body[h] !== undefined ? body[h] : '';
     }));
     return _json({ ok: true });

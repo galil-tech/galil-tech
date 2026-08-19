@@ -72,9 +72,10 @@
       '<input id="gc-id-school" value="' + esc(prefill.school || '') + '" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: מעלה">' +
       '<label style="font-size:.8rem;font-weight:700;color:#333;">כיתה</label>' +
       '<input id="gc-id-class" value="' + esc(prefill.className || '') + '" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: ח1">' +
-      '<label style="font-size:.8rem;font-weight:700;color:#333;">שם (שלכם, או שם הזוג)</label>' +
-      '<input id="gc-id-name" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: דנה ויותם">' +
-      '<div id="gc-id-err" style="display:none;color:#dc2626;font-size:.78rem;margin-bottom:8px;">נא למלא בית ספר, כיתה ושם לפני שממשיכים</div>' +
+      '<label style="font-size:.8rem;font-weight:700;color:#333;">שם פרטי (שלכם, או שם פרטי אחד מבני הזוג)</label>' +
+      '<input id="gc-id-name" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: דנה">' +
+      '<p style="font-size:.72rem;color:#999;margin:-8px 0 12px;">שם פרטי בלבד מספיק — הקוד האישי הוא מה שבאמת מזהה אתכם</p>' +
+      '<div id="gc-id-err" style="display:none;color:#dc2626;font-size:.78rem;margin-bottom:8px;">נא למלא בית ספר, כיתה ושם פרטי לפני שממשיכים</div>' +
       '<div style="display:flex;gap:8px;margin-bottom:14px;">' +
       '<button id="gc-id-new" style="flex:1;background:#166534;color:white;border:none;padding:10px;border-radius:10px;font-weight:800;cursor:pointer;">🆕 קבלת קוד חדש</button>' +
       '<button id="gc-id-existing-toggle" style="flex:1;background:#f3f4f6;color:#333;border:none;padding:10px;border-radius:10px;font-weight:800;cursor:pointer;">🔑 יש לי כבר קוד</button>' +
