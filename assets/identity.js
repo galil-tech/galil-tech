@@ -23,6 +23,36 @@
   GC_ID.clearIdentity = function () {
     localStorage.removeItem(KEY_STUDENT);
   };
+
+  // מוחק את כל ההתקדמות האישית מהמחשב הזה (עלים, דרכון, הישגים, דגלי-השלמה) —
+  // לא את הזהות עצמה (ראה clearIdentity). ההתקדמות האמיתית נשארת בטוחה בגיליון תחת
+  // הקוד האישי, ותחזור אוטומטית (GC_SYNC.pullMine) כשמזדהים איתו שוב — גם על מחשב אחר.
+  GC_ID.wipeLocalProgress = function () {
+    for (let i = 1; i <= 17; i++) {
+      localStorage.removeItem('ls' + i);
+      localStorage.removeItem('lesson' + i + '_completed');
+      localStorage.removeItem('gc_qseed_' + i);
+    }
+    localStorage.removeItem('passport1');
+    localStorage.removeItem('gc_achievements');
+    localStorage.removeItem('gc_msk');
+    localStorage.removeItem('leaves_spent');
+    localStorage.removeItem('studentName');
+  };
+
+  // יציאה מלאה מהסשן: מנסה לדחוף סנכרון אחרון (כדי לא לאבד עלים מהרגע האחרון), ואז
+  // מנקה זהות+התקדמות ומרענן — כדי שהתלמיד/ה הבא/ה על אותו מחשב יתחיל/תתחיל מדף נקי.
+  GC_ID.logout = function () {
+    const id = GC_ID.getIdentity();
+    const finish = function () {
+      GC_ID.clearIdentity();
+      GC_ID.wipeLocalProgress();
+      location.reload();
+    };
+    const sync = (window.GC_SYNC && typeof GC_SYNC.pushNow === 'function') ? GC_SYNC.pushNow() : Promise.resolve();
+    const timeout = new Promise((resolve) => setTimeout(resolve, 4000));
+    Promise.race([sync, timeout]).then(finish).catch(finish);
+  };
   GC_ID.getTeacherIdentity = function () {
     try { return JSON.parse(localStorage.getItem(KEY_TEACHER) || 'null'); } catch (e) { return null; }
   };
@@ -45,9 +75,8 @@
     b.style.cssText = 'position:fixed;bottom:10px;left:10px;z-index:9998;background:white;border:2px solid #d1fae5;border-radius:16px;padding:6px 12px;font-family:Heebo,sans-serif;font-size:.72rem;color:#166534;box-shadow:0 2px 10px rgba(0,0,0,.12);direction:rtl;cursor:pointer;max-width:230px;line-height:1.5;';
     b.innerHTML = '🏫 ' + esc(id.school || '—') + ' · ' + esc(id.className || '—') + '<br><b>' + esc(id.name || 'תלמיד/ה') + '</b> (' + esc(id.code || '----') + ') · <span style="text-decoration:underline">החלף/י</span>';
     b.onclick = function () {
-      if (confirm('להחליף משתמש/ת? (הנתונים שכבר נצברו במחשב הזה יישארו, רק הזיהוי יתאפס)')) {
-        GC_ID.clearIdentity();
-        location.reload();
+      if (confirm('לסיים ולפנות את המחשב לתלמיד/ה הבא/ה?\nההתקדמות שלכם שמורה בענן תחת הקוד ' + esc(id.code || '----') + ', ותחזור אוטומטית כשתיכנסו איתו שוב (גם ממחשב אחר).')) {
+        GC_ID.logout();
       }
     };
     document.body.appendChild(b);

@@ -707,10 +707,24 @@ function mascotSay(msg, emoji) { GC.mascotSay(msg, emoji); }
     });
     return maxEl;
   }
+  function showSessionEndBanner() {
+    if (document.getElementById('gc-session-end-banner')) return;
+    if (!(window.GC_ID && GC_ID.getIdentity && GC_ID.getIdentity())) return;
+    const b = document.createElement('div');
+    b.id = 'gc-session-end-banner';
+    b.style.cssText = 'position:fixed;bottom:10px;right:10px;z-index:9998;background:linear-gradient(135deg,#166534,#15803d);color:white;font-family:Heebo,sans-serif;font-size:.78rem;padding:10px 14px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.2);direction:rtl;max-width:210px;line-height:1.5;';
+    b.innerHTML = '<span id="gc-se-close" style="float:left;cursor:pointer;opacity:.7;padding-inline-start:6px;">✕</span>🏁 <b>סיימתם את השיעור!</b><br>המחשב עובר עכשיו למישהו אחר?<br><span id="gc-se-btn" style="text-decoration:underline;cursor:pointer;font-weight:900;">🔄 פנו את המחשב ←</span>';
+    document.body.appendChild(b);
+    document.getElementById('gc-se-btn').onclick = function () {
+      if (window.GC_ID && typeof GC_ID.logout === 'function') GC_ID.logout();
+    };
+    document.getElementById('gc-se-close').onclick = function () { b.remove(); };
+  }
   function check() {
     const el = lastStepPanel();
     if (el && el.classList.contains('active')) {
       localStorage.setItem('lesson' + lessonNum + '_completed', '1');
+      showSessionEndBanner();
     }
   }
   function start() {
