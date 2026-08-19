@@ -33,6 +33,11 @@ const GROUPS_SHEET_NAME = 'groups';
 const GROUPS_FIELDS = ['school_id', 'class_id', 'group_name', 'leaves', 'last_updated'];
 const GROUPS_KEY_FIELDS = ['school_id', 'class_id', 'group_name'];
 
+// גלריית אבטיפוסים בין-בית-ספרית (שלב 9ו) — קישור לתמונה חיצונית בלבד (Drive/Photos), לא קובץ
+// מאוחסן באתר עצמו (GitHub Pages סטטי, אין אחסון תמונות אמיתי).
+const GALLERY_SHEET_NAME = 'gallery';
+const GALLERY_FIELDS = ['id', 'school_id', 'class_id', 'group_name', 'title', 'image_url', 'description', 'votes', 'submitted_at'];
+
 function _sheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(SHEET_NAME);
@@ -51,6 +56,31 @@ function _groupsSheet() {
     sh.appendRow(GROUPS_FIELDS);
   }
   return sh;
+}
+
+function _gallerySheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(GALLERY_SHEET_NAME);
+  if (!sh) {
+    sh = ss.insertSheet(GALLERY_SHEET_NAME);
+    sh.appendRow(GALLERY_FIELDS);
+  }
+  return sh;
+}
+
+// שולף את הגובה הגבוה ביותר (ס"מ) שנמצא בתוך JSON של passport1 - סורק את כל המקומות
+// שבהם לומדות שונות שומרות מדידת גובה (lesson4.height, measurements[].height,
+// growthData[].height) ומחזיר את המקסימום. מחזיר 0 אם אין שום נתון גובה.
+function _maxHeightFromPassport(passportJson) {
+  let max = 0;
+  try {
+    const p = JSON.parse(passportJson || '{}');
+    const consider = (v) => { const n = Number(v); if (!isNaN(n) && n > max) max = n; };
+    if (p.lesson4) consider(p.lesson4.height);
+    if (Array.isArray(p.measurements)) p.measurements.forEach((m) => consider(m && m.height));
+    if (Array.isArray(p.growthData)) p.growthData.forEach((m) => consider(m && m.height));
+  } catch (e) {}
+  return max;
 }
 
 function _rowsAsObjects(sh) {
@@ -80,6 +110,33 @@ function doGet(e) {
     if (p.school) rows = rows.filter((r) => String(r.school_id) === p.school);
     if (p.class) rows = rows.filter((r) => String(r.class_id) === p.class);
     return _json({ ok: true, rows: rows });
+  }
+
+  // לוח "מי הצמיח הכי גבוה" בין-בית-ספרי (שלב 9ו) - מטבעו גלוי לכולם (כל בתי הספר),
+  // ולכן מחזיר רק שדות מצומצמים (לא code, לא passport1 מלא, לא הישגים) - לא dump מלא.
+  if (p.type === 'heights') {
+    const rows = _rowsAsObjects(_sheet())
+      .map((r) => ({
+        track: r.track, school_id: r.school_id, class_id: r.class_id,
+        name: r.student_name, height: _maxHeightFromPassport(r.passport1),
+      }))
+      .filter((r) => r.height > 0)
+      .sort((a, b) => b.height - a.height)
+      .slice(0, 50);
+    return _json({ ok: true, rows: rows });
+  }
+
+  // גלריית אבטיפוסים (שלב 9ו) - גלויה לכולם, בלי הגנת code (אין בה מידע אישי רגיש).
+  if (p.type === 'gallery') {
+    const rows = _rowsAsObjects(_gallerySheet()).sort((a, b) => Number(b.votes) - Number(a.votes));
+    return _json({ ok: true, rows: rows });
+  }
+
+  // dump מלא של כל התלמידים בכל בתי הספר/המסלולים - למנהל/ת המגמה בלבד. עדיין מוגן רק
+  // ב-token (כמו כל שאר ה-endpoint-ים, ראה ההערה למעלה) - לא הגנה אמיתית, רק חסם-כניסה
+  // מזדמן. הגישה בפועל למסך הזה מוגנת גם בסיסמת מנהל/ת נפרדת בצד הלקוח (admin-dashboard.html).
+  if (p.type === 'admin_students') {
+    return _json({ ok: true, rows: _rowsAsObjects(_sheet()), groups: _rowsAsObjects(_groupsSheet()) });
   }
 
   // הגנת פרטיות: קריאת שורות תלמידים (לא לוח קבוצות) דורשת code ספציפי - בלעדיו זו
@@ -128,6 +185,47 @@ function doPost(e) {
     const body = JSON.parse(e.postData.contents);
     if (body.token !== SHARED_SECRET) {
       return _json({ ok: false, error: 'bad token' });
+    }
+
+    if (body.type === 'gallery_submit') {
+      const sh = _gallerySheet();
+      const id = 'g' + Date.now() + Math.floor(Math.random() * 1000);
+      sh.appendRow([
+        id, body.school_id || '', body.class_id || '', body.group_name || '',
+        body.title || '', body.image_url || '', body.description || '', 0,
+        new Date().toISOString(),
+      ]);
+      return _json({ ok: true, id: id });
+    }
+
+    if (body.type === 'gallery_vote') {
+      const sh = _gallerySheet();
+      const data = sh.getDataRange().getValues();
+      const idCol = GALLERY_FIELDS.indexOf('id');
+      const votesCol = GALLERY_FIELDS.indexOf('votes');
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][idCol]) === String(body.id)) {
+          const newVotes = (Number(data[i][votesCol]) || 0) + 1;
+          sh.getRange(i + 1, votesCol + 1).setValue(newVotes);
+          return _json({ ok: true, votes: newVotes });
+        }
+      }
+      return _json({ ok: false, error: 'gallery id not found' });
+    }
+
+    // מחיקת פריט גלריה - למנהל/ת המגמה בלבד (admin-dashboard.html), כדי לאפשר הסרת תוכן
+    // בעייתי שהגיע דרך טופס ההגשה הציבורי (endpoint פתוח בריפו ציבורי, ראה הערת doGet).
+    if (body.type === 'gallery_delete') {
+      const sh = _gallerySheet();
+      const data = sh.getDataRange().getValues();
+      const idCol = GALLERY_FIELDS.indexOf('id');
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][idCol]) === String(body.id)) {
+          sh.deleteRow(i + 1);
+          return _json({ ok: true });
+        }
+      }
+      return _json({ ok: false, error: 'gallery id not found' });
     }
 
     if (body.type === 'group') {

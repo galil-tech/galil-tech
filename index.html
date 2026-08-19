@@ -41,6 +41,8 @@
       <a href="wall.html" class="hover:text-lime-300">🛠 קיר</a>
       <a href="leaves.html" class="hover:text-lime-300">🏆 עלים</a>
       <a href="shop.html" class="hover:text-lime-300">🛒 חנות</a>
+      <a href="cross-school.html" class="hover:text-lime-300">🌍 בין-בית-ספרי</a>
+      <a href="gallery.html" class="hover:text-lime-300">🖼 גלריה</a>
       <button onclick="switchToTeacher()" class="bg-yellow-500 hover:bg-yellow-400 text-green-900 px-4 py-2 rounded-xl">👨‍🏫 מורים</button>
     </div>
 
@@ -112,48 +114,8 @@
       </div>
     </div>
 
-    <div class="grid md:grid-cols-4 gap-4">
-      <!-- lessons 1-4 done -->
-      <a href="#" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-green-400 opacity-80">
-        <p class="text-2xl mb-1">🌾</p><p class="font-black">שיעור 1</p><p class="text-xs text-gray-400">האתגר הגדול</p><span class="text-xs text-green-600 font-bold">✅</span>
-      </a>
-      <a href="#" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-green-400 opacity-80">
-        <p class="text-2xl mb-1">📅</p><p class="font-black">שיעור 2</p><p class="text-xs text-gray-400">מהי חקלאות?</p><span class="text-xs text-green-600 font-bold">✅</span>
-      </a>
-      <a href="#" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-green-400 opacity-80">
-        <p class="text-2xl mb-1">🌱</p><p class="font-black">שיעור 3</p><p class="text-xs text-gray-400">הצמח צריך</p><span class="text-xs text-green-600 font-bold">✅</span>
-      </a>
-      <a href="#" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-green-400 opacity-80">
-        <p class="text-2xl mb-1">💰</p><p class="font-black">שיעור 4</p><p class="text-xs text-gray-400">החקלאי צריך</p><span class="text-xs text-green-600 font-bold">✅</span>
-      </a>
-      <!-- lessons 5-7 active -->
-      <a href="lessons/lesson-05.html" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-lime-400 relative">
-        <div class="absolute top-2 left-2 bg-lime-400 text-green-900 text-xs font-black px-2 py-0.5 rounded-full">📍</div>
-        <p class="text-2xl mb-1">🌿</p><p class="font-black">שיעור 5</p><p class="text-xs text-gray-500">הידרופוניקה · pH · EC</p>
-        <span class="text-xs text-lime-600 font-bold">פתוח ✅</span>
-      </a>
-      <a href="lessons/lesson-06.html" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-lime-400">
-        <p class="text-2xl mb-1">📡</p><p class="font-black">שיעור 6</p><p class="text-xs text-gray-500">חיישנים · ארדואינו</p>
-        <span class="text-xs text-lime-600 font-bold">פתוח ✅</span>
-      </a>
-      <a href="lessons/lesson-07.html" class="card bg-white rounded-2xl p-5 shadow border-t-4 border-lime-400">
-        <p class="text-2xl mb-1">⚙️</p><p class="font-black">שיעור 7</p><p class="text-xs text-gray-500">if/else · LED · Beewise</p>
-        <span class="text-xs text-lime-600 font-bold">פתוח ✅</span>
-      </a>
-      <!-- lesson 8 coming soon -->
-      <div class="card bg-white rounded-2xl p-5 shadow border-t-4 border-lime-200 opacity-60">
-        <p class="text-2xl mb-1">🔗</p><p class="font-black">שיעור 8</p><p class="text-xs text-gray-400">סינרגיה</p>
-        <span class="text-xs text-gray-400">בקרוב...</span>
-      </div>
-      <!-- lessons 9-17 locked -->
-      <div class="md:col-span-4 grid grid-cols-3 md:grid-cols-5 gap-3 opacity-40">
-        <div class="bg-white rounded-2xl p-4 shadow text-center text-xs border-t-4 border-sky-200"><p class="text-xl mb-1">🛰️</p><p class="font-bold">9</p><p class="text-gray-400">GIS</p></div>
-        <div class="bg-white rounded-2xl p-4 shadow text-center text-xs border-t-4 border-sky-200"><p class="text-xl mb-1">🤖</p><p class="font-bold">10</p><p class="text-gray-400">רובוטיקה</p></div>
-        <div class="bg-white rounded-2xl p-4 shadow text-center text-xs border-t-4 border-sky-200"><p class="text-xl mb-1">📊</p><p class="font-bold">11</p><p class="text-gray-400">Big Data</p></div>
-        <div class="bg-white rounded-2xl p-4 shadow text-center text-xs border-t-4 border-sky-200"><p class="text-xl mb-1">🧠</p><p class="font-bold">12</p><p class="text-gray-400">AI</p></div>
-        <div class="bg-white rounded-2xl p-4 shadow text-center text-xs border-t-4 border-amber-200"><p class="text-xl mb-1">💡</p><p class="font-bold">13–17</p><p class="text-gray-400">יצירה</p></div>
-      </div>
-    </div>
+    <p id="lessons-progress-note" class="text-center text-sm text-gray-400 mb-4"></p>
+    <div id="student-lessons-grid" class="grid md:grid-cols-4 gap-4"></div>
   </div>
 
   <!-- teacher view -->
@@ -388,6 +350,18 @@
       <div class="text-4xl mb-2">📌</div><h3 class="font-black mb-1">מסע התלמיד</h3>
       <p class="text-sm text-gray-500">רמות והתקדמות</p>
     </a>
+    <a href="cross-school.html" class="card bg-white rounded-2xl p-6 shadow text-center border">
+      <div class="text-4xl mb-2">🌍</div><h3 class="font-black mb-1">לוח בין-בית-ספרי</h3>
+      <p class="text-sm text-gray-500">אתגר "מי הצמיח הכי גבוה"</p>
+    </a>
+    <a href="gallery.html" class="card bg-white rounded-2xl p-6 shadow text-center border">
+      <div class="text-4xl mb-2">🖼</div><h3 class="font-black mb-1">גלריית אבטיפוסים</h3>
+      <p class="text-sm text-gray-500">תוצרי כל בתי הספר + הצבעה</p>
+    </a>
+    <a href="admin-dashboard.html" class="card bg-gray-50 rounded-2xl p-6 shadow text-center border border-gray-200">
+      <div class="text-4xl mb-2">🔐</div><h3 class="font-black mb-1">מנהל/ת מגמה</h3>
+      <p class="text-sm text-gray-500">גישה לראש/ת המגמה בלבד</p>
+    </a>
     <div class="card bg-blue-50 rounded-2xl p-6 shadow text-center border border-blue-200">
       <div class="text-4xl mb-2">🌐</div><h3 class="font-black mb-1">העלאה לרשת</h3>
       <p class="text-sm text-gray-500 mb-3">GitHub Pages – חינם, URL קבוע</p>
@@ -430,8 +404,18 @@
 <script>
 // ── MODE ──
 let teacherMode=false;
+// סיסמה פשוטה למצב מורה (הוחלט ע"י המשתמש) - רק על כפתור "מורים" כאן, לא על קבצי
+// teachers/teacher-NN.html עצמם (URL ישיר אליהם עדיין פתוח, כמו קודם - היקף מצומצם בכוונה).
+// כמו admin-dashboard.html: לא אבטחה אמיתית, רק חסם-כניסה מזדמן לתלמידים.
+const TEACHER_PASSWORD='moradaat2026';
 
 function switchToTeacher(){
+  if(sessionStorage.getItem('gc_teacher_pw_ok')!=='1'){
+    const pw=prompt('סיסמת מורה:');
+    if(pw===null) return; // ביטל - נשארים במצב תלמיד
+    if(pw!==TEACHER_PASSWORD){ alert('סיסמה שגויה'); return; }
+    sessionStorage.setItem('gc_teacher_pw_ok','1');
+  }
   document.getElementById('body').className='bg-gray-50 mode-teacher';
   teacherMode=true;sessionStorage.setItem('teacher','1');
   if(window.GC_ID){
@@ -445,10 +429,67 @@ function switchToStudent(){
   teacherMode=false;sessionStorage.removeItem('teacher');
 }
 
-// restore teacher mode if was logged in
-if(sessionStorage.getItem('teacher')==='1'){switchToTeacher();}
+// restore teacher mode if was logged in (הסיסמה כבר אושרה השתא, sessionStorage 'teacher' משמש רק לזכור העדפת תצוגה)
+if(sessionStorage.getItem('teacher')==='1' && sessionStorage.getItem('gc_teacher_pw_ok')==='1'){switchToTeacher();}
 // זיהוי תלמיד/קבוצה (שלב 9ג) - רק במצב תלמיד, לא מציק במצב מורה
 if(window.GC_ID && sessionStorage.getItem('teacher')!=='1'){ GC_ID.ensureStudentIdentity(); }
+
+// ── STUDENT LESSONS GRID (פתיחה הדרגתית - שיעור N נפתח רק אחרי שיעור N-1) ──
+// "סיים" = הגיע לשלב הסיכום הסופי (כוכב הצפון) - נקבע ע"י assets/core.js בכל דף לומדה
+// (שומר localStorage 'lesson{N}_completed'), לא כאן. כאן רק קוראים את הדגלים ומציגים.
+const LESSONS=[
+  {n:1,icon:'🌾',title:'האתגר הגדול',sub:'שרשרת אספקה · Vertical Field'},
+  {n:2,icon:'📅',title:'מהי חקלאות?',sub:"פרמה-קולצ'ר · נטפים"},
+  {n:3,icon:'🌱',title:'הצמח צריך',sub:'פוטוסינתזה · Supplant'},
+  {n:4,icon:'💰',title:'החקלאי צריך',sub:'כרטיס עלויות · FieldIn'},
+  {n:5,icon:'🌿',title:'הידרופוניקה',sub:'pH · EC · Growee'},
+  {n:6,icon:'📡',title:'חיישנים',sub:'ארדואינו · Phytech'},
+  {n:7,icon:'⚙️',title:'if/else',sub:'LED · Beewise'},
+  {n:8,icon:'🔗',title:'סינרגיה',sub:'BioBee · מעגל בקרה'},
+  {n:9,icon:'🛰️',title:'GIS',sub:'לוויינים · Taranis'},
+  {n:10,icon:'🤖',title:'רובוטיקה',sub:'Tevel Tech'},
+  {n:11,icon:'📊',title:'ביג דאטה',sub:'Prospera/Valley'},
+  {n:12,icon:'🧠',title:'AI בחקלאות',sub:'Beewise+AI'},
+  {n:13,icon:'💡',title:'Design Thinking',sub:'Empathize · Ideate'},
+  {n:14,icon:'🛠️',title:'אבטיפוס יום א׳',sub:'PoC · Lean Canvas'},
+  {n:15,icon:'🔧',title:'אבטיפוס יום ב׳',sub:'Fail Fast'},
+  {n:16,icon:'🎤',title:'פיצ׳ינג',sub:'4 טכניקות'},
+  {n:17,icon:'🏆',title:'סיכום',sub:'תערוכה · טקס תגים'},
+];
+function lessonEsc(s){ return String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+function lessonPad(n){ return n<10?'0'+n:''+n; }
+function lessonPhase(n){ return n<=4?1:n<=8?2:n<=12?3:4; }
+function lessonCompleted(n){ return localStorage.getItem('lesson'+n+'_completed')==='1'; }
+function lessonUnlocked(n){ return n===1 || lessonCompleted(n-1); }
+function renderStudentLessons(){
+  const grid=document.getElementById('student-lessons-grid');
+  if(!grid) return;
+  const phaseBorder={1:'border-green-400',2:'border-lime-400',3:'border-sky-400',4:'border-amber-400'};
+  let doneCount=0;
+  grid.innerHTML=LESSONS.map(l=>{
+    const done=lessonCompleted(l.n);
+    const unlocked=lessonUnlocked(l.n);
+    if(done) doneCount++;
+    const border=phaseBorder[lessonPhase(l.n)];
+    if(!unlocked){
+      return `<div class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} opacity-40">
+        <p class="text-2xl mb-1">🔒</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-400">${lessonEsc(l.title)}</p>
+        <span class="text-xs text-gray-400">נעול · סיימו את שיעור ${l.n-1}</span>
+      </div>`;
+    }
+    return `<div class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} relative flex flex-col">
+      ${done?'<div class="absolute top-2 left-2 bg-green-500 text-white text-xs font-black px-2 py-0.5 rounded-full">✅</div>':''}
+      <a href="lessons/lesson-${lessonPad(l.n)}.html" class="block flex-1">
+        <p class="text-2xl mb-1">${l.icon}</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-500">${lessonEsc(l.sub)}</p>
+        <span class="text-xs ${done?'text-green-600':'text-lime-600'} font-bold">${done?'הושלם ✅':'פתוח - התחילו!'}</span>
+      </a>
+      <a href="presentations/lesson-${lessonPad(l.n)}-slides.html" target="_blank" class="mt-2 text-center text-xs bg-green-800 text-white px-2 py-1 rounded-full hover:bg-green-700">🖥 שקפים</a>
+    </div>`;
+  }).join('');
+  const note=document.getElementById('lessons-progress-note');
+  if(note) note.textContent = doneCount>0 ? `הושלמו ${doneCount} מתוך 17 שיעורים` : 'לחצו על שיעור 1 כדי להתחיל';
+}
+renderStudentLessons();
 
 // ── HERO LEAVES ──
 // leaves_earned = סכום כל ה-ls{N} (מצטבר, קובע רמה, לעולם לא יורד)

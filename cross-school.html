@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>לוח בין-בית-ספרי - גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="assets/identity.js"></script>
+  <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="data/sheets-config.js"></script>
+  <script src="assets/sheets-sync.js"></script>
+</head>
+<body class="bg-green-50 dark:bg-gray-900">
+  <nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+      <div class="flex gap-4 text-sm">
+        <a href="index.html" class="hover:text-lime-300">🏠</a>
+        <a href="leaves.html" class="hover:text-lime-300">🌿 עלים</a>
+        <a href="gallery.html" class="hover:text-lime-300">🖼 גלריה</a>
+        <a href="wall.html" class="hover:text-lime-300">🛠 קיר</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <h1 class="text-5xl font-black text-center mb-2">🌍 לוח בין-בית-ספרי</h1>
+    <p class="text-center text-gray-500 mb-10">כל בתי הספר שמריצים את "גדלים למחר" - במקום אחד. הלוח מתעדכן בזמן אמת מכל הכיתות שמסונכרנות.</p>
+
+    <div id="sync-off-notice" class="hidden bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 text-center text-amber-800 mb-8">
+      ⚠️ הסנכרון לגיליון המשותף כבוי במחשב הזה כרגע, אז אין לוח בין-בית-ספרי להציג. (זה תקין אם עדיין לא הופעל סנכרון בפרויקט.)
+    </div>
+
+    <div id="board-wrap">
+      <div class="bg-white rounded-3xl shadow-2xl p-8 mb-10">
+        <h2 class="text-2xl font-black mb-1">🌱 אתגר "מי הצמיח הכי גבוה?"</h2>
+        <p class="text-gray-500 text-sm mb-6">מבוסס על מדידות הגובה שתיעדתם לאורך השיעורים בדרכון הדיגיטלי (ס"מ). מוצגים עד 50 השתילים הגבוהים ביותר, מכל בתי הספר.</p>
+        <div id="heights-list" class="space-y-2"></div>
+        <p id="heights-empty" class="hidden text-gray-400 text-center py-8">עדיין אין מדידות גובה בגיליון המשותף. תעדו גובה בלומדות (שיעורים 4, 5, 10, 11) כדי להופיע כאן!</p>
+      </div>
+
+      <div class="bg-white rounded-3xl shadow-2xl p-8">
+        <h2 class="text-2xl font-black mb-1">🏫 סיכום לפי בית ספר</h2>
+        <p class="text-gray-500 text-sm mb-6">השתיל הגבוה ביותר שנמדד בכל בית ספר.</p>
+        <div id="schools-list" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function syncEnabled(){
+      return !!(window.GC_SYNC && window.SHEETS_CONFIG && window.SHEETS_CONFIG.enabled);
+    }
+    function esc(s){ return String(s==null?'':s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+
+    function renderHeights(rows){
+      const list=document.getElementById('heights-list');
+      const empty=document.getElementById('heights-empty');
+      if(!rows.length){ list.innerHTML=''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      const medals=['🥇','🥈','🥉'];
+      list.innerHTML=rows.map((r,i)=>`
+        <div class="flex justify-between items-center bg-green-50 rounded-xl px-4 py-3">
+          <div class="flex items-center gap-3">
+            <span class="text-xl w-8 text-center">${medals[i]||(i+1)}</span>
+            <div>
+              <span class="font-bold">${esc(r.name)||'תלמיד/ה'}</span>
+              <span class="text-xs text-gray-400 mr-2">🏫 ${esc(r.school_id)||'—'} · ${esc(r.class_id)||'—'}</span>
+            </div>
+          </div>
+          <span class="text-xl font-black text-green-700">${r.height} ס"מ</span>
+        </div>`).join('');
+
+      // סיכום לפי בית ספר - השיא של כל בית ספר
+      const bySchool={};
+      rows.forEach(r=>{
+        const key=r.school_id||'לא ידוע';
+        if(!bySchool[key] || r.height>bySchool[key]) bySchool[key]=r.height;
+      });
+      const sortedSchools=Object.entries(bySchool).sort((a,b)=>b[1]-a[1]);
+      document.getElementById('schools-list').innerHTML = sortedSchools.length
+        ? sortedSchools.map(([school,h])=>`
+          <div class="flex justify-between items-center bg-lime-50 rounded-xl px-4 py-3">
+            <span class="font-bold">🏫 ${esc(school)}</span>
+            <span class="text-lg font-black text-lime-700">${h} ס"מ</span>
+          </div>`).join('')
+        : '<p class="text-gray-400 text-center py-4">אין עדיין נתונים</p>';
+    }
+
+    async function init(){
+      if(!syncEnabled()){
+        document.getElementById('sync-off-notice').classList.remove('hidden');
+        document.getElementById('board-wrap').classList.add('hidden');
+        return;
+      }
+      const resp = await GC_SYNC.pullHeights();
+      renderHeights((resp && resp.ok && resp.rows) ? resp.rows : []);
+    }
+    init();
+  </script>
+</body>
+</html>

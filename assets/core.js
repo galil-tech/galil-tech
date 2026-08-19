@@ -687,3 +687,39 @@ GC.initLesson = function(opts) {
 function goTo(n)               { GC.goTo(n); }
 function mascotSay(msg, emoji) { GC.mascotSay(msg, emoji); }
 // addLv and ansQ are already defined as globals above
+
+// ── LESSON COMPLETION TRACKING (index.html sequential unlock, requested by user) ──
+// רוב הלומדות (02-17) לא משתמשות ב-GC.goTo/GC._cur בפועל (יש להן goTo() מקומי משלהן,
+// שדורס את זה של core.js) - לכן א"א להסתמך על state פנימי של core.js לדעת מתי לומדה
+// "הסתיימה". הפתרון הגנרי שעובד לכל 17 הקבצים בלי לגעת בהם: כולם חולקים את אותה
+// קונבנציית HTML (<div class="step-panel" id="step-N">, מחלקת .active על השלב הנוכחי,
+// ראה build-lesson skill) - אז צופים ב-DOM עצמו, לא בקוד JS של כל שיעור.
+(function () {
+  const m = location.pathname.match(/lesson-0*(\d+)\.html/);
+  if (!m) return;
+  const lessonNum = parseInt(m[1], 10);
+
+  function lastStepPanel() {
+    let max = 0, maxEl = null;
+    document.querySelectorAll('.step-panel[id^="step-"]').forEach((el) => {
+      const n = parseInt(el.id.slice(5), 10);
+      if (!isNaN(n) && n > max) { max = n; maxEl = el; }
+    });
+    return maxEl;
+  }
+  function check() {
+    const el = lastStepPanel();
+    if (el && el.classList.contains('active')) {
+      localStorage.setItem('lesson' + lessonNum + '_completed', '1');
+    }
+  }
+  function start() {
+    check(); // כבר על השלב האחרון בטעינה (למשל חוזרים אחרי שסיימו)
+    const obs = new MutationObserver(check);
+    document.querySelectorAll('.step-panel').forEach((el) => {
+      obs.observe(el, { attributes: true, attributeFilter: ['class'] });
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();

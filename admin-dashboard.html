@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ממשק מנהל/ת מגמה - גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="data/sheets-config.js"></script>
+  <script src="assets/sheets-sync.js"></script>
+</head>
+<body class="bg-gray-100">
+  <!--
+    ממשק מנהל/ת מגמה (שלב 9ו, MASTER-WORKFLOW.md) — תפקיד יחיד, רואה הכל (כל בתי הספר/כיתות/מסלולים).
+    הגנה: סיסמה קבועה בקוד הצד-לקוח בלבד (הוחלט במפורש ע"י המשתמש) — לא אבטחה אמיתית,
+    רק חסם-כניסה לכניסה מזדמנת. הריפו ציבורי, אז כל מי שקורא את הקוד רואה את הסיסמה -
+    זה תפקיד יחיד (המשתמש עצמו), לא הגנה על מידע רגיש מפני צד עוין.
+    שנו כאן אם רוצים סיסמה אחרת:
+  -->
+  <script>const ADMIN_PASSWORD = 'galil2026admin';</script>
+
+  <div id="gate" class="min-h-screen flex items-center justify-center px-6">
+    <div class="bg-white rounded-3xl shadow-2xl p-10 max-w-sm w-full text-center">
+      <div class="text-5xl mb-3">🔐</div>
+      <h1 class="text-xl font-black mb-2">ממשק מנהל/ת מגמה</h1>
+      <p class="text-sm text-gray-500 mb-6">גישה לראש/ת המגמה בלבד</p>
+      <input id="pw" type="password" placeholder="סיסמה" class="w-full border-2 rounded-xl p-3 mb-3 text-center" onkeydown="if(event.key==='Enter')tryLogin()">
+      <button onclick="tryLogin()" class="w-full bg-green-700 hover:bg-green-800 text-white rounded-xl p-3 font-bold">כניסה</button>
+      <p id="gate-err" class="hidden text-red-600 text-sm mt-3">סיסמה שגויה</p>
+    </div>
+  </div>
+
+  <div id="dash" class="hidden">
+    <nav class="bg-gray-900 text-white sticky top-0 z-50 shadow-xl">
+      <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="index.html" class="text-xl font-bold">🌱 גדלים למחר · מנהל/ת מגמה</a>
+        <div class="flex gap-4 text-sm items-center">
+          <span id="counts" class="text-gray-400"></span>
+          <button onclick="loadAll()" class="hover:text-lime-300">🔄 רענון</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 py-10">
+      <div id="sync-off-notice" class="hidden bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 text-center text-amber-800 mb-8">
+        ⚠️ הסנכרון לגיליון כבוי במחשב הזה - אין נתונים אמיתיים להציג.
+      </div>
+
+      <div id="content">
+        <!-- SUMMARY -->
+        <div id="school-summary" class="grid md:grid-cols-3 gap-4 mb-10"></div>
+
+        <!-- STUDENTS TABLE -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-10 overflow-x-auto">
+          <h2 class="text-xl font-black mb-4">👥 כל התלמידים/קבוצות</h2>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-right text-gray-400 border-b">
+                <th class="py-2 pl-3">מסלול</th>
+                <th class="py-2 pl-3">בית ספר</th>
+                <th class="py-2 pl-3">כיתה</th>
+                <th class="py-2 pl-3">שם</th>
+                <th class="py-2 pl-3">קוד</th>
+                <th class="py-2 pl-3">סה"כ עלים</th>
+                <th class="py-2 pl-3">עודכן</th>
+              </tr>
+            </thead>
+            <tbody id="students-body"></tbody>
+          </table>
+          <p id="students-empty" class="hidden text-gray-400 text-center py-8">אין עדיין תלמידים בגיליון</p>
+        </div>
+
+        <!-- GROUPS TABLE -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-10 overflow-x-auto">
+          <h2 class="text-xl font-black mb-4">🏆 כל קבוצות הפרויקט</h2>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-right text-gray-400 border-b">
+                <th class="py-2 pl-3">בית ספר</th>
+                <th class="py-2 pl-3">כיתה</th>
+                <th class="py-2 pl-3">קבוצה</th>
+                <th class="py-2 pl-3">עלים</th>
+              </tr>
+            </thead>
+            <tbody id="groups-body"></tbody>
+          </table>
+          <p id="groups-empty" class="hidden text-gray-400 text-center py-8">אין עדיין קבוצות בגיליון</p>
+        </div>
+
+        <!-- GALLERY MODERATION -->
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <h2 class="text-xl font-black mb-1">🖼 ניהול גלריית אבטיפוסים</h2>
+          <p class="text-sm text-gray-500 mb-4">הגלריה פתוחה להגשה ציבורית - כאן אפשר להסיר תוכן בעייתי.</p>
+          <div id="gallery-mod" class="space-y-2"></div>
+          <p id="gallery-empty" class="hidden text-gray-400 text-center py-8">אין עדיין פריטים בגלריה</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function tryLogin(){
+      const v=document.getElementById('pw').value;
+      if(v===ADMIN_PASSWORD){
+        sessionStorage.setItem('gc_admin_ok','1');
+        document.getElementById('gate').classList.add('hidden');
+        document.getElementById('dash').classList.remove('hidden');
+        loadAll();
+      } else {
+        document.getElementById('gate-err').classList.remove('hidden');
+      }
+    }
+    if(sessionStorage.getItem('gc_admin_ok')==='1'){
+      document.getElementById('gate').classList.add('hidden');
+      document.getElementById('dash').classList.remove('hidden');
+    }
+
+    function esc(s){ return String(s==null?'':s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+    function syncEnabled(){
+      return !!(window.GC_SYNC && window.SHEETS_CONFIG && window.SHEETS_CONFIG.enabled);
+    }
+    function sumLeaves(row){
+      let t=0;
+      for(let i=1;i<=17;i++) t+=Number(row['ls'+i])||0;
+      return t;
+    }
+
+    function renderStudents(rows){
+      const body=document.getElementById('students-body');
+      const empty=document.getElementById('students-empty');
+      if(!rows.length){ body.innerHTML=''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      body.innerHTML=rows.map(r=>`
+        <tr class="border-b last:border-0">
+          <td class="py-2 pl-3">${esc(r.track)}</td>
+          <td class="py-2 pl-3">${esc(r.school_id)}</td>
+          <td class="py-2 pl-3">${esc(r.class_id)}</td>
+          <td class="py-2 pl-3 font-bold">${esc(r.student_name)}</td>
+          <td class="py-2 pl-3 text-gray-400">${esc(r.code)}</td>
+          <td class="py-2 pl-3 font-black text-green-700">${sumLeaves(r)}</td>
+          <td class="py-2 pl-3 text-gray-400 text-xs">${r.last_updated?new Date(r.last_updated).toLocaleString('he-IL'):''}</td>
+        </tr>`).join('');
+
+      // סיכום לפי בית ספר
+      const bySchool={};
+      rows.forEach(r=>{
+        const k=r.school_id||'לא ידוע';
+        if(!bySchool[k]) bySchool[k]={students:0,leaves:0,classes:new Set()};
+        bySchool[k].students++;
+        bySchool[k].leaves+=sumLeaves(r);
+        bySchool[k].classes.add(r.class_id);
+      });
+      document.getElementById('school-summary').innerHTML = Object.entries(bySchool).map(([school,s])=>`
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <p class="text-sm text-gray-400 mb-1">🏫 בית ספר</p>
+          <p class="text-lg font-black mb-3">${esc(school)}</p>
+          <div class="flex justify-between text-sm text-gray-600"><span>תלמידים/קבוצות</span><b>${s.students}</b></div>
+          <div class="flex justify-between text-sm text-gray-600"><span>כיתות</span><b>${s.classes.size}</b></div>
+          <div class="flex justify-between text-sm text-gray-600"><span>סה"כ עלים</span><b>${s.leaves}</b></div>
+        </div>`).join('') || '<p class="text-gray-400">אין נתונים</p>';
+    }
+
+    function renderGroups(rows){
+      const body=document.getElementById('groups-body');
+      const empty=document.getElementById('groups-empty');
+      if(!rows.length){ body.innerHTML=''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      body.innerHTML=rows.map(r=>`
+        <tr class="border-b last:border-0">
+          <td class="py-2 pl-3">${esc(r.school_id)}</td>
+          <td class="py-2 pl-3">${esc(r.class_id)}</td>
+          <td class="py-2 pl-3 font-bold">${esc(r.group_name)}</td>
+          <td class="py-2 pl-3 font-black text-lime-700">${esc(r.leaves)}</td>
+        </tr>`).join('');
+    }
+
+    async function renderGalleryMod(){
+      const resp = await GC_SYNC.pullGallery();
+      const rows=(resp && resp.ok && resp.rows) ? resp.rows : [];
+      const wrap=document.getElementById('gallery-mod');
+      const empty=document.getElementById('gallery-empty');
+      if(!rows.length){ wrap.innerHTML=''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      wrap.innerHTML=rows.map(r=>`
+        <div class="flex justify-between items-center bg-gray-50 rounded-xl px-4 py-3">
+          <div>
+            <span class="font-bold">${esc(r.title)}</span>
+            <span class="text-xs text-gray-400 mr-2">🏫 ${esc(r.school_id)} · ${esc(r.class_id)} · 👍 ${esc(r.votes)}</span>
+          </div>
+          <button onclick="delGallery('${esc(r.id)}')" class="text-red-600 hover:text-red-800 text-sm font-bold">🗑 הסר</button>
+        </div>`).join('');
+    }
+
+    async function delGallery(id){
+      if(!confirm('להסיר את הפריט הזה מהגלריה?')) return;
+      await GC_SYNC.deleteGalleryItem(id);
+      renderGalleryMod();
+    }
+
+    async function loadAll(){
+      if(!syncEnabled()){
+        document.getElementById('sync-off-notice').classList.remove('hidden');
+        document.getElementById('content').classList.add('hidden');
+        return;
+      }
+      const resp = await GC_SYNC.pullAdminAll();
+      const rows=(resp && resp.ok && resp.rows) ? resp.rows : [];
+      const groups=(resp && resp.ok && resp.groups) ? resp.groups : [];
+      renderStudents(rows);
+      renderGroups(groups);
+      renderGalleryMod();
+      document.getElementById('counts').textContent = rows.length+' תלמידים/קבוצות · '+groups.length+' קבוצות פרויקט';
+    }
+  </script>
+</body>
+</html>

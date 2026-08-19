@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>גלריית אבטיפוסים - גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="assets/identity.js"></script>
+  <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="data/sheets-config.js"></script>
+  <script src="assets/sheets-sync.js"></script>
+</head>
+<body class="bg-green-50 dark:bg-gray-900">
+  <nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+      <div class="flex gap-4 text-sm">
+        <a href="index.html" class="hover:text-lime-300">🏠</a>
+        <a href="cross-school.html" class="hover:text-lime-300">🌍 לוח בין-בית-ספרי</a>
+        <a href="wall.html" class="hover:text-lime-300">🛠 קיר</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-5xl mx-auto px-6 py-12">
+    <h1 class="text-5xl font-black text-center mb-2">🖼 גלריית אבטיפוסים</h1>
+    <p class="text-center text-gray-500 mb-10">האבטיפוסים מתערוכת "גדלים למחר" של כל בתי הספר, במקום אחד. הצביעו לאבטיפוסים שאהבתם!</p>
+
+    <div id="sync-off-notice" class="hidden bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 text-center text-amber-800 mb-8">
+      ⚠️ הסנכרון לגיליון המשותף כבוי במחשב הזה כרגע, אז אי אפשר להציג/להגיש לגלריה עדיין.
+    </div>
+
+    <div id="page-content">
+      <!-- SUBMIT FORM -->
+      <div class="bg-white rounded-3xl shadow-2xl p-8 mb-10">
+        <h2 class="text-2xl font-black mb-4">📤 הגישו את האבטיפוס שלכם</h2>
+        <p class="text-sm text-gray-500 mb-4">שם/כותרת הפרויקט + קישור לתמונה (Google Drive / Google Photos - וודאו ששיתפתם את הקישור כ"כל מי שיש לו את הקישור") + תיאור קצר.</p>
+        <div class="grid md:grid-cols-2 gap-3 mb-3">
+          <input id="g-title" type="text" placeholder="שם הפרויקט" class="border-2 rounded-xl p-3">
+          <input id="g-image" type="url" placeholder="קישור לתמונה (https://...)" class="border-2 rounded-xl p-3">
+        </div>
+        <textarea id="g-desc" rows="2" maxlength="300" placeholder="תיאור קצר - מה הבעיה שהאבטיפוס פותר?" class="w-full border-2 rounded-xl p-3 mb-3 resize-none"></textarea>
+        <button onclick="submitEntry()" class="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl p-3 font-bold">🚀 שליחה לגלריה</button>
+        <p id="g-status" class="text-sm text-center mt-3"></p>
+      </div>
+
+      <!-- GALLERY GRID -->
+      <div id="gallery-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      <p id="gallery-empty" class="hidden text-gray-400 text-center py-10">עדיין אין אבטיפוסים בגלריה. היו הראשונים להגיש!</p>
+    </div>
+  </div>
+
+  <script>
+    function syncEnabled(){
+      return !!(window.GC_SYNC && window.SHEETS_CONFIG && window.SHEETS_CONFIG.enabled);
+    }
+    function esc(s){ return String(s==null?'':s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+    function votedIds(){
+      try { return JSON.parse(localStorage.getItem('voted_gallery_ids')||'[]'); } catch(e){ return []; }
+    }
+    function markVoted(id){
+      const v=votedIds(); v.push(id); localStorage.setItem('voted_gallery_ids', JSON.stringify(v));
+    }
+
+    function renderGallery(rows){
+      const grid=document.getElementById('gallery-grid');
+      const empty=document.getElementById('gallery-empty');
+      if(!rows.length){ grid.innerHTML=''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      const voted=votedIds();
+      grid.innerHTML=rows.map(r=>{
+        const already=voted.includes(r.id);
+        return `<div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col">
+          <img src="${esc(r.image_url)}" alt="${esc(r.title)}" class="w-full h-44 object-cover bg-gray-100" onerror="this.style.display='none'">
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="font-black text-lg mb-1">${esc(r.title)||'(ללא שם)'}</h3>
+            <p class="text-xs text-gray-400 mb-2">🏫 ${esc(r.school_id)||'—'} · ${esc(r.class_id)||'—'} · ${esc(r.group_name)||''}</p>
+            <p class="text-sm text-gray-600 flex-1 mb-3">${esc(r.description)||''}</p>
+            <button ${already?'disabled':''} onclick="vote('${esc(r.id)}')" class="w-full rounded-xl p-2 font-bold text-sm ${already?'bg-gray-100 text-gray-400 cursor-not-allowed':'bg-lime-100 hover:bg-lime-200 text-lime-800'}">
+              ${already?'✅ הצבעתם':'👍 הצביעו'} (${r.votes||0})
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    async function loadGallery(){
+      const resp = await GC_SYNC.pullGallery();
+      renderGallery((resp && resp.ok && resp.rows) ? resp.rows : []);
+    }
+
+    async function vote(id){
+      if(votedIds().includes(id)) return;
+      markVoted(id);
+      await GC_SYNC.voteGallery(id);
+      loadGallery();
+    }
+
+    async function submitEntry(){
+      const title=document.getElementById('g-title').value.trim();
+      const image_url=document.getElementById('g-image').value.trim();
+      const description=document.getElementById('g-desc').value.trim();
+      const status=document.getElementById('g-status');
+      if(!title || !image_url){ status.textContent='נא למלא לפחות שם וקישור לתמונה'; status.className='text-sm text-center mt-3 text-red-600'; return; }
+      status.textContent='שולח...'; status.className='text-sm text-center mt-3 text-gray-500';
+      const resp = await GC_SYNC.submitGallery({title, image_url, description});
+      if(resp && resp.ok){
+        status.textContent='✅ נשלח בהצלחה לגלריה!'; status.className='text-sm text-center mt-3 text-green-600';
+        document.getElementById('g-title').value='';
+        document.getElementById('g-image').value='';
+        document.getElementById('g-desc').value='';
+        loadGallery();
+      } else {
+        status.textContent='❌ שגיאה בשליחה, נסו שוב'; status.className='text-sm text-center mt-3 text-red-600';
+      }
+    }
+
+    if(!syncEnabled()){
+      document.getElementById('sync-off-notice').classList.remove('hidden');
+      document.getElementById('page-content').classList.add('hidden');
+    } else {
+      loadGallery();
+    }
+  </script>
+</body>
+</html>

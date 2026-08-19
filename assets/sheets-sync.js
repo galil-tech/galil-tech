@@ -134,4 +134,62 @@
   // הידרציה שקטה בטעינת כל דף שטוען את הקובץ הזה: אם יש זהות וסנכרון פעיל, למשוך את
   // ההתקדמות האישית האמיתית (fire-and-forget - לא חוסם רינדור ראשוני של הדף).
   if (window.GC_ID && GC_ID.getIdentity()) { GC_SYNC.pullMine(); }
+
+  // ── שלב 9ו: שיתוף בין כיתות ובתי ספר ────────────────────────────────────
+
+  // לוח "מי הצמיח הכי גבוה" - גלוי לכולם (כל בתי הספר), לא רק לכיתה של המשתמש/ת.
+  GC_SYNC.pullHeights = function () {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, rows: [], skipped: true });
+    const url = c.url + '?token=' + encodeURIComponent(c.token) + '&type=heights';
+    return fetch(url).then((r) => r.json()).catch((err) => ({ ok: false, error: String(err), rows: [] }));
+  };
+
+  // גלריית אבטיפוסים - קריאה גלויה לכולם
+  GC_SYNC.pullGallery = function () {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, rows: [], skipped: true });
+    const url = c.url + '?token=' + encodeURIComponent(c.token) + '&type=gallery';
+    return fetch(url).then((r) => r.json()).catch((err) => ({ ok: false, error: String(err), rows: [] }));
+  };
+
+  GC_SYNC.submitGallery = function (entry) {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, skipped: true });
+    const id = window.GC_ID && GC_ID.getIdentity();
+    const payload = {
+      token: c.token, type: 'gallery_submit',
+      school_id: (id && id.school) || '', class_id: (id && id.className) || '',
+      group_name: (id && id.name) || '',
+      title: entry.title || '', image_url: entry.image_url || '', description: entry.description || '',
+    };
+    return fetch(c.url, { method: 'POST', body: JSON.stringify(payload) })
+      .then((r) => r.json())
+      .catch((err) => ({ ok: false, error: String(err) }));
+  };
+
+  GC_SYNC.voteGallery = function (id) {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, skipped: true });
+    return fetch(c.url, { method: 'POST', body: JSON.stringify({ token: c.token, type: 'gallery_vote', id: id }) })
+      .then((r) => r.json())
+      .catch((err) => ({ ok: false, error: String(err) }));
+  };
+
+  // dump מלא לכל בתי הספר/המסלולים - למנהל/ת המגמה בלבד (admin-dashboard.html מפעיל את
+  // זה רק אחרי אישור סיסמת מנהל בצד הלקוח, לא נטען אוטומטית בטעינת הקובץ).
+  GC_SYNC.pullAdminAll = function () {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, rows: [], groups: [], skipped: true });
+    const url = c.url + '?token=' + encodeURIComponent(c.token) + '&type=admin_students';
+    return fetch(url).then((r) => r.json()).catch((err) => ({ ok: false, error: String(err), rows: [], groups: [] }));
+  };
+
+  GC_SYNC.deleteGalleryItem = function (id) {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, skipped: true });
+    return fetch(c.url, { method: 'POST', body: JSON.stringify({ token: c.token, type: 'gallery_delete', id: id }) })
+      .then((r) => r.json())
+      .catch((err) => ({ ok: false, error: String(err) }));
+  };
 })();
