@@ -23,6 +23,10 @@
       leaves_spent: localStorage.getItem('leaves_spent') || '0',
       passport1: localStorage.getItem('passport1') || '{}',
       achievements: localStorage.getItem('gc_achievements') || '{}',
+      // השיעור הגבוה ביותר שמותר לפתוח - רק "משתקף" מהערך המקומי הנוכחי, לעולם לא
+      // מחושב-מחדש כאן. החישוב/הקידום קורה אך ורק ב-GC_ID.logout() (identity.js), כדי
+      // שסנכרון שוטף באמצע שיעור לא "יקדם" בטעות את הנעילה בלי שהתלמיד/ה התנתק/ה בפועל.
+      unlocked_through: localStorage.getItem('gc_unlocked_through') || '1',
     };
     for (let i = 1; i <= 17; i++) payload['ls' + i] = localStorage.getItem('ls' + i) || '0';
     return payload;
@@ -90,6 +94,9 @@
       const localSpent = parseInt(localStorage.getItem('leaves_spent') || '0');
       const remoteSpent = parseInt(row.leaves_spent || 0);
       if (remoteSpent > localSpent) localStorage.setItem('leaves_spent', remoteSpent);
+      const localUnlocked = parseInt(localStorage.getItem('gc_unlocked_through') || '1');
+      const remoteUnlocked = parseInt(row.unlocked_through || 1);
+      if (remoteUnlocked > localUnlocked) localStorage.setItem('gc_unlocked_through', remoteUnlocked);
       const localPassport = localStorage.getItem('passport1');
       if ((!localPassport || localPassport === '{}') && row.passport1 && row.passport1 !== '{}') {
         localStorage.setItem('passport1', row.passport1);

@@ -7,6 +7,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
   <script src="assets/identity.js"></script>
+  <script src="data/sheets-config.js"></script>
+  <script src="assets/sheets-sync.js"></script>
   <style>
     *{font-family:'Heebo',sans-serif;}
     .hero{background:linear-gradient(135deg,rgba(20,83,45,.93),rgba(22,101,52,.87)),url('https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=1600&q=80') center/cover;}
@@ -459,22 +461,34 @@ const LESSONS=[
 function lessonEsc(s){ return String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
 function lessonPad(n){ return n<10?'0'+n:''+n; }
 function lessonPhase(n){ return n<=4?1:n<=8?2:n<=12?3:4; }
-function lessonCompleted(n){ return localStorage.getItem('lesson'+n+'_completed')==='1'; }
-function lessonUnlocked(n){ return n===1 || lessonCompleted(n-1); }
+// חייב להישאר זהה ל-GC.LESSON_MAX ב-assets/points.config.js - כפילות מכוונת (כמו LESSONS
+// למעלה) כי index.html לא טוען את core.js/points.config.js המלאים, רק צריך את הטבלה הזו
+// כדי לבדוק "עשה את המקסימום" לפני שמאפשרים לפתוח את השיעור הבא.
+const LESSON_MAX={1:50,2:65,3:65,4:75,5:136,6:120,7:142,8:85,9:65,10:50,11:55,12:55,13:65,14:75,15:55,16:55,17:55};
+function lessonCompletedFlag(n){ return localStorage.getItem('lesson'+n+'_completed')==='1'; }
+function lessonMastered(n){ return lessonCompletedFlag(n) && parseInt(localStorage.getItem('ls'+n)||'0',10) >= (LESSON_MAX[n]||Infinity); }
+// "השיעור הגבוה ביותר שמותר לפתוח" - מתעדכן רק ביציאה מהמערכת (GC_ID.logout), לא באמצע
+// שיעור, כדי שלא יהיה מעבר ישיר לשיעור הבא בלי התנתקות בפועל (ראה assets/identity.js).
+function unlockedThrough(){ return parseInt(localStorage.getItem('gc_unlocked_through')||'1',10); }
+function lessonUnlocked(n){ return n<=unlockedThrough(); }
+// "הושלם" (וי ירוק) מוצג גם באותו סשן חי, מיד כשהושג המקסימום - גם לפני שהתנתקו -
+// כמשוב חיובי מיידי. זה נפרד מהנעילה של השיעור הבא, שממתינה בכוונה להתנתקות.
+function lessonDone(n){ return n<unlockedThrough() || lessonMastered(n); }
 function renderStudentLessons(){
   const grid=document.getElementById('student-lessons-grid');
   if(!grid) return;
   const phaseBorder={1:'border-green-400',2:'border-lime-400',3:'border-sky-400',4:'border-amber-400'};
   let doneCount=0;
   grid.innerHTML=LESSONS.map(l=>{
-    const done=lessonCompleted(l.n);
+    const done=lessonDone(l.n);
     const unlocked=lessonUnlocked(l.n);
     if(done) doneCount++;
     const border=phaseBorder[lessonPhase(l.n)];
     if(!unlocked){
+      const readyButWaiting = l.n>1 && lessonMastered(l.n-1);
       return `<div class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} opacity-40">
         <p class="text-2xl mb-1">🔒</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-400">${lessonEsc(l.title)}</p>
-        <span class="text-xs text-gray-400">נעול · סיימו את שיעור ${l.n-1}</span>
+        <span class="text-xs ${readyButWaiting?'text-lime-600 font-bold':'text-gray-400'}">${readyButWaiting?'כל הכבוד! התנתקו כדי לפתוח 🔄':'נעול · סיימו את שיעור '+(l.n-1)}</span>
       </div>`;
     }
     return `<div class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} relative flex flex-col">
@@ -493,11 +507,21 @@ renderStudentLessons();
 
 // ── HERO LEAVES ──
 // leaves_earned = סכום כל ה-ls{N} (מצטבר, קובע רמה, לעולם לא יורד)
-let leavesEarned=0;
-for(let i=1;i<=17;i++){ leavesEarned+=parseInt(localStorage.getItem('ls'+i)||'0'); }
-document.getElementById('hero-lv').textContent=leavesEarned;
-const lvls=[[0,'🌱 זרע'],[150,'🌿 שתיל'],[400,'🌳 צמח צעיר'],[700,'🌻 פורח'],[1050,'🏆 חקלאי העתיד']];
-document.getElementById('hero-lvl').textContent='רמה: '+lvls.filter(l=>leavesEarned>=l[0]).pop()[1];
+function renderHeroLeaves(){
+  let leavesEarned=0;
+  for(let i=1;i<=17;i++){ leavesEarned+=parseInt(localStorage.getItem('ls'+i)||'0'); }
+  document.getElementById('hero-lv').textContent=leavesEarned;
+  const lvls=[[0,'🌱 זרע'],[150,'🌿 שתיל'],[400,'🌳 צמח צעיר'],[700,'🌻 פורח'],[1050,'🏆 חקלאי העתיד']];
+  document.getElementById('hero-lvl').textContent='רמה: '+lvls.filter(l=>leavesEarned>=l[0]).pop()[1];
+}
+renderHeroLeaves();
+
+// אם כבר יש זהות ידועה (חוזרים אחרי התנתקות, כולל ממחשב אחר) - מושכים מהגיליון
+// ומרעננים את המסך, כדי שהנעילה/העלים ישקפו את המצב האמיתי, לא רק את מה שנשאר
+// מקומית (שאחרי logout מנוקה בכוונה - ראה GC_ID.wipeLocalProgress).
+if(window.GC_SYNC && typeof GC_SYNC.pullMine==='function' && window.GC_ID && GC_ID.getIdentity()){
+  GC_SYNC.pullMine().then(function(){ renderStudentLessons(); renderHeroLeaves(); });
+}
 </script>
 </body>
 </html>

@@ -728,10 +728,17 @@ function mascotSay(msg, emoji) { GC.mascotSay(msg, emoji); }
   function showSessionEndBanner() {
     if (document.getElementById('gc-session-end-banner')) return;
     if (!(window.GC_ID && GC_ID.getIdentity && GC_ID.getIdentity())) return;
+    const earned = parseInt(localStorage.getItem('ls' + lessonNum) || '0', 10);
+    const max = window.GC && GC.LESSON_MAX && GC.LESSON_MAX[lessonNum];
+    const mastered = !max || earned >= max; // בלי GC.LESSON_MAX טעון - לא חוסמים, רק לא בודקים
     const b = document.createElement('div');
     b.id = 'gc-session-end-banner';
-    b.style.cssText = 'position:fixed;bottom:10px;right:10px;z-index:9998;background:linear-gradient(135deg,#166534,#15803d);color:white;font-family:Heebo,sans-serif;font-size:.78rem;padding:10px 14px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.2);direction:rtl;max-width:210px;line-height:1.5;';
-    b.innerHTML = '<span id="gc-se-close" style="float:left;cursor:pointer;opacity:.7;padding-inline-start:6px;">✕</span>🏁 <b>סיימתם את השיעור!</b><br>המחשב עובר עכשיו למישהו אחר?<br><span id="gc-se-btn" style="text-decoration:underline;cursor:pointer;font-weight:900;">🔄 פנו את המחשב ←</span>';
+    b.style.cssText = 'position:fixed;bottom:10px;right:10px;z-index:9998;background:linear-gradient(135deg,#166534,#15803d);color:white;font-family:Heebo,sans-serif;font-size:.78rem;padding:10px 14px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.2);direction:rtl;max-width:220px;line-height:1.5;';
+    if (mastered) {
+      b.innerHTML = '<span id="gc-se-close" style="float:left;cursor:pointer;opacity:.7;padding-inline-start:6px;">✕</span>🏆 <b>כל הכבוד, עשיתם את המקסימום!</b><br>התנתקו כדי לפתוח את השיעור הבא - נתראה בשבוע הבא!<br><span id="gc-se-btn" style="text-decoration:underline;cursor:pointer;font-weight:900;">🔄 להתנתק ←</span>';
+    } else {
+      b.innerHTML = '<span id="gc-se-close" style="float:left;cursor:pointer;opacity:.7;padding-inline-start:6px;">✕</span>🏁 <b>סיימתם את השיעור!</b><br>עדיין לא צברתם את כל העלים האפשריים (' + earned + '/' + max + ') - כדאי לחזור ולהשלים לפני שממשיכים, השיעור הבא ייפתח רק אחרי שתתנתקו.<br><span id="gc-se-btn" style="text-decoration:underline;cursor:pointer;font-weight:900;">🔄 להתנתק בכל זאת ←</span>';
+    }
     document.body.appendChild(b);
     document.getElementById('gc-se-btn').onclick = function () {
       if (window.GC_ID && typeof GC_ID.logout === 'function') GC_ID.logout();

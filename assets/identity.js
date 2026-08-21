@@ -24,9 +24,9 @@
     localStorage.removeItem(KEY_STUDENT);
   };
 
-  // מוחק את כל ההתקדמות האישית מהמחשב הזה (עלים, דרכון, הישגים, דגלי-השלמה) —
-  // לא את הזהות עצמה (ראה clearIdentity). ההתקדמות האמיתית נשארת בטוחה בגיליון תחת
-  // הקוד האישי, ותחזור אוטומטית (GC_SYNC.pullMine) כשמזדהים איתו שוב — גם על מחשב אחר.
+  // מוחק את כל ההתקדמות האישית מהמחשב הזה (עלים, דרכון, הישגים, דגלי-השלמה, נעילת
+  // שיעורים) — לא את הזהות עצמה (ראה clearIdentity). ההתקדמות האמיתית נשארת בטוחה
+  // בגיליון תחת הקוד האישי, ותחזור אוטומטית (GC_SYNC.pullMine) כשמזדהים איתו שוב.
   GC_ID.wipeLocalProgress = function () {
     for (let i = 1; i <= 17; i++) {
       localStorage.removeItem('ls' + i);
@@ -38,12 +38,33 @@
     localStorage.removeItem('gc_msk');
     localStorage.removeItem('leaves_spent');
     localStorage.removeItem('studentName');
+    localStorage.removeItem('gc_unlocked_through');
   };
 
-  // יציאה מלאה מהסשן: מנסה לדחוף סנכרון אחרון (כדי לא לאבד עלים מהרגע האחרון), ואז
-  // מנקה זהות+התקדמות ומרענן — כדי שהתלמיד/ה הבא/ה על אותו מחשב יתחיל/תתחיל מדף נקי.
+  // בודק כמה שיעורים "מהשורה" (1,2,3... בלי חורים) הושלמו במלואם - הגיעו לשלב האחרון
+  // (lesson{N}_completed) *וגם* צברו את מלוא העלים האפשריים (ls{N} === GC.LESSON_MAX[N] -
+  // מובטח שלא לחרוג הודות לחסם ב-core.js). זו הבדיקה "עשה את המקסימום" שביקש המשתמש.
+  // תלוי ב-GC.LESSON_MAX (assets/points.config.js) - אם לא טעון בעמוד הזה (לדוגמה
+  // wall.html/leaves.html), פשוט לא מקדם את הנעילה, בלי לזרוק שגיאה.
+  GC_ID.computeUnlockedThrough = function () {
+    const current = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10);
+    if (!window.GC || !GC.LESSON_MAX) return current;
+    let n = 1;
+    while (n <= 17 && GC.LESSON_MAX[n] &&
+      localStorage.getItem('lesson' + n + '_completed') === '1' &&
+      parseInt(localStorage.getItem('ls' + n) || '0', 10) >= GC.LESSON_MAX[n]) {
+      n++;
+    }
+    return Math.max(current, n); // n כאן = "השיעור הבא שמותר לפתוח"
+  };
+
+  // יציאה מלאה מהסשן: מקדם את הנעילה אם התלמיד/ה עשה/תה את המקסימום (רק כאן, לא
+  // בסנכרון שוטף - כדי שלא יהיה מעבר ישיר לשיעור הבא באותו סשן בלי יציאה בפועל),
+  // דוחף סנכרון אחרון, ואז מנקה זהות+התקדמות ומרענן.
   GC_ID.logout = function () {
     const id = GC_ID.getIdentity();
+    const bumped = GC_ID.computeUnlockedThrough();
+    localStorage.setItem('gc_unlocked_through', bumped);
     const finish = function () {
       GC_ID.clearIdentity();
       GC_ID.wipeLocalProgress();
@@ -51,7 +72,7 @@
     };
     const sync = (window.GC_SYNC && typeof GC_SYNC.pushNow === 'function') ? GC_SYNC.pushNow() : Promise.resolve();
     const timeout = new Promise((resolve) => setTimeout(resolve, 4000));
-    Promise.race([sync, timeout]).then(finish).catch(finish);
+    return Promise.race([sync, timeout]).then(finish).catch(finish);
   };
   GC_ID.getTeacherIdentity = function () {
     try { return JSON.parse(localStorage.getItem(KEY_TEACHER) || 'null'); } catch (e) { return null; }

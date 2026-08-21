@@ -24,7 +24,7 @@ const FIELDS = [
   'track', 'school_id', 'class_id', 'group_name', 'student_name', 'code',
   'ls1', 'ls2', 'ls3', 'ls4', 'ls5', 'ls6', 'ls7', 'ls8', 'ls9', 'ls10',
   'ls11', 'ls12', 'ls13', 'ls14', 'ls15', 'ls16', 'ls17',
-  'leaves_spent', 'passport1', 'achievements', 'last_updated',
+  'leaves_spent', 'passport1', 'achievements', 'unlocked_through', 'last_updated',
 ];
 const KEY_FIELDS = ['track', 'school_id', 'class_id', 'code']; // מזהה ייחודי לשורה (upsert)
 
@@ -245,7 +245,9 @@ function doPost(e) {
     // מיזוג בטוח בצד השרת - לא רק בצד הלקוח (pullMine): אם לתלמיד/זוג שני מכשירים ומכשיר
     // "מפגר" שולח POST אחרי שמכשיר אחר כבר עדכן את השרת לערך גבוה יותר, בלי המיזוג הזה
     // השורה הייתה נדרסת אחורה. נצפה כתרחיש אמיתי בבדיקת הפאנל - לא רק תיאורטי.
-    const LS_FIELDS = FIELDS.filter((h) => /^ls\d+$/.test(h)).concat(['leaves_spent']);
+    // unlocked_through (השיעור הגבוה ביותר שמותר לתלמיד/ה לפתוח) מתנהג באותו אופן -
+    // לעולם לא נסוג אחורה, גם אם מכשיר ישן שולח ערך נמוך יותר בטעות.
+    const LS_FIELDS = FIELDS.filter((h) => /^ls\d+$/.test(h)).concat(['leaves_spent', 'unlocked_through']);
     _upsert(_sheet(), FIELDS, KEY_FIELDS, body, (headers, existing) => headers.map((h, i) => {
       if (h === 'last_updated') return new Date().toISOString();
       if (LS_FIELDS.indexOf(h) !== -1) {
