@@ -40,3 +40,14 @@ GC.LESSON_MAX = {
   8: 85, 9: 65, 10: 50, 11: 55, 12: 55, 13: 65,
   14: 75, 15: 55, 16: 55, 17: 55,
 };
+
+// ניקוי חד-פעמי: אם כבר הצטברו עלים מעבר למקסימום (למשל מ"חזרות" על שיעור לפני
+// שהתווסף החסם ב-core.js) - חותכים עכשיו. רץ פעם אחת בכל טעינת עמוד, אחרי ש-
+// GC.LESSON_MAX כבר קיים (בניגוד לחסם עצמו ב-core.js, שלא תלוי בסדר טעינה).
+(function () {
+  Object.keys(GC.LESSON_MAX).forEach(function (n) {
+    const key = 'ls' + n, cap = GC.LESSON_MAX[n];
+    const cur = parseInt(localStorage.getItem(key) || '0', 10);
+    if (cur > cap) localStorage.setItem(key, cap);
+  });
+})();

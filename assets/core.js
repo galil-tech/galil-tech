@@ -6,6 +6,24 @@
 const GC = window.GC || {};
 window.GC = GC;
 
+// ── HARD CAP: אין אפשרות לצבור מעבר למקסימום הידוע של שיעור ─────────────────
+// עוטף localStorage.setItem גלובלית (לא רק GC.addLeaves) - כי רוב הלומדות (02-17)
+// עדיין כותבות ל-ls{N} דרך addLv המקומי שלהן, לא רק דרך GC.addLeaves. בלי זה, אפשר
+// לחזור על אותו שיעור שוב ושוב ולצבור עלים ללא הגבלה. הבדיקה מול GC.LESSON_MAX
+// נעשית בזמן קריאה (lazy) כדי לא תלוי בסדר טעינה מול assets/points.config.js.
+(function () {
+  const _origSetItem = localStorage.setItem.bind(localStorage);
+  localStorage.setItem = function (key, value) {
+    const m = /^ls(\d+)$/.exec(key);
+    if (m && GC.LESSON_MAX && GC.LESSON_MAX[m[1]]) {
+      const cap = GC.LESSON_MAX[m[1]];
+      const num = parseInt(value, 10);
+      if (!isNaN(num) && num > cap) value = String(cap);
+    }
+    return _origSetItem(key, value);
+  };
+})();
+
 // ── STATE (set by initLesson) ──────────────────────────────────────────────
 GC._steps   = 6;
 GC._cur     = 1;
