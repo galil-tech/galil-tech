@@ -6,6 +6,10 @@
   const GC_ID = (window.GC_ID = {});
   const KEY_STUDENT = 'gc_identity';
   const KEY_TEACHER = 'gc_teacher_identity';
+  // זהות מורה+כיתה עשירה (קוד אישי, בקשת המשתמש אחרי שלב 10) - נפרדת מ-KEY_TEACHER
+  // הישן (תיוג בית-ספר קליל בלבד, עדיין בשימוש ב-index.html למעבר "מצב מורה" רגיל).
+  // זו רק לגישה ל-teacher-class.html (הערות לשיעור + קצב התקדמות כיתה ספציפית).
+  const KEY_TEACHER_CLASS = 'gc_teacher_class_identity';
 
   function qs(name) {
     return new URLSearchParams(location.search).get(name);
@@ -82,6 +86,17 @@
   };
   GC_ID.clearTeacherIdentity = function () {
     localStorage.removeItem(KEY_TEACHER);
+  };
+
+  GC_ID.getTeacherClassIdentity = function () {
+    try { return JSON.parse(localStorage.getItem(KEY_TEACHER_CLASS) || 'null'); } catch (e) { return null; }
+  };
+  GC_ID.setTeacherClassIdentity = function (obj) {
+    localStorage.setItem(KEY_TEACHER_CLASS, JSON.stringify(obj));
+  };
+  GC_ID.clearTeacherClassIdentity = function () {
+    localStorage.removeItem(KEY_TEACHER_CLASS);
+    localStorage.removeItem('gc_teacher_notes');
   };
 
   // ── תג זיהוי קטן בפינת המסך (תלמיד) ──
@@ -192,6 +207,109 @@
     if (GC_ID.getIdentity()) { renderBadge(); return; }
     if (sessionStorage.getItem('gc_id_skipped') === '1') return;
     const show = function () { showStudentModal(); };
+    if (document.body) show(); else document.addEventListener('DOMContentLoaded', show);
+  };
+
+  // ── מודל כניסה למורה+כיתה (קוד נפרד לכל צירוף מורה+כיתה - מורה עם 5 כיתות
+  // מחזיק/ה 5 קודים שונים, אחד לכל כיתה) - לגישה ל-teacher-class.html בלבד. ──
+  function showTeacherClassModal(prefill, onReady) {
+    prefill = prefill || {};
+    const overlay = document.createElement('div');
+    overlay.id = 'gc-tc-modal';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:Heebo,sans-serif;direction:rtl;';
+    overlay.innerHTML =
+      '<div style="background:white;border-radius:24px;max-width:420px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow:auto;">' +
+      '<div style="font-size:2rem;text-align:center;margin-bottom:6px;">🍎</div>' +
+      '<h2 style="font-weight:900;font-size:1.3rem;text-align:center;color:#166534;margin-bottom:4px;">הכיתה שלי</h2>' +
+      '<p style="font-size:.85rem;color:#666;text-align:center;margin-bottom:18px;">מלמדים כמה כיתות? כל כיתה מקבלת קוד נפרד משלה - כך שההערות והנתונים לא מתערבבים</p>' +
+      '<label style="font-size:.8rem;font-weight:700;color:#333;">בית ספר</label>' +
+      '<input id="gc-tc-school" value="' + esc(prefill.school || '') + '" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: מעלה">' +
+      '<label style="font-size:.8rem;font-weight:700;color:#333;">כיתה</label>' +
+      '<input id="gc-tc-class" value="' + esc(prefill.className || '') + '" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: ח1">' +
+      '<label style="font-size:.8rem;font-weight:700;color:#333;">שם המורה</label>' +
+      '<input id="gc-tc-name" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: רונית">' +
+      '<div id="gc-tc-err" style="display:none;color:#dc2626;font-size:.78rem;margin-bottom:8px;">נא למלא בית ספר, כיתה ושם לפני שממשיכים</div>' +
+      '<div style="display:flex;gap:8px;margin-bottom:14px;">' +
+      '<button id="gc-tc-new" style="flex:1;background:#166534;color:white;border:none;padding:10px;border-radius:10px;font-weight:800;cursor:pointer;">🆕 קוד חדש לכיתה הזו</button>' +
+      '<button id="gc-tc-existing-toggle" style="flex:1;background:#f3f4f6;color:#333;border:none;padding:10px;border-radius:10px;font-weight:800;cursor:pointer;">🔑 יש לי כבר קוד</button>' +
+      '</div>' +
+      '<div id="gc-tc-existing-wrap" style="display:none;margin-bottom:10px;">' +
+      '<input id="gc-tc-existing-code" maxlength="4" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2rem;text-align:center;letter-spacing:6px;box-sizing:border-box;" placeholder="1234">' +
+      '<button id="gc-tc-existing-go" style="width:100%;margin-top:8px;background:#166534;color:white;border:none;padding:10px;border-radius:10px;font-weight:800;cursor:pointer;">המשך/י</button>' +
+      '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    function fields() {
+      return {
+        school: document.getElementById('gc-tc-school').value.trim(),
+        className: document.getElementById('gc-tc-class').value.trim(),
+        teacherName: document.getElementById('gc-tc-name').value.trim(),
+      };
+    }
+    function valid(f) {
+      if (!f.school || !f.className || !f.teacherName) {
+        document.getElementById('gc-tc-err').style.display = 'block';
+        return false;
+      }
+      return true;
+    }
+    function finish(code) {
+      const f = fields();
+      if (!valid(f)) return false;
+      GC_ID.setTeacherClassIdentity({ school: f.school, className: f.className, teacherName: f.teacherName, code: code, savedAt: Date.now() });
+      overlay.remove();
+      renderTeacherClassBadge();
+      return true;
+    }
+
+    document.getElementById('gc-tc-new').onclick = function () {
+      const code = rand4();
+      if (finish(code)) {
+        alert('הקוד לכיתה הזו הוא: ' + code + '\nתזכרו אותו - תצטרכו אותו כדי לחזור לאותה כיתה ממחשב אחר, ואם אתם מלמדים כמה כיתות תצטרכו קוד נפרד לכל אחת.');
+        if (window.GC_SYNC && typeof GC_SYNC.pushTeacherNotesNow === 'function') GC_SYNC.pushTeacherNotesNow();
+        if (onReady) onReady(GC_ID.getTeacherClassIdentity());
+      }
+    };
+    document.getElementById('gc-tc-existing-toggle').onclick = function () {
+      document.getElementById('gc-tc-existing-wrap').style.display = 'block';
+    };
+    document.getElementById('gc-tc-existing-go').onclick = function () {
+      const code = document.getElementById('gc-tc-existing-code').value.trim();
+      if (!/^\d{4}$/.test(code)) { alert('קוד צריך להיות 4 ספרות'); return; }
+      if (finish(code)) {
+        if (window.GC_SYNC && typeof GC_SYNC.pullTeacherMine === 'function') GC_SYNC.pullTeacherMine();
+        if (onReady) onReady(GC_ID.getTeacherClassIdentity());
+      }
+    };
+  }
+
+  // תג זיהוי מורה+כיתה - נפרד מתג התלמיד/ה (renderBadge), רק בעמוד teacher-class.html.
+  function renderTeacherClassBadge() {
+    if (!document.body) return;
+    const old = document.getElementById('gc-tc-badge');
+    if (old) old.remove();
+    const t = GC_ID.getTeacherClassIdentity();
+    if (!t) return;
+    const b = document.createElement('div');
+    b.id = 'gc-tc-badge';
+    b.style.cssText = 'position:fixed;bottom:10px;left:10px;z-index:9998;background:white;border:2px solid #d1fae5;border-radius:16px;padding:6px 12px;font-family:Heebo,sans-serif;font-size:.72rem;color:#166534;box-shadow:0 2px 10px rgba(0,0,0,.12);direction:rtl;cursor:pointer;max-width:230px;line-height:1.5;';
+    b.innerHTML = '🍎 ' + esc(t.school || '—') + ' · ' + esc(t.className || '—') + '<br><b>' + esc(t.teacherName || 'מורה') + '</b> (' + esc(t.code || '----') + ') · <span style="text-decoration:underline">להחליף כיתה</span>';
+    b.onclick = function () {
+      if (confirm('להחליף לכיתה אחרת? (ההערות של הכיתה הנוכחית שמורות בענן תחת הקוד ' + esc(t.code || '----') + ' - יחזרו אם תיכנסו איתו שוב)')) {
+        GC_ID.clearTeacherClassIdentity();
+        location.reload();
+      }
+    };
+    document.body.appendChild(b);
+  }
+
+  // חוסם עד שנבחרה כיתה (בניגוד לתלמיד/ה - אין "דלג/י", כי בלי זהות אין מה להציג בדף
+  // הזה בכלל). קורא ל-teacher-class.html בלבד, לא לכל עמוד.
+  GC_ID.ensureTeacherClassIdentity = function (onReady) {
+    const existing = GC_ID.getTeacherClassIdentity();
+    if (existing) { renderTeacherClassBadge(); if (onReady) onReady(existing); return; }
+    const show = function () { showTeacherClassModal(null, onReady); };
     if (document.body) show(); else document.addEventListener('DOMContentLoaded', show);
   };
 

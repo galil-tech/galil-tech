@@ -142,6 +142,67 @@
   // ההתקדמות האישית האמיתית (fire-and-forget - לא חוסם רינדור ראשוני של הדף).
   if (window.GC_ID && GC_ID.getIdentity()) { GC_SYNC.pullMine(); }
 
+  // ── מורה+כיתה: הערות לשיעור + קצב התקדמות (בקשת המשתמש, אחרי שלב 10) ─────
+  // notes_json הוא בלוק JSON אחד {"1":"הערה לשיעור 1", "5":"..."} - כמו passport1
+  // אצל תלמידים, לא 17 שדות נפרדים. לא נטען אוטומטית בכל דף (בניגוד ל-pullMine למעלה) -
+  // רק teacher-class.html קורא ל-pullTeacherMine במפורש, כי זה רלוונטי רק שם.
+  let teacherSyncTimer = null;
+  function teacherCollectPayload() {
+    const t = window.GC_ID && GC_ID.getTeacherClassIdentity && GC_ID.getTeacherClassIdentity();
+    if (!t) return null;
+    return {
+      token: cfg().token, type: 'teacher',
+      school_id: t.school || '', class_id: t.className || '',
+      teacher_name: t.teacherName || '', code: t.code || '',
+      notes_json: localStorage.getItem('gc_teacher_notes') || '{}',
+    };
+  }
+  GC_SYNC.pushTeacherNotesNow = function () {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ skipped: true, reason: 'sync disabled' });
+    const payload = teacherCollectPayload();
+    if (!payload) return Promise.resolve({ skipped: true, reason: 'no teacher identity' });
+    return fetch(c.url, { method: 'POST', body: JSON.stringify(payload) })
+      .then((r) => r.json())
+      .catch((err) => ({ ok: false, error: String(err) }));
+  };
+  // סנכרון מבוזבז קצר (1.5 שניות) - קצר יותר מזה של תלמידים (3 שניות) כי הערות טקסט
+  // חופשי, לא רוצים לאבד הרבה אם המורה סוגר/ת טאב מהר אחרי הקלדה.
+  GC_SYNC.scheduleTeacherSync = function () {
+    clearTimeout(teacherSyncTimer);
+    teacherSyncTimer = setTimeout(function () { teacherSyncTimer = null; GC_SYNC.pushTeacherNotesNow(); }, 1500);
+  };
+  GC_SYNC.pullTeacherMine = function () {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ skipped: true, reason: 'sync disabled' });
+    const t = window.GC_ID && GC_ID.getTeacherClassIdentity && GC_ID.getTeacherClassIdentity();
+    if (!t) return Promise.resolve({ skipped: true, reason: 'no teacher identity' });
+    const url = c.url + '?token=' + encodeURIComponent(c.token) + '&type=teacher_notes' +
+      '&school=' + encodeURIComponent(t.school || '') +
+      '&class=' + encodeURIComponent(t.className || '') +
+      '&code=' + encodeURIComponent(t.code || '');
+    return fetch(url).then((r) => r.json()).then((resp) => {
+      if (!resp.ok || !resp.rows || !resp.rows.length) return resp;
+      const row = resp.rows[0];
+      const localNotes = localStorage.getItem('gc_teacher_notes');
+      if ((!localNotes || localNotes === '{}') && row.notes_json && row.notes_json !== '{}') {
+        localStorage.setItem('gc_teacher_notes', row.notes_json);
+      }
+      return resp;
+    }).catch((err) => ({ ok: false, error: String(err) }));
+  };
+
+  // קצב התקדמות הכיתה - כל התלמידים/קבוצות ב-school+class הספציפיים, לא רק מה שהמורה
+  // שומר/ת מקומית - זו בדיוק הנקודה של הפיצ'ר: לראות את כל הכיתה, לא רק את עצמו/ה.
+  GC_SYNC.pullClassProgress = function (school, className) {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, rows: [], skipped: true });
+    const url = c.url + '?token=' + encodeURIComponent(c.token) + '&type=class_progress' +
+      '&school=' + encodeURIComponent(school || '') +
+      '&class=' + encodeURIComponent(className || '');
+    return fetch(url).then((r) => r.json()).catch((err) => ({ ok: false, error: String(err), rows: [] }));
+  };
+
   // ── שלב 9ו: שיתוף בין כיתות ובתי ספר ────────────────────────────────────
 
   // לוח "מי הצמיח הכי גבוה" - גלוי לכולם (כל בתי הספר), לא רק לכיתה של המשתמש/ת.

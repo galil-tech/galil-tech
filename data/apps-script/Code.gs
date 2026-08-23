@@ -38,6 +38,14 @@ const GROUPS_KEY_FIELDS = ['school_id', 'class_id', 'group_name'];
 const GALLERY_SHEET_NAME = 'gallery';
 const GALLERY_FIELDS = ['id', 'school_id', 'class_id', 'group_name', 'title', 'image_url', 'description', 'votes', 'submitted_at'];
 
+// מורה+כיתה (בקשת המשתמש, אחרי שלב 10) — קוד נפרד לכל צירוף מורה+כיתה (מורה שמלמד/ת
+// כמה כיתות מקבל/ת כמה קודים, אחד לכל כיתה) - כדי לצפות בהערות האישיות שלו/ה לשיעור
+// ובקצב ההתקדמות של הכיתה הספציפית הזו. notes_json = בלוק JSON אחד {"1":"...", "5":"..."}
+// (כמו passport1 אצל תלמידים) - לא 17 עמודות נפרדות.
+const TEACHERS_SHEET_NAME = 'teachers';
+const TEACHERS_FIELDS = ['school_id', 'class_id', 'teacher_name', 'code', 'notes_json', 'last_updated'];
+const TEACHERS_KEY_FIELDS = ['school_id', 'class_id', 'code'];
+
 function _sheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(SHEET_NAME);
@@ -64,6 +72,16 @@ function _gallerySheet() {
   if (!sh) {
     sh = ss.insertSheet(GALLERY_SHEET_NAME);
     sh.appendRow(GALLERY_FIELDS);
+  }
+  return sh;
+}
+
+function _teachersSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(TEACHERS_SHEET_NAME);
+  if (!sh) {
+    sh = ss.insertSheet(TEACHERS_SHEET_NAME);
+    sh.appendRow(TEACHERS_FIELDS);
   }
   return sh;
 }
@@ -112,6 +130,26 @@ function doGet(e) {
     return _json({ ok: true, rows: rows });
   }
 
+  // "קצב התקדמות" למורה - כל התלמידים/קבוצות בכיתה הספציפית שלו/ה בלבד (לא dump מלא כמו
+  // admin_students). מוגן ב-token בלבד (כמו type=groups), לא דורש קוד תלמיד ספציפי - מורה
+  // צריך/ה לראות את כל הכיתה, לא רשומה אחת. דורש גם school+class כדי לא להחזיר הכל בטעות.
+  if (p.type === 'class_progress') {
+    if (!p.school || !p.class) return _json({ ok: false, error: 'school and class parameters required' });
+    const rows = _rowsAsObjects(_sheet()).filter((r) =>
+      String(r.school_id) === p.school && String(r.class_id) === p.class);
+    return _json({ ok: true, rows: rows });
+  }
+
+  // הערות המורה לשיעורים, לצירוף מורה+כיתה ספציפי - דורש code (כמו pullMine של תלמיד/ה),
+  // כדי שלא כל מי שמנחש school+class יראה את ההערות האישיות של מורה אחר/ת באותה כיתה.
+  if (p.type === 'teacher_notes') {
+    if (!p.code) return _json({ ok: false, error: 'code parameter required' });
+    let rows = _rowsAsObjects(_teachersSheet()).filter((r) => String(r.code) === p.code);
+    if (p.school) rows = rows.filter((r) => String(r.school_id) === p.school);
+    if (p.class) rows = rows.filter((r) => String(r.class_id) === p.class);
+    return _json({ ok: true, rows: rows });
+  }
+
   // לוח "מי הצמיח הכי גבוה" בין-בית-ספרי (שלב 9ו) - מטבעו גלוי לכולם (כל בתי הספר),
   // ולכן מחזיר רק שדות מצומצמים (לא code, לא passport1 מלא, לא הישגים) - לא dump מלא.
   if (p.type === 'heights') {
@@ -136,7 +174,7 @@ function doGet(e) {
   // ב-token (כמו כל שאר ה-endpoint-ים, ראה ההערה למעלה) - לא הגנה אמיתית, רק חסם-כניסה
   // מזדמן. הגישה בפועל למסך הזה מוגנת גם בסיסמת מנהל/ת נפרדת בצד הלקוח (admin-dashboard.html).
   if (p.type === 'admin_students') {
-    return _json({ ok: true, rows: _rowsAsObjects(_sheet()), groups: _rowsAsObjects(_groupsSheet()) });
+    return _json({ ok: true, rows: _rowsAsObjects(_sheet()), groups: _rowsAsObjects(_groupsSheet()), teachers: _rowsAsObjects(_teachersSheet()) });
   }
 
   // הגנת פרטיות: קריאת שורות תלמידים (לא לוח קבוצות) דורשת code ספציפי - בלעדיו זו
@@ -226,6 +264,21 @@ function doPost(e) {
         }
       }
       return _json({ ok: false, error: 'gallery id not found' });
+    }
+
+    // הערות מורה לצירוף מורה+כיתה - upsert, לא דורסים notes_json קיים במשהו ריק/חסר
+    // שמגיע ממכשיר שעוד לא הספיק להתעדכן (אותו עיקרון הגנה כמו passport1/achievements).
+    if (body.type === 'teacher') {
+      _upsert(_teachersSheet(), TEACHERS_FIELDS, TEACHERS_KEY_FIELDS, body, (headers, existing) => headers.map((h, i) => {
+        if (h === 'last_updated') return new Date().toISOString();
+        if (h === 'notes_json' && existing) {
+          const incoming = body[h];
+          const current = existing[i];
+          if ((incoming === undefined || incoming === '' || incoming === '{}') && current) return current;
+        }
+        return body[h] !== undefined ? body[h] : '';
+      }));
+      return _json({ ok: true });
     }
 
     if (body.type === 'group') {

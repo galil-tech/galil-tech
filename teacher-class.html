@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>הכיתה שלי - גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <script src="assets/identity.js"></script>
+  <script src="data/sheets-config.js"></script>
+  <script src="assets/sheets-sync.js"></script>
+  <style>*{font-family:'Heebo',sans-serif;}</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!--
+  דף "הכיתה שלי" למורה (בקשת המשתמש, אחרי שלב 10) - הערות אישיות לכל שיעור + קצב
+  התקדמות הכיתה הספציפית. הגנה כפולה: (1) סיסמת מורה כללית (כמו index.html), (2)
+  קוד מורה+כיתה ספציפי (assets/identity.js, GC_ID.ensureTeacherClassIdentity) - מורה
+  שמלמד/ת כמה כיתות מחזיק/ה קוד נפרד לכל אחת, לא בוחר/ת מתוך רשימה.
+-->
+<script>const TEACHER_PASSWORD='moradaat2026';</script>
+
+<div id="pw-gate" class="min-h-screen flex items-center justify-center px-6">
+  <div class="bg-white rounded-3xl shadow-2xl p-10 max-w-sm w-full text-center">
+    <div class="text-5xl mb-3">🔐</div>
+    <h1 class="text-xl font-black mb-2">הכיתה שלי</h1>
+    <p class="text-sm text-gray-500 mb-6">גישה למורים בלבד</p>
+    <input id="pw" type="password" placeholder="סיסמת מורה" class="w-full border-2 rounded-xl p-3 mb-3 text-center" onkeydown="if(event.key==='Enter')tryPw()">
+    <button onclick="tryPw()" class="w-full bg-green-700 hover:bg-green-800 text-white rounded-xl p-3 font-bold">כניסה</button>
+    <p id="pw-err" class="hidden text-red-600 text-sm mt-3">סיסמה שגויה</p>
+    <a href="index.html" class="block mt-4 text-xs text-gray-400 hover:text-gray-600">← בחזרה לדף הבית</a>
+  </div>
+</div>
+
+<div id="page" class="hidden">
+  <nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+      <div class="flex gap-4 text-sm items-center">
+        <a href="index.html" class="hover:text-lime-300">🏠 דף הבית</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-5xl mx-auto px-6 py-10">
+    <h1 class="text-3xl font-black mb-1">🍎 הכיתה שלי</h1>
+    <p id="class-sub" class="text-gray-500 mb-8"></p>
+
+    <div id="sync-off-notice" class="hidden bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 text-center text-amber-800 mb-8">
+      ⚠️ הסנכרון לגיליון כבוי במחשב הזה - אין נתונים אמיתיים להציג כאן.
+    </div>
+
+    <div id="content">
+      <!-- PACE -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-black">📊 קצב התקדמות הכיתה</h2>
+          <button onclick="loadProgress()" class="text-sm text-green-700 hover:underline">🔄 רענון</button>
+        </div>
+        <div id="pace-bars" class="space-y-1.5 mb-6"></div>
+        <p id="pace-empty" class="hidden text-gray-400 text-center py-6">אין עדיין נתונים לכיתה הזו בגיליון</p>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-right text-gray-400 border-b">
+                <th class="py-2 pl-3">שם</th>
+                <th class="py-2 pl-3">קוד</th>
+                <th class="py-2 pl-3">שיעור נוכחי</th>
+                <th class="py-2 pl-3">סה"כ עלים</th>
+                <th class="py-2 pl-3">עודכן</th>
+              </tr>
+            </thead>
+            <tbody id="progress-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="bg-white rounded-2xl shadow-xl p-6">
+        <div class="flex justify-between items-center mb-1">
+          <h2 class="text-xl font-black">📝 ההערות שלי לכל שיעור</h2>
+          <span id="notes-saved" class="hidden text-xs text-green-600 font-bold">✓ נשמר</span>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">נשמר אוטומטית תחת הקוד של הכיתה הזו - זמין מכל מחשב שנכנסים איתו.</p>
+        <div id="notes-list" class="space-y-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function tryPw(){
+  const v=document.getElementById('pw').value;
+  if(v===TEACHER_PASSWORD){
+    sessionStorage.setItem('gc_teacher_pw_ok','1');
+    enterPage();
+  } else {
+    document.getElementById('pw-err').classList.remove('hidden');
+  }
+}
+function enterPage(){
+  document.getElementById('pw-gate').classList.add('hidden');
+  document.getElementById('page').classList.remove('hidden');
+  if(window.GC_ID){
+    GC_ID.ensureTeacherClassIdentity(function(){ init(); });
+  }
+}
+if(sessionStorage.getItem('gc_teacher_pw_ok')==='1'){ enterPage(); }
+
+const LESSON_TITLES={1:'האתגר הגדול',2:'מהי חקלאות?',3:'הצמח צריך',4:'החקלאי צריך',5:'הידרופוניקה',6:'חיישנים',7:'if/else',8:'סינרגיה',9:'GIS',10:'רובוטיקה',11:'ביג דאטה',12:'AI בחקלאות',13:'Design Thinking',14:'אבטיפוס יום א׳',15:'אבטיפוס יום ב׳',16:'פיצ׳ינג',17:'סיכום'};
+function esc(s){ return String(s==null?'':s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+function syncEnabled(){ return !!(window.GC_SYNC && window.SHEETS_CONFIG && window.SHEETS_CONFIG.enabled); }
+
+function init(){
+  const t=GC_ID.getTeacherClassIdentity();
+  if(!t) return;
+  document.getElementById('class-sub').textContent = t.teacherName+' · '+t.school+' · כיתה '+t.className+' (קוד '+t.code+')';
+  if(!syncEnabled()){
+    document.getElementById('sync-off-notice').classList.remove('hidden');
+    document.getElementById('content').classList.add('hidden');
+    return;
+  }
+  GC_SYNC.pullTeacherMine().then(renderNotes);
+  renderNotes(); // תצוגה מיידית ממה שכבר מקומי, לפני שהמשיכה מהגיליון חוזרת
+  loadProgress();
+}
+
+// ── NOTES ──
+function getNotes(){
+  try { return JSON.parse(localStorage.getItem('gc_teacher_notes')||'{}'); } catch(e){ return {}; }
+}
+function renderNotes(){
+  const notes=getNotes();
+  const wrap=document.getElementById('notes-list');
+  wrap.innerHTML='';
+  for(let n=1;n<=17;n++){
+    const row=document.createElement('div');
+    row.innerHTML=`<label class="block text-sm font-bold text-gray-700 mb-1">שיעור ${n} · ${esc(LESSON_TITLES[n]||'')}</label>
+      <textarea data-n="${n}" rows="2" class="w-full border-2 border-gray-200 rounded-xl p-3 text-sm focus:border-green-400 outline-none" placeholder="הערות, תובנות, מה עבד/לא עבד...">${esc(notes[n]||'')}</textarea>`;
+    wrap.appendChild(row);
+  }
+  wrap.querySelectorAll('textarea').forEach(ta=>{
+    ta.addEventListener('input', function(){
+      const all=getNotes();
+      all[this.dataset.n]=this.value;
+      localStorage.setItem('gc_teacher_notes', JSON.stringify(all));
+      if(window.GC_SYNC && typeof GC_SYNC.scheduleTeacherSync==='function') GC_SYNC.scheduleTeacherSync();
+      const saved=document.getElementById('notes-saved');
+      saved.classList.remove('hidden');
+      clearTimeout(saved._t);
+      saved._t=setTimeout(()=>saved.classList.add('hidden'),1500);
+    });
+  });
+}
+
+// ── PACE / PROGRESS ──
+function unlockedOf(row){ return parseInt(row.unlocked_through||1,10); }
+function sumLeaves(row){ let s=0; for(let i=1;i<=17;i++) s+=Number(row['ls'+i])||0; return s; }
+
+async function loadProgress(){
+  const t=GC_ID.getTeacherClassIdentity();
+  if(!t) return;
+  const resp=await GC_SYNC.pullClassProgress(t.school, t.className);
+  const rows=(resp&&resp.ok&&resp.rows)?resp.rows:[];
+  renderPaceBars(rows);
+  renderProgressTable(rows);
+}
+
+function renderPaceBars(rows){
+  const wrap=document.getElementById('pace-bars');
+  const empty=document.getElementById('pace-empty');
+  if(!rows.length){ wrap.innerHTML=''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  const total=rows.length;
+  let html='';
+  for(let n=1;n<=17;n++){
+    const passed=rows.filter(r=>unlockedOf(r)>n).length;
+    const pct=total?Math.round(passed/total*100):0;
+    html+=`<div class="flex items-center gap-3 text-xs">
+      <span class="w-16 text-gray-500 shrink-0">שיעור ${n}</span>
+      <div class="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden"><div class="h-4 bg-green-500 rounded-full transition-all" style="width:${pct}%"></div></div>
+      <span class="w-14 text-left text-gray-500 shrink-0">${passed}/${total}</span>
+    </div>`;
+  }
+  wrap.innerHTML=html;
+}
+
+function renderProgressTable(rows){
+  const body=document.getElementById('progress-body');
+  const sorted=rows.slice().sort((a,b)=>unlockedOf(b)-unlockedOf(a));
+  body.innerHTML=sorted.map(r=>`
+    <tr class="border-b last:border-0">
+      <td class="py-2 pl-3 font-bold">${esc(r.student_name)}</td>
+      <td class="py-2 pl-3 text-gray-400">${esc(r.code)}</td>
+      <td class="py-2 pl-3">שיעור ${Math.min(unlockedOf(r),17)}</td>
+      <td class="py-2 pl-3 font-black text-green-700">${sumLeaves(r)}</td>
+      <td class="py-2 pl-3 text-gray-400 text-xs">${r.last_updated?new Date(r.last_updated).toLocaleString('he-IL'):''}</td>
+    </tr>`).join('');
+}
+</script>
+</body>
+</html>
