@@ -298,11 +298,18 @@ GC.Tutorial = (function () {
       b.style.maxWidth = '260px';
       b.classList.remove('hidden');
       if (m) m.classList.add('mascot-bounce');
-      const waitNext = step.wait === 'next' || (step.wait === 'click' && !target); // בלי target אין מה ללחוץ עליו - fallback לכפתור
+      // wait:'click' עם target - חייבים גם כפתור מילוט ("הבנתי, אמשיך לבד"), כדי שתלמיד/ה
+      // שלא מוצא/ת את האלמנט (או במורה - שרק סוקר/ת ולא באמת רוצה ללחוץ) לא ייתקע/תיתקע.
+      // הכפתור לא מחליף את הקליק על היעד - שניהם מקדמים לצעד הבא, כל אחד בדרכו.
+      const isClickWait = step.wait === 'click' && !!target;
+      const btnLabel = isClickWait ? 'הבנתי, אמשיך לבד ←' : 'הבנתי ←';
+      const btnStyle = isClickWait
+        ? 'margin-top:10px;background:transparent;color:#166534;border:1px solid #166534;padding:6px 12px;border-radius:12px;font-weight:800;cursor:pointer;font-size:.72rem;'
+        : 'margin-top:10px;background:#166534;color:white;border:none;padding:8px 16px;border-radius:12px;font-weight:800;cursor:pointer;font-size:.85rem;';
       b.innerHTML = '<div>' + esc(step.text) + '</div>' +
-        (waitNext ? '<button id="gc-tut-next" style="margin-top:10px;background:#166534;color:white;border:none;padding:8px 16px;border-radius:12px;font-weight:800;cursor:pointer;font-size:.85rem;">הבנתי ←</button>' : '');
-      if (waitNext) document.getElementById('gc-tut-next').onclick = function () { next(); };
-      else if (target) {
+        '<button id="gc-tut-next" style="' + btnStyle + '">' + btnLabel + '</button>';
+      document.getElementById('gc-tut-next').onclick = function () { next(); };
+      if (isClickWait) {
         curClickHandler = function () { next(); };
         curTarget = target;
         target.addEventListener('click', curClickHandler);

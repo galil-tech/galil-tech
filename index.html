@@ -6,6 +6,8 @@
   <title>גדלים למחר – גליל-טק 🌱</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/core.css">
+  <script src="assets/core.js"></script>
   <script src="data/roster.js"></script>
   <script src="assets/identity.js"></script>
   <script src="data/sheets-config.js"></script>
@@ -25,6 +27,12 @@
   </style>
 </head>
 <body class="bg-gray-50 mode-student" id="body">
+
+<!-- MASCOT (זהה בדיוק ל-lessons/lesson-01.html - GC.Tutorial תלוי בו) -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
 
 <!-- NAV -->
 <nav class="bg-green-900 text-white sticky top-0 z-50 shadow-2xl">
@@ -527,6 +535,27 @@ renderHeroLeaves();
 if(window.GC_SYNC && typeof GC_SYNC.pullMine==='function' && window.GC_ID && GC_ID.getIdentity()){
   GC_SYNC.pullMine().then(function(){ renderStudentLessons(); renderHeroLeaves(); });
 }
+
+// ── TUTORIAL (מצב תלמיד בלבד) ───────────────────────────────────────────────
+// רץ פעם אחת (GC.Tutorial בודק gc_tutorial_home בעצמו). ממתין ל-window 'load'
+// ואז לסגירת מודל הזהות (#gc-id-modal, ראה assets/identity.js) - כמו בשיעור 1.
+function maybeStartHomeTutorial(){
+  if(sessionStorage.getItem('teacher')==='1') return; // מצב מורה - לא מריצים לתלמיד
+  if(localStorage.getItem('gc_tutorial_home')) return;
+  function ready(){
+    if(document.getElementById('gc-id-modal')){ setTimeout(ready,300); return; }
+    if(!window.GC || !GC.Tutorial) return;
+    GC.Tutorial.start('home', [
+      { target: null, emoji: '🌱', wait: 'next',
+        text: 'פה הבית של גדלים למחר.' },
+      { target: '#student-lessons-grid a[href="lessons/lesson-01.html"]', emoji: '🚀', wait: 'click',
+        text: 'לחצו על שיעור 1 כדי להתחיל.' },
+    ]);
+  }
+  if(document.readyState==='complete') ready();
+  else window.addEventListener('load', ready);
+}
+maybeStartHomeTutorial();
 </script>
 </body>
 </html>

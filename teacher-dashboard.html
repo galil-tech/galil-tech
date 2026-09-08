@@ -46,6 +46,12 @@
 </div>
 
 <div id="page" class="hidden">
+<!-- MASCOT (זהה בדיוק ל-lessons/lesson-01.html - GC.Tutorial תלוי בו). בתוך #page כדי
+     שלא יופיע מאחורי שער הכניסה. -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
 <nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
   <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center flex-wrap gap-3">
     <div>
@@ -64,7 +70,7 @@
 <div class="max-w-6xl mx-auto px-6 py-10 space-y-8">
 
   <!-- CLASS ROSTER (מהענן, לפי data/roster.js) -->
-  <div class="bg-white rounded-3xl shadow-lg p-6">
+  <div id="class-roster-card" class="bg-white rounded-3xl shadow-lg p-6">
     <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
       <div>
         <h2 class="text-xl font-black text-gray-800">👥 הכיתה שלי</h2>
@@ -234,6 +240,28 @@ function enterPage(res) {
   populateClassSelect(res.classes);
   loadClass();
   renderDashboard();
+  maybeStartTeacherTutorial();
+}
+
+// ── TUTORIAL (רק אחרי כניסה מוצלחת, רק פעם אחת) ─────────────────────────────
+function maybeStartTeacherTutorial() {
+  if (!window.GC || !GC.Tutorial) return;
+  if (localStorage.getItem('gc_tutorial_teacher')) return;
+  const steps = [
+    { target: '#class-teacher-label', emoji: '🍎', wait: 'next',
+      text: 'זה מי שנכנס/ה עכשיו ללוח - השם ובית הספר שלך.' },
+    { target: '#class-select', emoji: '🏫', wait: 'next',
+      text: 'כאן בוחרים כיתה. אם את/ה מלמד/ת כמה כיתות - כולן כאן.' },
+    { target: '#class-roster-card', emoji: '🔄', wait: 'next',
+      text: 'כפתור הרענון מושך את התלמידים מהענן, ולמטה רואים גם את התשובות הפתוחות שלהם.' },
+  ];
+  if (document.getElementById('import-btn')) {
+    steps.push({ target: '#import-btn', emoji: '📥', wait: 'next',
+      text: 'אפשר גם לייבא JSON של תלמיד בודד, אם מישהו שלח לך קובץ נתונים.' });
+  }
+  steps.push({ target: null, emoji: '👍', wait: 'next',
+    text: 'מכאן מקרינים / עוקבים. השיעור עצמו אצל התלמידים.' });
+  GC.Tutorial.start('teacher', steps);
 }
 
 (function () {
