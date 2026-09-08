@@ -303,6 +303,47 @@ GC.getPassport = function(key) {
   } catch(e) { return key !== undefined ? null : {}; }
 };
 
+// ── OPEN ANSWERS ───────────────────────────────────────────────────────────
+// שמירה גנרית לשדות טקסט חופשי (בלי כפתור "שמור" ייעודי) — כתובים ל-passport1
+// גם תחת answers[key] (עם timestamp, לתצוגת מורה) וגם כשדה שטוח passport1[key],
+// כדי שקוד קיים שכבר קורא p.name/p.why/וכו' ימשיך לעבוד בלי שינוי.
+GC.saveOpenAnswer = function(key, text) {
+  try {
+    const p = JSON.parse(localStorage.getItem('passport1') || '{}');
+    if (!p.answers) p.answers = {};
+    p.answers[key] = { text: text, ts: Date.now() };
+    p[key] = text;
+    localStorage.setItem('passport1', JSON.stringify(p));
+  } catch(e) {}
+  if (window.GC_SYNC) GC_SYNC.scheduleSync();
+};
+
+GC.getOpenAnswer = function(key) {
+  const p = GC.getPassport();
+  if (!p) return '';
+  if (p.answers && p.answers[key] && p.answers[key].text) return p.answers[key].text;
+  return p[key] || '';
+};
+
+// מאתר כל [data-answer-key] בעמוד, ממלא ערך קיים ושומר אוטומטית ב-input (debounce
+// 1.2 שניות) וב-blur — כדי שתשובות לא יאבדו גם אם התלמיד/ה לא לוחצ/ת על כפתור "שמור".
+GC.bindOpenAnswers = function() {
+  document.querySelectorAll('[data-answer-key]').forEach(function(el) {
+    const key = el.dataset.answerKey;
+    const existing = GC.getOpenAnswer(key);
+    if (existing && !el.value) el.value = existing;
+    let t = null;
+    el.addEventListener('input', function() {
+      clearTimeout(t);
+      t = setTimeout(function() { GC.saveOpenAnswer(key, el.value.trim()); }, 1200);
+    });
+    el.addEventListener('blur', function() {
+      clearTimeout(t);
+      GC.saveOpenAnswer(key, el.value.trim());
+    });
+  });
+};
+
 // Append to array in passport (for measurement history)
 GC.pushPassport = function(key, entry) {
   try {

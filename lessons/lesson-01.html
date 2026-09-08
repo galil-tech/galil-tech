@@ -11,6 +11,7 @@
   <script src="../assets/core.js"></script>
   <script src="../assets/points.config.js"></script>
   <script src="../assets/questions.js"></script>
+  <script src="../data/roster.js"></script>
   <script src="../assets/identity.js"></script>
   <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
   <script src="../data/sheets-config.js"></script>
@@ -279,7 +280,7 @@
       <p class="font-black text-xl text-lime-800 text-center mb-3">🎉 שרשרת שלמה! מהשדה בגליל עד הבית במוסקבה</p>
       <p class="text-gray-700 text-sm font-bold mb-2">💡 שאלה פתוחה לדיון בזוג:</p>
       <p class="text-gray-700 text-sm">"<b>באיזה שלב בשרשרת הייתם מכניסים שיפור טכנולוגי?</b> (רובוט, AI, חיישן...)"</p>
-      <textarea id="supply-open" rows="2" placeholder="הרעיון שלנו: ..." class="w-full mt-3 border-2 border-lime-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-lime-500"></textarea>
+      <textarea id="supply-open" data-answer-key="l01_supply" rows="2" placeholder="הרעיון שלנו: ..." class="w-full mt-3 border-2 border-lime-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-lime-500"></textarea>
       <p class="text-xs text-gray-400 mt-1">🔗 הרעיון הזה יחזור בשיעור 10 כשנבחן איפה רובוטים יכולים להיכנס לשרשרת</p>
     </div>
   </div>
@@ -304,15 +305,15 @@
       <div class="space-y-4">
         <div>
           <label class="block font-bold text-gray-700 mb-2">📛 שם / כינוי:</label>
-          <input id="p-name" type="text" maxlength="30" placeholder="ראשי תיבות, כינוי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
+          <input id="p-name" data-answer-key="name" type="text" maxlength="30" placeholder="ראשי תיבות, כינוי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
         </div>
         <div>
           <label class="block font-bold text-gray-700 mb-2">🌱 למה הצטרפתי ל"גדלים למחר"? (משפט אחד)</label>
-          <input id="p-why" type="text" maxlength="120" placeholder="הצטרפתי כי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
+          <input id="p-why" data-answer-key="why" type="text" maxlength="120" placeholder="הצטרפתי כי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
         </div>
         <div>
           <label class="block font-bold text-gray-700 mb-2">🔮 מה הכי מסקרן אותי לגלות השנה?</label>
-          <input id="p-curious" type="text" maxlength="120" placeholder="הכי מסקרן לי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
+          <input id="p-curious" data-answer-key="curious" type="text" maxlength="120" placeholder="הכי מסקרן לי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
         </div>
       </div>
       <button onclick="savePassport()" class="mt-5 w-full bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg transition-colors">📔 שמור את הדרכון</button>
@@ -377,7 +378,7 @@
         <h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3>
       </div>
       <p class="text-gray-800 font-bold text-lg mb-3">"איך האתגר של 'להאכיל 10 מיליארד' מתחבר לפרויקט שתבנו ותציגו בתערוכה בפברואר?"</p>
-      <textarea id="north-star" rows="2" placeholder="הפרויקט שלנו יכול לתרום על ידי..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
+      <textarea id="north-star" data-answer-key="l01_northstar" rows="2" placeholder="הפרויקט שלנו יכול לתרום על ידי..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
     </div>
 
     <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
@@ -436,8 +437,8 @@ function buildCmp() {
     row.className = 'cmp-row flex items-center gap-3 p-3';
     row.id = 'cr' + i;
     row.innerHTML = `<span class="flex-1 text-sm font-bold text-gray-700">${item.text}</span>
-      <button class="cmp-btn px-3 py-2 text-sm font-bold" onclick="cmpAns(${i},'שדה',this)">שדה 🌾</button>
-      <button class="cmp-btn px-3 py-2 text-sm font-bold" onclick="cmpAns(${i},'אנכי',this)">אנכי 📦</button>`;
+      <button class="cmp-btn px-3 py-2 text-sm font-bold" data-val="שדה" onclick="cmpAns(${i},'שדה',this)">שדה 🌾</button>
+      <button class="cmp-btn px-3 py-2 text-sm font-bold" data-val="אנכי" onclick="cmpAns(${i},'אנכי',this)">אנכי 📦</button>`;
     zone.appendChild(row);
   });
 }
@@ -449,6 +450,10 @@ function cmpAns(i, ans, el) {
   row.querySelectorAll('.cmp-btn').forEach(b => b.disabled = true);
   const ok = ans === cmpData[i].ans;
   el.classList.add(ok ? 'picked-correct' : 'picked-wrong');
+  if (!ok) {
+    const correctBtn = row.querySelector(`.cmp-btn[data-val="${cmpData[i].ans}"]`);
+    if (correctBtn) correctBtn.classList.add('picked-correct');
+  }
   cmpDone++;
   if (cmpDone === cmpData.length) {
     document.getElementById('cmp-done').classList.remove('hidden');
@@ -547,6 +552,9 @@ function init() {
   if (p.name)    { document.getElementById('p-name').value    = p.name; }
   if (p.why)     { document.getElementById('p-why').value     = p.why; }
   if (p.curious) { document.getElementById('p-curious').value = p.curious; }
+
+  // שמירה אוטומטית לשדות טקסט חופשי (data-answer-key)
+  GC.bindOpenAnswers();
 }
 
 init();

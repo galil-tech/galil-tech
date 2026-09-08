@@ -253,6 +253,19 @@
     return fetch(url).then((r) => r.json()).catch((err) => ({ ok: false, error: String(err), rows: [], groups: [] }));
   };
 
+  // רשימת תלמידי כיתה ספציפית למורה+כיתה מהרשימה (data/roster.js) - מפעיל dump מלא
+  // (pullAdminAll, אותו endpoint שמשמש את admin-dashboard.html) ומסנן בצד הלקוח לפי
+  // school_id+class_id, בלי לגעת ב-Apps Script.
+  GC_SYNC.pullClass = function (school, classId) {
+    return GC_SYNC.pullAdminAll().then(function (resp) {
+      if (!resp || !resp.ok) return resp;
+      const rows = (resp.rows || []).filter(function (r) {
+        return String(r.school_id) === String(school) && String(r.class_id) === String(classId);
+      });
+      return Object.assign({}, resp, { rows: rows });
+    });
+  };
+
   GC_SYNC.deleteGalleryItem = function (id) {
     const c = cfg();
     if (!c.enabled || !c.url) return Promise.resolve({ ok: false, skipped: true });

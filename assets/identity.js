@@ -123,8 +123,32 @@
   }
 
   // ── מודל כניסה לתלמיד/קבוצה ──
+  // אם GC_ROSTER טעון (data/roster.js) — בית ספר וכיתה נבחרים מרשימה סגורה (SELECT),
+  // ובחירת בית ספר מרעננת את רשימת הכיתות. בלי roster — נשאר input חופשי כמו קודם.
+  function schoolOptionsHtml(selected) {
+    return GC_ROSTER.schools.map(function (s) {
+      return '<option value="' + esc(s.name) + '"' + (s.name === selected ? ' selected' : '') + '>' + esc(s.name) + '</option>';
+    }).join('');
+  }
+  function classOptionsHtml(schoolName, selected) {
+    const s = GC_ROSTER.schools.find(function (sc) { return sc.name === schoolName; }) || GC_ROSTER.schools[0];
+    if (!s) return '';
+    return s.classes.map(function (c) {
+      return '<option value="' + esc(c.id) + '"' + (c.id === selected ? ' selected' : '') + '>' + esc(c.name) + '</option>';
+    }).join('');
+  }
+
   function showStudentModal(prefill) {
     prefill = prefill || {};
+    const hasRoster = !!(window.GC_ROSTER && GC_ROSTER.schools && GC_ROSTER.schools.length);
+    const selectStyle = 'width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;background:white;';
+    const defaultSchool = hasRoster ? (prefill.school || GC_ROSTER.schools[0].name) : '';
+    const schoolFieldHtml = hasRoster
+      ? '<select id="gc-id-school" style="' + selectStyle + '">' + schoolOptionsHtml(defaultSchool) + '</select>'
+      : '<input id="gc-id-school" value="' + esc(prefill.school || '') + '" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: מעלה">';
+    const classFieldHtml = hasRoster
+      ? '<select id="gc-id-class" style="' + selectStyle + '">' + classOptionsHtml(defaultSchool, prefill.className || '') + '</select>'
+      : '<input id="gc-id-class" value="' + esc(prefill.className || '') + '" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: ח1">';
     const overlay = document.createElement('div');
     overlay.id = 'gc-id-modal';
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:Heebo,sans-serif;direction:rtl;';
@@ -134,9 +158,9 @@
       '<h2 style="font-weight:900;font-size:1.3rem;text-align:center;color:#166534;margin-bottom:4px;">ברוכים הבאים לגדלים למחר!</h2>' +
       '<p style="font-size:.85rem;color:#666;text-align:center;margin-bottom:18px;">כמה פרטים כדי שנזכור אתכם בפעם הבאה (נשמר במחשב הזה בלבד, בשלב זה)</p>' +
       '<label style="font-size:.8rem;font-weight:700;color:#333;">בית ספר</label>' +
-      '<input id="gc-id-school" value="' + esc(prefill.school || '') + '" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: מעלה">' +
+      schoolFieldHtml +
       '<label style="font-size:.8rem;font-weight:700;color:#333;">כיתה</label>' +
-      '<input id="gc-id-class" value="' + esc(prefill.className || '') + '" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: ח1">' +
+      classFieldHtml +
       '<label style="font-size:.8rem;font-weight:700;color:#333;">שם פרטי (שלכם, או שם פרטי אחד מבני הזוג)</label>' +
       '<input id="gc-id-name" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: דנה">' +
       '<p style="font-size:.72rem;color:#999;margin:-8px 0 12px;">שם פרטי בלבד מספיק — הקוד האישי הוא מה שבאמת מזהה אתכם</p>' +
@@ -152,6 +176,12 @@
       '<button id="gc-id-skip" style="width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;color:#555;font-size:.8rem;font-weight:700;cursor:pointer;padding:9px;">⏭ אין זמן עכשיו — דלג/י והתחל/י ישר (אפשר למלא בפעם הבאה)</button>' +
       '</div>';
     document.body.appendChild(overlay);
+
+    if (hasRoster) {
+      document.getElementById('gc-id-school').addEventListener('change', function () {
+        document.getElementById('gc-id-class').innerHTML = classOptionsHtml(this.value, '');
+      });
+    }
 
     function fields() {
       return {

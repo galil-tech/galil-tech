@@ -9,6 +9,10 @@
   <link rel="stylesheet" href="assets/core.css">
   <script src="assets/core.js"></script>
   <script src="assets/points.config.js"></script>
+  <script src="data/roster.js"></script>
+  <script src="assets/identity.js"></script>
+  <script src="data/sheets-config.js"></script>
+  <script src="assets/sheets-sync.js"></script>
   <style>
     *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
     .badge-chip{display:inline-block;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:900;margin:3px;}
@@ -25,6 +29,23 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
 
+<!--
+  שער כניסה: סיסמת מדריך/ה או רכז/ת מגמה, לפי data/roster.js (GC_ROSTER.findTeacher).
+  אחרי כניסה מוצגת בחירת כיתה מתוך הכיתות שהמדריך/ה הזה/ו רואה + לוח התלמיד הבודד הקיים (יבוא JSON) נשאר מתחת.
+-->
+<div id="pw-gate" class="min-h-screen flex items-center justify-center px-6">
+  <div class="bg-white rounded-3xl shadow-2xl p-10 max-w-sm w-full text-center">
+    <div class="text-5xl mb-3">🔐</div>
+    <h1 class="text-xl font-black mb-2">לוח בקרה למורה</h1>
+    <p class="text-sm text-gray-500 mb-6">גישה למדריכים ולרכז/ת המגמה בלבד</p>
+    <input id="pw" type="password" placeholder="סיסמה" class="w-full border-2 rounded-xl p-3 mb-3 text-center" onkeydown="if(event.key==='Enter')tryLogin()">
+    <button onclick="tryLogin()" class="w-full bg-green-700 hover:bg-green-800 text-white rounded-xl p-3 font-bold">כניסה</button>
+    <p id="pw-err" class="hidden text-red-600 text-sm mt-3">סיסמה שגויה</p>
+    <a href="index.html" class="block mt-4 text-xs text-gray-400 hover:text-gray-600">← בחזרה לדף הבית</a>
+  </div>
+</div>
+
+<div id="page" class="hidden">
 <nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
   <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center flex-wrap gap-3">
     <div>
@@ -42,10 +63,28 @@
 
 <div class="max-w-6xl mx-auto px-6 py-10 space-y-8">
 
+  <!-- CLASS ROSTER (מהענן, לפי data/roster.js) -->
+  <div class="bg-white rounded-3xl shadow-lg p-6">
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+      <div>
+        <h2 class="text-xl font-black text-gray-800">👥 הכיתה שלי</h2>
+        <p class="text-sm text-gray-500" id="class-teacher-label"></p>
+      </div>
+      <div class="flex gap-2 items-center flex-wrap">
+        <select id="class-select" onchange="loadClass()" class="border-2 border-gray-200 rounded-xl px-3 py-2 text-sm font-bold"></select>
+        <button onclick="loadClass()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl text-sm font-bold">🔄 רענון</button>
+      </div>
+    </div>
+    <div id="class-sync-off" class="hidden bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 text-center text-amber-800 text-sm mb-2">
+      ⚠️ הסנכרון לגיליון כבוי במחשב הזה - אין נתונים אמיתיים להציג כאן.
+    </div>
+    <div id="class-table-wrap"></div>
+  </div>
+
   <!-- READ-ONLY banner -->
   <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 text-sm text-blue-800 flex items-center gap-3">
     <span class="text-2xl">ℹ️</span>
-    <span><b>צפייה בלבד.</b> הלוח קורא נתונים מה-localStorage של הדפדפן הנוכחי. להצגת תלמיד אחר — לחץ "יבא נתוני תלמיד" (JSON שיוצא ממכשיר התלמיד).</span>
+    <span><b>צפייה בלבד.</b> הלוח שלמטה קורא נתונים מה-localStorage של הדפדפן הנוכחי. להצגת תלמיד אחר — לחץ "יבא נתוני תלמיד" (JSON שיוצא ממכשיר התלמיד).</span>
   </div>
 
   <!-- STUDENT HEADER CARD -->
@@ -171,8 +210,102 @@
     <div id="import-error" class="hidden mt-2 text-red-600 text-sm"></div>
   </div>
 </div>
+</div><!-- /#page -->
 
 <script>
+// ── LOGIN GATE (data/roster.js — GC_ROSTER.findTeacher) ─────────────────────
+function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c])); }
+
+function tryLogin() {
+  const v = document.getElementById('pw').value;
+  const res = window.GC_ROSTER && GC_ROSTER.findTeacher(v);
+  if (res) {
+    sessionStorage.setItem('gc_teacher_dash_pw', v);
+    enterPage(res);
+  } else {
+    document.getElementById('pw-err').classList.remove('hidden');
+  }
+}
+
+function enterPage(res) {
+  document.getElementById('pw-gate').classList.add('hidden');
+  document.getElementById('page').classList.remove('hidden');
+  document.getElementById('class-teacher-label').textContent = res.label;
+  populateClassSelect(res.classes);
+  loadClass();
+  renderDashboard();
+}
+
+(function () {
+  const savedPw = sessionStorage.getItem('gc_teacher_dash_pw');
+  const res = savedPw && window.GC_ROSTER && GC_ROSTER.findTeacher(savedPw);
+  if (res) enterPage(res);
+})();
+
+// ── CLASS ROSTER (מהענן) ─────────────────────────────────────────────────
+function populateClassSelect(classes) {
+  const sel = document.getElementById('class-select');
+  sel.innerHTML = classes.map((c, i) => `<option value="${i}">${esc(c.schoolName)} · כיתה ${esc(c.className)}</option>`).join('');
+  sel._classes = classes;
+}
+
+function syncEnabled() {
+  return !!(window.GC_SYNC && window.SHEETS_CONFIG && window.SHEETS_CONFIG.enabled);
+}
+
+async function loadClass() {
+  const sel = document.getElementById('class-select');
+  const c = sel._classes && sel._classes[Number(sel.value)];
+  if (!c) return;
+  if (!syncEnabled()) {
+    document.getElementById('class-sync-off').classList.remove('hidden');
+    document.getElementById('class-table-wrap').innerHTML = '';
+    return;
+  }
+  document.getElementById('class-sync-off').classList.add('hidden');
+  document.getElementById('class-table-wrap').innerHTML = '<p class="text-gray-400 text-sm py-4 text-center">טוען...</p>';
+  const resp = await GC_SYNC.pullClass(c.schoolName, c.classId);
+  const rows = (resp && resp.ok && resp.rows) ? resp.rows : [];
+  renderClassTable(rows);
+}
+
+function classOpenAnswer(passportJson, key) {
+  let p = {};
+  try { p = JSON.parse(passportJson || '{}'); } catch (e) {}
+  if (p.answers && p.answers[key] && p.answers[key].text) return p.answers[key].text;
+  return p[key] || '';
+}
+
+function renderClassTable(rows) {
+  const wrap = document.getElementById('class-table-wrap');
+  if (!rows.length) {
+    wrap.innerHTML = '<p class="text-gray-400 text-sm py-8 text-center">אין עדיין תלמידים בכיתה הזו בגיליון</p>';
+    return;
+  }
+  wrap.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-sm">
+    <thead><tr class="text-right text-gray-400 border-b">
+      <th class="py-2 pl-3">שם</th>
+      <th class="py-2 pl-3">קוד</th>
+      <th class="py-2 pl-3">עלים ש׳1</th>
+      <th class="py-2 pl-3">למה הצטרפתי</th>
+      <th class="py-2 pl-3">מה הכי מסקרן</th>
+      <th class="py-2 pl-3">רעיון שרשרת אספקה</th>
+      <th class="py-2 pl-3">כוכב הצפון</th>
+    </tr></thead>
+    <tbody>${rows.map(r => `
+      <tr class="border-b last:border-0 align-top">
+        <td class="py-2 pl-3 font-bold">${esc(r.student_name)}</td>
+        <td class="py-2 pl-3 text-gray-400">${esc(r.code)}</td>
+        <td class="py-2 pl-3 font-black text-green-700">${esc(r.ls1 || 0)}</td>
+        <td class="py-2 pl-3">${esc(classOpenAnswer(r.passport1, 'why'))}</td>
+        <td class="py-2 pl-3">${esc(classOpenAnswer(r.passport1, 'curious'))}</td>
+        <td class="py-2 pl-3">${esc(classOpenAnswer(r.passport1, 'l01_supply'))}</td>
+        <td class="py-2 pl-3">${esc(classOpenAnswer(r.passport1, 'l01_northstar'))}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
 // ── DATA SOURCE ── (defaults to localStorage, overrideable via import)
 let dataSource = localStorage;
 let importedData = null; // when not null, overrides localStorage reads
@@ -462,8 +595,8 @@ function doImport() {
   }
 }
 
-// ── MAIN ─────────────────────────────────────────────────────────────────────
-renderDashboard();
+// renderDashboard() נקרא מ-enterPage() אחרי כניסה מוצלחת (ראה שער הכניסה למעלה בקובץ),
+// ומחדש בכל doImport() — לא צריך קריאה נוספת כאן.
 </script>
 </body>
 </html>
