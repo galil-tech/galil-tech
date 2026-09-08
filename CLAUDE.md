@@ -149,6 +149,14 @@
 - בחירה מ-3 / השלמת מילה → lesson-07
 - סימולטור LED / SVG ארדואינו → simulators/
 - תרחישי אבחון → simulator.html
+- Onboarding מונחה-מסקוט (spotlight על אלמנט + בועת גרגיר) → GC.Tutorial ב-assets/core.js (ראה lesson-01.html)
+
+---
+
+## טutorial פיצ'ר חדש
+כל פיצ'ר חדש שתלמיד פוגש בפעם הראשונה חייב 2–4 צעדי `GC.Tutorial` עם `id` ייחודי (`assets/core.js`).
+כל צעד חייב אפשרות «דלג», ולסמן `localStorage['gc_tutorial_<id>']='1'` בסיום/דילוג כדי שלא ירוץ שוב.
+אל תריץ טutorial ארוך מ-5 צעדים בשיעור רגיל.
 
 ---
 

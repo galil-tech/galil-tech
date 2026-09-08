@@ -76,17 +76,6 @@
 <!-- ══ STEP 1: פתיחה + הימור האוכלוסייה ══ -->
 <div class="step-panel active" id="step-1">
   <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
-    <!-- Tutorial (only in lesson 1) -->
-    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 mb-7">
-      <h3 class="font-black text-lime-900 text-xl mb-3">👋 ברוכים הבאים ללומדה!</h3>
-      <ul class="text-sm text-gray-700 space-y-2">
-        <li>📋 <b>עובדים בזוגות</b> – מחשב אחד לשני תלמידים. השתיל האישי נשאר אישי.</li>
-        <li>🌿 כל תשובה נכונה ופעילות מרוויחה <b>עלים 🌿</b> – המטבע של התוכנית</li>
-        <li>🔘 <b>הנקודות</b> בראש הדף מראות באיזה שלב אתם</li>
-        <li>⭐ בסוף כל שיעור תמצאו את <b>שאלת כוכב הצפון</b> – המחברת את מה שלמדתם לתערוכה שלכם</li>
-      </ul>
-    </div>
-
     <div class="flex items-center gap-3 mb-6">
       <span class="text-4xl">🌍</span>
       <div>
@@ -555,6 +544,33 @@ function init() {
 
   // שמירה אוטומטית לשדות טקסט חופשי (data-answer-key)
   GC.bindOpenAnswers();
+
+  maybeStartTutorial();
+}
+
+// ── TUTORIAL (רק שיעור 1) ──────────────────────────────────────────────────
+// רץ פעם אחת בלבד (GC.Tutorial בודק gc_tutorial_l01 בעצמו). ממתין ל-window
+// 'load' ואז לסגירת מודל הזהות (#gc-id-modal, ראה assets/identity.js) - כדי
+// שה-spotlight לא יופיע מתחת/מעל המודל של GC_ID.ensureStudentIdentity().
+function maybeStartTutorial() {
+  if (localStorage.getItem('gc_tutorial_l01')) return;
+  function ready() {
+    if (document.getElementById('gc-id-modal')) { setTimeout(ready, 300); return; }
+    GC.Tutorial.start('l01', [
+      { target: '#mascot', emoji: '🌱', wait: 'next',
+        text: 'שלום, אני גרגיר. אני איתכם כל השיעור. כשאני מדבר — כדאי להקשיב.' },
+      { target: '#lc', emoji: '🌿', wait: 'next',
+        text: 'כאן נספרים העלים 🌿. כל תשובה נכונה מוסיפה עלים.' },
+      { target: '.bet-btn', emoji: '🤔', wait: 'click',
+        text: 'לחצו על אחת התשובות. נחשו — גם אם טועים מקבלים עלים.' },
+      { target: '#dots', emoji: '🔘', wait: 'next',
+        text: 'הנקודות האלה הן שלבי השיעור. אפשר לחזור אחורה, לא לדלג קדימה.' },
+      { target: null, emoji: '⭐', wait: 'next',
+        text: 'עובדים בזוג על מחשב אחד. בסוף השיעור יש שאלת כוכב הצפון — אל תדלגו עליה. יאללה.' },
+    ]);
+  }
+  if (document.readyState === 'complete') ready();
+  else window.addEventListener('load', ready);
 }
 
 init();

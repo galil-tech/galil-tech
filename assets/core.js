@@ -216,6 +216,146 @@ GC.mascotSay = function(msg, emoji) {
   }, 5000);
 };
 
+// ── TUTORIAL ───────────────────────────────────────────────────────────────
+// מנוע spotlight גנרי מבוסס-מסקוט, לשימוש חוזר בכל פיצ'ר חדש (לא רק שיעור 1).
+// לא בונה UI חדש - משתמש ב-#mascot/#mascot-bubble הקיימים, רק מגדיל את הבועה
+// ומאפשר בה קליק (pointer-events:auto) בזמן הטutorial. חסימת המסך נעשית ע"י 4
+// מלבנים כהים סביב האלמנט המודגש (לא מסכה/clip-path) - כך שהחור עצמו הוא "אין
+// שם שום אלמנט", והקליק על האלמנט המודגש עצמו מגיע אליו ישירות בלי יירוט
+// (חשוב לצעד wait:'click' על כפתור עם onclick קיים - לא שוברים אותו).
+GC.Tutorial = (function () {
+  let steps = [], idx = 0, tutId = null, dom = null, resizeHandler = null;
+  let curTarget = null, curClickHandler = null;
+  let mascotPrevZ = '';
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;' }[c]));
+  }
+
+  function buildOverlay() {
+    if (dom) return;
+    const mk = () => {
+      const d = document.createElement('div');
+      d.style.cssText = 'position:fixed;background:rgba(0,0,0,.62);z-index:9990;pointer-events:auto;';
+      document.body.appendChild(d);
+      return d;
+    };
+    dom = { top: mk(), bottom: mk(), left: mk(), right: mk() };
+    dom.ring = document.createElement('div');
+    dom.ring.style.cssText = 'position:fixed;z-index:9991;border:3px solid #a3e635;border-radius:14px;box-shadow:0 0 0 4px rgba(163,230,53,.35);pointer-events:none;display:none;';
+    document.body.appendChild(dom.ring);
+    dom.skip = document.createElement('button');
+    dom.skip.type = 'button';
+    dom.skip.textContent = 'דלג ✕';
+    dom.skip.style.cssText = 'position:fixed;top:14px;left:14px;z-index:9995;background:white;color:#166534;font-family:Heebo,sans-serif;font-weight:800;font-size:.8rem;padding:8px 16px;border:none;border-radius:20px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.25);';
+    dom.skip.onclick = function () { GC.Tutorial.skip(); };
+    document.body.appendChild(dom.skip);
+
+    // המסקוט חייב לצייר מעל המלבנים הכהים (שהם z-index:9990) כדי שהבועה תיראה ותהיה לחיצה
+    const wrap = document.getElementById('mascot-wrap');
+    if (wrap) { mascotPrevZ = wrap.style.zIndex || ''; wrap.style.zIndex = '9996'; }
+  }
+
+  function placeHole(rect) {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    if (!rect) {
+      Object.assign(dom.top.style,    { top:'0px', left:'0px', width:vw+'px', height:vh+'px' });
+      Object.assign(dom.bottom.style, { width:'0px', height:'0px' });
+      Object.assign(dom.left.style,   { width:'0px', height:'0px' });
+      Object.assign(dom.right.style,  { width:'0px', height:'0px' });
+      dom.ring.style.display = 'none';
+      return;
+    }
+    const pad = 8;
+    const t = Math.max(rect.top - pad, 0), b = Math.min(rect.bottom + pad, vh);
+    const l = Math.max(rect.left - pad, 0), r = Math.min(rect.right + pad, vw);
+    Object.assign(dom.top.style,    { top:'0px', left:'0px', width:vw+'px', height:t+'px' });
+    Object.assign(dom.bottom.style, { top:b+'px', left:'0px', width:vw+'px', height:Math.max(vh-b,0)+'px' });
+    Object.assign(dom.left.style,   { top:t+'px', left:'0px', width:l+'px', height:(b-t)+'px' });
+    Object.assign(dom.right.style,  { top:t+'px', left:r+'px', width:Math.max(vw-r,0)+'px', height:(b-t)+'px' });
+    Object.assign(dom.ring.style,   { top:t+'px', left:l+'px', width:(r-l)+'px', height:(b-t)+'px', display:'block' });
+  }
+
+  function clearTargetListener() {
+    if (curTarget && curClickHandler) curTarget.removeEventListener('click', curClickHandler);
+    curTarget = null; curClickHandler = null;
+  }
+
+  function renderStep() {
+    const step = steps[idx];
+    if (!step) { finish(); return; }
+    clearTargetListener();
+    const target = step.target ? document.querySelector(step.target) : null;
+    if (target && target.scrollIntoView) target.scrollIntoView({ block: 'center', behavior: 'auto' });
+    placeHole(target ? target.getBoundingClientRect() : null);
+
+    const m = document.getElementById('mascot');
+    const b = document.getElementById('mascot-bubble');
+    if (m && step.emoji) m.textContent = step.emoji;
+    if (b) {
+      clearTimeout(GC._mascTimer); // לא לתת ל-mascotSay הרגיל לסגור את הבועה מתחת לרגלינו
+      b.style.pointerEvents = 'auto';
+      b.style.maxWidth = '260px';
+      b.classList.remove('hidden');
+      if (m) m.classList.add('mascot-bounce');
+      const waitNext = step.wait === 'next' || (step.wait === 'click' && !target); // בלי target אין מה ללחוץ עליו - fallback לכפתור
+      b.innerHTML = '<div>' + esc(step.text) + '</div>' +
+        (waitNext ? '<button id="gc-tut-next" style="margin-top:10px;background:#166534;color:white;border:none;padding:8px 16px;border-radius:12px;font-weight:800;cursor:pointer;font-size:.85rem;">הבנתי ←</button>' : '');
+      if (waitNext) document.getElementById('gc-tut-next').onclick = function () { next(); };
+      else if (target) {
+        curClickHandler = function () { next(); };
+        curTarget = target;
+        target.addEventListener('click', curClickHandler);
+      }
+    }
+  }
+
+  function next() { idx++; renderStep(); }
+
+  function teardown() {
+    clearTargetListener();
+    if (resizeHandler) {
+      window.removeEventListener('resize', resizeHandler);
+      window.removeEventListener('scroll', resizeHandler);
+      resizeHandler = null;
+    }
+    if (dom) {
+      [dom.top, dom.bottom, dom.left, dom.right, dom.ring, dom.skip].forEach(el => el && el.remove());
+      dom = null;
+    }
+    const wrap = document.getElementById('mascot-wrap');
+    if (wrap) wrap.style.zIndex = mascotPrevZ;
+    const b = document.getElementById('mascot-bubble');
+    if (b) { b.style.pointerEvents = ''; b.style.maxWidth = ''; b.classList.add('hidden'); }
+    const m = document.getElementById('mascot');
+    if (m) m.classList.remove('mascot-bounce');
+  }
+
+  function finish() {
+    if (tutId) localStorage.setItem('gc_tutorial_' + tutId, '1');
+    teardown();
+  }
+
+  return {
+    start: function (id, stepList) {
+      if (!id || !stepList || !stepList.length) return;
+      if (localStorage.getItem('gc_tutorial_' + id) === '1') return;
+      tutId = id; steps = stepList; idx = 0;
+      buildOverlay();
+      resizeHandler = function () {
+        const step = steps[idx];
+        const target = step && step.target ? document.querySelector(step.target) : null;
+        placeHole(target ? target.getBoundingClientRect() : null);
+      };
+      window.addEventListener('resize', resizeHandler);
+      window.addEventListener('scroll', resizeHandler, { passive: true });
+      renderStep();
+    },
+    skip: function () { finish(); },
+    done: function () { finish(); },
+  };
+})();
+
 // ── REVEAL ─────────────────────────────────────────────────────────────────
 GC.reveal = function(id) {
   const el = document.getElementById(id);
