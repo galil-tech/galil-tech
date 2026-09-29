@@ -45,30 +45,29 @@
     localStorage.removeItem('gc_unlocked_through');
   };
 
-  // בודק כמה שיעורים "מהשורה" (1,2,3... בלי חורים) הושלמו במלואם - הגיעו לשלב האחרון
-  // (lesson{N}_completed) *וגם* צברו את מלוא העלים האפשריים (ls{N} === GC.LESSON_MAX[N] -
-  // מובטח שלא לחרוג הודות לחסם ב-core.js). זו הבדיקה "עשה את המקסימום" שביקש המשתמש.
-  // תלוי ב-GC.LESSON_MAX (assets/points.config.js) - אם לא טעון בעמוד הזה (לדוגמה
-  // wall.html/leaves.html), פשוט לא מקדם את הנעילה, בלי לזרוק שגיאה.
+  // "השיעור הגבוה ביותר שמותר לפתוח" = max(הערך השמור, השיעור שאחרי השיעור האחרון
+  // שסומן lesson{N}_completed). «הושלם» = הגיע לשלב האחרון בלומדה (core.js) - בלי דרישת
+  // מקסימום עלים (GC.LESSON_MAX נשאר לגיימיפיקציה בלבד). לעולם לא מוריד ערך קיים.
   GC_ID.computeUnlockedThrough = function () {
-    const current = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10);
-    if (!window.GC || !GC.LESSON_MAX) return current;
-    let n = 1;
-    while (n <= 17 && GC.LESSON_MAX[n] &&
-      localStorage.getItem('lesson' + n + '_completed') === '1' &&
-      parseInt(localStorage.getItem('ls' + n) || '0', 10) >= GC.LESSON_MAX[n]) {
-      n++;
+    const current = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
+    let lastDone = 0;
+    for (let n = 1; n <= 17; n++) {
+      if (localStorage.getItem('lesson' + n + '_completed') === '1') lastDone = n;
     }
-    return Math.max(current, n); // n כאן = "השיעור הבא שמותר לפתוח"
+    return Math.max(current, Math.min(17, lastDone + 1));
+  };
+  // מחשב ושומר מקומית; מחזיר את הערך. נקרא מ-core.js ברגע סיום שיעור ומ-index.html אחרי pullMine.
+  GC_ID.syncUnlockedThrough = function () {
+    const n = GC_ID.computeUnlockedThrough();
+    localStorage.setItem('gc_unlocked_through', n);
+    return n;
   };
 
-  // יציאה מלאה מהסשן: מקדם את הנעילה אם התלמיד/ה עשה/תה את המקסימום (רק כאן, לא
-  // בסנכרון שוטף - כדי שלא יהיה מעבר ישיר לשיעור הבא באותו סשן בלי יציאה בפועל),
-  // דוחף סנכרון אחרון, ואז מנקה זהות+התקדמות ומרענן.
+  // יציאה מלאה מהסשן (פינוי מחשב משותף): שומר את הנעילה העדכנית, דוחף סנכרון אחרון,
+  // ואז מנקה זהות+התקדמות מקומית ומרענן. ההתקדמות חוזרת מהגיליון בכניסה הבאה.
   GC_ID.logout = function () {
     const id = GC_ID.getIdentity();
-    const bumped = GC_ID.computeUnlockedThrough();
-    localStorage.setItem('gc_unlocked_through', bumped);
+    GC_ID.syncUnlockedThrough();
     const finish = function () {
       GC_ID.clearIdentity();
       GC_ID.wipeLocalProgress();
@@ -126,15 +125,20 @@
   // ── מודל כניסה לתלמיד/קבוצה ──
   // אם GC_ROSTER טעון (data/roster.js) — בית ספר וכיתה נבחרים מרשימה סגורה (SELECT),
   // ובחירת בית ספר מרעננת את רשימת הכיתות. בלי roster — נשאר input חופשי כמו קודם.
+  // ה-value הוא שם בית הספר (לא ה-id) - זה מה שנשמר ב-school_id בגיליון מאז ההתחלה,
+  // ושינוי שלו היה מנתק תלמידים קיימים מהשורות שלהם. מתחיל ב"בחרו" כדי שלא ייבחר
+  // בטעות בית הספר הראשון ברשימה.
   function schoolOptionsHtml(selected) {
-    return GC_ROSTER.schools.map(function (s) {
+    return '<option value="">— בחרו בית ספר —</option>' + GC_ROSTER.schools.map(function (s) {
       return '<option value="' + esc(s.name) + '"' + (s.name === selected ? ' selected' : '') + '>' + esc(s.name) + '</option>';
     }).join('');
   }
   function classOptionsHtml(schoolName, selected) {
-    const s = GC_ROSTER.schools.find(function (sc) { return sc.name === schoolName; }) || GC_ROSTER.schools[0];
-    if (!s) return '';
-    return s.classes.map(function (c) {
+    const s = GC_ROSTER.schoolByName ? GC_ROSTER.schoolByName(schoolName)
+      : GC_ROSTER.schools.find(function (sc) { return sc.name === schoolName; });
+    if (!s) return '<option value="">— קודם בחרו בית ספר —</option>';
+    const list = s.classes.length === 1 ? '' : '<option value="">— בחרו כיתה —</option>';
+    return list + s.classes.map(function (c) {
       return '<option value="' + esc(c.id) + '"' + (c.id === selected ? ' selected' : '') + '>' + esc(c.name) + '</option>';
     }).join('');
   }
@@ -143,7 +147,7 @@
     prefill = prefill || {};
     const hasRoster = !!(window.GC_ROSTER && GC_ROSTER.schools && GC_ROSTER.schools.length);
     const selectStyle = 'width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;background:white;';
-    const defaultSchool = hasRoster ? (prefill.school || GC_ROSTER.schools[0].name) : '';
+    const defaultSchool = hasRoster ? (prefill.school || '') : '';
     const schoolFieldHtml = hasRoster
       ? '<select id="gc-id-school" style="' + selectStyle + '">' + schoolOptionsHtml(defaultSchool) + '</select>'
       : '<input id="gc-id-school" value="' + esc(prefill.school || '') + '" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;margin:4px 0 12px;font-size:.9rem;box-sizing:border-box;" placeholder="למשל: מעלה">';

@@ -84,6 +84,13 @@
     <div id="class-sync-off" class="hidden bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 text-center text-amber-800 text-sm mb-2">
       ⚠️ הסנכרון לגיליון כבוי במחשב הזה - אין נתונים אמיתיים להציג כאן.
     </div>
+    <!-- פתיחת שיעור לכיתה (נשמר בגיליון - GC_SYNC.setClassUnlock) -->
+    <div id="class-unlock-box" class="bg-lime-50 border-2 border-lime-200 rounded-2xl p-4 mb-4 flex flex-wrap items-center gap-3">
+      <span class="font-black text-green-900">🔓 פתיחת שיעור לכיתה</span>
+      <select id="class-unlock-n" class="border-2 border-gray-200 rounded-xl px-3 py-2 text-sm font-bold"></select>
+      <button id="class-unlock-btn" onclick="unlockForClass()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl text-sm font-bold">פתח לכיתה</button>
+      <span id="class-unlock-status" class="text-xs text-gray-500"></span>
+    </div>
     <div id="class-table-wrap"></div>
   </div>
 
@@ -294,7 +301,64 @@ async function loadClass() {
   document.getElementById('class-table-wrap').innerHTML = '<p class="text-gray-400 text-sm py-4 text-center">טוען...</p>';
   const resp = await GC_SYNC.pullClass(c.schoolName, c.classId);
   const rows = (resp && resp.ok && resp.rows) ? resp.rows : [];
+  const classN = (resp && resp.classUnlockedThrough) || 0;
+  document.getElementById('class-unlock-status').textContent = classN
+    ? 'כרגע פתוח לכל הכיתה עד שיעור ' + classN : '';
   renderClassTable(rows);
+}
+
+// ── פתיחת שיעור ע"י המדריך/ה ──────────────────────────────────────────────
+// נשמר בגיליון (Apps Script: class_unlock / student_unlock) - לא ב-localStorage של המורה.
+// אם הפריסה של Apps Script ישנה ולא מכירה את הפעולות האלה - הכפתורים לא שולחים כלום.
+(function () {
+  const sel = document.getElementById('class-unlock-n');
+  let html = '';
+  for (let i = 1; i <= 17; i++) html += `<option value="${i}">שיעור ${i}</option>`;
+  sel.innerHTML = html;
+  sel.value = '2';
+})();
+
+function currentClass() {
+  const sel = document.getElementById('class-select');
+  return sel._classes && sel._classes[Number(sel.value)];
+}
+
+function unlockErrorText(resp) {
+  if (resp && resp.error === 'server_outdated') return 'צריך קודם לעדכן את ה-Apps Script (Deploy → New version) - הפעולה לא בוצעה.';
+  return 'הפתיחה נכשלה - נסו שוב. (' + ((resp && resp.error) || 'שגיאת רשת') + ')';
+}
+
+async function unlockForClass() {
+  const c = currentClass();
+  if (!c) return;
+  if (!syncEnabled()) { alert('הסנכרון לגיליון כבוי - אי אפשר לפתוח שיעור.'); return; }
+  const n = Number(document.getElementById('class-unlock-n').value);
+  if (!confirm(`כל התלמידים בכיתה הזו יוכלו להיכנס לשיעור ${n} גם אם לא סיימו את הקודם.\n\n${c.schoolName} · כיתה ${c.className}`)) return;
+  const btn = document.getElementById('class-unlock-btn');
+  const status = document.getElementById('class-unlock-status');
+  btn.disabled = true; status.textContent = 'פותח...';
+  const resp = await GC_SYNC.setClassUnlock(c.schoolName, c.classId, n);
+  btn.disabled = false;
+  if (resp && resp.ok) {
+    status.textContent = `✅ נפתח לכיתה עד שיעור ${resp.unlocked_through} (עודכנו ${resp.students_updated} תלמידים; החדשים יקבלו בכניסה)`;
+    loadClass();
+  } else {
+    status.textContent = '⚠️ ' + unlockErrorText(resp);
+  }
+}
+
+async function unlockForStudent(code, name, current) {
+  const c = currentClass();
+  if (!c || !syncEnabled()) return;
+  const suggested = Math.min(17, (Number(current) || 1) + 1);
+  const v = prompt(`פתיחת שיעור ל${name} (קוד ${code}).\nעד איזה שיעור לפתוח? (1–17)`, String(suggested));
+  if (v === null) return;
+  const n = parseInt(v, 10);
+  if (!(n >= 1 && n <= 17)) { alert('מספר שיעור בין 1 ל-17'); return; }
+  if (!confirm(`${name} יוכל/תוכל להיכנס לשיעור ${n} גם בלי לסיים את הקודם. להמשיך?`)) return;
+  const resp = await GC_SYNC.setStudentUnlock(c.schoolName, c.classId, code, n);
+  if (resp && resp.ok) loadClass();
+  else alert(unlockErrorText(resp));
 }
 
 function classOpenAnswer(passportJson, key) {
@@ -319,6 +383,7 @@ function renderClassTable(rows) {
       <th class="py-2 pl-3">מה הכי מסקרן</th>
       <th class="py-2 pl-3">רעיון שרשרת אספקה</th>
       <th class="py-2 pl-3">כוכב הצפון</th>
+      <th class="py-2 pl-3">פתוח עד</th>
     </tr></thead>
     <tbody>${rows.map(r => `
       <tr class="border-b last:border-0 align-top">
@@ -329,6 +394,10 @@ function renderClassTable(rows) {
         <td class="py-2 pl-3">${esc(classOpenAnswer(r.passport1, 'curious'))}</td>
         <td class="py-2 pl-3">${esc(classOpenAnswer(r.passport1, 'l01_supply'))}</td>
         <td class="py-2 pl-3">${esc(classOpenAnswer(r.passport1, 'l01_northstar'))}</td>
+        <td class="py-2 pl-3 whitespace-nowrap">
+          <span class="font-black">${esc(r.unlocked_through || 1)}</span>
+          <button onclick="unlockForStudent('${esc(r.code)}','${esc(String(r.student_name || '').replace(/['\\]/g, ''))}','${esc(r.unlocked_through || 1)}')" class="mr-2 text-xs bg-lime-100 hover:bg-lime-200 text-green-800 px-2 py-1 rounded-lg font-bold" title="פתח שיעור לתלמיד הזה">🔓 פתח</button>
+        </td>
       </tr>`).join('')}
     </tbody>
   </table></div>`;

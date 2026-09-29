@@ -87,7 +87,7 @@
         <div class="text-green-300 text-xs mt-1" id="hero-lvl">רמה: 🌱 זרע</div>
       </div>
       <div class="flex flex-wrap justify-center gap-4">
-        <a href="#lessons-section" class="card bg-lime-500 hover:bg-lime-400 text-green-900 px-10 py-5 rounded-3xl text-xl font-black shadow-xl">🚀 לשיעורים</a>
+        <a id="hero-next-cta" href="#lessons-section" class="card bg-lime-500 hover:bg-lime-400 text-green-900 px-10 py-5 rounded-3xl text-xl font-black shadow-xl">🚀 לשיעורים</a>
         <a href="#sims-section" class="card border-2 border-white/40 bg-white/10 text-white px-8 py-5 rounded-3xl text-lg font-bold">🎮 סימולטורים</a>
       </div>
     </div>
@@ -474,23 +474,35 @@ const LESSONS=[
 function lessonEsc(s){ return String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
 function lessonPad(n){ return n<10?'0'+n:''+n; }
 function lessonPhase(n){ return n<=4?1:n<=8?2:n<=12?3:4; }
-// חייב להישאר זהה ל-GC.LESSON_MAX ב-assets/points.config.js - כפילות מכוונת (כמו LESSONS
-// למעלה) כי index.html לא טוען את core.js/points.config.js המלאים, רק צריך את הטבלה הזו
-// כדי לבדוק "עשה את המקסימום" לפני שמאפשרים לפתוח את השיעור הבא.
-const LESSON_MAX={1:50,2:65,3:65,4:75,5:136,6:120,7:142,8:85,9:65,10:50,11:55,12:55,13:65,14:75,15:55,16:55,17:55};
 function lessonCompletedFlag(n){ return localStorage.getItem('lesson'+n+'_completed')==='1'; }
-function lessonMastered(n){ return lessonCompletedFlag(n) && parseInt(localStorage.getItem('ls'+n)||'0',10) >= (LESSON_MAX[n]||Infinity); }
-// "השיעור הגבוה ביותר שמותר לפתוח" - מתעדכן רק ביציאה מהמערכת (GC_ID.logout), לא באמצע
-// שיעור, כדי שלא יהיה מעבר ישיר לשיעור הבא בלי התנתקות בפועל (ראה assets/identity.js).
-function unlockedThrough(){ return parseInt(localStorage.getItem('gc_unlocked_through')||'1',10); }
+// השיעור שאחרי השיעור האחרון שסומן completed (1 אם אין). מקסימום העלים (GC.LESSON_MAX)
+// הוא גיימיפיקציה בלבד ולא משפיע על הנעילה.
+function nextAfterLastCompleted(){
+  let last=0;
+  for(let i=1;i<=17;i++){ if(lessonCompletedFlag(i)) last=i; }
+  return Math.min(17,last+1);
+}
+// gc_unlocked_through = מקומי + מהגיליון (pullMine), כולל פתיחה כיתתית/אישית ע"י המדריך/ה.
+// core.js מקדם אותו ברגע שהשיעור הושלם - אין צורך להתנתק.
+function unlockedThrough(){ return Math.max(parseInt(localStorage.getItem('gc_unlocked_through')||'1',10)||1, nextAfterLastCompleted()); }
 function lessonUnlocked(n){ return n<=unlockedThrough(); }
-// "הושלם" (וי ירוק) מוצג גם באותו סשן חי, מיד כשהושג המקסימום - גם לפני שהתנתקו -
-// כמשוב חיובי מיידי. זה נפרד מהנעילה של השיעור הבא, שממתינה בכוונה להתנתקות.
-function lessonDone(n){ return n<unlockedThrough() || lessonMastered(n); }
+// הושלם = דגל completed. הדגלים נמחקים מקומית ביציאה (wipeLocalProgress) ולא נשמרים בגיליון,
+// לכן שיעור שלפני הנעילה ויש בו עלים נחשב גם הוא הושלם (חוזרים ממחשב אחר). שיעור שהמדריך/ה
+// פתח/ה ועוד לא נגעו בו (0 עלים) - לא מסומן כהושלם.
+function lessonDone(n){
+  if(lessonCompletedFlag(n)) return true;
+  return n<unlockedThrough() && parseInt(localStorage.getItem('ls'+n)||'0',10)>0;
+}
+// השיעור הפתוח הנמוך ביותר שעוד לא הושלם - אליו מצביעים ה-CTA והטutorial
+function nextLessonToDo(){
+  for(let i=1;i<=17;i++){ if(lessonUnlocked(i) && !lessonDone(i)) return i; }
+  return null; // הכל הושלם
+}
 function renderStudentLessons(){
   const grid=document.getElementById('student-lessons-grid');
   if(!grid) return;
   const phaseBorder={1:'border-green-400',2:'border-lime-400',3:'border-sky-400',4:'border-amber-400'};
+  const next=nextLessonToDo();
   let doneCount=0;
   grid.innerHTML=LESSONS.map(l=>{
     const done=lessonDone(l.n);
@@ -498,23 +510,29 @@ function renderStudentLessons(){
     if(done) doneCount++;
     const border=phaseBorder[lessonPhase(l.n)];
     if(!unlocked){
-      const readyButWaiting = l.n>1 && lessonMastered(l.n-1);
       return `<div class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} opacity-40">
         <p class="text-2xl mb-1">🔒</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-400">${lessonEsc(l.title)}</p>
-        <span class="text-xs ${readyButWaiting?'text-lime-600 font-bold':'text-gray-400'}">${readyButWaiting?'כל הכבוד! התנתקו כדי לפתוח 🔄':'נעול · סיימו את שיעור '+(l.n-1)}</span>
+        <span class="text-xs text-gray-400">נעול · סיימו את שיעור ${l.n-1}</span>
       </div>`;
     }
-    return `<div class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} relative flex flex-col">
+    const isNext=l.n===next;
+    return `<div class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} relative flex flex-col${isNext?' ring-4 ring-lime-400':''}">
       ${done?'<div class="absolute top-2 left-2 bg-green-500 text-white text-xs font-black px-2 py-0.5 rounded-full">✅</div>':''}
+      ${isNext?'<div class="absolute top-2 left-2 bg-lime-500 text-white text-xs font-black px-2 py-0.5 rounded-full">הבא בתור</div>':''}
       <a href="lessons/lesson-${lessonPad(l.n)}.html" class="block flex-1">
         <p class="text-2xl mb-1">${l.icon}</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-500">${lessonEsc(l.sub)}</p>
-        <span class="text-xs ${done?'text-green-600':'text-lime-600'} font-bold">${done?'הושלם ✅':'פתוח - התחילו!'}</span>
+        <span class="text-xs ${done?'text-green-600':'text-lime-600'} font-bold">${done?'הושלם ✅ · אפשר לחזור':'פתוח - התחילו!'}</span>
       </a>
-      <a href="presentations/lesson-${lessonPad(l.n)}-slides.html" target="_blank" class="mt-2 text-center text-xs bg-green-800 text-white px-2 py-1 rounded-full hover:bg-green-700">🖥 שקפים</a>
     </div>`;
   }).join('');
   const note=document.getElementById('lessons-progress-note');
   if(note) note.textContent = doneCount>0 ? `הושלמו ${doneCount} מתוך 17 שיעורים` : 'לחצו על שיעור 1 כדי להתחיל';
+  // CTA ראשי ב-hero - לשיעור הבא בתור (לא תמיד שיעור 1)
+  const cta=document.getElementById('hero-next-cta');
+  if(cta){
+    if(next){ cta.href='lessons/lesson-'+lessonPad(next)+'.html'; cta.textContent='🚀 '+(doneCount>0?'להמשיך לשיעור ':'להתחיל בשיעור ')+next; }
+    else { cta.href='#lessons-section'; cta.textContent='🏆 כל השיעורים הושלמו!'; }
+  }
 }
 renderStudentLessons();
 
@@ -533,7 +551,10 @@ renderHeroLeaves();
 // ומרעננים את המסך, כדי שהנעילה/העלים ישקפו את המצב האמיתי, לא רק את מה שנשאר
 // מקומית (שאחרי logout מנוקה בכוונה - ראה GC_ID.wipeLocalProgress).
 if(window.GC_SYNC && typeof GC_SYNC.pullMine==='function' && window.GC_ID && GC_ID.getIdentity()){
-  GC_SYNC.pullMine().then(function(){ renderStudentLessons(); renderHeroLeaves(); });
+  GC_SYNC.pullMine().then(function(){
+    if(typeof GC_ID.syncUnlockedThrough==='function') GC_ID.syncUnlockedThrough();
+    renderStudentLessons(); renderHeroLeaves();
+  });
 }
 
 // ── TUTORIAL (מצב תלמיד בלבד) ───────────────────────────────────────────────
@@ -545,11 +566,12 @@ function maybeStartHomeTutorial(){
   function ready(){
     if(document.getElementById('gc-id-modal')){ setTimeout(ready,300); return; }
     if(!window.GC || !GC.Tutorial) return;
+    const next=nextLessonToDo()||1; // השיעור הפתוח הנמוך ביותר שעוד לא הושלם
     GC.Tutorial.start('home', [
       { target: null, emoji: '🌱', wait: 'next',
         text: 'פה הבית של גדלים למחר.' },
-      { target: '#student-lessons-grid a[href="lessons/lesson-01.html"]', emoji: '🚀', wait: 'click',
-        text: 'לחצו על שיעור 1 כדי להתחיל.' },
+      { target: '#student-lessons-grid a[href="lessons/lesson-'+lessonPad(next)+'.html"]', emoji: '🚀', wait: 'click',
+        text: 'לחצו על שיעור '+next+' כדי '+(next===1?'להתחיל':'להמשיך')+'.' },
     ]);
   }
   if(document.readyState==='complete') ready();

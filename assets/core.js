@@ -922,11 +922,16 @@ function mascotSay(msg, emoji) { GC.mascotSay(msg, emoji); }
     const b = document.createElement('div');
     b.id = 'gc-session-end-banner';
     b.style.cssText = 'position:fixed;bottom:10px;right:10px;z-index:9998;background:linear-gradient(135deg,#166534,#15803d);color:white;font-family:Heebo,sans-serif;font-size:.78rem;padding:10px 14px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.2);direction:rtl;max-width:220px;line-height:1.5;';
-    if (mastered) {
-      b.innerHTML = '<span id="gc-se-close" style="float:left;cursor:pointer;opacity:.7;padding-inline-start:6px;">✕</span>🏆 <b>כל הכבוד, עשיתם את המקסימום!</b><br>התנתקו כדי לפתוח את השיעור הבא - נתראה בשבוע הבא!<br><span id="gc-se-btn" style="text-decoration:underline;cursor:pointer;font-weight:900;">🔄 להתנתק ←</span>';
-    } else {
-      b.innerHTML = '<span id="gc-se-close" style="float:left;cursor:pointer;opacity:.7;padding-inline-start:6px;">✕</span>🏁 <b>סיימתם את השיעור!</b><br>עדיין לא צברתם את כל העלים האפשריים (' + earned + '/' + max + ') - כדאי לחזור ולהשלים לפני שממשיכים, השיעור הבא ייפתח רק אחרי שתתנתקו.<br><span id="gc-se-btn" style="text-decoration:underline;cursor:pointer;font-weight:900;">🔄 להתנתק בכל זאת ←</span>';
-    }
+    // השיעור הבא כבר נפתח (ראה check למטה). מקסימום העלים = גיימיפיקציה בלבד, לא חסם.
+    const nextLine = lessonNum < 17
+      ? '🔓 שיעור ' + (lessonNum + 1) + ' נפתח! <a href="../index.html#lessons-section" style="color:#d9f99d;font-weight:900;">לדף השיעורים ←</a>'
+      : '<a href="../index.html#lessons-section" style="color:#d9f99d;font-weight:900;">לדף השיעורים ←</a>';
+    const head = mastered
+      ? '🏆 <b>כל הכבוד, עשיתם את המקסימום!</b>'
+      : '🏁 <b>סיימתם את השיעור!</b><br>צברתם ' + earned + '/' + max + ' עלים - אפשר לחזור ולהשלים מתי שרוצים.';
+    b.innerHTML = '<span id="gc-se-close" style="float:left;cursor:pointer;opacity:.7;padding-inline-start:6px;">✕</span>' +
+      head + '<br>' + nextLine +
+      '<br><span id="gc-se-btn" style="text-decoration:underline;cursor:pointer;opacity:.85;">🔄 לפנות את המחשב לתלמיד/ה הבא/ה</span>';
     document.body.appendChild(b);
     document.getElementById('gc-se-btn').onclick = function () {
       if (window.GC_ID && typeof GC_ID.logout === 'function') GC_ID.logout();
@@ -936,7 +941,13 @@ function mascotSay(msg, emoji) { GC.mascotSay(msg, emoji); }
   function check() {
     const el = lastStepPanel();
     if (el && el.classList.contains('active')) {
+      const already = localStorage.getItem('lesson' + lessonNum + '_completed') === '1';
       localStorage.setItem('lesson' + lessonNum + '_completed', '1');
+      // פותח את השיעור הבא מיד, באותו סשן (בלי התנתקות), ומסנכרן לגיליון
+      if (window.GC_ID && typeof GC_ID.syncUnlockedThrough === 'function') {
+        GC_ID.syncUnlockedThrough();
+        if (!already && window.GC_SYNC && typeof GC_SYNC.scheduleSync === 'function') GC_SYNC.scheduleSync();
+      }
       showSessionEndBanner();
     }
   }

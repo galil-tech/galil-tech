@@ -46,6 +46,16 @@ const TEACHERS_SHEET_NAME = 'teachers';
 const TEACHERS_FIELDS = ['school_id', 'class_id', 'teacher_name', 'code', 'notes_json', 'last_updated'];
 const TEACHERS_KEY_FIELDS = ['school_id', 'class_id', 'code'];
 
+// פתיחת שיעור לכיתה שלמה ע"י המדריך/ה (teacher-dashboard.html) - שורה אחת לכל school+class.
+// תלמיד/ה שמצטרף/ת לכיתה אחרי הפתיחה מקבל/ת את הערך הזה ב-pullMine (max עם הערך האישי).
+const CLASS_UNLOCKS_SHEET_NAME = 'class_unlocks';
+const CLASS_UNLOCKS_FIELDS = ['school_id', 'class_id', 'unlocked_through', 'last_updated'];
+const CLASS_UNLOCKS_KEY_FIELDS = ['school_id', 'class_id'];
+
+// הצד-לקוח בודק את הרשימה הזו (type=features) לפני ששולח class_unlock/student_unlock -
+// כדי שפריסה ישנה (שלא מכירה את הסוגים האלה) לא תיפול ל-upsert של תלמיד ותיצור שורת זבל.
+const FEATURES = ['class_unlock', 'student_unlock'];
+
 function _sheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(SHEET_NAME);
@@ -86,6 +96,46 @@ function _teachersSheet() {
   return sh;
 }
 
+function _classUnlocksSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(CLASS_UNLOCKS_SHEET_NAME);
+  if (!sh) {
+    sh = ss.insertSheet(CLASS_UNLOCKS_SHEET_NAME);
+    sh.appendRow(CLASS_UNLOCKS_FIELDS);
+  }
+  return sh;
+}
+
+// ערך הפתיחה הכיתתי (0 אם המדריך/ה לא פתח/ה כלום לכיתה הזו)
+function _classUnlockValue(school, classId) {
+  const row = _rowsAsObjects(_classUnlocksSheet()).find((r) =>
+    String(r.school_id) === String(school) && String(r.class_id) === String(classId));
+  return row ? Number(row.unlocked_through) || 0 : 0;
+}
+
+// מעלה unlocked_through לכל שורות התלמידים שמתאימות ל-match(row) ל-max(הקיים, n).
+// לעולם לא מוריד. מחזיר כמה שורות עודכנו בפועל.
+function _raiseStudentsUnlock(match, n) {
+  const sh = _sheet();
+  const data = sh.getDataRange().getValues();
+  const headers = data[0];
+  const col = headers.indexOf('unlocked_through');
+  const tsCol = headers.indexOf('last_updated');
+  let changed = 0;
+  for (let i = 1; i < data.length; i++) {
+    const o = {};
+    headers.forEach((h, j) => (o[h] = data[i][j]));
+    if (!match(o)) continue;
+    const current = Number(data[i][col]) || 0;
+    if (n > current) {
+      sh.getRange(i + 1, col + 1).setValue(n);
+      if (tsCol !== -1) sh.getRange(i + 1, tsCol + 1).setValue(new Date().toISOString());
+      changed++;
+    }
+  }
+  return changed;
+}
+
 // שולף את הגובה הגבוה ביותר (ס"מ) שנמצא בתוך JSON של passport1 - סורק את כל המקומות
 // שבהם לומדות שונות שומרות מדידת גובה (lesson4.height, measurements[].height,
 // growthData[].height) ומחזיר את המקסימום. מחזיר 0 אם אין שום נתון גובה.
@@ -121,6 +171,10 @@ function doGet(e) {
   // (ציבורי מטבעו, כי הצד-לקוח חייב אותו) יכול לקרוא את נתוני כל התלמידים בלי הרשאה.
   if (p.token !== SHARED_SECRET) {
     return _json({ ok: false, error: 'unauthorized' });
+  }
+
+  if (p.type === 'features') {
+    return _json({ ok: true, features: FEATURES });
   }
 
   if (p.type === 'groups') {
@@ -174,7 +228,7 @@ function doGet(e) {
   // ב-token (כמו כל שאר ה-endpoint-ים, ראה ההערה למעלה) - לא הגנה אמיתית, רק חסם-כניסה
   // מזדמן. הגישה בפועל למסך הזה מוגנת גם בסיסמת מנהל/ת נפרדת בצד הלקוח (admin-dashboard.html).
   if (p.type === 'admin_students') {
-    return _json({ ok: true, rows: _rowsAsObjects(_sheet()), groups: _rowsAsObjects(_groupsSheet()), teachers: _rowsAsObjects(_teachersSheet()) });
+    return _json({ ok: true, rows: _rowsAsObjects(_sheet()), groups: _rowsAsObjects(_groupsSheet()), teachers: _rowsAsObjects(_teachersSheet()), class_unlocks: _rowsAsObjects(_classUnlocksSheet()) });
   }
 
   // הגנת פרטיות: קריאת שורות תלמידים (לא לוח קבוצות) דורשת code ספציפי - בלעדיו זו
@@ -188,6 +242,12 @@ function doGet(e) {
   if (p.school) rows = rows.filter((r) => String(r.school_id) === p.school);
   if (p.class) rows = rows.filter((r) => String(r.class_id) === p.class);
   if (p.track) rows = rows.filter((r) => String(r.track) === p.track);
+  // פתיחה כיתתית ע"י המדריך/ה: התלמיד/ה מקבל/ת max(הערך האישי, הערך של הכיתה)
+  rows = rows.map((r) => {
+    const cls = _classUnlockValue(r.school_id, r.class_id);
+    const own = Number(r.unlocked_through) || 0;
+    return cls > own ? Object.assign({}, r, { unlocked_through: cls }) : r;
+  });
   return _json({ ok: true, rows: rows });
 }
 
@@ -279,6 +339,31 @@ function doPost(e) {
         return body[h] !== undefined ? body[h] : '';
       }));
       return _json({ ok: true });
+    }
+
+    // מדריך/ה פותח/ת שיעור לכל הכיתה (teacher-dashboard.html): שומר ערך כיתתי (לתלמידים
+    // שיצטרפו בהמשך) ומעלה את כל שורות התלמידים הקיימות באותו school+class. לעולם לא מוריד.
+    if (body.type === 'class_unlock') {
+      const n = Math.min(17, Number(body.unlocked_through) || 0);
+      if (!body.school_id || !body.class_id || n < 1) return _json({ ok: false, error: 'school_id, class_id, unlocked_through required' });
+      const rowValues = _upsert(_classUnlocksSheet(), CLASS_UNLOCKS_FIELDS, CLASS_UNLOCKS_KEY_FIELDS, body, (headers, existing) => headers.map((h, i) => {
+        if (h === 'last_updated') return new Date().toISOString();
+        if (h === 'unlocked_through') return Math.max(n, existing ? Number(existing[i]) || 0 : 0);
+        return body[h] !== undefined ? body[h] : '';
+      }));
+      const updated = _raiseStudentsUnlock((r) =>
+        String(r.school_id) === String(body.school_id) && String(r.class_id) === String(body.class_id), n);
+      return _json({ ok: true, unlocked_through: rowValues[CLASS_UNLOCKS_FIELDS.indexOf('unlocked_through')], students_updated: updated });
+    }
+
+    // פתיחת שיעור לתלמיד/ה בודד/ת (לפי school+class+code) - אותו עיקרון, רק שורה אחת.
+    if (body.type === 'student_unlock') {
+      const n = Math.min(17, Number(body.unlocked_through) || 0);
+      if (!body.school_id || !body.class_id || !body.code || n < 1) return _json({ ok: false, error: 'school_id, class_id, code, unlocked_through required' });
+      const updated = _raiseStudentsUnlock((r) =>
+        String(r.school_id) === String(body.school_id) && String(r.class_id) === String(body.class_id) &&
+        String(r.code) === String(body.code), n);
+      return _json({ ok: true, students_updated: updated });
     }
 
     if (body.type === 'group') {

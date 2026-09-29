@@ -23,9 +23,8 @@
       leaves_spent: localStorage.getItem('leaves_spent') || '0',
       passport1: localStorage.getItem('passport1') || '{}',
       achievements: localStorage.getItem('gc_achievements') || '{}',
-      // השיעור הגבוה ביותר שמותר לפתוח - רק "משתקף" מהערך המקומי הנוכחי, לעולם לא
-      // מחושב-מחדש כאן. החישוב/הקידום קורה אך ורק ב-GC_ID.logout() (identity.js), כדי
-      // שסנכרון שוטף באמצע שיעור לא "יקדם" בטעות את הנעילה בלי שהתלמיד/ה התנתק/ה בפועל.
+      // השיעור הגבוה ביותר שמותר לפתוח - משתקף מהערך המקומי. הקידום קורה ברגע שמסומן
+      // lesson{N}_completed (core.js → GC_ID.syncUnlockedThrough), והשרת לעולם לא מוריד אותו.
       unlocked_through: localStorage.getItem('gc_unlocked_through') || '1',
     };
     for (let i = 1; i <= 17; i++) payload['ls' + i] = localStorage.getItem('ls' + i) || '0';
@@ -259,11 +258,46 @@
   GC_SYNC.pullClass = function (school, classId) {
     return GC_SYNC.pullAdminAll().then(function (resp) {
       if (!resp || !resp.ok) return resp;
-      const rows = (resp.rows || []).filter(function (r) {
+      const match = function (r) {
         return String(r.school_id) === String(school) && String(r.class_id) === String(classId);
-      });
-      return Object.assign({}, resp, { rows: rows });
+      };
+      const rows = (resp.rows || []).filter(match);
+      // ערך הפתיחה הכיתתי (0 אם אין / פריסה ישנה בלי class_unlocks)
+      const cu = (resp.class_unlocks || []).filter(match)[0];
+      return Object.assign({}, resp, { rows: rows, classUnlockedThrough: cu ? Number(cu.unlocked_through) || 0 : 0 });
     });
+  };
+
+  // ── פתיחת שיעור ע"י מדריך/ה (teacher-dashboard.html) ──────────────────────
+  // קודם בודקים שהפריסה של Apps Script מכירה את class_unlock/student_unlock (type=features).
+  // פריסה ישנה הייתה מפילה POST כזה ל-upsert של תלמיד ויוצרת שורת זבל - לכן לא שולחים בלי אישור.
+  let featuresPromise = null;
+  GC_SYNC.getFeatures = function () {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve([]);
+    if (!featuresPromise) {
+      featuresPromise = fetch(c.url + '?token=' + encodeURIComponent(c.token) + '&type=features')
+        .then((r) => r.json())
+        .then((resp) => (resp && resp.ok && Array.isArray(resp.features)) ? resp.features : [])
+        .catch(() => { featuresPromise = null; return []; });
+    }
+    return featuresPromise;
+  };
+  function postUnlock(type, payload) {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, error: 'sync disabled' });
+    return GC_SYNC.getFeatures().then(function (features) {
+      if (features.indexOf(type) === -1) return { ok: false, error: 'server_outdated' };
+      return fetch(c.url, { method: 'POST', body: JSON.stringify(Object.assign({ token: c.token, type: type }, payload)) })
+        .then((r) => r.json());
+    }).catch((err) => ({ ok: false, error: String(err) }));
+  }
+  // school = שם בית הספר כפי שנשמר ב-school_id בגיליון (GC_ROSTER schoolName)
+  GC_SYNC.setClassUnlock = function (school, classId, n) {
+    return postUnlock('class_unlock', { school_id: school, class_id: classId, unlocked_through: n });
+  };
+  GC_SYNC.setStudentUnlock = function (school, classId, code, n) {
+    return postUnlock('student_unlock', { school_id: school, class_id: classId, code: code, unlocked_through: n });
   };
 
   GC_SYNC.deleteGalleryItem = function (id) {
