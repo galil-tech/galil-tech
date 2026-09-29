@@ -500,7 +500,7 @@ function studentTrack(){
   return s && s.track ? s.track : 'middle';
 }
 // שיעורי היסודי שכבר נבנו (elementary/lessons/). השאר מוצגים «בקרוב» עד שייבנו.
-const ELEMENTARY_READY=[1, 2];
+const ELEMENTARY_READY=[1, 2, 3, 4];
 // null = אין עדיין לומדה במסלול הזה
 function lessonHref(n){
   if(studentTrack()==='elementary') return ELEMENTARY_READY.includes(n) ? 'elementary/lessons/lesson-'+lessonPad(n)+'.html' : null;

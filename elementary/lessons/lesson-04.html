@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 4 – חקלאות היא גם עסק | מסלול יסודי | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת עם החטיבה (במכוון - כמו שיעורים 1-3 יסודי). אין elementary/assets. -->
+  <link rel="stylesheet" href="../../assets/core.css">
+  <script src="../../assets/core.js"></script>
+  <script src="../../assets/points.config.js"></script>
+  <script src="../../data/roster.js"></script>
+  <script src="../../assets/identity.js"></script>
+  <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="../../data/sheets-config.js"></script>
+  <script src="../../assets/sheets-sync.js"></script>
+  <style>
+    /* ── סגנונות ייחודיים לשיעור 4 יסודי ── */
+    .pick-btn { border:2px solid #e5e7eb; cursor:pointer; transition:all .2s; border-radius:12px; background:white; }
+    .pick-btn:hover:not([disabled]) { border-color:#84cc16; background:#f0fdf4; }
+    .pick-btn.ok  { background:#dcfce7; border-color:#16a34a; font-weight:900; }
+    .cost-row { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px dashed #e5e7eb; }
+    .plot { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; font-size:1.7rem; text-align:center; }
+    .plot span { background:#fef3c7; border-radius:10px; padding:4px 0; transition:all .4s; }
+    .plot span.sick { background:#fee2e2; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 to-lime-50 min-h-screen">
+
+<!-- MASCOT (GC.Tutorial תלוי בו) -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="../../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+      <a href="../../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-lime-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 1 – נביטה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 4 מתוך 17</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">מסלול יסודי</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">💰 חקלאות היא גם עסק</h1>
+    <p class="text-green-200">כרטיס עלויות · לגלות מוקדם · מדידה ראשונה</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 6</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: תזכורת + דוכן לימונדה → «עסק» ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🍋</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">קונים, מוכרים, מרוויחים</h2>
+        <p class="text-gray-500 text-sm">קודם דוכן קטן, אחר כך שדה שלם.</p>
+      </div>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5">
+      <p class="text-slate-400 text-sm mb-1">🔁 בשיעור הקודם:</p>
+      <p class="font-bold">שתלתם שתיל אחד, ואתם אחראים עליו. עכשיו דמיינו חקלאי שאחראי על <b class="text-lime-300">מאות שתילים</b>. על מה הוא צריך לחשוב?</p>
+    </div>
+
+    <div class="bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-5 mb-5">
+      <p class="font-black text-lg text-yellow-900 mb-3">🍋 דוכן הלימונדה של נועה</p>
+      <div class="grid grid-cols-2 gap-3 text-center mb-2">
+        <div class="bg-white rounded-xl p-3"><span class="text-3xl block">🛒</span>קנתה לימונים וסוכר<br><b class="text-2xl text-red-600">10 ₪</b></div>
+        <div class="bg-white rounded-xl p-3"><span class="text-3xl block">🥤</span>מכרה כוסות לימונדה<br><b class="text-2xl text-green-700">15 ₪</b></div>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3">❓ כמה כסף נשאר לנועה אחרי שהחזירה את מה שקנתה?</p>
+      <div class="grid grid-cols-3 gap-3" id="lm1">
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,true,'lm1')" data-correct="true">5 ₪</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'lm1')">25 ₪</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'lm1')">10 ₪</div>
+      </div>
+      <div id="fb-lm1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="biz-name" class="reveal bg-lime-50 border-2 border-lime-300 rounded-2xl p-5">
+      <p class="font-black text-lg text-lime-900 mb-1">🏷️ יש לזה שם!</p>
+      <p class="text-gray-800">מוציאים כסף, מוכרים, ומה שנשאר זה <b class="text-lime-800">רווח</b>. כשעושים את זה כעבודה, קוראים לזה <b class="text-lime-800 text-xl">עסק</b>.</p>
+      <p class="text-gray-800 mt-2">🧑‍🌾 חקלאי עושה בדיוק אותו דבר, רק עם צמחים במקום לימונדה.</p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">כרטיס עלויות ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: כרטיס עלויות - תקציב מיני-שדה ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🧾</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">כרטיס עלויות</h2>
+        <p class="text-gray-500 text-sm">מיני-שדה של 10 חסות. מספרים עגולים, חשבון פשוט.</p>
+      </div>
+    </div>
+
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 mb-5 max-w-md mx-auto">
+      <p class="font-black text-amber-900 text-center mb-2">🧾 מה עולה לגדל 10 חסות?</p>
+      <div class="bg-white rounded-xl">
+        <div class="cost-row"><span>🌰 זרעים</span><b>10 ₪</b></div>
+        <div class="cost-row"><span>💧 מים</span><b>5 ₪</b></div>
+        <div class="cost-row"><span>🌿 דשן</span><b>5 ₪</b></div>
+        <div class="cost-row" style="border:none"><span class="font-black">סך הכל</span><b id="total-cell" class="text-gray-400">? ₪</b></div>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3">❓ כמה עולה הכל ביחד?</p>
+      <div class="grid grid-cols-3 gap-3" id="c1">
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'c1')">15 ₪</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,true,'c1')" data-correct="true">20 ₪</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'c1')">25 ₪</div>
+      </div>
+      <div id="fb-c1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="c2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-1">❓ 20 ₪ על 10 חסות. כמה עולה <u>חסה אחת</u>?</p>
+      <p class="text-sm text-gray-500 mb-3">רמז: מחלקים את 20 ל-10 חלקים שווים.</p>
+      <div class="grid grid-cols-3 gap-3" id="c2">
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,true,'c2')" data-correct="true">2 ₪</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'c2')">10 ₪</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'c2')">20 ₪</div>
+      </div>
+      <div id="fb-c2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="c3-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-1">❓ החקלאי מכר את 10 החסות, כל אחת ב-5 ₪. אחרי שהחזיר את ה-20 ₪ שהוציא, כמה נשאר לו?</p>
+      <p class="text-sm text-gray-500 mb-3">רמז: קודם 10 × 5, אחר כך מורידים 20.</p>
+      <div class="grid grid-cols-3 gap-3" id="c3">
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'c3')">50 ₪</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'c3')">5 ₪</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,true,'c3')" data-correct="true">30 ₪</div>
+      </div>
+      <div id="fb-c3" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="c-after" class="reveal bg-sky-50 border-2 border-sky-200 rounded-2xl p-5 text-sm text-gray-800">
+      🌿 <b>רק לדמיין:</b> אם הייתם «משלמים» בעלים על מים ודשן, כמה עלים הייתם שומרים לשתיל שלכם? ככה חקלאי חושב על כל שקל.
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3)">יום שני או יום שישי? ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: תרחיש - לגלות ביום שני או ביום שישי ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">📅</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">יום שני או יום שישי?</h2>
+        <p class="text-gray-500 text-sm">ביום שני הופיעה מחלה על 2 חסות. מתי החקלאי גילה?</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <button id="day-mon" class="pick-btn p-3 font-bold" onclick="showDay('mon')">🔎 גילה ביום שני</button>
+      <button id="day-fri" class="pick-btn p-3 font-bold" onclick="showDay('fri')">😴 גילה רק ביום שישי</button>
+    </div>
+
+    <div class="bg-gray-50 rounded-2xl p-4 mb-2">
+      <div class="plot max-w-sm mx-auto" id="plot" aria-live="polite"></div>
+    </div>
+    <p id="day-text" class="text-center font-bold text-gray-700 mb-5">לחצו על שני הכפתורים ותראו מה קורה.</p>
+
+    <div id="d1-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ מתי הכי טוב לגלות בעיה בשדה?</p>
+      <div class="grid grid-cols-3 gap-3" id="d1">
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,true,'d1')" data-correct="true">⏱️ מוקדם, כשהיא עוד קטנה</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'d1')">🐢 מאוחר, כשרואים אותה טוב</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'d1')">🤷 לא משנה</div>
+      </div>
+      <div id="fb-d1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)">רעיון ישראלי ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: FieldIn ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🇮🇱</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">FieldIn: עיניים על השדה</h2>
+        <p class="text-gray-500 text-sm">קוראים · מסתכלים על המסך של המורה · עונים</p>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-700 to-lime-600 text-white rounded-2xl p-6 mb-5">
+      <p class="leading-relaxed mb-2">שדה ענק. חקלאי אחד. הוא לא יכול לעמוד בכל מקום כל הזמן.</p>
+      <p class="leading-relaxed mb-4"><b>FieldIn (פילדאין)</b> היא חברה ישראלית שבנתה מערכת שעוקבת אחרי מה שקורה בשדה: איפה השקו, איפה ריססו, איפה קטפו. ככה החקלאי יודע מה קורה בכל חלק, <b>גם כשהוא לא שם</b>.</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">💧</span>השקיה</div>
+        <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">🚜</span>ריסוס</div>
+        <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">🧺</span>קטיף</div>
+      </div>
+    </div>
+
+    <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 mb-5 text-center">
+      <p class="font-black text-slate-800">📽️ המורה מקרין או מספר על FieldIn.</p>
+      <p class="text-sm text-gray-500">מסתכלים על המסך הגדול, לא צריך להפעיל כלום כאן.</p>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ במה FieldIn עוזרת לחקלאי?</p>
+      <div class="grid gap-3" id="f1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'f1')">🧺 קוטפת את הירקות במקומו</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'f1')" data-correct="true">👀 לדעת מה קורה בשדה, גם כשהוא לא שם</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'f1')">🛒 מוכרת את הירקות בסופר</div>
+      </div>
+      <div id="fb-f1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5); maybeStartTutorial()">בודקים את השתיל שלי ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: מדידה ראשונה ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">📏</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">בדיקה ראשונה</h2>
+        <p class="text-gray-500 text-sm">היום אתם החקלאים. מודדים ומחפשים בעיות.</p>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-5">
+      <p class="font-bold text-lg mb-3">❓ מאיפה מודדים את הגובה של השתיל?</p>
+      <div class="grid grid-cols-3 gap-3" id="m1">
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'m1')">🪑 מהשולחן</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'m1')">🪴 מתחתית העציץ</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,true,'m1')" data-correct="true">🌱 מהבסיס של הגבעול</div>
+      </div>
+      <div id="fb-m1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="measure-wrap" class="reveal bg-lime-50 border-2 border-lime-200 rounded-2xl p-5">
+      <h3 class="font-black text-lime-900 mb-3">📋 דף הבדיקה שלי</h3>
+      <div class="grid grid-cols-2 gap-3 mb-4" id="measure-fields">
+        <div>
+          <label for="m-height" class="block font-bold text-gray-700 mb-1 text-sm">📏 גובה (ס״מ)</label>
+          <input id="m-height" data-answer-key="l04e_height" type="number" inputmode="numeric" min="0" max="100" placeholder="למשל: 6" class="w-full border-2 border-lime-200 rounded-xl p-3 text-xl font-black text-center outline-none focus:border-lime-500">
+        </div>
+        <div>
+          <label for="m-leaves" class="block font-bold text-gray-700 mb-1 text-sm">🍃 כמה עלים?</label>
+          <input id="m-leaves" data-answer-key="l04e_leaves" type="number" inputmode="numeric" min="0" max="100" placeholder="למשל: 4" class="w-full border-2 border-lime-200 rounded-xl p-3 text-xl font-black text-center outline-none focus:border-lime-500">
+        </div>
+      </div>
+      <p class="font-bold text-gray-700 mb-2 text-sm">👀 איך השתיל נראה?</p>
+      <div class="grid grid-cols-3 gap-2 mb-2" id="status">
+        <button class="pick-btn p-2 text-sm font-bold" data-val="בריא" onclick="pickStatus(this)">💚 ירוק ובריא</button>
+        <button class="pick-btn p-2 text-sm font-bold" data-val="צריך עזרה" onclick="pickStatus(this)">🆘 צריך עזרה</button>
+        <button class="pick-btn p-2 text-sm font-bold" data-val="עוד לא צמח" onclick="pickStatus(this)">🌰 עוד לא צמח</button>
+      </div>
+      <div id="help-wrap" class="hidden mb-2">
+        <label for="m-obs" class="block text-sm font-bold text-gray-700 mb-1">מה ראיתם? (עלים צהובים, נבול, חרקים...)</label>
+        <input id="m-obs" data-answer-key="l04e_observe" type="text" maxlength="100" placeholder="ראיתי ש..." class="w-full border-2 border-lime-200 rounded-xl p-3 outline-none focus:border-lime-500">
+      </div>
+      <p class="text-xs text-gray-500 mb-3">שתיל שעוד לא צמח? כתבו 0 ס״מ. גם זה נתון חשוב, לא כישלון.</p>
+      <button onclick="saveMeasure()" class="w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-2xl font-black shadow">💾 שמירת המדידה</button>
+      <p id="measure-saved" class="hidden mt-3 text-center font-bold text-lime-800">✅ נשמר! זו המדידה הראשונה. נמשיך למדוד כל השנה.</p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">סיכום ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: דרכון + כוכב הצפון + סוף שלב הנביטה ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🏁</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">דרכון + כוכב הצפון</h2>
+        <p class="text-gray-500 text-sm">עמוד אחרון של שלב הנביטה</p>
+      </div>
+    </div>
+
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-1">📔 דרכון: עמוד 4</h3>
+      <label for="p-watch" class="block font-bold text-gray-700 mb-2">על מה חקלאי צריך לשמור עין, כל הזמן?</label>
+      <textarea id="p-watch" data-answer-key="l04e_passport" rows="2" maxlength="200" placeholder="חקלאי צריך לבדוק..." class="w-full border-2 border-green-200 rounded-xl p-3 outline-none resize-none focus:border-green-500"></textarea>
+      <p class="text-xs text-gray-500 mt-1">אפשר לכתוב משפט קצר. אפשר גם בערבית. 🙂</p>
+      <button onclick="savePassport4()" class="mt-3 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-2xl font-black shadow">📔 שמירה בדרכון</button>
+      <p id="passport-saved" class="hidden mt-3 text-center font-bold text-lime-800">✨ נשמר בדרכון!</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">⭐</span>
+        <h3 class="font-black text-amber-900 text-xl">כוכב הצפון</h3>
+      </div>
+      <p class="text-sm text-gray-600 mb-2">בסוף השנה יש תערוכה. בעיה שמגלים מוקדם חוסכת כסף וצמחים.</p>
+      <p class="text-gray-800 font-bold text-lg mb-3">איך הפרויקט שלכם יכול לעזור לגלות בעיה בצמח מוקדם?</p>
+      <textarea data-answer-key="l04e_northstar" rows="2" placeholder="הפרויקט שלנו יגלה..." class="w-full border-2 border-amber-200 rounded-xl p-3 outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+
+    <div class="bg-green-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3">📚 מה למדנו היום:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li>💰 חקלאות היא גם עסק: מוציאים כסף, מוכרים, ומה שנשאר זה רווח.</li>
+        <li>🧾 20 ₪ על 10 חסות = 2 ₪ לחסה אחת.</li>
+        <li>📅 בעיה שמגלים מוקדם נשארת קטנה.</li>
+        <li>👀 FieldIn עוזרת לחקלאי לדעת מה קורה בשדה, גם כשהוא לא שם.</li>
+      </ul>
+    </div>
+
+    <div class="bg-gradient-to-l from-lime-400 to-green-500 text-green-950 rounded-2xl p-5 mb-5 text-center">
+      <p class="text-3xl mb-1">🌱 ➜ 🌿</p>
+      <p class="font-black text-lg">סיימנו את שלב הנביטה! מהשיעור הבא עוברים לשלב הצמיחה.</p>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא:</p>
+      <p class="font-black text-lg">"מדדתם ידנית היום. אבל מה אם המערכת הייתה מודדת בעצמה, כל הזמן, גם כשאתם לא בכיתה?"</p>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים בשיעור 4:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך 45 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4">
+    <a href="../../index.html#lessons-section" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">🏠 לדף השיעורים</a>
+  </div>
+</div>
+
+</div><!-- /max-w -->
+
+<script>
+// מקור אמת: elementary/teachers/teacher-04.html
+// עלים (בסיס 45): 7 שאלות × 5 + מדידה 5 + דרכון 5. חשבון: חיבור/חיסור/כפל/חילוק פשוט, בלי אחוזים.
+
+// ── STEP 3: יום שני / יום שישי ──
+// 10 חסות. ביום שני 2 חולות; עד יום שישי המחלה עוברת ל-8.
+const DAYS = {
+  mon: { sick: 2, text: '🔎 ביום שני: 2 חסות חולות. מטפלים מהר, ו-8 חסות נשארות בריאות.' },
+  fri: { sick: 8, text: '😴 ביום שישי: המחלה עברה לעוד חסות. רק 2 נשארו בריאות. 8 × 5 ₪ = 40 ₪ שהלכו לאיבוד.' },
+};
+const seenDays = new Set();
+function renderPlot(sick) {
+  document.getElementById('plot').innerHTML = Array.from({ length: 10 }, (_, i) =>
+    i < sick ? '<span class="sick" aria-label="חסה חולה">🥀</span>' : '<span aria-label="חסה בריאה">🥬</span>').join('');
+}
+function showDay(d) {
+  renderPlot(DAYS[d].sick);
+  // «40 ₪» בתוך משפט עברי - span LTR כדי שהמשוואה לא תתהפך
+  document.getElementById('day-text').innerHTML = DAYS[d].text.replace('8 × 5 ₪ = 40 ₪', '<span dir="ltr" class="inline-block">8 × 5 ₪ = 40 ₪</span>');
+  document.querySelectorAll('#day-mon,#day-fri').forEach(b => b.classList.remove('ok'));
+  document.getElementById('day-' + d).classList.add('ok');
+  seenDays.add(d);
+  if (seenDays.size === 2) { GC.reveal('d1-wrap'); mascotSay('אותה מחלה, רק 4 ימים אחר כך 😮', '📅'); }
+}
+
+// ── STEP 5: מדידה ──
+let statusVal = '';
+function pickStatus(el) {
+  document.querySelectorAll('#status .pick-btn').forEach(b => b.classList.remove('ok'));
+  el.classList.add('ok');
+  statusVal = el.dataset.val;
+  document.getElementById('help-wrap').classList.toggle('hidden', statusVal !== 'צריך עזרה');
+  if (statusVal === 'עוד לא צמח' && !document.getElementById('m-height').value) document.getElementById('m-height').value = '0';
+}
+
+let measureSaved = false;
+function saveMeasure() {
+  const h = document.getElementById('m-height').value.trim();
+  const n = document.getElementById('m-leaves').value.trim();
+  if (h === '' || !statusVal) { mascotSay('חסר גובה או «איך השתיל נראה» 📏', '🤔'); return; }
+  const obs = document.getElementById('m-obs').value.trim();
+  GC.saveOpenAnswer('l04e_height', h);
+  if (n !== '') GC.saveOpenAnswer('l04e_leaves', n);
+  GC.saveOpenAnswer('l04e_status', statusVal);
+  if (obs) GC.saveOpenAnswer('l04e_observe', obs);
+  document.getElementById('measure-saved').classList.remove('hidden');
+  if (measureSaved) return; // תיקון אחרי שמירה = מעדכן את התשובות, לא מוסיף מדידה כפולה
+  measureSaved = true;
+  // אותו מבנה כמו שיעור 5 בחטיבה - רצף מדידות לאורך השנה
+  GC.pushPassport('measurements', { lesson: 4, height: parseInt(h) || 0, leaves: parseInt(n) || 0, color: statusVal, obs: obs, ts: Date.now() });
+  GC.addLeaves(5, 'S');
+  GC.showBtn('btn5');
+  mascotSay('מדידה ראשונה בדרכון! 📏', '🌱');
+}
+
+// ── STEP 6: דרכון ──
+let passportSaved = false;
+function savePassport4() {
+  const v = document.getElementById('p-watch').value.trim();
+  if (!v) { mascotSay('כתבו משפט אחד קטן 🙂', '📔'); return; }
+  GC.saveOpenAnswer('l04e_passport', v);
+  document.getElementById('passport-saved').classList.remove('hidden');
+  if (passportSaved) return;
+  passportSaved = true;
+  GC.addLeaves(5, 'S');
+  mascotSay('נשמר בדרכון! 📔', '🌱');
+}
+
+// ── INIT ──
+function init() {
+  GC.initLesson({
+    lessonId: 4,
+    steps: 6,
+    mascotMessages: {
+      1: 'שלום! גרגיר כאן 🌱 היום נהיה חקלאים-עסקים!',
+      2: 'כמה עולה לגדל חסה? 🧾',
+      3: 'מה עדיף: לגלות מוקדם או מאוחר? 📅',
+      4: 'איך רואים שדה ענק בבת אחת? 👀',
+      5: 'מביאים סרגל! 📏',
+      6: 'כמעט סיימנו את שלב הנביטה! ⭐'
+    }
+  });
+
+  GC.registerCascades({
+    'lm1': () => { GC.reveal('biz-name'); GC.showBtn('btn1'); mascotSay('15 פחות 10 = 5. זה הרווח! 🍋', '💰'); },
+    'c1':  () => { const t = document.getElementById('total-cell'); t.textContent = '20 ₪'; t.classList.remove('text-gray-400'); GC.reveal('c2-wrap'); },
+    'c2':  () => GC.reveal('c3-wrap'),
+    'c3':  () => { GC.reveal('c-after'); GC.showBtn('btn2'); mascotSay('50 פחות 20 = 30 ₪ רווח 🥬', '💰'); },
+    'd1':  () => { GC.showBtn('btn3'); },
+    'f1':  () => { GC.showBtn('btn4'); mascotSay('כמו עיניים על כל השדה 👀', '🌱'); },
+    'm1':  () => { GC.reveal('measure-wrap'); mascotSay('שמים את הסרגל ליד הגבעול, לא באדמה 📏', '🌱'); },
+  });
+
+  renderPlot(0);
+  GC.bindOpenAnswers();
+}
+
+// ── TUTORIAL (פעם אחת, id l04e) - דף מדידה (פיצ'ר חדש: הקלדת מספרים) ──
+function maybeStartTutorial() {
+  if (localStorage.getItem('gc_tutorial_l04e')) return;
+  if (document.getElementById('gc-id-modal')) return;
+  setTimeout(() => {
+    GC.Tutorial.start('l04e', [
+      { target: '#m1', emoji: '📏', wait: 'next',
+        text: 'קודם שאלה קטנה: מאיפה מודדים? ואז נפתח דף הבדיקה.' },
+      { target: null, emoji: '🌱', wait: 'next',
+        text: 'בדף הבדיקה כותבים מספרים: גובה בס״מ וכמה עלים. ואז «שמירה».' },
+    ]);
+  }, 450); // אחרי גלילת goTo
+}
+
+init();
+</script>
+</body>
+</html>

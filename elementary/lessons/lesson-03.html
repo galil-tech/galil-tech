@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 3 – מה הצמח שלי צריך? | מסלול יסודי | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת עם החטיבה (במכוון - כמו שיעורים 1-2 יסודי). אין elementary/assets. -->
+  <link rel="stylesheet" href="../../assets/core.css">
+  <script src="../../assets/core.js"></script>
+  <script src="../../assets/points.config.js"></script>
+  <script src="../../data/roster.js"></script>
+  <script src="../../assets/identity.js"></script>
+  <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="../../data/sheets-config.js"></script>
+  <script src="../../assets/sheets-sync.js"></script>
+  <style>
+    /* ── סגנונות ייחודיים לשיעור 3 יסודי ── */
+    .pick-btn { border:2px solid #e5e7eb; cursor:pointer; transition:all .2s; border-radius:12px; background:white; }
+    .pick-btn:hover:not([disabled]) { border-color:#84cc16; background:#f0fdf4; }
+    .pick-btn.ok  { background:#dcfce7; border-color:#16a34a; font-weight:900; }
+
+    /* כרטיסי צרכים: לוחצים וחושפים */
+    .need-card { cursor:pointer; border:2px solid #d1fae5; border-radius:16px; background:white; transition:all .2s; min-height:118px; }
+    .need-card:hover { border-color:#84cc16; }
+    .need-card .need-why { display:none; }
+    .need-card.open { background:#f0fdf4; border-color:#16a34a; }
+    .need-card.open .need-why { display:block; }
+
+    /* פוטוסינתזה: קווים זורמים אל העלה (stroke-dashoffset, בלי ספריה) */
+    .flow { stroke-dasharray:6 7; animation:flow 1.4s linear infinite; }
+    @keyframes flow { to { stroke-dashoffset:-26; } }
+    @media (prefers-reduced-motion: reduce) { .flow { animation:none; } }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-lime-50 min-h-screen">
+
+<!-- MASCOT (GC.Tutorial תלוי בו) -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="../../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+      <a href="../../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-lime-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 1 – נביטה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 3 מתוך 17</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">מסלול יסודי</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🌱 מה הצמח שלי צריך?</h1>
+    <p class="text-green-200">4 צרכים · צמח שמכין אוכל · השתיל האישי שלי</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 6</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: תזכורת + 4 הצרכים ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🧺</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">מה צריך כדי לגדול?</h2>
+        <p class="text-gray-500 text-sm">קודם אנחנו, אחר כך הצמח.</p>
+      </div>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5">
+      <p class="text-slate-400 text-sm mb-1">🔁 בשיעור הקודם:</p>
+      <p class="font-bold">«המים כבר יודעים לאן ללכת. אבל עוד אין שם שום צמח!» מה חסר? נכון, <b class="text-lime-300">צמח</b>. היום כל אחד ואחת מקבלים שתיל אישי.</p>
+    </div>
+
+    <p class="font-bold text-gray-700 mb-2">🙋 מה <u>אתם</u> צריכים כל יום?</p>
+    <div class="grid grid-cols-4 gap-2 text-center text-sm mb-6">
+      <div class="bg-gray-50 rounded-xl p-2"><span class="text-2xl block">🍎</span>אוכל</div>
+      <div class="bg-gray-50 rounded-xl p-2"><span class="text-2xl block">💧</span>מים</div>
+      <div class="bg-gray-50 rounded-xl p-2"><span class="text-2xl block">💨</span>אוויר</div>
+      <div class="bg-gray-50 rounded-xl p-2"><span class="text-2xl block">😴</span>שינה</div>
+    </div>
+
+    <p class="font-bold text-gray-700 mb-1">🌱 ומה <u>הצמח</u> צריך? לחצו על כל כרטיס:</p>
+    <p class="text-xs text-gray-400 mb-3" id="needs-count">פתחתם 0 מתוך 4</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5" id="needs">
+      <div class="need-card p-3 text-center" onclick="openNeed(this)"><span class="text-4xl block">☀️</span><b>אור</b><p class="need-why text-xs text-gray-600 mt-1">בלי אור הצמח לא יכול להכין אוכל.</p></div>
+      <div class="need-card p-3 text-center" onclick="openNeed(this)"><span class="text-4xl block">💧</span><b>מים</b><p class="need-why text-xs text-gray-600 mt-1">השורשים שותים, והמים עולים עד העלים.</p></div>
+      <div class="need-card p-3 text-center" onclick="openNeed(this)"><span class="text-4xl block">💨</span><b>אוויר</b><p class="need-why text-xs text-gray-600 mt-1">העלים «נושמים» אוויר דרך חורים קטנטנים.</p></div>
+      <div class="need-card p-3 text-center" onclick="openNeed(this)"><span class="text-4xl block">🌿</span><b>דשן</b><p class="need-why text-xs text-gray-600 mt-1">כמו ויטמינים לצמח. מגיע עם המים.</p></div>
+    </div>
+
+    <div id="nd1-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3">🔮 נחשו: מה יקרה לשתיל שנשאר שבוע בארון חשוך?</p>
+      <div class="grid gap-3" id="nd1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'nd1')">🚀 יגדל מהר יותר</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'nd1')" data-correct="true">🥀 ייחלש, יהיה חיוור וייראה עייף</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'nd1')">😐 לא ישתנה כלום</div>
+      </div>
+      <div id="fb-nd1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="nd2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ מה משותף לנו ולצמח?</p>
+      <div class="grid gap-3" id="nd2">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'nd2')">📱 שנינו צריכים טלפון</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'nd2')">🛏️ שנינו ישנים במיטה</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'nd2')" data-correct="true">💧💨 שנינו צריכים מים ואוויר</div>
+      </div>
+      <div id="fb-nd2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">צמח שמכין אוכל ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: צמח מכין לעצמו אוכל (ורק אז: פוטוסינתזה) ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🍃</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">המטבח של הצמח</h2>
+        <p class="text-gray-500 text-sm">צמח לא אוכל כמו שאנחנו אוכלים.</p>
+      </div>
+    </div>
+
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 mb-5">
+      <p class="text-gray-800 leading-relaxed">צמח לא צריך צלחת ומזלג. הוא <b>מכין לעצמו אוכל</b>, בתוך <b>העלים</b> שלו, מ<b>אור השמש</b>, מ<b>מים</b> ומ<b>אוויר</b>.</p>
+      <p class="text-gray-800 leading-relaxed mt-2">האוכל שהוא מכין הוא <b>סוכר</b>. ממנו הצמח גדל.</p>
+    </div>
+
+    <div class="bg-sky-50 rounded-2xl p-3 mb-5">
+      <svg viewBox="0 0 320 230" class="w-full max-w-md mx-auto block" role="img" aria-label="תרשים: אור מהשמש, מים מהשורשים ואוויר נכנסים אל העלה, ויוצא ממנו סוכר, האוכל של הצמח">
+        <!-- גבעול (קודם, כדי שזרימת המים תיראה לידו ולא תתחבא מאחוריו) -->
+        <line x1="160" y1="132" x2="160" y2="200" stroke="#15803d" stroke-width="5"/>
+        <!-- זרימות אל העלה -->
+        <g fill="none" stroke-width="4" stroke-linecap="round">
+          <path class="flow" d="M262 48 L190 92"  stroke="#f59e0b"/>
+          <path class="flow" d="M172 196 L172 130" stroke="#0ea5e9"/>
+          <path class="flow" d="M48 104 L118 108"  stroke="#94a3b8"/>
+          <path class="flow" d="M150 132 L88 176"  stroke="#db2777"/>
+        </g>
+        <!-- עלה -->
+        <ellipse cx="160" cy="108" rx="44" ry="26" fill="#22c55e" transform="rotate(-18 160 108)"/>
+        <path d="M124 120 Q160 106 196 94" stroke="#15803d" stroke-width="2.5" fill="none"/>
+        <rect x="100" y="198" width="120" height="30" rx="6" fill="#a16207"/>
+        <!-- תוויות -->
+        <g font-family="Heebo,sans-serif" font-weight="700" text-anchor="middle">
+          <text x="276" y="36" font-size="26">☀️</text><text x="276" y="62" font-size="12" fill="#b45309">אור</text>
+          <text x="196" y="218" font-size="12" fill="#fff">💧 מים מהשורש</text>
+          <text x="30" y="104" font-size="24">💨</text><text x="30" y="126" font-size="12" fill="#475569">אוויר</text>
+          <text x="72" y="196" font-size="24">🍬</text><text x="72" y="218" font-size="12" fill="#be185d">סוכר!</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3">❓ איפה הצמח מכין את האוכל שלו?</p>
+      <div class="grid grid-cols-3 gap-3" id="ps1">
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'ps1')">🟫 בשורשים</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,true,'ps1')" data-correct="true">🍃 בעלים</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'ps1')">🪴 בעציץ</div>
+      </div>
+      <div id="fb-ps1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="ps-name" class="reveal bg-lime-50 border-2 border-lime-300 rounded-2xl p-5">
+      <p class="font-black text-lg text-lime-900 mb-1">🏷️ יש לזה שם!</p>
+      <p class="text-gray-800">לבישול הזה, שבו הצמח מכין סוכר מאור, מים ואוויר, קוראים <b class="text-lime-800 text-xl">פוטוסינתזה</b>.</p>
+      <p class="text-xs text-gray-500 mt-2">פוטו = אור. כמו «פוטו» במצלמה 📷</p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3); maybeStartTutorial()">השלימו את התרשים ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: גרירה - השלמת התרשים (2 חסרים) ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🧩</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">מה נכנס? מה יוצא?</h2>
+        <p class="text-gray-500 text-sm">חסרים שני כרטיסים. גררו כל אחד למקום שלו.</p>
+      </div>
+    </div>
+
+    <!-- בנק (מעורבב ב-init) -->
+    <div class="flex flex-wrap justify-center gap-3 mb-6" id="ps-bank">
+      <div class="drag-item px-4 py-3 font-bold" draggable="true" data-val="water">💧 מים</div>
+      <div class="drag-item px-4 py-3 font-bold text-center" draggable="true" data-val="oxygen">🫧 חמצן<span class="block text-xs font-normal text-gray-500">האוויר שאנחנו נושמים</span></div>
+      <div class="drag-item px-4 py-3 font-bold" draggable="true" data-val="pizza">🍕 פיצה</div>
+      <div class="drag-item px-4 py-3 font-bold" draggable="true" data-val="stone">🪨 אבנים</div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-5" id="ps-zones">
+      <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4">
+        <p class="font-black text-sky-900 mb-3 text-center">⬇️ נכנס לעלה</p>
+        <div class="flex items-center justify-center gap-2 flex-wrap">
+          <div class="bg-white rounded-xl px-3 py-3 font-bold">☀️ אור</div>
+          <span class="font-black text-gray-400">+</span>
+          <div class="drop-zone h-16 w-28 p-1 bg-white" data-correct="water" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPs(event,this)"><span class="text-gray-300 text-2xl font-black">?</span></div>
+          <span class="font-black text-gray-400">+</span>
+          <div class="bg-white rounded-xl px-3 py-3 font-bold">💨 אוויר</div>
+        </div>
+      </div>
+      <div class="bg-pink-50 border-2 border-pink-200 rounded-2xl p-4">
+        <p class="font-black text-pink-900 mb-3 text-center">⬆️ יוצא מהעלה</p>
+        <div class="flex items-center justify-center gap-2 flex-wrap">
+          <div class="bg-white rounded-xl px-3 py-3 font-bold">🍬 סוכר</div>
+          <span class="font-black text-gray-400">+</span>
+          <div class="drop-zone h-16 w-28 p-1 bg-white" data-correct="oxygen" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPs(event,this)"><span class="text-gray-300 text-2xl font-black">?</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ps-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="font-black text-xl text-lime-800 mb-1">🎉 התרשים שלם!</p>
+      <p class="text-gray-700">הצמח מכין סוכר לעצמו, ו<b>משחרר חמצן</b>, האוויר שאנחנו נושמים. הצמחים עוזרים לנו לנשום! 🫁</p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)">רעיון ישראלי ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: Supplant ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🇮🇱</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">Supplant: להשקות כשצריך</h2>
+        <p class="text-gray-500 text-sm">קוראים · מסתכלים על המסך של המורה · עונים</p>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-700 to-sky-600 text-white rounded-2xl p-6 mb-5">
+      <p class="leading-relaxed mb-2">צמח לא יכול לדבר ולהגיד «אני צמא». אז איך יודעים מתי להשקות?</p>
+      <p class="leading-relaxed mb-4"><b>Supplant (סאפלנט)</b> היא חברה ישראלית שבנתה מערכת שאומרת לחקלאי <b>מתי</b> ו<b>כמה</b> להשקות ולדשן. לא לפי שעון קבוע, אלא לפי מה שהצמח <b>באמת צריך</b> עכשיו.</p>
+      <div class="grid grid-cols-2 gap-3 text-center text-sm">
+        <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">⏰❌</span>לא «כל יום ב-8:00»</div>
+        <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">🌱✅</span>כשהצמח צריך</div>
+      </div>
+    </div>
+
+    <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 mb-5 text-center">
+      <p class="font-black text-slate-800">📽️ המורה מקרין או מספר על Supplant.</p>
+      <p class="text-sm text-gray-500">מסתכלים על המסך הגדול, לא צריך להפעיל כלום כאן.</p>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3">❓ במה Supplant עוזרת לחקלאי?</p>
+      <div class="grid gap-3" id="sp1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'sp1')" data-correct="true">💧 לדעת מתי וכמה להשקות</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'sp1')">🎨 לבחור צבע לטרקטור</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'sp1')">🛒 למכור ירקות בסופר</div>
+      </div>
+      <div id="fb-sp1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="sp2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ מה עדיף לצמח?</p>
+      <div class="grid gap-3" id="sp2">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'sp2')">⏰ להשקות כל יום באותה שעה, גם אם האדמה עוד רטובה</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'sp2')" data-correct="true">🌱 להשקות כשהצמח באמת צריך</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'sp2')">📅 להשקות פעם בחודש</div>
+      </div>
+      <div id="fb-sp2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)">בלשי צמחים ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: זיווג סימפטום ↔ צורך חסר ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🔍</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">בלשי צמחים</h2>
+        <p class="text-gray-500 text-sm">לכל שתיל חסר משהו. גררו את מה שחסר לו מתחת לתמונה.</p>
+      </div>
+    </div>
+
+    <!-- בנק (מעורבב ב-init) -->
+    <div class="flex flex-wrap justify-center gap-3 mb-6" id="sy-bank">
+      <div class="drag-item px-4 py-3 font-bold" draggable="true" data-val="water">💧 חסרים מים</div>
+      <div class="drag-item px-4 py-3 font-bold" draggable="true" data-val="light">☀️ חסר אור</div>
+      <div class="drag-item px-4 py-3 font-bold" draggable="true" data-val="food">🌿 חסר דשן</div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-2 md:gap-4 mb-5">
+      <!-- נבול -->
+      <div class="text-center">
+        <svg viewBox="0 0 100 120" class="w-full max-w-[140px] mx-auto" role="img" aria-label="שתיל נבול: הגבעול כפוף והעלים משתלשלים למטה">
+          <!-- גבעול שעולה ומתקפל למטה כמו קרס, עלים תלויים -->
+          <path d="M50 96 Q50 52 36 50 Q24 50 22 72" stroke="#84a33a" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <ellipse cx="22" cy="80" rx="11" ry="4.5" fill="#a3b556" transform="rotate(95 22 80)"/>
+          <ellipse cx="42" cy="62" rx="11" ry="4.5" fill="#a3b556" transform="rotate(75 42 62)"/>
+          <ellipse cx="30" cy="60" rx="10" ry="4"   fill="#a3b556" transform="rotate(105 30 60)"/>
+          <path d="M28 96 H72 L66 118 H34 Z" fill="#b45309"/><rect x="26" y="92" width="48" height="6" rx="2" fill="#92400e"/>
+        </svg>
+        <p class="text-xs md:text-sm font-bold text-gray-700 mb-2">הגבעול כפוף, העלים נופלים למטה</p>
+        <div class="drop-zone h-16 p-1" data-correct="water" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropSy(event,this)"></div>
+      </div>
+      <!-- נמתח לאור -->
+      <div class="text-center">
+        <svg viewBox="0 0 100 120" class="w-full max-w-[140px] mx-auto" role="img" aria-label="שתיל ארוך ודק שנוטה הצידה, עם עלים קטנים וחיוורים">
+          <path d="M50 96 Q48 50 76 12" stroke="#a3b18a" stroke-width="2.5" fill="none"/>
+          <ellipse cx="78" cy="12" rx="7" ry="3" fill="#d9e8b0" transform="rotate(-30 78 12)"/>
+          <ellipse cx="60" cy="40" rx="6" ry="2.5" fill="#d9e8b0" transform="rotate(20 60 40)"/>
+          <path d="M28 96 H72 L66 118 H34 Z" fill="#b45309"/><rect x="26" y="92" width="48" height="6" rx="2" fill="#92400e"/>
+        </svg>
+        <p class="text-xs md:text-sm font-bold text-gray-700 mb-2">ארוך, דק, חיוור ונוטה הצידה</p>
+        <div class="drop-zone h-16 p-1" data-correct="light" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropSy(event,this)"></div>
+      </div>
+      <!-- עלים צהובים -->
+      <div class="text-center">
+        <svg viewBox="0 0 100 120" class="w-full max-w-[140px] mx-auto" role="img" aria-label="שתיל ישר, אבל העלים שלו צהובים">
+          <line x1="50" y1="96" x2="50" y2="40" stroke="#65a30d" stroke-width="4"/>
+          <ellipse cx="36" cy="52" rx="14" ry="6" fill="#facc15" transform="rotate(-25 36 52)"/>
+          <ellipse cx="64" cy="62" rx="14" ry="6" fill="#facc15" transform="rotate(25 64 62)"/>
+          <ellipse cx="50" cy="36" rx="12" ry="5" fill="#fde047" transform="rotate(-80 50 36)"/>
+          <path d="M28 96 H72 L66 118 H34 Z" fill="#b45309"/><rect x="26" y="92" width="48" height="6" rx="2" fill="#92400e"/>
+        </svg>
+        <p class="text-xs md:text-sm font-bold text-gray-700 mb-2">עומד ישר, אבל העלים צהובים</p>
+        <div class="drop-zone h-16 p-1" data-correct="food" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropSy(event,this)"></div>
+      </div>
+    </div>
+
+    <div id="sy-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="font-black text-xl text-lime-800 mb-1">🕵️ בלשים מעולים!</p>
+      <p class="text-gray-700">הצמח לא מדבר, אבל הוא «מראה» לנו מה חסר לו. עלים צהובים יכולים להיות גם מסיבות אחרות, ועל זה נלמד בהמשך.</p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">השתיל שלי ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: שתילה (שני מסלולים) + דרכון + כוכב הצפון ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🏁</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">השתיל שלי + כוכב הצפון</h2>
+        <p class="text-gray-500 text-sm">עם המורה, בכיתה</p>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-5">
+      <p class="font-black text-lg text-green-900 mb-3">🌱 איפה שותלים היום?</p>
+      <div class="grid grid-cols-2 gap-3" id="sys-choice">
+        <button class="pick-btn p-3 font-bold" onclick="chooseSystem(true,this)">💧 במערכת של הכיתה</button>
+        <button class="pick-btn p-3 font-bold" onclick="chooseSystem(false,this)">🪴 בכוס או בעציץ (עוד אין מערכת)</button>
+      </div>
+    </div>
+
+    <div id="sys-yes" class="hidden bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-lime-900 mb-1">🌱 שתילה במערכת</h3>
+      <p class="text-xs text-gray-500 mb-3">אצבעות פתוחות, לא לוחצים על השורשים. סמנו ✅ כל מה שעשיתם:</p>
+      <div class="space-y-2" id="yes-list">
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('yes',this,0)"><span class="mission-icon text-2xl">⬜</span> 🏷️ קיבלתי שתיל ותווית עם שם</div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('yes',this,1)"><span class="mission-icon text-2xl">⬜</span> 🤲 שתלתי במצע בעדינות, בלי לשבור שורשים</div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('yes',this,2)"><span class="mission-icon text-2xl">⬜</span> 📏 השתיל עומד ישר ויציב</div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('yes',this,3)"><span class="mission-icon text-2xl">⬜</span> 📸 צילמנו את השתיל ביום ההולדת שלו</div>
+      </div>
+    </div>
+
+    <div id="sys-no" class="hidden bg-sky-50 border-2 border-sky-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-sky-900 mb-1">🪴 שתילה בכוס או בעציץ</h3>
+      <p class="text-xs text-gray-500 mb-3">אצבעות פתוחות, לא לוחצים על השורשים. סמנו ✅ כל מה שעשיתם:</p>
+      <div class="space-y-2" id="no-list">
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('no',this,0)"><span class="mission-icon text-2xl">⬜</span> 🏷️ קיבלתי שתיל ותווית עם שם</div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('no',this,1)"><span class="mission-icon text-2xl">⬜</span> 🕳️ לכוס יש חור בתחתית, כדי שמים עודפים יצאו</div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('no',this,2)"><span class="mission-icon text-2xl">⬜</span> 🤲 שתלתי באדמה בעדינות, והשתיל עומד ישר</div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('no',this,3)"><span class="mission-icon text-2xl">⬜</span> ☀️ שמנו את הכוס ליד חלון עם אור</div>
+      </div>
+    </div>
+
+    <div id="plant-done" class="hidden bg-gradient-to-br from-lime-100 to-green-100 border-2 border-lime-400 rounded-2xl p-5 mb-5 text-center">
+      <p class="text-4xl mb-1">🌱🏅</p>
+      <p class="font-black text-xl text-green-900">שתלתם! קיבלתם את באדג׳ «השתלן»</p>
+      <p class="text-sm text-gray-600">מהיום השתיל הזה שלכם, ואתם אחראים עליו.</p>
+    </div>
+
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3">📔 דרכון: עמוד 3</h3>
+      <label for="plant-name" class="block font-bold text-gray-700 mb-2">🏷️ איך קוראים לשתיל שלי?</label>
+      <input id="plant-name" data-answer-key="l03e_plant_name" type="text" maxlength="30" placeholder="למשל: ירוקי" class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500 mb-4">
+      <label for="plant-desc" class="block font-bold text-gray-700 mb-2">👀 איך השתיל נראה היום?</label>
+      <textarea id="plant-desc" data-answer-key="l03e_passport" rows="2" maxlength="200" placeholder="השתיל שלי קטן, יש לו..." class="w-full border-2 border-green-200 rounded-xl p-3 outline-none resize-none focus:border-green-500"></textarea>
+      <p class="text-xs text-gray-500 mt-1">אפשר לכתוב משפט קצר. אפשר גם בערבית. 🙂</p>
+      <button onclick="savePlant()" class="mt-3 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-2xl font-black shadow">📔 שמירה בדרכון</button>
+      <p id="passport-saved" class="hidden mt-3 text-center font-bold text-lime-800">✨ נשמר בדרכון! תאריך השתילה נרשם.</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">⭐</span>
+        <h3 class="font-black text-amber-900 text-xl">כוכב הצפון</h3>
+      </div>
+      <p class="text-sm text-gray-600 mb-2">בסוף השנה יש תערוכה. הצמח צריך אור, מים, אוויר ודשן.</p>
+      <p class="text-gray-800 font-bold text-lg mb-3">איך הפרויקט שלכם יכול לעזור לצמח לקבל את מה שהוא צריך?</p>
+      <textarea data-answer-key="l03e_northstar" rows="2" placeholder="הפרויקט שלנו יעזור לצמח כי..." class="w-full border-2 border-amber-200 rounded-xl p-3 outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+
+    <div class="bg-green-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3">📚 מה למדנו היום:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li>🧺 צמח צריך 4 דברים: אור, מים, אוויר ודשן.</li>
+        <li>🍃 הצמח מכין לעצמו אוכל (סוכר) בעלים, ומשחרר חמצן. קוראים לזה פוטוסינתזה.</li>
+        <li>💧 Supplant עוזרת לחקלאי להשקות כשהצמח באמת צריך.</li>
+        <li>🔍 הצמח «מראה» מה חסר לו: נבול, חיוור, צהוב.</li>
+      </ul>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא:</p>
+      <p class="font-black text-lg">"השתיל שלכם תלוי בכם. אבל מי בכלל מחליט מה כדאי לגדל, ומתי כדאי?"</p>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים בשיעור 3:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך 45 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4">
+    <a href="../../index.html#lessons-section" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">🏠 לדף השיעורים</a>
+  </div>
+</div>
+
+</div><!-- /max-w -->
+
+<script>
+// מקור אמת: elementary/teachers/teacher-03.html
+// עלים (בסיס 45): 5 שאלות × 5 + תרשים 5 + בלשים 5 + שתילה 5 + דרכון 5
+
+// Fisher–Yates
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ── STEP 1: כרטיסי צרכים (חוויה, בלי עלים) ──
+function openNeed(el) {
+  el.classList.add('open');
+  const n = document.querySelectorAll('#needs .need-card.open').length;
+  document.getElementById('needs-count').textContent = `פתחתם ${n} מתוך 4`;
+  if (n === 4) { GC.reveal('nd1-wrap'); mascotSay('אור, מים, אוויר ודשן! 🌱', '🧺'); }
+}
+
+// ── גרירה: אותו handler לשני המשחקים, כל אחד עם מונה משלו ──
+function makeDrop(total, onDone, hint) {
+  let ok = 0;
+  return function (e, zone) {
+    GC.handleDrop(e, zone, zone.dataset.correct, (src, z) => {
+      z.innerHTML = src.innerHTML;
+      z.classList.add('flex', 'flex-col', 'items-center', 'justify-center', 'text-center', 'text-sm', 'font-bold');
+      if (++ok === total) onDone();
+    }, () => mascotSay(hint, '🤔'));
+  };
+}
+
+// ── STEP 3: השלמת תרשים הפוטוסינתזה ──
+const dropPs = makeDrop(2, () => {
+  GC.addLeaves(5, 'S');
+  document.getElementById('ps-done').classList.remove('hidden');
+  GC.showBtn('btn3');
+  mascotSay('סוכר לצמח, חמצן לנו! 🫧', '🍃');
+}, 'כמעט! מה הצמח שותה? ומה הוא נותן לנו לנשום?');
+
+// ── STEP 5: זיווג סימפטום ↔ צורך ──
+const dropSy = makeDrop(3, () => {
+  GC.addLeaves(5, 'S');
+  document.getElementById('sy-done').classList.remove('hidden');
+  GC.showBtn('btn5');
+  mascotSay('בלשי צמחים אמיתיים! 🕵️', '🔍');
+}, 'הסתכלו שוב על התמונה. מה חסר לשתיל הזה?');
+
+// initTouch מקבל dropFn אחד - מנתבים לפי הבנק שממנו התחילה הגרירה
+function dropAny(e, zone) {
+  return zone.closest('#ps-zones') ? dropPs(e, zone) : dropSy(e, zone);
+}
+
+// ── STEP 6: שתילה (שני מסלולים). 5 עלים + באדג' פעם אחת בלבד ──
+let plantLeaves = false;
+function chooseSystem(has, el) {
+  document.querySelectorAll('#sys-choice .pick-btn').forEach(b => b.classList.remove('ok'));
+  el.classList.add('ok');
+  document.getElementById('sys-yes').classList.toggle('hidden', !has);
+  document.getElementById('sys-no').classList.toggle('hidden', has);
+}
+
+const tasksDone = { yes: [], no: [] };
+function checkTask(path, el, idx) {
+  const done = tasksDone[path];
+  if (done.includes(idx)) return;
+  done.push(idx);
+  el.classList.add('done-card');
+  el.querySelector('.mission-icon').textContent = '✅';
+  const total = document.querySelectorAll('#' + path + '-list .mission-card').length;
+  if (done.length === total && !plantLeaves) {
+    plantLeaves = true;
+    GC.addLeaves(5, 'S');
+    GC.savePassport('planted3', new Date().toLocaleDateString('he-IL'));
+    document.getElementById('plant-done').classList.remove('hidden');
+    mascotSay('באדג׳ השתלן! 🌱🏅', '🌱');
+  }
+}
+
+// דרכון: שם השתיל נשמר גם כ-plantName (הדשבורד של המורה ו-PlantTwin קוראים אותו)
+let passportSaved = false;
+function savePlant() {
+  const name = document.getElementById('plant-name').value.trim();
+  const desc = document.getElementById('plant-desc').value.trim();
+  if (!name && !desc) { mascotSay('תנו שם לשתיל 🙂', '📔'); return; }
+  if (name) {
+    GC.saveOpenAnswer('l03e_plant_name', name);
+    GC.savePassport('plantName', name);
+    try { localStorage.setItem('plantName', name); } catch (e) {}
+  }
+  if (desc) GC.saveOpenAnswer('l03e_passport', desc);
+  GC.savePassport('lesson3', { name, desc, date: new Date().toLocaleDateString('he-IL') });
+  document.getElementById('passport-saved').classList.remove('hidden');
+  if (passportSaved) return;
+  passportSaved = true;
+  GC.addLeaves(5, 'S');
+  mascotSay('השתיל קיבל שם! ✨ ' + name, '📔');
+}
+
+// ── INIT ──
+function init() {
+  GC.initLesson({
+    lessonId: 3,
+    steps: 6,
+    mascotMessages: {
+      1: 'שלום! גרגיר כאן 🌱 היום מקבלים שתיל!',
+      2: 'איך צמח אוכל בלי צלחת? 🍃',
+      3: 'חסרים שני כרטיסים בתרשים 🧩',
+      4: 'איך יודעים שצמח צמא? 💧',
+      5: 'בלשי צמחים: מה חסר לכל שתיל? 🔍',
+      6: 'הגיע הזמן לשתול! 🌱'
+    }
+  });
+
+  GC.registerCascades({
+    'nd1': () => { GC.reveal('nd2-wrap'); mascotSay('בלי אור הצמח לא מכין אוכל 🌑', '🥀'); },
+    'nd2': () => { GC.showBtn('btn1'); },
+    'ps1': () => { GC.reveal('ps-name'); GC.showBtn('btn2'); mascotSay('העלים הם המטבח של הצמח 🍃', '🌱'); },
+    'sp1': () => GC.reveal('sp2-wrap'),
+    'sp2': () => { GC.showBtn('btn4'); mascotSay('משקים כשצריך, לא לפי שעון 💧', '🌱'); },
+  });
+
+  ['ps-bank', 'sy-bank'].forEach(id => {
+    const bank = document.getElementById(id);
+    shuffle(Array.from(bank.children)).forEach(el => bank.appendChild(el));
+  });
+  GC.initTouch('.drag-item', '.drop-zone', dropAny);
+
+  GC.bindOpenAnswers();
+}
+
+// ── TUTORIAL (פעם אחת, id l03e) - גרירה להשלמת תרשים (פיצ'ר חדש: חסרים בתוך משפט) ──
+function maybeStartTutorial() {
+  if (localStorage.getItem('gc_tutorial_l03e')) return;
+  if (document.getElementById('gc-id-modal')) return;
+  setTimeout(() => {
+    GC.Tutorial.start('l03e', [
+      { target: '#ps-zones', emoji: '🧩', wait: 'next',
+        text: 'בתרשים חסרים שני כרטיסים. סימן שאלה = מקום ריק.' },
+      { target: '#ps-bank', emoji: '🖐️', wait: 'next',
+        text: 'גררו כרטיס מכאן אל סימן השאלה. יש גם כרטיסים שלא מתאימים!' },
+    ]);
+  }, 450); // אחרי גלילת goTo
+}
+
+init();
+</script>
+</body>
+</html>
