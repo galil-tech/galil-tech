@@ -28,7 +28,7 @@
     .pick-btn:hover:not([disabled]) { border-color:#84cc16; background:#f0fdf4; }
     .pick-btn.ok  { background:#dcfce7; border-color:#16a34a; font-weight:900; }
     .pick-btn.no  { background:#fee2e2; border-color:#dc2626; }
-    .chain-arrow { color:#9ca3af; font-size:1.4rem; font-weight:900; }
+    .chain-line { display:block; width:14px; height:3px; background:#d1d5db; border-radius:2px; flex-shrink:0; }
   </style>
 </head>
 <body class="bg-gradient-to-br from-green-50 to-lime-50 min-h-screen">
@@ -88,7 +88,7 @@
     </div>
 
     <!-- המדרגות (לא בקנה מידה) -->
-    <div class="flex items-end justify-center gap-2 mb-2" id="stairs"></div>
+    <div class="flex items-end justify-center gap-1 md:gap-2 mb-2" id="stairs"></div>
     <p class="text-center text-xs text-gray-400 mb-5">המדרגות לא מצוירות לפי הגודל האמיתי. אחרת העולם לא היה נכנס במסך! 😄</p>
 
     <!-- שאלת הניחוש של המדרגה הנוכחית -->
@@ -97,14 +97,11 @@
       <div class="grid grid-cols-3 gap-3" id="ladder-opts"></div>
       <div id="ladder-fb" class="hidden mt-4 rounded-xl p-4 text-sm font-bold"></div>
 
-      <!-- קפיצה: הרבה יותר? -->
-      <div id="jump-box" class="hidden mt-4 bg-white border-2 border-gray-100 rounded-xl p-4">
-        <p class="font-bold mb-3" id="jump-q"></p>
-        <div class="grid grid-cols-2 gap-3">
-          <button class="pick-btn p-3 text-sm font-bold" data-ok="0" onclick="jumpAns(this)">רק עוד קצת</button>
-          <button class="pick-btn p-3 text-sm font-bold" data-ok="1" onclick="jumpAns(this)">הרבה יותר – קפיצה גדולה! 🚀</button>
-        </div>
-        <div id="jump-fb" class="hidden mt-3 rounded-xl p-3 text-sm"></div>
+      <!-- יחס משוער למדרגה הקודמת -->
+      <div id="ratio-box" class="hidden mt-4 bg-white border-2 border-gray-100 rounded-xl p-4">
+        <p class="font-bold mb-3" id="ratio-q"></p>
+        <div class="grid grid-cols-3 gap-3" id="ratio-opts"></div>
+        <div id="ratio-fb" class="hidden mt-3 rounded-xl p-3 text-sm"></div>
       </div>
 
       <button id="ladder-next" class="hidden mt-4 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-2xl font-black" onclick="ladderNext()">למדרגה הבאה ⬆️</button>
@@ -152,7 +149,7 @@
 
     <div class="bg-gray-50 rounded-2xl p-4 mb-2">
       <p class="font-black text-center text-gray-800 mb-2">כמה אנשים חיים בעולם?</p>
-      <svg viewBox="0 0 420 260" class="w-full max-w-xl mx-auto block" dir="ltr" role="img" aria-label="גרף: מספר האנשים בעולם עולה משנת 1950 עד היום, וממשיך לעלות עד 2050">
+      <svg viewBox="0 -22 430 282" class="w-full max-w-xl mx-auto block" dir="ltr" role="img" aria-label="גרף: מספר האנשים בעולם עולה משנת 1950 (בערך 2.5 מיליארד) עד היום (בערך 8 מיליארד), והתחזית ל-2050 היא בערך 10 מיליארד">
         <!-- קווי רשת -->
         <g stroke="#e5e7eb" stroke-width="1">
           <line x1="60" y1="210" x2="400" y2="210"/>
@@ -160,6 +157,7 @@
           <line x1="60" y1="130" x2="400" y2="130"/>
           <line x1="60" y1="90"  x2="400" y2="90"/>
           <line x1="60" y1="50"  x2="400" y2="50"/>
+          <line x1="60" y1="10"  x2="400" y2="10"/>
         </g>
         <!-- צירים -->
         <line x1="60" y1="210" x2="400" y2="210" stroke="#374151" stroke-width="2"/>
@@ -171,7 +169,7 @@
           <text x="54" y="134">4</text>
           <text x="54" y="94">6</text>
           <text x="54" y="54">8</text>
-          <text x="54" y="18" font-weight="700">10</text>
+          <text x="54" y="14">10</text>
         </g>
         <!-- תוויות ציר אופקי (שנה) -->
         <g font-size="12" fill="#6b7280" text-anchor="middle" font-family="Heebo,sans-serif">
@@ -189,8 +187,11 @@
         <g fill="#16a34a"><circle cx="60" cy="160" r="4"/><circle cx="145" cy="130" r="4"/><circle cx="230" cy="90" r="4"/><circle cx="315" cy="48" r="5"/></g>
         <!-- חץ תחזית ל-2050 -->
         <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#f59e0b"/></marker></defs>
-        <line x1="315" y1="48" x2="394" y2="18" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#arr)"/>
+        <line x1="315" y1="48" x2="392" y2="14" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#arr)"/>
         <text x="352" y="72" font-size="11" fill="#b45309" text-anchor="middle" font-family="Heebo,sans-serif">תחזית</text>
+        <!-- נקודת 2050 מתויגת: החץ נוחת על מספר, לא בורח מהסקאלה -->
+        <circle cx="400" cy="10" r="5" fill="#f59e0b" stroke="white" stroke-width="2"/>
+        <text x="370" y="-6" font-size="12" font-weight="700" fill="#b45309" text-anchor="middle" font-family="Heebo,sans-serif">כ־10 מיליארד</text>
       </svg>
     </div>
     <p class="text-center text-xs text-gray-400 mb-5">הקו הירוק = מה שכבר קרה. החץ הכתום המקווקו = מה שחושבים שיקרה.</p>
@@ -203,6 +204,17 @@
         <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'g1')">לא כתוב בגרף</div>
       </div>
       <div id="fb-g1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="g1b-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-1">❓ ב־1950 היו בערך כמה מיליארד אנשים?</p>
+      <p class="text-sm text-gray-500 mb-3">מצאו את הנקודה הראשונה על הקו, והסתכלו על הציר בצד.</p>
+      <div class="grid grid-cols-3 gap-3" id="g1b">
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,true,'g1b')" data-correct="true">2</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'g1b')">8</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'g1b')">10</div>
+      </div>
+      <div id="fb-g1b" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
     </div>
 
     <div id="g2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
@@ -225,8 +237,18 @@
         <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'g3')">אותו דבר</div>
       </div>
       <div id="fb-g3" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="g4-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mt-4">
+      <p class="font-bold text-lg mb-3">❓ מה לא גדל בגרף הזה — וזו הבעיה?</p>
+      <div class="grid gap-3" id="g4">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'g4')">👥 מספר האנשים</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'g4')" data-correct="true">🟫 האדמה לחקלאות</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'g4')">📅 מספר השנים</div>
+      </div>
+      <div id="fb-g4" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
       <div id="g3-after" class="hidden mt-4 bg-amber-50 border-2 border-amber-200 rounded-xl p-4 text-sm text-gray-800">
-        עוד ועוד אנשים, וכולם צריכים לאכול. אבל <b>האדמה בעולם לא גדלה</b>. אז איך נגדל יותר אוכל? 🤔
+        עוד ועוד אנשים, וכולם צריכים לאכול. אבל <b>האדמה לחקלאות לא גדלה</b>. אז איך נגדל יותר אוכל על אותה אדמה? 🤔
       </div>
     </div>
   </div>
@@ -242,7 +264,7 @@
       <span class="text-4xl">📦</span>
       <div>
         <h2 class="text-3xl font-black text-green-900">ירקות בתוך מכולה</h2>
-        <p class="text-gray-500 text-sm">קוראים ← צופים ← עונים</p>
+        <p class="text-gray-500 text-sm">קוראים · צופים · עונים</p>
       </div>
     </div>
 
@@ -260,8 +282,14 @@
       </div>
     </div>
 
-    <div class="rounded-2xl overflow-hidden mb-5" style="position:relative;padding-top:56.25%;">
-      <iframe src="https://www.youtube-nocookie.com/embed/SztIV-AyQZ8" title="Vertical Field" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    <!-- הסרטון מוקרן ע"י המורה לכולם. ה-embed נטען רק אחרי לחיצה (data-src), לא אוטומטית בכל מחשב. -->
+    <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-5 mb-5 text-center">
+      <p class="font-black text-lg text-slate-800 mb-1">📽️ המורה מקרין לכולם.</p>
+      <p class="text-sm text-gray-600 mb-3">אל תפעילו לבד אלא אם המורה אמר.</p>
+      <button id="vf-open" class="bg-white border-2 border-slate-300 hover:border-green-500 text-slate-700 px-5 py-2 rounded-xl text-sm font-bold" onclick="openVideo('vf-video','vf-open')">המורה אמר לפתוח ▶</button>
+      <div id="vf-video" class="hidden rounded-2xl overflow-hidden mt-4" style="position:relative;padding-top:56.25%;">
+        <iframe data-src="https://www.youtube-nocookie.com/embed/SztIV-AyQZ8" title="Vertical Field" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
     </div>
 
     <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
@@ -308,14 +336,18 @@
       <div class="drag-item flex items-center gap-2 px-4 py-3 font-bold" draggable="true" data-val="store">🛒 סופר</div>
     </div>
 
+    <!-- כיוון התנועה בכיתוב מעל השורה (בלי חצים - ב-RTL הם מבלבלים). השדה מימין, הסופר משמאל. -->
+    <div class="max-w-xl mx-auto mb-1 flex items-center gap-2 text-xs font-bold text-gray-500">
+      <span>🌾 מהשדה</span><span class="flex-1 border-t-2 border-dashed border-gray-300"></span><span>אל הסופר 🛒</span>
+    </div>
     <!-- תיבות: רק שני הקצוות עם תווית -->
     <div class="flex items-center justify-center gap-1 md:gap-2 mb-5" id="chain-zones">
       <div class="drop-zone h-20 w-24 md:w-32 p-1" data-correct="field" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChain(event,this)"><span class="text-gray-400 text-xs font-bold">שדה בגליל</span></div>
-      <span class="chain-arrow">←</span>
+      <span class="chain-line"></span>
       <div class="drop-zone h-20 w-24 md:w-32 p-1" data-correct="pack" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChain(event,this)"></div>
-      <span class="chain-arrow">←</span>
+      <span class="chain-line"></span>
       <div class="drop-zone h-20 w-24 md:w-32 p-1" data-correct="dist" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChain(event,this)"></div>
-      <span class="chain-arrow">←</span>
+      <span class="chain-line"></span>
       <div class="drop-zone h-20 w-24 md:w-32 p-1" data-correct="store" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChain(event,this)"><span class="text-gray-400 text-xs font-bold">סופר</span></div>
     </div>
 
@@ -384,7 +416,7 @@
     </div>
   </div>
   <div class="flex justify-end">
-    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">סיור במערכת ←</button>
+    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">המקום שלנו ←</button>
   </div>
 </div>
 
@@ -394,12 +426,21 @@
     <div class="flex items-center gap-3 mb-5">
       <span class="text-4xl">🏁</span>
       <div>
-        <h2 class="text-3xl font-black text-green-900">סיור במערכת + כוכב הצפון</h2>
-        <p class="text-gray-500 text-sm">עם המורה, ליד המערכת של הכיתה</p>
+        <h2 class="text-3xl font-black text-green-900">המקום שלנו + כוכב הצפון</h2>
+        <p class="text-gray-500 text-sm">עם המורה, בכיתה</p>
       </div>
     </div>
 
-    <div class="bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-5">
+    <!-- שני מסלולים: יש / עוד אין מערכת מים בכיתה -->
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-5">
+      <p class="font-black text-lg text-green-900 mb-3">💧 יש בכיתה מערכת מים לירקות?</p>
+      <div class="grid grid-cols-2 gap-3" id="sys-choice">
+        <button class="pick-btn p-3 font-bold" onclick="chooseSystem(true,this)">✅ כן, יש מערכת</button>
+        <button class="pick-btn p-3 font-bold" onclick="chooseSystem(false,this)">🕐 עוד אין מערכת</button>
+      </div>
+    </div>
+
+    <div id="sys-yes" class="hidden bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-5">
       <h3 class="font-black text-lime-900 mb-1">🔍 מצאו במערכת של הכיתה:</h3>
       <p class="text-xs text-gray-500 mb-3">מסתכלים ומצביעים. נוגעים רק אם המורה אומר/ת. סמנו ✅ כל מה שמצאתם:</p>
       <div class="space-y-2">
@@ -415,6 +456,43 @@
       </div>
       <div id="mission-done" class="hidden mt-3 bg-lime-100 rounded-xl p-3 text-center font-bold text-lime-800">
         🏆 מצאתם הכל! זו החווה שלנו לכל השנה.
+      </div>
+    </div>
+
+    <div id="sys-no" class="hidden bg-sky-50 border-2 border-sky-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-sky-900 mb-1">🗺️ מחפשים מקום לחווה שלנו</h3>
+      <p class="text-xs text-gray-500 mb-4">עוד אין מערכת? מעולה, אז אתם מתכננים איפה היא תהיה.</p>
+
+      <p class="font-bold mb-2">1. איפה בבית הספר הכי הגיוני לגדל ירקות?</p>
+      <div class="grid grid-cols-3 gap-2 mb-1" id="pl1">
+        <button class="pick-btn p-2 text-sm font-bold" data-ok="1" onclick="placeAns('pl1',this)">☀️ ליד חלון עם שמש</button>
+        <button class="pick-btn p-2 text-sm font-bold" data-ok="0" onclick="placeAns('pl1',this)">🏠 על הגג</button>
+        <button class="pick-btn p-2 text-sm font-bold" data-ok="0" onclick="placeAns('pl1',this)">⚽ בחצר שילדים רצים בה</button>
+      </div>
+      <p id="fb-pl1" class="hidden text-sm text-sky-900 font-bold mb-4">ליד חלון עם שמש: יש אור, ואפשר לבדוק את הצמחים כל יום. לגג צריך מבוגר שיעלה איתכם, ובחצר דורכים עליהם.</p>
+
+      <div id="pl2-wrap" class="reveal">
+        <p class="font-bold mb-2 mt-3">2. מה חייבים שיהיה קרוב?</p>
+        <div class="grid grid-cols-3 gap-2 mb-1" id="pl2">
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="0" onclick="placeAns('pl2',this)">⚽ מגרש כדורגל</button>
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="1" onclick="placeAns('pl2',this)">🔌💧 חשמל ומים</button>
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="0" onclick="placeAns('pl2',this)">☕ חדר מורים</button>
+        </div>
+        <p id="fb-pl2" class="hidden text-sm text-sky-900 font-bold mb-4">מים כדי למלא את המאגר, וחשמל בשביל המשאבה.</p>
+      </div>
+
+      <div id="pl3-wrap" class="reveal">
+        <p class="font-bold mb-2 mt-3">3. מה עלול לקלקל את הצמחים שם?</p>
+        <div class="grid grid-cols-3 gap-2 mb-1" id="pl3">
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="1" onclick="placeAns('pl3',this)">👟 דריכות</button>
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="1" onclick="placeAns('pl3',this)">🌑 חושך כל היום</button>
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="0" onclick="placeAns('pl3',this)">👀 שהמורה צופה</button>
+        </div>
+        <p id="fb-pl3" class="hidden text-sm text-sky-900 font-bold">גם דריכות וגם חושך מקלקלים צמחים. מורה שצופה דווקא עוזר 😄</p>
+      </div>
+
+      <div id="place-done" class="hidden mt-4 bg-sky-100 rounded-xl p-3 text-center font-bold text-sky-900">
+        🏆 יש לכם תוכנית! כשתגיע המערכת, כבר תדעו איפה לשים אותה.
       </div>
     </div>
 
@@ -457,14 +535,25 @@
 
 <script>
 // ── STEP 1: מדרגות המספרים ──
-// מספרים לפי elementary/teachers/teacher-01.html (הלמ"ס, אומדן 2026)
+// מספרים לפי elementary/teachers/teacher-01.html (הלמ"ס, אומדן 2026). ארה"ב/סין - מספרים עגולים בלבד.
+// ratio = «פי כמה בערך מהמדרגה הקודמת?» - אפשרויות בסדרי גודל שונים, רק אחת נכונה.
 const LADDER = [
-  { place:'אדמית',  emoji:'🏡', real:'בערך 500',        opts:['50','500','5,000'],                correct:1 },
-  { place:'שלומי',  emoji:'🏘️', real:'בערך 8,000',      opts:['800','8,000','80,000'],            correct:1 },
-  { place:'נהריה',  emoji:'🏙️', real:'בערך 70,000',     opts:['7,000','70,000','700,000'],        correct:1 },
-  { place:'ישראל',  emoji:'🇮🇱', real:'בערך 10 מיליון',  opts:['מיליון','10 מיליון','100 מיליון'], correct:1 },
-  { place:'העולם',  emoji:'🌍', real:'בערך 8 מיליארד',  opts:['8 מיליון','800 מיליון','8 מיליארד'], correct:2 },
+  { place:'אדמית', emoji:'🏡', short:'500',        real:'בערך 500',         opts:['50','500','5,000'],                    correct:1 },
+  { place:'שלומי', emoji:'🏘️', short:'8,000',      real:'בערך 8,000',       opts:['800','8,000','80,000'],                correct:1,
+    ratio:{ opts:['פי 2','פי 16','פי 500'], correct:1, n:16,  eq:'500 × 16 = 8,000',         note:'' } },
+  { place:'נהריה', emoji:'🏙️', short:'70 אלף',     real:'בערך 70,000',      opts:['7,000','70,000','700,000'],            correct:1,
+    ratio:{ opts:['פי 9','פי 90','פי 900'], correct:0, n:9,   eq:'8,000 × 9 = 72,000',        note:'קרוב ל-70,000' } },
+  { place:'ישראל', emoji:'🇮🇱', short:'10 מיליון',  real:'בערך 10 מיליון',   opts:['מיליון','10 מיליון','100 מיליון'],     correct:1,
+    ratio:{ opts:['פי 3','פי 14','פי 140'], correct:2, n:140, eq:'70,000 × 140 = 9,800,000', note:'כמעט 10 מיליון' } },
+  { place:'ארה״ב', emoji:'🗽', short:'340 מיליון', real:'בערך 340 מיליון',  opts:['35 מיליון','340 מיליון','3 מיליארד'], correct:1,
+    ratio:{ opts:['פי 3','פי 34','פי 300'], correct:1, n:34,  eq:'10 × 34 = 340',             note:'במיליונים' } },
+  { place:'סין',   emoji:'🏯', short:'1.4 מיליארד', real:'בערך 1.4 מיליארד', opts:['14 מיליון','140 מיליון','1.4 מיליארד'], correct:2,
+    ratio:{ opts:['פי 4','פי 40','פי 400'], correct:0, n:4,   eq:'340 × 4 = 1,360',           note:'במיליונים, כמעט 1.4 מיליארד' } },
+  { place:'העולם', emoji:'🌍', short:'8 מיליארד',  real:'בערך 8 מיליארד',   opts:['8 מיליון','800 מיליון','8 מיליארד'],   correct:2,
+    ratio:{ opts:['פי 2','פי 6','פי 60'], correct:1, n:6,     eq:'1.4 × 6 = 8.4',             note:'במיליארדים, קרוב ל-8' } },
 ];
+// «בשלומי» / «בעולם» / «בארה״ב»
+function inPlace(l) { return l.place === 'העולם' ? 'בעולם' : 'ב' + l.place; }
 let ladderIdx = 0;
 
 // Fisher–Yates
@@ -481,12 +570,12 @@ function renderStairs() {
   const wrap = document.getElementById('stairs');
   wrap.innerHTML = LADDER.map((l, i) => {
     const revealed = i < ladderIdx || (i === ladderIdx && l._shown);
-    const cls = 'stair border-2 border-green-200 bg-green-50 flex flex-col items-center justify-end p-1 w-1/5 max-w-[110px]' +
+    const cls = 'stair border-2 border-green-200 bg-green-50 flex flex-col items-center justify-end p-1 flex-1 max-w-[96px] min-w-0' +
       (revealed ? ' on' : '') + (i === ladderIdx ? ' now' : '');
-    return `<div class="${cls}" style="height:${60 + i * 32}px">
-      <span class="text-2xl">${l.emoji}</span>
-      <span class="font-black text-xs md:text-sm text-green-900">${l.place}</span>
-      <span class="text-[10px] md:text-xs text-gray-600 font-bold text-center leading-tight">${revealed ? l.real : '?'}</span>
+    return `<div class="${cls}" style="height:${56 + i * 22}px">
+      <span class="text-xl md:text-2xl">${l.emoji}</span>
+      <span class="font-black text-[11px] md:text-sm text-green-900">${l.place}</span>
+      <span class="text-[10px] md:text-xs text-gray-600 font-bold text-center leading-tight">${revealed ? l.short : '?'}</span>
     </div>`;
   }).join('');
 }
@@ -497,9 +586,8 @@ function renderLadderQuestion() {
   document.getElementById('ladder-opts').innerHTML = l.opts.map((o, i) =>
     `<button class="guess-btn p-3 md:p-4 text-base md:text-xl font-black" onclick="ladderGuess(${i},this)">${o}</button>`).join('');
   document.getElementById('ladder-fb').classList.add('hidden');
-  document.getElementById('jump-box').classList.add('hidden');
-  document.querySelectorAll('#jump-box .pick-btn').forEach(b => { b.disabled = false; b.classList.remove('ok', 'no'); });
-  document.getElementById('jump-fb').classList.add('hidden');
+  document.getElementById('ratio-box').classList.add('hidden');
+  document.getElementById('ratio-fb').classList.add('hidden');
   document.getElementById('ladder-next').classList.add('hidden');
   renderStairs();
 }
@@ -513,28 +601,37 @@ function ladderGuess(i, el) {
   GC.addLeaves(1, 'K'); // כל ניחוש = השתתפות (לא תלוי בנכונות)
   const fb = document.getElementById('ladder-fb');
   fb.className = 'mt-4 rounded-xl p-4 text-sm font-bold ' + (i === l.correct ? 'bg-green-100 text-green-900' : 'bg-amber-50 text-amber-900');
-  fb.textContent = (i === l.correct ? '🎯 בול! ' : '👀 המספר האמיתי: ') + `ב${l.place === 'העולם' ? 'עולם' : l.place} גרים ${l.real} אנשים.`;
+  fb.textContent = (i === l.correct ? '🎯 בול! ' : '👀 המספר האמיתי: ') + `${inPlace(l)} גרים ${l.real} אנשים.`;
   renderStairs();
-  if (ladderIdx > 0) {
+  if (l.ratio) {
     const prev = LADDER[ladderIdx - 1];
-    document.getElementById('jump-q').textContent = `מ${prev.place} ל${l.place}: זה רק עוד קצת, או הרבה יותר?`;
-    document.getElementById('jump-box').classList.remove('hidden');
+    document.getElementById('ratio-q').textContent =
+      `פי כמה בערך מהמדרגה הקודמת? (מ${prev.place} אל ${l.place === 'העולם' ? 'כל העולם' : l.place})`;
+    document.getElementById('ratio-opts').innerHTML = l.ratio.opts.map((o, k) =>
+      `<button class="pick-btn p-3 text-base md:text-lg font-black" onclick="ratioAns(${k},this)">${o}</button>`).join('');
+    document.getElementById('ratio-box').classList.remove('hidden');
   } else {
     afterStair();
   }
 }
 
-function jumpAns(el) {
-  const box = document.getElementById('jump-box');
+// «פי כמה בערך?» - בלי עלים (חוויה, לא מבחן). המשוב תמיד מראה את היחס ואת הבדיקה.
+function ratioAns(k, el) {
+  const l = LADDER[ladderIdx], box = document.getElementById('ratio-box');
   if (box.dataset.done === String(ladderIdx)) return;
   box.dataset.done = String(ladderIdx);
-  box.querySelectorAll('.pick-btn').forEach(b => b.disabled = true);
-  const ok = el.dataset.ok === '1';
+  const btns = box.querySelectorAll('.pick-btn');
+  btns.forEach(b => b.disabled = true);
+  const ok = k === l.ratio.correct;
   el.classList.add(ok ? 'ok' : 'no');
-  if (!ok) box.querySelector('.pick-btn[data-ok="1"]').classList.add('ok');
-  const fb = document.getElementById('jump-fb');
-  fb.className = 'mt-3 rounded-xl p-3 text-sm ' + (ok ? 'bg-green-50 text-green-800' : 'bg-amber-50 text-amber-900');
-  fb.textContent = ok ? '✅ נכון! כל מדרגה היא קפיצה ענקית, לא רק עוד קצת.' : 'בעצם זו קפיצה ענקית! המספר גדל פי הרבה.';
+  if (!ok) btns[l.ratio.correct].classList.add('ok');
+  const prev = LADDER[ladderIdx - 1];
+  const fb = document.getElementById('ratio-fb');
+  fb.className = 'mt-3 rounded-xl p-3 text-sm font-bold ' + (ok ? 'bg-green-50 text-green-800' : 'bg-amber-50 text-amber-900');
+  // המשוואה ב-LTR, אחרת ה-RTL הופך את סדר המספרים
+  fb.innerHTML = (ok ? '✅ נכון! ' : '👀 כמעט. ') +
+    `${inPlace(l)} יש בערך פי ${l.ratio.n} יותר אנשים מאשר ${inPlace(prev)}.` +
+    `<br><span class="font-normal">בדיקה: <span dir="ltr" class="inline-block font-black">${l.ratio.eq}</span>${l.ratio.note ? ' · ' + l.ratio.note : ''}</span>`;
   afterStair();
 }
 
@@ -566,6 +663,21 @@ function countAns(id, el) {
   if (id === 'cnt2') { GC.showBtn('btn1'); mascotSay('ועכשיו נראה את זה בגרף 📈', '🌱'); }
 }
 
+// סרטון מאחורי כפתור: טוען את ה-iframe רק כשהמורה אומר לפתוח
+function openVideo(boxId, btnId) {
+  const box = document.getElementById(boxId);
+  const f = box.querySelector('iframe');
+  if (f && !f.src) f.src = f.dataset.src;
+  box.classList.remove('hidden');
+  document.getElementById(btnId).classList.add('hidden');
+}
+
+// משוב עם הסבר (דורס את הטקסט הכללי של ansQ, העלים כבר נוספו)
+function fbNote(qid, ok, text) {
+  const fb = document.getElementById('fb-' + qid);
+  if (fb) fb.textContent = (ok ? '✅ נכון! ' : '👀 ') + text;
+}
+
 // ── STEP 4: שרשרת קצרה ──
 let chainOk = 0;
 function dropChain(e, zone) {
@@ -576,7 +688,7 @@ function dropChain(e, zone) {
     if (chainOk === 4) {
       GC.addLeaves(5, 'S');
       document.getElementById('chain-done').classList.remove('hidden');
-      mascotSay('שדה ← אריזה והסעה ← הפצה ← סופר. יופי! 🚚', '🌱');
+      mascotSay('שדה, אריזה והסעה, הפצה, סופר. יופי! 🚚', '🌱');
     }
   }, () => mascotSay('כמעט! חשבו: מה קורה קודם?', '🤔'));
 }
@@ -601,19 +713,50 @@ function savePassport() {
   mascotSay('הדרכון נשמר! 📔', '🌱');
 }
 
-// ── STEP 6: סיור מערכת ──
+// ── STEP 6: שני מסלולים - יש מערכת (סיור) / עוד אין (תכנון מקום) ──
+// 5 עלים פעם אחת בלבד, לא משנה באיזה מסלול (גם אם החליפו מסלול באמצע).
+let step6Leaves = false;
+function step6Reward(msg) {
+  if (step6Leaves) return;
+  step6Leaves = true;
+  GC.addLeaves(5, 'S');
+  mascotSay(msg, '🌱');
+}
+
+function chooseSystem(has, el) {
+  document.querySelectorAll('#sys-choice .pick-btn').forEach(b => b.classList.remove('ok'));
+  el.classList.add('ok');
+  document.getElementById('sys-yes').classList.toggle('hidden', !has);
+  document.getElementById('sys-no').classList.toggle('hidden', has);
+}
+
 const missionsDone = [];
-let missionLeaves = false;
 function checkMission(el, idx) {
   if (missionsDone.includes(idx)) return;
   missionsDone.push(idx);
   el.classList.add('done-card');
   el.querySelector('.mission-icon').textContent = '✅';
-  if (missionsDone.length === 3 && !missionLeaves) {
-    missionLeaves = true;
+  if (missionsDone.length === 3) {
     document.getElementById('mission-done').classList.remove('hidden');
-    GC.addLeaves(5, 'S');
-    mascotSay('מצאתם הכל! עכשיו כוכב הצפון ⭐', '🌱');
+    step6Reward('מצאתם הכל! עכשיו כוכב הצפון ⭐');
+  }
+}
+
+// שאלות מקום (בלי עלים לכל שאלה, 5 בסוף - כמו מסלול הסיור)
+function placeAns(id, el) {
+  const box = document.getElementById(id);
+  if (box.dataset.done) return;
+  box.dataset.done = '1';
+  box.querySelectorAll('.pick-btn').forEach(b => b.disabled = true);
+  const ok = el.dataset.ok === '1';
+  el.classList.add(ok ? 'ok' : 'no');
+  if (!ok) box.querySelectorAll('.pick-btn[data-ok="1"]').forEach(b => b.classList.add('ok'));
+  document.getElementById('fb-' + id).classList.remove('hidden');
+  if (id === 'pl1') GC.reveal('pl2-wrap');
+  if (id === 'pl2') GC.reveal('pl3-wrap');
+  if (id === 'pl3') {
+    document.getElementById('place-done').classList.remove('hidden');
+    step6Reward('יש תוכנית! עכשיו כוכב הצפון ⭐');
   }
 }
 
@@ -628,14 +771,20 @@ function init() {
       3: 'רעיון ישראלי: ירקות בתוך מכולה! 📦',
       4: 'מאיפה מגיע הירק שבסופר? 🚚',
       5: 'הדרכון שלכם. כתבו מה שבא לכם 📔',
-      6: 'כמעט סיימנו! סיור במערכת ⭐'
+      6: 'כמעט סיימנו! יש לכם מערכת בכיתה? ⭐'
     }
   });
 
   GC.registerCascades({
-    'g1':     () => GC.reveal('g2-wrap'),
+    'g1':     () => GC.reveal('g1b-wrap'),
+    'g1b':    (ok) => { fbNote('g1b', ok, 'בערך 2.5 מיליארד, הכי קרוב ל-2.'); GC.reveal('g2-wrap'); },
     'g2':     () => { document.getElementById('g2-note').classList.remove('hidden'); GC.reveal('g3-wrap'); },
-    'g3':     () => { document.getElementById('g3-after').classList.remove('hidden'); GC.showBtn('btn2'); mascotSay('יותר אנשים = צריך יותר אוכל 🍅', '📈'); },
+    'g3':     () => GC.reveal('g4-wrap'),
+    'g4':     (ok) => {
+      fbNote('g4', ok, 'אנשים יש יותר ויותר, אבל האדמה לחקלאות נשארת בערך אותו דבר.');
+      document.getElementById('g3-after').classList.remove('hidden'); GC.showBtn('btn2');
+      mascotSay('יותר אנשים, אותה אדמה. צריך רעיון! 🍅', '📈');
+    },
     'vf1':    () => GC.reveal('vf2-wrap'),
     'vf2':    () => { GC.showBtn('btn3'); mascotSay('21 יום! בשדה זה לוקח הרבה יותר', '📦'); },
     'short1': () => { GC.reveal('tech-wrap'); GC.showBtn('btn4'); mascotSay('בדיוק! מגדלים ליד המדף, והדרך קצרה 🛒', '📦'); },

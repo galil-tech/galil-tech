@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 2 – מהצפה לטיפה אחת | מסלול יסודי | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת עם החטיבה (במכוון - כמו שיעור 1 יסודי). אין elementary/assets. -->
+  <link rel="stylesheet" href="../../assets/core.css">
+  <script src="../../assets/core.js"></script>
+  <script src="../../assets/points.config.js"></script>
+  <script src="../../data/roster.js"></script>
+  <script src="../../assets/identity.js"></script>
+  <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="../../data/sheets-config.js"></script>
+  <script src="../../assets/sheets-sync.js"></script>
+  <style>
+    /* ── סגנונות ייחודיים לשיעור 2 יסודי ── */
+    .pick-btn { border:2px solid #e5e7eb; cursor:pointer; transition:all .2s; border-radius:12px; background:white; }
+    .pick-btn:hover:not([disabled]) { border-color:#84cc16; background:#f0fdf4; }
+    .pick-btn.ok  { background:#dcfce7; border-color:#16a34a; font-weight:900; }
+
+    /* טפטפת מבפנים: טיפה יורדת מהצינור אל השורש (CSS בלבד) */
+    .drip-scene { position:relative; height:250px; border-radius:20px; overflow:hidden;
+                  background:linear-gradient(#e0f2fe 0 46%, #a16207 46% 100%); }
+    .drip-pipe  { position:absolute; top:26px; left:0; right:0; height:16px; background:#4b5563; }
+    .drip-hole  { position:absolute; top:40px; left:50%; width:14px; height:10px; margin-left:-7px; background:#111827; border-radius:0 0 7px 7px; }
+    .drip-drop  { position:absolute; top:50px; left:50%; width:14px; height:18px; margin-left:-7px;
+                  background:#38bdf8; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+                  animation:drip-fall 2.2s ease-in infinite; }
+    .drip-plant { position:absolute; top:78px; left:calc(50% + 24px); transform:translateX(-50%); font-size:2.6rem; line-height:1; }
+    .drip-root  { position:absolute; top:122px; left:calc(50% + 24px); width:60px; height:70px; margin-left:-30px; }
+    .drip-wet   { position:absolute; top:132px; left:calc(50% + 12px); width:96px; height:60px; margin-left:-48px; border-radius:50%;
+                  background:rgba(125,211,252,.75); animation:drip-wet 2.2s ease-in infinite; }
+    .drip-path  { position:absolute; bottom:14px; right:14px; background:#fde68a; color:#78350f; font-weight:800;
+                  font-size:.75rem; padding:6px 10px; border-radius:10px; }
+    @keyframes drip-fall {
+      0%   { transform:translateY(0) scale(.4); opacity:0; }
+      15%  { transform:translateY(0) scale(1);  opacity:1; }
+      80%  { transform:translateY(110px);        opacity:1; }
+      100% { transform:translateY(118px) scale(.6); opacity:0; }
+    }
+    @keyframes drip-wet {
+      0%, 70% { opacity:.25; transform:scale(.8); }
+      90%     { opacity:1;   transform:scale(1.05); }
+      100%    { opacity:.25; transform:scale(.8); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .drip-drop { animation:none; transform:translateY(80px); }
+      .drip-wet  { animation:none; opacity:.8; }
+    }
+
+    /* ציר-ידע */
+    .tl-line { position:absolute; top:50%; left:4%; right:4%; height:4px; background:#d1d5db; border-radius:2px; }
+
+    /* דלי מול כוס */
+    .field-row { display:flex; justify-content:space-around; align-items:flex-end; font-size:1.6rem; position:relative; padding:10px 4px 6px; }
+    .flood-water { position:absolute; left:0; right:0; bottom:0; height:55%; background:rgba(56,189,248,.45); border-radius:0 0 12px 12px; }
+    .drip-dot { display:block; width:8px; height:10px; margin:0 auto 2px; background:#38bdf8; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-sky-50 to-green-50 min-h-screen">
+
+<!-- MASCOT (GC.Tutorial תלוי בו) -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../../index.html" class="hover:text-lime-300">🏠</a>
+      <a href="../../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+      <a href="../../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-lime-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 1 – נביטה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 2 מתוך 17</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">מסלול יסודי</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">💧 מהצפה לטיפה אחת</h1>
+    <p class="text-green-200">שתי דרכים לגדל · נטפים · כל טיפה לשורש</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-300 mb-1">
+        <span id="plabel">שלב 1 מתוך 6</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: תזכורת + שתי דרכים לגדל ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🌾</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">שתי דרכים לגדל אוכל</h2>
+        <p class="text-gray-500 text-sm">קודם מסתכלים על דוגמה, אחר כך נותנים שם.</p>
+      </div>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5">
+      <p class="text-slate-400 text-sm mb-1">🔁 בשיעור הקודם:</p>
+      <p class="font-bold">ראינו ירקות שגדלים בתוך מכולה בעיר. אבל הרבה לפני שהיו מכולות, אנשים כבר גידלו אוכל. איך?</p>
+    </div>
+
+    <p class="font-bold text-gray-700 mb-3">שני חקלאים, שתי דרכים:</p>
+    <div class="grid md:grid-cols-2 gap-4 mb-5">
+      <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-5">
+        <p class="font-black text-lg text-red-900 mb-2">🧴 דרך א׳ <span id="name-a" class="hidden text-sm font-bold">· חקלאות שנלחמת בטבע</span></p>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• מרססים חומר שהורג את כל החרקים, גם את הטובים.</li>
+          <li>• שדה ענק עם סוג אחד בלבד של צמח.</li>
+          <li>• כשמשהו מפריע, נלחמים בו.</li>
+        </ul>
+      </div>
+      <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+        <p class="font-black text-lg text-green-900 mb-2">🐞 דרך ב׳ <span id="name-b" class="hidden text-sm font-bold">· חקלאות שעובדת עם הטבע</span></p>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• שותלים יחד צמחים שעוזרים זה לזה.</li>
+          <li>• נותנים לציפורים ולפרות משה רבנו לאכול את המזיקים.</li>
+          <li>• מסתכלים על הטבע ולומדים ממנו.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3">❓ איזו דרך עובדת <u>עם</u> הטבע?</p>
+      <div class="grid grid-cols-3 gap-3" id="w1">
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'w1')">🧴 דרך א׳</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,true,'w1')" data-correct="true">🐞 דרך ב׳</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'w1')">אין הבדל</div>
+      </div>
+      <div id="fb-w1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="perma-wrap" class="reveal bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 mb-4">
+      <p class="font-black text-lg text-lime-900 mb-1">🏷️ יש לזה שם!</p>
+      <p class="text-gray-800">לדרך השנייה, זו שעובדת עם הטבע, קוראים <b class="text-lime-800 text-xl">פרמה-קולצ׳ר</b>.</p>
+    </div>
+
+    <div id="sisters-wrap" class="reveal bg-amber-50 border-2 border-amber-200 rounded-2xl p-5">
+      <p class="font-black text-lg text-amber-900 mb-1">👭 דוגמה: גינת 3 האחיות</p>
+      <p class="text-sm text-gray-700 mb-4">שיטה עתיקה מאמריקה: שלושה צמחים גדלים ביחד, וכל אחד עוזר לשניים האחרים.</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm mb-5">
+        <div class="bg-white rounded-xl p-3"><span class="text-3xl block">🌽</span><b>תירס</b><br>עומד גבוה, והשעועית מטפסת עליו</div>
+        <div class="bg-white rounded-xl p-3"><span class="text-3xl block">🫘</span><b>שעועית</b><br>מוסיפה לאדמה אוכל לצמחים</div>
+        <div class="bg-white rounded-xl p-3"><span class="text-3xl block">🎃</span><b>דלעת</b><br>עלים רחבים שעושים צל, ועשבים רעים לא גדלים</div>
+      </div>
+      <p class="font-bold mb-3">❓ למה זו חקלאות שעובדת עם הטבע?</p>
+      <div class="grid gap-3" id="w2">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'w2')">כי מרססים את הגינה הרבה</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'w2')" data-correct="true">כי כל צמח עוזר לצמחים האחרים</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'w2')">כי כל צמח גדל לבד, רחוק מהאחרים</div>
+      </div>
+      <div id="fb-w2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">המצאה ישראלית ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: נטפים ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🇮🇱</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">נטפים: טיפה אחרי טיפה</h2>
+        <p class="text-gray-500 text-sm">קוראים · מסתכלים על המסך של המורה · עונים</p>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-sky-700 to-green-600 text-white rounded-2xl p-6 mb-5">
+      <p class="leading-relaxed mb-2">בשנת <b>1965</b>, ב<b>קיבוץ חצרים</b> שבנגב, חשבו: למה להשקות את כל השדה, אם הצמח שותה דרך השורש?</p>
+      <p class="leading-relaxed mb-4">הם המציאו את <b>הטפטוף</b>: צינור עם חורים קטנים, שממנו יוצאת טיפה אחרי טיפה, <b>ישר לשורש</b>. החברה נקראת <b>נטפים</b>, וההמצאה הישראלית הזו הגיעה משם לכל העולם. 🌍</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">1965</b>השנה</div>
+        <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">🏡</span>קיבוץ חצרים</div>
+        <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">💧</span>טיפה לשורש</div>
+      </div>
+    </div>
+
+    <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 mb-5 text-center">
+      <p class="font-black text-slate-800">📽️ המורה מקרין סרטון קצר על נטפים.</p>
+      <p class="text-sm text-gray-500">מסתכלים על המסך הגדול, לא צריך להפעיל כלום כאן.</p>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3">❓ מה נטפים המציאו?</p>
+      <div class="grid grid-cols-3 gap-3" id="n1">
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,true,'n1')" data-correct="true">💧 טפטוף</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'n1')">🚜 טרקטור</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'n1')">📦 מכולה</div>
+      </div>
+      <div id="fb-n1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="n2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ בטפטוף, לאן הטיפה הולכת?</p>
+      <div class="grid grid-cols-3 gap-3" id="n2">
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'n2')">🌾 לכל השדה</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'n2')">☁️ לאוויר</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,true,'n2')" data-correct="true">🌱 לשורש</div>
+      </div>
+      <div id="fb-n2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3)">טפטפת מבפנים ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: טפטפת מבפנים (אנימציית CSS) ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🔬</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">טפטפת מבפנים</h2>
+        <p class="text-gray-500 text-sm">הסתכלו על הטיפה. לאן היא נופלת?</p>
+      </div>
+    </div>
+
+    <div class="drip-scene max-w-md mx-auto mb-4" role="img" aria-label="טיפת מים יוצאת מחור קטן בצינור, נופלת ליד הצמח, והאדמה סביב השורש נרטבת. השביל בצד נשאר יבש.">
+      <div class="drip-pipe"></div>
+      <div class="drip-hole"></div>
+      <div class="drip-drop"></div>
+      <div class="drip-plant">🌱</div>
+      <div class="drip-wet"></div>
+      <svg class="drip-root" viewBox="0 0 60 70" aria-hidden="true">
+        <g stroke="#fef3c7" stroke-width="3" fill="none" stroke-linecap="round">
+          <path d="M30 0 V40"/><path d="M30 18 L14 34"/><path d="M30 22 L46 40"/><path d="M30 38 L20 58"/><path d="M30 40 L40 62"/>
+        </g>
+      </svg>
+      <div class="drip-path">👟 שביל: יבש</div>
+    </div>
+
+    <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-5 text-center mb-4">
+      <p class="font-black text-2xl text-sky-900">כל טיפה לשורש, לא לשביל.</p>
+      <p class="text-sm text-gray-600 mt-1">האדמה רטובה רק איפה שהשורש שותה. כל השאר נשאר יבש, ולא מבזבזים מים.</p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn3" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4); maybeStartTutorial()">ציר-ידע ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: ציר-ידע (גרירה) ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🗺️</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">ציר-ידע</h2>
+        <p class="text-gray-500 text-sm">גררו כל דרך השקיה לתחנה שלה על הציר.</p>
+      </div>
+    </div>
+
+    <!-- בנק (מעורבב ב-init) -->
+    <div class="flex flex-wrap justify-center gap-3 mb-6" id="tl-bank">
+      <div class="drag-item px-4 py-3 text-center" draggable="true" data-val="flood"><b class="block">🌊 הצפה</b><span class="text-xs text-gray-500">מזמן מזמן</span></div>
+      <div class="drag-item px-4 py-3 text-center" draggable="true" data-val="drip"><b class="block">💧 טפטוף</b><span class="text-xs text-gray-500">בישראל, לפני כ-60 שנה</span></div>
+      <div class="drag-item px-4 py-3 text-center" draggable="true" data-val="auto"><b class="block">🤖 אוטומציה</b><span class="text-xs text-gray-500">היום: המערכת משקה לבד</span></div>
+    </div>
+
+    <!-- הציר: תוויות רק בקצוות. ב-RTL «מזמן» מימין, «היום» משמאל. -->
+    <div class="flex justify-between text-sm font-black text-gray-600 mb-2 px-1">
+      <span>⏳ מזמן</span><span>היום 📱</span>
+    </div>
+    <div class="relative mb-5">
+      <div class="tl-line"></div>
+      <div class="relative flex justify-between gap-2" id="tl-zones">
+        <div class="drop-zone h-20 w-28 md:w-40 p-1 bg-white" data-correct="flood" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropTimeline(event,this)"></div>
+        <div class="drop-zone h-20 w-28 md:w-40 p-1 bg-white" data-correct="drip"  ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropTimeline(event,this)"></div>
+        <div class="drop-zone h-20 w-28 md:w-40 p-1 bg-white" data-correct="auto"  ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropTimeline(event,this)"></div>
+      </div>
+    </div>
+
+    <div id="tl-done" class="hidden">
+      <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 mb-4 text-center">
+        <p class="font-black text-xl text-lime-800 mb-1">🎉 הציר מוכן!</p>
+        <p class="text-gray-700">הצפה, אחר כך טפטוף, ועכשיו מערכת שמשקה לבד. כל קפיצה חסכה עוד מים ועוד עבודה.</p>
+      </div>
+      <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-5">
+        <p class="font-bold text-lg mb-1">🔮 מה תהיה הקפיצה הבאה אחרי שהמערכת משקה לבד?</p>
+        <p class="text-sm text-gray-500 mb-3">אין תשובה לא נכונה. דמיינו!</p>
+        <textarea data-answer-key="l02e_next" rows="2" placeholder="הקפיצה הבאה תהיה..." class="w-full border-2 border-sky-200 rounded-xl p-3 outline-none resize-none focus:border-sky-500"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)">דלי או כוס? ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: דלי מול כוס ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🪣</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">דלי או כוס?</h2>
+        <p class="text-gray-500 text-sm">אותם צמחים בדיוק. שתי דרכים להשקות.</p>
+      </div>
+    </div>
+
+    <!-- RTL: הכוס (טפטוף) מימין, הדלי (הצפה) משמאל -->
+    <div class="grid grid-cols-2 gap-3 md:gap-5 mb-5">
+      <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-3 md:p-4 text-center">
+        <p class="text-5xl mb-1">🥤</p>
+        <p class="font-black text-sky-900">טפטוף</p>
+        <p class="text-xs text-gray-500 mb-3">כוס אחת</p>
+        <div class="bg-amber-100 rounded-xl">
+          <div class="field-row">
+            <span><i class="drip-dot"></i>🌱</span><span class="text-base self-center">🌿</span><span><i class="drip-dot"></i>🌱</span><span class="text-base self-center">🌿</span><span><i class="drip-dot"></i>🌱</span>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 mt-2">מים רק ליד כל צמח</p>
+      </div>
+      <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 md:p-4 text-center">
+        <p class="text-5xl mb-1">🪣</p>
+        <p class="font-black text-amber-900">הצפה</p>
+        <p class="text-xs text-gray-500 mb-3">דלי גדול</p>
+        <div class="bg-amber-100 rounded-xl">
+          <div class="field-row">
+            <div class="flood-water"></div>
+            <span class="relative">🌱</span><span class="relative text-base self-center">🌿</span><span class="relative">🌱</span><span class="relative text-base self-center">🌿</span><span class="relative">🌱</span>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 mt-2">מים בכל מקום, גם בשביל</p>
+      </div>
+    </div>
+    <p class="text-center text-xs text-gray-400 mb-5">🌿 = עשב שוטה, שגדל בין הצמחים</p>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3">❓ לאותם צמחים, איפה מתבזבזים יותר מים?</p>
+      <div class="grid grid-cols-3 gap-3" id="b1">
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'b1')">🥤 בטפטוף</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,true,'b1')" data-correct="true">🪣 בהצפה</div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'b1')">אותו דבר</div>
+      </div>
+      <div id="fb-b1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="b2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ למה?</p>
+      <div class="grid gap-3" id="b2">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'b2')" data-correct="true">המים הולכים גם לשביל ולעשבים</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'b2')">הטפטוף יקר יותר</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'b2')">הכוס יותר יפה</div>
+      </div>
+      <div id="fb-b2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">המערכת שלנו ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: מערכת הכיתה (שני מסלולים) + דרכון + כוכב הצפון ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🏁</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">המים שלנו + כוכב הצפון</h2>
+        <p class="text-gray-500 text-sm">עם המורה, בכיתה</p>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-5">
+      <p class="font-black text-lg text-green-900 mb-3">💧 יש בכיתה מערכת מים לירקות?</p>
+      <div class="grid grid-cols-2 gap-3" id="sys-choice">
+        <button class="pick-btn p-3 font-bold" onclick="chooseSystem(true,this)">✅ כן, יש מערכת</button>
+        <button class="pick-btn p-3 font-bold" onclick="chooseSystem(false,this)">🕐 עוד אין מערכת</button>
+      </div>
+    </div>
+
+    <div id="sys-yes" class="hidden bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-lime-900 mb-1">🔍 מצאו במערכת של הכיתה:</h3>
+      <p class="text-xs text-gray-500 mb-3">מסתכלים ומצביעים. נוגעים רק אם המורה אומר/ת. סמנו ✅ כל מה שמצאתם:</p>
+      <div class="space-y-2" id="yes-list">
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('yes',this,0)"><span class="mission-icon text-2xl">⬜</span> ⚙️ המשאבה (מזיזה את המים)</div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('yes',this,1)"><span class="mission-icon text-2xl">⬜</span> 〰️ הצינור (המים עוברים בו)</div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('yes',this,2)"><span class="mission-icon text-2xl">⬜</span> 💧 הטפטפת, או החור שממנו יוצאים המים</div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('yes',this,3)"><span class="mission-icon text-2xl">⬜</span> 🪨 המצע (מה שהשורשים יושבים בו)</div>
+      </div>
+      <div id="yes-done" class="hidden mt-3 bg-lime-100 rounded-xl p-3 text-center font-bold text-lime-800">🏆 מצאתם הכל! עכשיו אתם יודעים איך המים מגיעים לשורש.</div>
+    </div>
+
+    <div id="sys-no" class="hidden bg-sky-50 border-2 border-sky-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-sky-900 mb-1">📝 מתכננים על הנייר</h3>
+      <p class="text-xs text-gray-500 mb-3">עם הקבוצה, על דף. סמנו ✅ כל מה שעשיתם:</p>
+      <div class="space-y-2" id="no-list">
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('no',this,0)"><span class="mission-icon text-2xl">⬜</span> 🪣 ציירנו איפה יהיה מאגר המים</div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('no',this,1)"><span class="mission-icon text-2xl">⬜</span> ☀️ ציירנו איפה הצינור עובר, ליד השמש</div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkTask('no',this,2)"><span class="mission-icon text-2xl">⬜</span> 🙋 החלטנו מי בקבוצה ממלא מים השבוע</div>
+      </div>
+      <div id="no-done" class="hidden mt-3 bg-sky-100 rounded-xl p-3 text-center font-bold text-sky-900">🏆 יש תוכנית! שמרו את הדף, נחזור אליו.</div>
+    </div>
+
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-1">📔 דרכון: עמוד 2</h3>
+      <label for="p-water" class="block font-bold text-gray-700 mb-2">מה למדתי היום על מים?</label>
+      <textarea id="p-water" data-answer-key="l02e_passport" rows="2" maxlength="200" placeholder="היום למדתי ש..." class="w-full border-2 border-green-200 rounded-xl p-3 outline-none resize-none focus:border-green-500"></textarea>
+      <p class="text-xs text-gray-500 mt-1">אפשר לכתוב משפט קצר. אפשר גם בערבית. 🙂</p>
+      <button onclick="savePassport2()" class="mt-3 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-2xl font-black shadow">📔 שמירה בדרכון</button>
+      <p id="passport-saved" class="hidden mt-3 text-center font-bold text-lime-800">✨ נשמר בדרכון!</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">⭐</span>
+        <h3 class="font-black text-amber-900 text-xl">כוכב הצפון</h3>
+      </div>
+      <p class="text-sm text-gray-600 mb-2">בסוף השנה יש תערוכה. איך המים של הפרויקט שלכם יגיעו לשורש?</p>
+      <p class="text-gray-800 font-bold text-lg mb-3">איפה בבית הספר הייתם שמים טפטפת ראשונה?</p>
+      <textarea data-answer-key="l02e_northstar" rows="2" placeholder="הייתי שם/ה טפטפת ב..." class="w-full border-2 border-amber-200 rounded-xl p-3 outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+
+    <div class="bg-green-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3">📚 מה למדנו היום:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li>🐞 יש חקלאות שעובדת עם הטבע. קוראים לה פרמה-קולצ׳ר.</li>
+        <li>💧 נטפים המציאו בישראל את הטפטוף: כל טיפה לשורש.</li>
+        <li>🗺️ הצפה, אחר כך טפטוף, והיום מערכות שמשקות לבד.</li>
+        <li>🪣 בהצפה המים הולכים גם לשביל ולעשבים. בטפטוף רק לצמח.</li>
+      </ul>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא:</p>
+      <p class="font-black text-lg">"המים כבר יודעים לאן ללכת. אבל עוד אין שם שום צמח! מה חסר כדי שיגדל משהו?"</p>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים בשיעור 2:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך 45 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4">
+    <a href="../../index.html#lessons-section" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">🏠 לדף השיעורים</a>
+  </div>
+</div>
+
+</div><!-- /max-w -->
+
+<script>
+// מקור אמת: elementary/teachers/teacher-02.html
+// עלים (בסיס 45): 6 שאלות × 5 + ציר-ידע 5 + מערכת/תכנון 5 + דרכון 5
+
+// Fisher–Yates
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ── STEP 4: ציר-ידע ──
+let tlOk = 0;
+function dropTimeline(e, zone) {
+  GC.handleDrop(e, zone, zone.dataset.correct, (src, z) => {
+    z.innerHTML = src.innerHTML;
+    z.classList.add('flex', 'flex-col', 'items-center', 'justify-center', 'text-center', 'text-sm');
+    tlOk++;
+    if (tlOk === 3) {
+      GC.addLeaves(5, 'S');
+      document.getElementById('tl-done').classList.remove('hidden');
+      GC.showBtn('btn4');
+      mascotSay('מהצפה, לטפטוף, למערכת שמשקה לבד! 🗺️', '🌱');
+    }
+  }, () => mascotSay('כמעט! מה היה קודם, ומה יש היום?', '🤔'));
+}
+
+// ── STEP 6: שני מסלולים - יש מערכת (סיור) / עוד אין (תכנון על הנייר) ──
+// 5 עלים פעם אחת בלבד, לא משנה באיזה מסלול.
+let step6Leaves = false;
+function chooseSystem(has, el) {
+  document.querySelectorAll('#sys-choice .pick-btn').forEach(b => b.classList.remove('ok'));
+  el.classList.add('ok');
+  document.getElementById('sys-yes').classList.toggle('hidden', !has);
+  document.getElementById('sys-no').classList.toggle('hidden', has);
+}
+
+const tasksDone = { yes: [], no: [] };
+function checkTask(path, el, idx) {
+  const done = tasksDone[path];
+  if (done.includes(idx)) return;
+  done.push(idx);
+  el.classList.add('done-card');
+  el.querySelector('.mission-icon').textContent = '✅';
+  const total = document.querySelectorAll('#' + path + '-list .mission-card').length;
+  if (done.length === total) {
+    document.getElementById(path + '-done').classList.remove('hidden');
+    if (!step6Leaves) {
+      step6Leaves = true;
+      GC.addLeaves(5, 'S');
+      mascotSay('מעולה! עכשיו הדרכון וכוכב הצפון ⭐', '🌱');
+    }
+  }
+}
+
+// דרכון: התשובה נשמרת אוטומטית (bindOpenAnswers). הכפתור = אישור + עלים פעם אחת.
+let passportSaved = false;
+function savePassport2() {
+  const v = document.getElementById('p-water').value.trim();
+  if (!v) { mascotSay('כתבו משפט אחד קטן 🙂', '📔'); return; }
+  GC.saveOpenAnswer('l02e_passport', v);
+  document.getElementById('passport-saved').classList.remove('hidden');
+  if (passportSaved) return;
+  passportSaved = true;
+  GC.addLeaves(5, 'S');
+  mascotSay('נשמר בדרכון! 📔', '🌱');
+}
+
+// ── INIT ──
+function init() {
+  GC.initLesson({
+    lessonId: 2,
+    steps: 6,
+    mascotMessages: {
+      1: 'שלום שוב! אני גרגיר 🌱 איך גידלו אוכל לפני המכולות?',
+      2: 'המצאה ישראלית שהגיעה לכל העולם 💧',
+      3: 'בואו נראה טיפה אחת מקרוב 🔬',
+      4: 'משחק גרירה: מה היה קודם? 🗺️',
+      5: 'דלי או כוס? 🪣',
+      6: 'כמעט סיימנו! יש לכם מערכת בכיתה? ⭐'
+    }
+  });
+
+  GC.registerCascades({
+    'w1': () => {
+      document.getElementById('name-a').classList.remove('hidden');
+      document.getElementById('name-b').classList.remove('hidden');
+      GC.reveal('perma-wrap'); GC.reveal('sisters-wrap');
+      mascotSay('פרמה-קולצ׳ר = עובדים עם הטבע 🐞', '🌱');
+    },
+    'w2': () => { GC.showBtn('btn1'); mascotSay('כל אחות עוזרת לשתיים האחרות 👭', '🌽'); },
+    'n1': () => GC.reveal('n2-wrap'),
+    'n2': () => { GC.showBtn('btn2'); mascotSay('טיפה אחרי טיפה, ישר לשורש 💧', '🌱'); },
+    'b1': () => GC.reveal('b2-wrap'),
+    'b2': () => { GC.showBtn('btn5'); mascotSay('בטפטוף המים הולכים רק לצמח 🥤', '💧'); },
+  });
+
+  // ערבוב בנק הציר - data-val נשאר, רק סדר התצוגה משתנה
+  const bank = document.getElementById('tl-bank');
+  shuffle(Array.from(bank.children)).forEach(el => bank.appendChild(el));
+  GC.initTouch('.drag-item', '.drop-zone', dropTimeline);
+
+  GC.bindOpenAnswers();
+}
+
+// ── TUTORIAL (פעם אחת, id l02e) - רץ בכניסה לציר-ידע (הגרירה היא הפיצ'ר החדש) ──
+function maybeStartTutorial() {
+  if (localStorage.getItem('gc_tutorial_l02e')) return;
+  if (document.getElementById('gc-id-modal')) return;
+  setTimeout(() => {
+    GC.Tutorial.start('l02e', [
+      { target: null, emoji: '🌱', wait: 'next',
+        text: 'גרגיר כאן! עכשיו משחק גרירה חדש.' },
+      { target: '#tl-bank', emoji: '🖐️', wait: 'next',
+        text: 'גררו תחנה לציר. אפשר גם עם האצבע.' },
+      { target: '#tl-zones', emoji: '🗺️', wait: 'next',
+        text: 'בצד אחד «מזמן», בצד השני «היום». שימו כל דרך במקום שלה.' },
+    ]);
+  }, 450); // אחרי גלילת goTo
+}
+
+init();
+</script>
+</body>
+</html>
