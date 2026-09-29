@@ -33,16 +33,11 @@ window.GC_ROSTER = (function () {
   ];
 
   // classes: [{schoolId, classId}] - classId חסר = כל הכיתות של בית הספר.
-  // גוונים משויך כרגע לרכז/ת בלבד (אין עדיין מדריך/ה ייעודי/ת).
   const teachers = [
     { id: 'osher', name: 'אושר', password: 'osher2026',
       classes: [{ schoolId: 'manor-eilon' }] },
     { id: 'maayan', name: 'מעין', password: 'maayan2026',
-      classes: [{ schoolId: 'shlomi-middle' }] },
-    { id: 'maimon', name: 'הרב מימון', password: 'maimon2026',
-      classes: [{ schoolId: 'shlomi-maimon' }] },
-    { id: 'benzvi', name: 'בן צבי', password: 'benzvi2026',
-      classes: [{ schoolId: 'shlomi-benzvi' }] },
+      classes: [{ schoolId: 'shlomi-middle' }, { schoolId: 'shlomi-maimon' }, { schoolId: 'shlomi-benzvi' }, { schoolId: 'gvanim' }] },
     { id: 'shimon', name: 'שמעון', password: 'shimon2026',
       classes: [{ schoolId: 'netaim' }, { schoolId: 'regba' }, { schoolId: 'ofek' }] },
     { id: 'dvora', name: 'דבורה', password: 'dvora2026',
