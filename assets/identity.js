@@ -23,6 +23,8 @@
   };
   GC_ID.setIdentity = function (obj) {
     localStorage.setItem(KEY_STUDENT, JSON.stringify(obj));
+    // דפים שתלויים בבית הספר (למשל index.html - מסלול יסודי/חטיבה) מרנדרים מחדש
+    try { window.dispatchEvent(new Event('gc:identity')); } catch (e) {}
   };
   GC_ID.clearIdentity = function () {
     localStorage.removeItem(KEY_STUDENT);

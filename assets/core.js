@@ -923,9 +923,13 @@ function mascotSay(msg, emoji) { GC.mascotSay(msg, emoji); }
     b.id = 'gc-session-end-banner';
     b.style.cssText = 'position:fixed;bottom:10px;right:10px;z-index:9998;background:linear-gradient(135deg,#166534,#15803d);color:white;font-family:Heebo,sans-serif;font-size:.78rem;padding:10px 14px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.2);direction:rtl;max-width:220px;line-height:1.5;';
     // השיעור הבא כבר נפתח (ראה check למטה). מקסימום העלים = גיימיפיקציה בלבד, לא חסם.
-    const nextLine = lessonNum < 17
-      ? '🔓 שיעור ' + (lessonNum + 1) + ' נפתח! <a href="../index.html#lessons-section" style="color:#d9f99d;font-weight:900;">לדף השיעורים ←</a>'
-      : '<a href="../index.html#lessons-section" style="color:#d9f99d;font-weight:900;">לדף השיעורים ←</a>';
+    // elementary/lessons/ יושב שתי רמות מתחת לשורש (lessons/ - רמה אחת). שיעורי היסודי
+    // הבאים עוד לא נבנו - לכן שם לא מכריזים "שיעור N+1 נפתח".
+    const isElementary = location.pathname.indexOf('/elementary/') !== -1;
+    const homeLink = '<a href="' + (isElementary ? '../../' : '../') + 'index.html#lessons-section" style="color:#d9f99d;font-weight:900;">לדף השיעורים ←</a>';
+    const nextLine = (lessonNum < 17 && !isElementary)
+      ? '🔓 שיעור ' + (lessonNum + 1) + ' נפתח! ' + homeLink
+      : homeLink;
     const head = mastered
       ? '🏆 <b>כל הכבוד, עשיתם את המקסימום!</b>'
       : '🏁 <b>סיימתם את השיעור!</b><br>צברתם ' + earned + '/' + max + ' עלים - אפשר לחזור ולהשלים מתי שרוצים.';

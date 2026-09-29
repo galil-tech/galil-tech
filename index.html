@@ -493,10 +493,23 @@ function lessonDone(n){
   if(lessonCompletedFlag(n)) return true;
   return n<unlockedThrough() && parseInt(localStorage.getItem('ls'+n)||'0',10)>0;
 }
-// השיעור הפתוח הנמוך ביותר שעוד לא הושלם - אליו מצביעים ה-CTA והטutorial
+// מסלול לפי בית הספר של התלמיד/ה (data/roster.js, track). בלי זהות / בית ספר לא מוכר = חטיבה.
+function studentTrack(){
+  const id=window.GC_ID && GC_ID.getIdentity();
+  const s=id && window.GC_ROSTER && GC_ROSTER.schoolByName ? GC_ROSTER.schoolByName(id.school) : null;
+  return s && s.track ? s.track : 'middle';
+}
+// שיעורי היסודי שכבר נבנו (elementary/lessons/). השאר מוצגים «בקרוב» עד שייבנו.
+const ELEMENTARY_READY=[1];
+// null = אין עדיין לומדה במסלול הזה
+function lessonHref(n){
+  if(studentTrack()==='elementary') return ELEMENTARY_READY.includes(n) ? 'elementary/lessons/lesson-'+lessonPad(n)+'.html' : null;
+  return 'lessons/lesson-'+lessonPad(n)+'.html';
+}
+// השיעור הפתוח הנמוך ביותר שעוד לא הושלם (ושיש לו לומדה) - אליו מצביעים ה-CTA והטutorial
 function nextLessonToDo(){
-  for(let i=1;i<=17;i++){ if(lessonUnlocked(i) && !lessonDone(i)) return i; }
-  return null; // הכל הושלם
+  for(let i=1;i<=17;i++){ if(lessonUnlocked(i) && !lessonDone(i) && lessonHref(i)) return i; }
+  return null; // הכל הושלם / השאר עוד לא נבנו
 }
 function renderStudentLessons(){
   const grid=document.getElementById('student-lessons-grid');
@@ -515,11 +528,18 @@ function renderStudentLessons(){
         <span class="text-xs text-gray-400">נעול · סיימו את שיעור ${l.n-1}</span>
       </div>`;
     }
+    const href=lessonHref(l.n);
+    if(!href){
+      return `<div class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} opacity-60">
+        <p class="text-2xl mb-1">🚧</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-400">${lessonEsc(l.title)}</p>
+        <span class="text-xs text-gray-500 font-bold">בקרוב</span>
+      </div>`;
+    }
     const isNext=l.n===next;
     return `<div class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} relative flex flex-col${isNext?' ring-4 ring-lime-400':''}">
       ${done?'<div class="absolute top-2 left-2 bg-green-500 text-white text-xs font-black px-2 py-0.5 rounded-full">✅</div>':''}
       ${isNext?'<div class="absolute top-2 left-2 bg-lime-500 text-white text-xs font-black px-2 py-0.5 rounded-full">הבא בתור</div>':''}
-      <a href="lessons/lesson-${lessonPad(l.n)}.html" class="block flex-1">
+      <a href="${href}" class="block flex-1">
         <p class="text-2xl mb-1">${l.icon}</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-500">${lessonEsc(l.sub)}</p>
         <span class="text-xs ${done?'text-green-600':'text-lime-600'} font-bold">${done?'הושלם ✅ · אפשר לחזור':'פתוח - התחילו!'}</span>
       </a>
@@ -530,11 +550,13 @@ function renderStudentLessons(){
   // CTA ראשי ב-hero - לשיעור הבא בתור (לא תמיד שיעור 1)
   const cta=document.getElementById('hero-next-cta');
   if(cta){
-    if(next){ cta.href='lessons/lesson-'+lessonPad(next)+'.html'; cta.textContent='🚀 '+(doneCount>0?'להמשיך לשיעור ':'להתחיל בשיעור ')+next; }
-    else { cta.href='#lessons-section'; cta.textContent='🏆 כל השיעורים הושלמו!'; }
+    if(next){ cta.href=lessonHref(next); cta.textContent='🚀 '+(doneCount>0?'להמשיך לשיעור ':'להתחיל בשיעור ')+next; }
+    else { cta.href='#lessons-section'; cta.textContent = doneCount>=17 ? '🏆 כל השיעורים הושלמו!' : '✅ כל הכבוד! השיעור הבא בקרוב'; }
   }
 }
 renderStudentLessons();
+// בחירת בית ספר במודל הכניסה קובעת את המסלול (יסודי/חטיבה) - מרנדרים מחדש את הקישורים
+window.addEventListener('gc:identity', renderStudentLessons);
 
 // ── HERO LEAVES ──
 // leaves_earned = סכום כל ה-ls{N} (מצטבר, קובע רמה, לעולם לא יורד)
@@ -570,7 +592,7 @@ function maybeStartHomeTutorial(){
     GC.Tutorial.start('home', [
       { target: null, emoji: '🌱', wait: 'next',
         text: 'פה הבית של גדלים למחר.' },
-      { target: '#student-lessons-grid a[href="lessons/lesson-'+lessonPad(next)+'.html"]', emoji: '🚀', wait: 'click',
+      { target: '#student-lessons-grid a[href="'+(lessonHref(next)||'lessons/lesson-01.html')+'"]', emoji: '🚀', wait: 'click',
         text: 'לחצו על שיעור '+next+' כדי '+(next===1?'להתחיל':'להמשיך')+'.' },
     ]);
   }
