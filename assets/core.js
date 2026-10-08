@@ -923,12 +923,12 @@ function mascotSay(msg, emoji) { GC.mascotSay(msg, emoji); }
     b.id = 'gc-session-end-banner';
     b.style.cssText = 'position:fixed;bottom:10px;right:10px;z-index:9998;background:linear-gradient(135deg,#166534,#15803d);color:white;font-family:Heebo,sans-serif;font-size:.78rem;padding:10px 14px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.2);direction:rtl;max-width:220px;line-height:1.5;';
     // השיעור הבא כבר נפתח (ראה check למטה). מקסימום העלים = גיימיפיקציה בלבד, לא חסם.
-    // elementary/lessons/ יושב שתי רמות מתחת לשורש (lessons/ - רמה אחת). שיעורי היסודי
-    // הבאים עוד לא נבנו - לכן שם לא מכריזים "שיעור N+1 נפתח".
+    // elementary/lessons/ יושב שתי רמות מתחת לשורש (lessons/ - רמה אחת).
+    // השיעור הבא נפתח רק ע"י המדריך/ה (לוח המורה), לא בסיום השיעור.
     const isElementary = location.pathname.indexOf('/elementary/') !== -1;
     const homeLink = '<a href="' + (isElementary ? '../../' : '../') + 'index.html#lessons-section" style="color:#d9f99d;font-weight:900;">לדף השיעורים ←</a>';
-    const nextLine = (lessonNum < 17 && !isElementary)
-      ? '🔓 שיעור ' + (lessonNum + 1) + ' נפתח! ' + homeLink
+    const nextLine = lessonNum < 17
+      ? '🔒 המורה יפתח את השיעור הבא. ' + homeLink
       : homeLink;
     const head = mastered
       ? '🏆 <b>כל הכבוד, עשיתם את המקסימום!</b>'
@@ -943,15 +943,13 @@ function mascotSay(msg, emoji) { GC.mascotSay(msg, emoji); }
     document.getElementById('gc-se-close').onclick = function () { b.remove(); };
   }
   function check() {
+    if (window.GC_LESSON_LOCKED) return; // כניסה ישירה לשיעור שעוד לא נפתח (sheets-sync.js)
     const el = lastStepPanel();
     if (el && el.classList.contains('active')) {
       const already = localStorage.getItem('lesson' + lessonNum + '_completed') === '1';
       localStorage.setItem('lesson' + lessonNum + '_completed', '1');
-      // פותח את השיעור הבא מיד, באותו סשן (בלי התנתקות), ומסנכרן לגיליון
-      if (window.GC_ID && typeof GC_ID.syncUnlockedThrough === 'function') {
-        GC_ID.syncUnlockedThrough();
-        if (!already && window.GC_SYNC && typeof GC_SYNC.scheduleSync === 'function') GC_SYNC.scheduleSync();
-      }
+      // מסנכרן לגיליון (עלים/תשובות). לא פותח את השיעור הבא - רק המדריך/ה פותח/ת מלוח המורה.
+      if (!already && window.GC_SYNC && typeof GC_SYNC.scheduleSync === 'function') GC_SYNC.scheduleSync();
       showSessionEndBanner();
     }
   }

@@ -23,8 +23,8 @@
       leaves_spent: localStorage.getItem('leaves_spent') || '0',
       passport1: localStorage.getItem('passport1') || '{}',
       achievements: localStorage.getItem('gc_achievements') || '{}',
-      // השיעור הגבוה ביותר שמותר לפתוח - משתקף מהערך המקומי. הקידום קורה ברגע שמסומן
-      // lesson{N}_completed (core.js → GC_ID.syncUnlockedThrough), והשרת לעולם לא מוריד אותו.
+      // השיעור הגבוה ביותר שמותר לפתוח - משתקף מהערך המקומי, שמגיע רק מפתיחת המדריך/ה
+      // (pullMine). סיום שיעור לא מקדם אותו. השרת לעולם לא מוריד אותו.
       unlocked_through: localStorage.getItem('gc_unlocked_through') || '1',
     };
     for (let i = 1; i <= 17; i++) payload['ls' + i] = localStorage.getItem('ls' + i) || '0';
@@ -139,7 +139,7 @@
 
   // הידרציה שקטה בטעינת כל דף שטוען את הקובץ הזה: אם יש זהות וסנכרון פעיל, למשוך את
   // ההתקדמות האישית האמיתית (fire-and-forget - לא חוסם רינדור ראשוני של הדף).
-  if (window.GC_ID && GC_ID.getIdentity()) { GC_SYNC.pullMine(); }
+  GC_SYNC.hydrated = (window.GC_ID && GC_ID.getIdentity()) ? GC_SYNC.pullMine() : Promise.resolve({ skipped: true });
 
   // ── מורה+כיתה: הערות לשיעור + קצב התקדמות (בקשת המשתמש, אחרי שלב 10) ─────
   // notes_json הוא בלוק JSON אחד {"1":"הערה לשיעור 1", "5":"..."} - כמו passport1
@@ -307,4 +307,47 @@
       .then((r) => r.json())
       .catch((err) => ({ ok: false, error: String(err) }));
   };
+
+  // ── נעילת כניסה ישירה ל-URL של לומדה (lessons/ + elementary/lessons/) ─────────
+  // שיעור N מוצג רק אם N <= gc_unlocked_through (מה שהמדריך/ה פתח/ה, אחרי pullMine אם יש
+  // זהות). שיעור 1 תמיד פתוח; שיעור שכבר הושלם פתוח לחזרה; מצב מורה (index.html) לא ננעל.
+  (function lessonGate() {
+    const m = location.pathname.match(/\/lessons\/lesson-0*(\d+)\.html$/);
+    if (!m) return;
+    const n = parseInt(m[1], 10);
+    if (n <= 1) return;
+    if (sessionStorage.getItem('teacher') === '1' && sessionStorage.getItem('gc_teacher_pw_ok') === '1') return;
+    const allowed = function () {
+      const u = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
+      return n <= u || localStorage.getItem('lesson' + n + '_completed') === '1';
+    };
+    if (allowed()) return;
+    window.GC_LESSON_LOCKED = true; // core.js לא יסמן completed בזמן ההמתנה
+    const hide = document.createElement('style');
+    hide.textContent = 'body{visibility:hidden!important}';
+    document.head.appendChild(hide);
+    const home = (location.pathname.indexOf('/elementary/') !== -1 ? '../../' : '../') + 'index.html#lessons-section';
+    const lock = function () {
+      document.body.innerHTML =
+        '<div dir="rtl" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;font-family:Heebo,sans-serif;background:#f0fdf4;">' +
+        '<div style="background:white;border-radius:20px;padding:28px 24px;max-width:360px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);">' +
+        '<p style="font-size:2.5rem;margin:0 0 8px;">🔒</p>' +
+        '<p style="font-weight:900;font-size:1.15rem;margin:0 0 6px;color:#166534;">השיעור הזה עוד לא נפתח.</p>' +
+        '<p style="margin:0 0 18px;color:#4b5563;">המורה פותח אותו.</p>' +
+        '<a href="' + home + '" style="display:inline-block;background:#16a34a;color:white;font-weight:900;padding:10px 20px;border-radius:999px;text-decoration:none;">לדף הבית ←</a>' +
+        '</div></div>';
+      hide.remove();
+    };
+    const decide = function () {
+      if (allowed()) { window.GC_LESSON_LOCKED = false; hide.remove(); return; }
+      if (document.body) lock(); else document.addEventListener('DOMContentLoaded', lock);
+    };
+    // pullMine רץ כבר למעלה (הידרציה) - כאן מחכים לתוצאה שלו כדי לכלול פתיחה של המורה
+    const c = cfg();
+    if (window.GC_ID && GC_ID.getIdentity() && c.enabled && c.url) {
+      GC_SYNC.hydrated.then(decide, decide);
+    } else {
+      decide();
+    }
+  })();
 })();

@@ -475,17 +475,12 @@ function lessonEsc(s){ return String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&
 function lessonPad(n){ return n<10?'0'+n:''+n; }
 function lessonPhase(n){ return n<=4?1:n<=8?2:n<=12?3:4; }
 function lessonCompletedFlag(n){ return localStorage.getItem('lesson'+n+'_completed')==='1'; }
-// השיעור שאחרי השיעור האחרון שסומן completed (1 אם אין). מקסימום העלים (GC.LESSON_MAX)
-// הוא גיימיפיקציה בלבד ולא משפיע על הנעילה.
-function nextAfterLastCompleted(){
-  let last=0;
-  for(let i=1;i<=17;i++){ if(lessonCompletedFlag(i)) last=i; }
-  return Math.min(17,last+1);
-}
-// gc_unlocked_through = מקומי + מהגיליון (pullMine), כולל פתיחה כיתתית/אישית ע"י המדריך/ה.
-// core.js מקדם אותו ברגע שהשיעור הושלם - אין צורך להתנתק.
-function unlockedThrough(){ return Math.max(parseInt(localStorage.getItem('gc_unlocked_through')||'1',10)||1, nextAfterLastCompleted()); }
-function lessonUnlocked(n){ return n<=unlockedThrough(); }
+// gc_unlocked_through = רק מה שהמדריך/ה פתח/ה (פתיחה כיתתית/אישית בלוח המורה, מגיע דרך
+// pullMine). סיום שיעור לא פותח את הבא. שיעור שהושלם נשאר לחיץ לחזרה.
+function unlockedThrough(){ return parseInt(localStorage.getItem('gc_unlocked_through')||'1',10)||1; }
+function lessonUnlocked(n){ return n<=unlockedThrough() || lessonCompletedFlag(n); }
+// השיעור הבא נעול כי המדריך/ה עוד לא פתח/ה אותו - ה-CTA מציג «ממתינים למורה»
+function waitingForTeacher(){ return unlockedThrough()<17 && !lessonUnlocked(unlockedThrough()+1); }
 // הושלם = דגל completed. הדגלים נמחקים מקומית ביציאה (wipeLocalProgress) ולא נשמרים בגיליון,
 // לכן שיעור שלפני הנעילה ויש בו עלים נחשב גם הוא הושלם (חוזרים ממחשב אחר). שיעור שהמדריך/ה
 // פתח/ה ועוד לא נגעו בו (0 עלים) - לא מסומן כהושלם.
@@ -525,7 +520,7 @@ function renderStudentLessons(){
     if(!unlocked){
       return `<div class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} opacity-40">
         <p class="text-2xl mb-1">🔒</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-400">${lessonEsc(l.title)}</p>
-        <span class="text-xs text-gray-400">נעול · סיימו את שיעור ${l.n-1}</span>
+        <span class="text-xs text-gray-400">נעול · המורה יפתח את השיעור הבא</span>
       </div>`;
     }
     const href=lessonHref(l.n);
@@ -551,7 +546,7 @@ function renderStudentLessons(){
   const cta=document.getElementById('hero-next-cta');
   if(cta){
     if(next){ cta.href=lessonHref(next); cta.textContent='🚀 '+(doneCount>0?'להמשיך לשיעור ':'להתחיל בשיעור ')+next; }
-    else { cta.href='#lessons-section'; cta.textContent = doneCount>=17 ? '🏆 כל השיעורים הושלמו!' : '✅ כל הכבוד! השיעור הבא בקרוב'; }
+    else { cta.href='#lessons-section'; cta.textContent = doneCount>=17 ? '🏆 כל השיעורים הושלמו!' : waitingForTeacher() ? '⏳ ממתינים למורה' : '✅ כל הכבוד! השיעור הבא בקרוב'; }
   }
 }
 renderStudentLessons();

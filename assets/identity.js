@@ -47,18 +47,13 @@
     localStorage.removeItem('gc_unlocked_through');
   };
 
-  // "השיעור הגבוה ביותר שמותר לפתוח" = max(הערך השמור, השיעור שאחרי השיעור האחרון
-  // שסומן lesson{N}_completed). «הושלם» = הגיע לשלב האחרון בלומדה (core.js) - בלי דרישת
-  // מקסימום עלים (GC.LESSON_MAX נשאר לגיימיפיקציה בלבד). לעולם לא מוריד ערך קיים.
+  // "השיעור הגבוה ביותר שמותר לפתוח" = רק מה שהמדריך/ה פתח/ה: ברירת מחדל 1, או הערך
+  // מהגיליון (pullMine - פתיחה כיתתית/אישית מלוח המורה). סיום שיעור (lesson{N}_completed)
+  // לא מקדם את הנעילה.
   GC_ID.computeUnlockedThrough = function () {
-    const current = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
-    let lastDone = 0;
-    for (let n = 1; n <= 17; n++) {
-      if (localStorage.getItem('lesson' + n + '_completed') === '1') lastDone = n;
-    }
-    return Math.max(current, Math.min(17, lastDone + 1));
+    return parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
   };
-  // מחשב ושומר מקומית; מחזיר את הערך. נקרא מ-core.js ברגע סיום שיעור ומ-index.html אחרי pullMine.
+  // שומר מקומית; מחזיר את הערך. נקרא מ-index.html אחרי pullMine ומ-logout.
   GC_ID.syncUnlockedThrough = function () {
     const n = GC_ID.computeUnlockedThrough();
     localStorage.setItem('gc_unlocked_through', n);
