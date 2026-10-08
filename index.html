@@ -479,6 +479,10 @@ function lessonCompletedFlag(n){ return localStorage.getItem('lesson'+n+'_comple
 // pullMine). סיום שיעור לא פותח את הבא. שיעור שהושלם נשאר לחיץ לחזרה.
 function unlockedThrough(){ return parseInt(localStorage.getItem('gc_unlocked_through')||'1',10)||1; }
 function lessonUnlocked(n){ return n<=unlockedThrough() || lessonCompletedFlag(n); }
+// פתיחה מהמחשב של התלמיד/ה בסיסמת מורה (GC_SYNC.askTeacherUnlock, assets/sheets-sync.js)
+function askTeacherUnlock(n){
+  if(window.GC_SYNC && typeof GC_SYNC.askTeacherUnlock==='function') GC_SYNC.askTeacherUnlock(n, renderStudentLessons);
+}
 // השיעור הבא נעול כי המדריך/ה עוד לא פתח/ה אותו - ה-CTA מציג «ממתינים למורה»
 function waitingForTeacher(){ return unlockedThrough()<17 && !lessonUnlocked(unlockedThrough()+1); }
 // הושלם = דגל completed. הדגלים נמחקים מקומית ביציאה (wipeLocalProgress) ולא נשמרים בגיליון,
@@ -518,10 +522,11 @@ function renderStudentLessons(){
     if(done) doneCount++;
     const border=phaseBorder[lessonPhase(l.n)];
     if(!unlocked){
-      return `<div class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} opacity-40">
-        <p class="text-2xl mb-1">🔒</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-400">${lessonEsc(l.title)}</p>
-        <span class="text-xs text-gray-400">נעול · המורה יפתח את השיעור הבא</span>
-      </div>`;
+      return `<button type="button" onclick="askTeacherUnlock(${l.n})" class="card bg-white rounded-2xl p-5 shadow border-t-4 ${border} text-right w-full">
+        <div class="opacity-40"><p class="text-2xl mb-1">🔒</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-400">${lessonEsc(l.title)}</p>
+        <span class="text-xs text-gray-400">נעול · המורה יפתח את השיעור הבא</span></div>
+        <span class="text-xs text-gray-500 underline">🔑 מורה? פתיחה בסיסמה</span>
+      </button>`;
     }
     const href=lessonHref(l.n);
     if(!href){

@@ -4,6 +4,8 @@
 (function () {
   const GC_SYNC = (window.GC_SYNC = {});
   let syncTimer = null;
+  // roster.js לא נטען בכל הלומדות - נטען לפי דרישה (פתיחה בסיסמת מורה), יחסית לקובץ הזה
+  const ROSTER_SRC = ((document.currentScript && document.currentScript.src) || '').replace(/assets\/sheets-sync\.js.*$/, 'data/roster.js');
 
   function cfg() {
     return window.SHEETS_CONFIG || { enabled: false };
@@ -300,6 +302,71 @@
     return postUnlock('student_unlock', { school_id: school, class_id: classId, code: code, unlocked_through: n });
   };
 
+  // ── פתיחת שיעור מהמחשב של התלמיד/ה בסיסמת מורה ─────────────────────────────
+  // מתקבלות: סיסמת המורה הכללית (זהה ל-TEACHER_PASSWORD ב-index.html / teacher-class.html),
+  // סיסמת רכז/ת, או סיסמה אישית של מדריך/ה (data/roster.js) שמדריך/ה את בית הספר של התלמיד/ה.
+  // הצלחה = gc_unlocked_through עד n מקומית + student_unlock בגיליון (נשמר גם אחרי התנתקות).
+  const TEACHER_UNLOCK_PASSWORD = 'moradaat2026';
+  function loadRoster() {
+    if (window.GC_ROSTER || !ROSTER_SRC) return Promise.resolve();
+    return new Promise(function (resolve) {
+      const s = document.createElement('script');
+      s.src = ROSTER_SRC;
+      s.onload = s.onerror = function () { resolve(); };
+      document.head.appendChild(s);
+    });
+  }
+  GC_SYNC.teacherUnlock = function (n, password) {
+    return loadRoster().then(function () {
+      const pw = String(password || '').trim();
+      const id = window.GC_ID && GC_ID.getIdentity();
+      let ok = pw === TEACHER_UNLOCK_PASSWORD;
+      if (!ok && pw && window.GC_ROSTER) {
+        const t = GC_ROSTER.findTeacher(pw);
+        ok = !!t && (t.role === 'coordinator' || !id || !id.school ||
+          t.classes.some(function (c) { return c.schoolName === id.school; }));
+      }
+      if (!ok) return false;
+      const cur = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
+      if (n > cur) localStorage.setItem('gc_unlocked_through', n);
+      if (!id) return true;
+      const sync = GC_SYNC.setStudentUnlock(id.school || '', id.className || '', id.code || '', n).catch(function () {});
+      const timeout = new Promise(function (resolve) { setTimeout(resolve, 4000); });
+      return Promise.race([sync, timeout]).then(function () { return true; });
+    });
+  };
+  // חלון סיסמה (שדה מוסתר - הסיסמה לא נחשפת על מסך התלמיד/ה). onOk נקרא אחרי פתיחה מוצלחת.
+  GC_SYNC.askTeacherUnlock = function (n, onOk) {
+    if (document.getElementById('gc-tu-modal')) return;
+    const o = document.createElement('div');
+    o.id = 'gc-tu-modal';
+    o.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;';
+    o.innerHTML = '<form dir="rtl" style="background:white;border-radius:20px;padding:22px;max-width:320px;width:100%;box-sizing:border-box;font-family:Heebo,sans-serif;text-align:center;">' +
+      '<p style="font-weight:900;font-size:1.05rem;margin:0 0 4px;color:#166534;">🔑 פתיחת שיעור ' + n + '</p>' +
+      '<p style="margin:0 0 12px;color:#4b5563;font-size:.85rem;">המורה מקליד/ה סיסמה</p>' +
+      '<input id="gc-tu-pw" type="password" autocomplete="off" aria-label="סיסמת מורה" style="width:100%;box-sizing:border-box;border:2px solid #d1d5db;border-radius:12px;padding:8px 10px;font-size:1rem;text-align:center;">' +
+      '<p id="gc-tu-err" style="display:none;color:#dc2626;font-size:.8rem;margin:6px 0 0;">סיסמה שגויה</p>' +
+      '<div style="display:flex;gap:8px;margin-top:14px;">' +
+      '<button type="submit" id="gc-tu-ok" style="flex:1;background:#16a34a;color:white;font-weight:900;border:0;border-radius:999px;padding:9px;cursor:pointer;">פתיחה</button>' +
+      '<button type="button" id="gc-tu-cancel" style="flex:1;background:#f3f4f6;font-weight:700;border:0;border-radius:999px;padding:9px;cursor:pointer;">ביטול</button>' +
+      '</div></form>';
+    document.body.appendChild(o);
+    const input = o.querySelector('#gc-tu-pw');
+    const btn = o.querySelector('#gc-tu-ok');
+    input.focus();
+    o.querySelector('#gc-tu-cancel').onclick = function () { o.remove(); };
+    o.querySelector('form').onsubmit = function (e) {
+      e.preventDefault();
+      btn.disabled = true; btn.textContent = '...';
+      GC_SYNC.teacherUnlock(n, input.value).then(function (ok) {
+        btn.disabled = false; btn.textContent = 'פתיחה';
+        if (!ok) { o.querySelector('#gc-tu-err').style.display = 'block'; input.value = ''; input.focus(); return; }
+        o.remove();
+        if (onOk) onOk();
+      });
+    };
+  };
+
   GC_SYNC.deleteGalleryItem = function (id) {
     const c = cfg();
     if (!c.enabled || !c.url) return Promise.resolve({ ok: false, skipped: true });
@@ -335,8 +402,12 @@
         '<p style="font-weight:900;font-size:1.15rem;margin:0 0 6px;color:#166534;">השיעור הזה עוד לא נפתח.</p>' +
         '<p style="margin:0 0 18px;color:#4b5563;">המורה פותח אותו.</p>' +
         '<a href="' + home + '" style="display:inline-block;background:#16a34a;color:white;font-weight:900;padding:10px 20px;border-radius:999px;text-decoration:none;">לדף הבית ←</a>' +
+        '<p style="margin:16px 0 0;"><button type="button" id="gc-tu-open" style="background:none;border:0;color:#6b7280;font-size:.85rem;text-decoration:underline;cursor:pointer;font-family:inherit;">🔑 מורה? פתיחה בסיסמה</button></p>' +
         '</div></div>';
       hide.remove();
+      document.getElementById('gc-tu-open').onclick = function () {
+        GC_SYNC.askTeacherUnlock(n, function () { location.reload(); });
+      };
     };
     const decide = function () {
       if (allowed()) { window.GC_LESSON_LOCKED = false; hide.remove(); return; }
