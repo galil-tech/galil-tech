@@ -4,8 +4,11 @@
 (function () {
   const GC_SYNC = (window.GC_SYNC = {});
   let syncTimer = null;
-  // roster.js לא נטען בכל הלומדות - נטען לפי דרישה (פתיחה בסיסמת מורה), יחסית לקובץ הזה
-  const ROSTER_SRC = ((document.currentScript && document.currentScript.src) || '').replace(/assets\/sheets-sync\.js.*$/, 'data/roster.js');
+  // השרת דורס passport1 בכל ערך לא-ריק שמגיע. במכשיר חדש passport1 מקומי עלול להכיל רק
+  // resume (core.js) לפני שהמשיכה הסתיימה - לכן לא שולחים passport1 עד pullMine מוצלח בדף
+  // הזה (השרת שומר את הקיים כשהשדה חסר). passportHeld = נדחה, לשלוח אחרי המשיכה.
+  let pulledOk = false;
+  let passportHeld = false;
 
   function cfg() {
     return window.SHEETS_CONFIG || { enabled: false };
@@ -23,13 +26,14 @@
       student_name: id.name || '',
       code: id.code || '',
       leaves_spent: localStorage.getItem('leaves_spent') || '0',
-      passport1: localStorage.getItem('passport1') || '{}',
+      passport1: pulledOk ? (localStorage.getItem('passport1') || '{}') : undefined,
       achievements: localStorage.getItem('gc_achievements') || '{}',
       // השיעור הגבוה ביותר שמותר לפתוח - משתקף מהערך המקומי, שמגיע רק מפתיחת המדריך/ה
       // (pullMine). סיום שיעור לא מקדם אותו. השרת לעולם לא מוריד אותו.
       unlocked_through: localStorage.getItem('gc_unlocked_through') || '1',
     };
     for (let i = 1; i <= 17; i++) payload['ls' + i] = localStorage.getItem('ls' + i) || '0';
+    if (!pulledOk) passportHeld = true;
     return payload;
   }
 
@@ -72,8 +76,9 @@
 
   // מושך את השורה האישית של התלמיד/ה (לפי school+class+code) ומאחד לתוך localStorage:
   // per-lesson leaves = מקסימום בין המקומי לזה שבגיליון (אף פעם לא נסוג אחורה, גם אם
-  // המכשיר הזה "מפגר" אחרי מכשיר אחר של אותו תלמיד/זוג). passport1/achievements
-  // מאומצים מהגיליון רק אם המקומי עדיין ריק — כדי לא לדרוס עריכות טריות מהמכשיר הזה.
+  // המכשיר הזה "מפגר" אחרי מכשיר אחר של אותו תלמיד/זוג). achievements מאומצים רק אם המקומי
+  // ריק. passport1 ממוזג (mergePassport): שדות מהגיליון שחסרים מקומית נוספים, resume = החדש
+  // יותר לפי ts, done = איחוד; ומ-done משוחזרים דגלי lesson{N}_completed.
   GC_SYNC.pullMine = function () {
     const c = cfg();
     if (!c.enabled || !c.url) return Promise.resolve({ skipped: true, reason: 'sync disabled' });
@@ -84,6 +89,10 @@
       '&class=' + encodeURIComponent(id.className || '') +
       '&code=' + encodeURIComponent(id.code || '');
     return fetch(url).then((r) => r.json()).then((resp) => {
+      if (resp.ok) {
+        pulledOk = true;
+        if (passportHeld) { passportHeld = false; GC_SYNC.scheduleSync(); }
+      }
       if (!resp.ok || !resp.rows || !resp.rows.length) return resp;
       const row = resp.rows[0];
       for (let i = 1; i <= 17; i++) {
@@ -98,10 +107,7 @@
       const localUnlocked = parseInt(localStorage.getItem('gc_unlocked_through') || '1');
       const remoteUnlocked = parseInt(row.unlocked_through || 1);
       if (remoteUnlocked > localUnlocked) localStorage.setItem('gc_unlocked_through', remoteUnlocked);
-      const localPassport = localStorage.getItem('passport1');
-      if ((!localPassport || localPassport === '{}') && row.passport1 && row.passport1 !== '{}') {
-        localStorage.setItem('passport1', row.passport1);
-      }
+      mergePassport(row.passport1);
       const localAch = localStorage.getItem('gc_achievements');
       if ((!localAch || localAch === '{}') && row.achievements && row.achievements !== '{}') {
         localStorage.setItem('gc_achievements', row.achievements);
@@ -109,6 +115,28 @@
       return resp;
     }).catch((err) => ({ ok: false, error: String(err) }));
   };
+
+  function mergePassport(remoteRaw) {
+    let local = {}, remote = {};
+    try { local = JSON.parse(localStorage.getItem('passport1') || '{}') || {}; } catch (e) {}
+    try { remote = JSON.parse(remoteRaw || '{}') || {}; } catch (e) {}
+    const merged = Object.assign({}, remote, local);
+    if (remote.answers || local.answers) merged.answers = Object.assign({}, remote.answers, local.answers);
+    const lr = local.resume, rr = remote.resume;
+    merged.resume = (rr && (!lr || (rr.ts || 0) > (lr.ts || 0))) ? rr : lr;
+    if (!merged.resume) delete merged.resume;
+    if (remote.done || local.done) merged.done = Object.assign({}, remote.done, local.done);
+    if (Object.keys(merged).length) localStorage.setItem('passport1', JSON.stringify(merged));
+    // «הושלם» גם בלי דגל מקומי: done מהגיליון, או resume שהגיע לשלב האחרון ויש בו עלים.
+    // לא נוגעים בעלים ולא ב-gc_unlocked_through (הנעילה נשארת של המורה).
+    Object.keys(merged.done || {}).forEach(function (k) {
+      if (merged.done[k]) localStorage.setItem('lesson' + k + '_completed', '1');
+    });
+    const r = merged.resume;
+    if (r && r.lesson && r.steps && r.step >= r.steps && parseInt(localStorage.getItem('ls' + r.lesson) || '0', 10) > 0) {
+      localStorage.setItem('lesson' + r.lesson + '_completed', '1');
+    }
+  }
 
   // מושך את לוח המנהיגות בין-קבוצתי (כל הקבוצות באותו school+class) — משותף אמיתי בין
   // כל תלמידי הכיתה, לא רק מה שנשמר בדפדפן הזה.
@@ -308,13 +336,7 @@
   // הצלחה = gc_unlocked_through עד n מקומית + student_unlock בגיליון (נשמר גם אחרי התנתקות).
   const TEACHER_UNLOCK_PASSWORD = 'moradaat2026';
   function loadRoster() {
-    if (window.GC_ROSTER || !ROSTER_SRC) return Promise.resolve();
-    return new Promise(function (resolve) {
-      const s = document.createElement('script');
-      s.src = ROSTER_SRC;
-      s.onload = s.onerror = function () { resolve(); };
-      document.head.appendChild(s);
-    });
+    return (window.GC_ID && typeof GC_ID.loadRoster === 'function') ? GC_ID.loadRoster() : Promise.resolve();
   }
   GC_SYNC.teacherUnlock = function (n, password) {
     return loadRoster().then(function () {

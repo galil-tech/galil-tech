@@ -485,12 +485,21 @@ function askTeacherUnlock(n){
 }
 // השיעור הבא נעול כי המדריך/ה עוד לא פתח/ה אותו - ה-CTA מציג «ממתינים למורה»
 function waitingForTeacher(){ return unlockedThrough()<17 && !lessonUnlocked(unlockedThrough()+1); }
-// הושלם = דגל completed. הדגלים נמחקים מקומית ביציאה (wipeLocalProgress) ולא נשמרים בגיליון,
-// לכן שיעור שלפני הנעילה ויש בו עלים נחשב גם הוא הושלם (חוזרים ממחשב אחר). שיעור שהמדריך/ה
-// פתח/ה ועוד לא נגעו בו (0 עלים) - לא מסומן כהושלם.
+function studentPassport(){ try{ return JSON.parse(localStorage.getItem('passport1')||'{}')||{}; }catch(e){ return {}; } }
+// הושלם = דגל completed, או passport1.done (מסונכרן - pullMine משחזר ממנו את הדגל), או resume
+// שהגיע לשלב האחרון ויש בו עלים. נתונים ישנים (לפני done/resume): שיעור לפני הנעילה עם עלים.
 function lessonDone(n){
   if(lessonCompletedFlag(n)) return true;
-  return n<unlockedThrough() && parseInt(localStorage.getItem('ls'+n)||'0',10)>0;
+  const p=studentPassport(), r=p.resume, ls=parseInt(localStorage.getItem('ls'+n)||'0',10);
+  if(p.done && p.done[n]) return true;
+  if(r && r.lesson===n && r.steps && r.step>=r.steps && ls>0) return true;
+  if(!p.done && !r) return n<unlockedThrough() && ls>0;
+  return false;
+}
+// השיעור שבו עצרו (passport1.resume) - אם פתוח, לא הושלם ויש לו לומדה. אחרת null.
+function resumeLesson(){
+  const r=studentPassport().resume;
+  return r && lessonUnlocked(r.lesson) && !lessonDone(r.lesson) && lessonHref(r.lesson) ? r.lesson : null;
 }
 // מסלול לפי בית הספר של התלמיד/ה (data/roster.js, track). בלי זהות / בית ספר לא מוכר = חטיבה.
 function studentTrack(){
@@ -499,14 +508,17 @@ function studentTrack(){
   return s && s.track ? s.track : 'middle';
 }
 // שיעורי היסודי שכבר נבנו (elementary/lessons/). השאר מוצגים «בקרוב» עד שייבנו.
-const ELEMENTARY_READY=[1, 2, 3, 4];
+const ELEMENTARY_READY=(window.GC_ID && GC_ID.ELEMENTARY_READY) || [1, 2, 3, 4];
 // null = אין עדיין לומדה במסלול הזה
 function lessonHref(n){
   if(studentTrack()==='elementary') return ELEMENTARY_READY.includes(n) ? 'elementary/lessons/lesson-'+lessonPad(n)+'.html' : null;
   return 'lessons/lesson-'+lessonPad(n)+'.html';
 }
-// השיעור הפתוח הנמוך ביותר שעוד לא הושלם (ושיש לו לומדה) - אליו מצביעים ה-CTA והטutorial
+// השיעור שבו עצרו (אם פתוח ולא הושלם), אחרת הפתוח הנמוך ביותר שעוד לא הושלם (ושיש לו לומדה)
+// - אליו מצביעים ה-CTA, «הבא בתור» והטutorial
 function nextLessonToDo(){
+  const r=resumeLesson();
+  if(r) return r;
   for(let i=1;i<=17;i++){ if(lessonUnlocked(i) && !lessonDone(i) && lessonHref(i)) return i; }
   return null; // הכל הושלם / השאר עוד לא נבנו
 }
@@ -541,7 +553,7 @@ function renderStudentLessons(){
       ${isNext?'<div class="absolute top-2 left-2 bg-lime-500 text-white text-xs font-black px-2 py-0.5 rounded-full">הבא בתור</div>':''}
       <a href="${href}" class="block flex-1">
         <p class="text-2xl mb-1">${l.icon}</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-500">${lessonEsc(l.sub)}</p>
-        <span class="text-xs ${done?'text-green-600':'text-lime-600'} font-bold">${done?'הושלם ✅ · אפשר לחזור':'פתוח - התחילו!'}</span>
+        <span class="text-xs ${done?'text-green-600':'text-lime-600'} font-bold">${done?'הושלם ✅ · לשפר':(l.n===resumeLesson()?'באמצע - להמשיך':'פתוח - התחילו!')}</span>
       </a>
     </div>`;
   }).join('');
@@ -550,7 +562,8 @@ function renderStudentLessons(){
   // CTA ראשי ב-hero - לשיעור הבא בתור (לא תמיד שיעור 1)
   const cta=document.getElementById('hero-next-cta');
   if(cta){
-    if(next){ cta.href=lessonHref(next); cta.textContent='🚀 '+(doneCount>0?'להמשיך לשיעור ':'להתחיל בשיעור ')+next; }
+    if(next && next===resumeLesson()){ cta.href=lessonHref(next); cta.textContent='🚀 להמשיך משיעור '+next; }
+    else if(next){ cta.href=lessonHref(next); cta.textContent='🚀 '+(doneCount>0?'להמשיך לשיעור ':'להתחיל בשיעור ')+next; }
     else { cta.href='#lessons-section'; cta.textContent = doneCount>=17 ? '🏆 כל השיעורים הושלמו!' : waitingForTeacher() ? '⏳ ממתינים למורה' : '✅ כל הכבוד! השיעור הבא בקרוב'; }
   }
 }

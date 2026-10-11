@@ -10,6 +10,48 @@
   // הישן (תיוג בית-ספר קליל בלבד, עדיין בשימוש ב-index.html למעבר "מצב מורה" רגיל).
   // זו רק לגישה ל-teacher-class.html (הערות לשיעור + קצב התקדמות כיתה ספציפית).
   const KEY_TEACHER_CLASS = 'gc_teacher_class_identity';
+  // שורש האתר, יחסית לקובץ הזה (index.html / lessons/ / elementary/lessons/ טוענים אותו מרמות שונות)
+  const ROOT = ((document.currentScript && document.currentScript.src) || '').replace(/assets\/identity\.js.*$/, '');
+
+  // שיעורי היסודי שכבר נבנו (elementary/lessons/). מקור יחיד - index.html קורא מכאן.
+  GC_ID.ELEMENTARY_READY = [1, 2, 3, 4];
+
+  // roster.js לא נטען בכל הלומדות - נטען לפי דרישה
+  GC_ID.loadRoster = function () {
+    if (window.GC_ROSTER || !ROOT) return Promise.resolve();
+    return new Promise(function (resolve) {
+      const s = document.createElement('script');
+      s.src = ROOT + 'data/roster.js';
+      s.onload = s.onerror = function () { resolve(); };
+      document.head.appendChild(s);
+    });
+  };
+
+  // מיקום אחרון בלומדה: passport1.resume = {lesson, step, steps, ts} (core.js כותב, מסונכרן לגיליון)
+  GC_ID.getResume = function () {
+    try { return JSON.parse(localStorage.getItem('passport1') || '{}').resume || null; } catch (e) { return null; }
+  };
+
+  // ניווט אחרי כניסה עם קוד קיים: לשיעור של resume אם פתוח ולא הושלם; אחרת לשיעור הפתוח
+  // הנמוך ביותר שלא הושלם; אחרת לשיעור הפתוח הגבוה ביותר. לעולם לא מעבר ל-gc_unlocked_through.
+  GC_ID.goToResume = function () {
+    return GC_ID.loadRoster().then(function () {
+      const unlocked = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
+      const r = GC_ID.getResume();
+      const id = GC_ID.getIdentity();
+      const s = id && window.GC_ROSTER && GC_ROSTER.schoolByName ? GC_ROSTER.schoolByName(id.school) : null;
+      const elementary = !!(s && s.track === 'elementary');
+      const open = function (n) {
+        return n >= 1 && n <= Math.min(17, unlocked) && (!elementary || GC_ID.ELEMENTARY_READY.indexOf(n) !== -1);
+      };
+      const done = function (n) { return localStorage.getItem('lesson' + n + '_completed') === '1'; };
+      let n = (r && open(r.lesson) && !done(r.lesson)) ? r.lesson : 0;
+      for (let i = 1; !n && i <= 17; i++) if (open(i) && !done(i)) n = i;
+      for (let i = 17; !n && i >= 1; i--) if (open(i)) n = i;
+      if (!n) n = 1;
+      location.href = ROOT + (elementary ? 'elementary/lessons/' : 'lessons/') + 'lesson-' + (n < 10 ? '0' + n : n) + '.html';
+    });
+  };
 
   function qs(name) {
     return new URLSearchParams(location.search).get(name);
@@ -158,7 +200,7 @@
       '<div style="background:white;border-radius:24px;max-width:420px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow:auto;">' +
       '<div style="font-size:2rem;text-align:center;margin-bottom:6px;">🌱</div>' +
       '<h2 style="font-weight:900;font-size:1.3rem;text-align:center;color:#166534;margin-bottom:4px;">ברוכים הבאים לגדלים למחר!</h2>' +
-      '<p style="font-size:.85rem;color:#666;text-align:center;margin-bottom:18px;">כמה פרטים כדי שנזכור אתכם בפעם הבאה (נשמר במחשב הזה בלבד, בשלב זה)</p>' +
+      '<p style="font-size:.85rem;color:#666;text-align:center;margin-bottom:18px;">כמה פרטים כדי שנזכור אתכם - עם הקוד תחזרו למקום שבו עצרתם, גם ממחשב אחר</p>' +
       '<label style="font-size:.8rem;font-weight:700;color:#333;">בית ספר</label>' +
       schoolFieldHtml +
       '<label style="font-size:.8rem;font-weight:700;color:#333;">כיתה</label>' +
@@ -211,16 +253,34 @@
     document.getElementById('gc-id-new').onclick = function () {
       const code = rand4();
       if (finish(code)) {
-        alert('הקוד האישי שלכם הוא: ' + code + '\nתזכרו אותו / תצלמו את המסך!\n(בשלב זה הקוד הוא לזיהוי בלבד — עדיין לא משחזר נתונים במחשב אחר, זה יגיע בהמשך)');
+        alert('הקוד שלכם: ' + code + '. שמרו אותו. בכניסה הבאה תחזרו למקום שבו עצרתם.');
       }
     };
     document.getElementById('gc-id-existing-toggle').onclick = function () {
       document.getElementById('gc-id-existing-wrap').style.display = 'block';
     };
+    // כניסה חוזרת: מנקים את מי שהיה לפני על המחשב, מושכים מהגיליון (עד 6 שניות) ומנווטים
+    // לשיעור/לשלב שבו עצרו (GC_ID.goToResume + core.js). כישלון משיכה = נכנסים בכל זאת.
     document.getElementById('gc-id-existing-go').onclick = function () {
       const code = document.getElementById('gc-id-existing-code').value.trim();
       if (!/^\d{4}$/.test(code)) { alert('קוד צריך להיות 4 ספרות'); return; }
-      finish(code);
+      const f = fields();
+      if (!valid(f)) return;
+      const btn = this;
+      btn.disabled = true;
+      btn.textContent = '⏳ מחזירים אתכם למקום שבו עצרתם...';
+      const c = window.SHEETS_CONFIG || {};
+      const canPull = !!(c.enabled && c.url && window.GC_SYNC && typeof GC_SYNC.pullMine === 'function');
+      // בלי סנכרון אין מאיפה לשחזר - לא מוחקים את מה שיש במחשב
+      if (canPull) GC_ID.wipeLocalProgress();
+      GC_ID.setIdentity({ school: f.school, className: f.className, name: f.name, code: code, savedAt: Date.now() });
+      renderBadge();
+      const pull = canPull ? GC_SYNC.pullMine().catch(function () {}) : Promise.resolve();
+      const timeout = new Promise(function (resolve) { setTimeout(resolve, 6000); });
+      const fallback = function () { location.href = ROOT + 'lessons/lesson-01.html'; };
+      Promise.race([pull, timeout])
+        .then(function () { return GC_ID.goToResume(); }, function () { return GC_ID.goToResume(); })
+        .catch(fallback);
     };
     document.getElementById('gc-id-skip').onclick = function () {
       sessionStorage.setItem('gc_id_skipped', '1');

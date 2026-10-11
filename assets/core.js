@@ -942,23 +942,70 @@ function mascotSay(msg, emoji) { GC.mascotSay(msg, emoji); }
     };
     document.getElementById('gc-se-close').onclick = function () { b.remove(); };
   }
+  function readPassport() {
+    try { return JSON.parse(localStorage.getItem('passport1') || '{}') || {}; } catch (e) { return {}; }
+  }
+  function activeStep() {
+    const el = document.querySelector('.step-panel.active[id^="step-"]');
+    return el ? parseInt(el.id.slice(5), 10) || 0 : 0;
+  }
   function check() {
     if (window.GC_LESSON_LOCKED) return; // כניסה ישירה לשיעור שעוד לא נפתח (sheets-sync.js)
     const el = lastStepPanel();
     if (el && el.classList.contains('active')) {
       const already = localStorage.getItem('lesson' + lessonNum + '_completed') === '1';
       localStorage.setItem('lesson' + lessonNum + '_completed', '1');
+      // done נשמר גם ב-passport1 (מסונכרן) - כדי שבמחשב אחר השיעור ייחשב הושלם (pullMine)
+      const p = readPassport();
+      if (!(p.done && p.done[lessonNum])) {
+        p.done = Object.assign({}, p.done, { [lessonNum]: 1 });
+        localStorage.setItem('passport1', JSON.stringify(p));
+      }
       // מסנכרן לגיליון (עלים/תשובות). לא פותח את השיעור הבא - רק המדריך/ה פותח/ת מלוח המורה.
       if (!already && window.GC_SYNC && typeof GC_SYNC.scheduleSync === 'function') GC_SYNC.scheduleSync();
       showSessionEndBanner();
     }
   }
+
+  // ── מיקום אחרון: passport1.resume = {lesson, step, steps, ts} ──
+  // נרשם מכל מעבר שלב (GC.goTo או goTo מקומי של הלומדה - צופים ב-.step-panel.active, כמו check).
+  // נקרא כאן בטעינת הסקריפט, לפני שהלומדה מתחילה לזוז, כדי לשחזר את השלב פעם אחת.
+  const resumeAtLoad = readPassport().resume || null;
+  function recordResume() {
+    if (window.GC_LESSON_LOCKED) return;
+    const step = activeStep();
+    const last = lastStepPanel();
+    if (!step || !last) return;
+    const p = readPassport();
+    const r = p.resume;
+    if (r && r.lesson === lessonNum && r.step === step) return;
+    p.resume = { lesson: lessonNum, step: step, steps: parseInt(last.id.slice(5), 10), ts: Date.now() };
+    localStorage.setItem('passport1', JSON.stringify(p));
+    if (window.GC_SYNC && typeof GC_SYNC.scheduleSync === 'function') GC_SYNC.scheduleSync();
+  }
+  // שיעור שהושלם נפתח מההתחלה (לשיפור); שיעור באמצע - חוזרים לשלב שבו עצרו
+  function restoreResume(tries) {
+    const r = resumeAtLoad;
+    if (!r || r.lesson !== lessonNum || !(r.step > 1)) return;
+    if (localStorage.getItem('lesson' + lessonNum + '_completed') === '1') return;
+    if (window.GC_LESSON_LOCKED) { // ממתינים להכרעת נעילת המורה (sheets-sync.js)
+      if (tries < 16) setTimeout(function () { restoreResume(tries + 1); }, 500);
+      return;
+    }
+    if (!document.getElementById('step-' + r.step) || activeStep() === r.step) return;
+    if (typeof window.goTo === 'function') window.goTo(r.step); // goTo של הלומדה, או העוטף של GC.goTo
+  }
+
   function start() {
     check(); // כבר על השלב האחרון בטעינה (למשל חוזרים אחרי שסיימו)
-    const obs = new MutationObserver(check);
+    const obs = new MutationObserver(function () { check(); recordResume(); });
     document.querySelectorAll('.step-panel').forEach((el) => {
       obs.observe(el, { attributes: true, attributeFilter: ['class'] });
     });
+    // אחרי שהלומדה סיימה init (סקריפטים בסוף body רצים לפני load)
+    const restore = function () { setTimeout(function () { restoreResume(0); }, 0); };
+    if (document.readyState === 'complete') restore();
+    else window.addEventListener('load', restore);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
