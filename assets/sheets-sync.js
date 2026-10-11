@@ -126,6 +126,28 @@
     merged.resume = (rr && (!lr || (rr.ts || 0) > (lr.ts || 0))) ? rr : lr;
     if (!merged.resume) delete merged.resume;
     if (remote.done || local.done) merged.done = Object.assign({}, remote.done, local.done);
+    // דגלי completed שכבר קיימים במחשב הזה (מלפני שהיה done) - נכנסים ל-done כדי שיגיעו לגיליון
+    for (let i = 1; i <= 17; i++) {
+      if (localStorage.getItem('lesson' + i + '_completed') === '1' && !(merged.done && merged.done[i])) {
+        merged.done = Object.assign({}, merged.done, { [i]: 1 });
+      }
+    }
+    // תלמידים מלפני resume/done (למשל מי שכבר עשו שיעורים 1-3): אין מיקום שמור ואין דגלים.
+    // מסיקים «הושלם» לשיעור עם עלים שלפני gc_unlocked_through (באותה תקופה השיעור הבא נפתח
+    // רק בסיום), ושיעור עם עלים בגבול הנעילה = השיעור שבו עצרו. רץ רק כשאין done וגם אין resume.
+    if (!merged.done && !merged.resume) {
+      const unlocked = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
+      const done = {};
+      let lastTouched = 0;
+      for (let i = 1; i <= 17; i++) {
+        if (parseInt(localStorage.getItem('ls' + i) || '0', 10) > 0) {
+          lastTouched = i;
+          if (i < unlocked) done[i] = 1;
+        }
+      }
+      if (Object.keys(done).length) merged.done = done;
+      if (lastTouched && !done[lastTouched]) merged.resume = { lesson: lastTouched, step: 1, steps: 0, ts: 0 };
+    }
     if (Object.keys(merged).length) localStorage.setItem('passport1', JSON.stringify(merged));
     // «הושלם» גם בלי דגל מקומי: done מהגיליון, או resume שהגיע לשלב האחרון ויש בו עלים.
     // לא נוגעים בעלים ולא ב-gc_unlocked_through (הנעילה נשארת של המורה).

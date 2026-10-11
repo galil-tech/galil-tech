@@ -88,6 +88,7 @@
       </div>
       <div class="flex flex-wrap justify-center gap-4">
         <a id="hero-next-cta" href="#lessons-section" class="card bg-lime-500 hover:bg-lime-400 text-green-900 px-10 py-5 rounded-3xl text-xl font-black shadow-xl">🚀 לשיעורים</a>
+        <a id="hero-behind-cta" href="#lessons-section" class="hidden card bg-white text-green-900 px-8 py-5 rounded-3xl text-lg font-black shadow-xl">↩️ להשלים</a>
         <a href="#sims-section" class="card border-2 border-white/40 bg-white/10 text-white px-8 py-5 rounded-3xl text-lg font-bold">🎮 סימולטורים</a>
       </div>
     </div>
@@ -514,19 +515,25 @@ function lessonHref(n){
   if(studentTrack()==='elementary') return ELEMENTARY_READY.includes(n) ? 'elementary/lessons/lesson-'+lessonPad(n)+'.html' : null;
   return 'lessons/lesson-'+lessonPad(n)+'.html';
 }
-// השיעור שבו עצרו (אם פתוח ולא הושלם), אחרת הפתוח הנמוך ביותר שעוד לא הושלם (ושיש לו לומדה)
-// - אליו מצביעים ה-CTA, «הבא בתור» והטutorial
+// {current: שיעור הכיתה (הפתוח הגבוה ביותר, אם לא הושלם), behind: שיעור קודם שלא הושלם}
+// - GC_ID.lessonPlan (assets/identity.js), משותף עם הניווט אחרי כניסה עם קוד
+function lessonPlanNow(){
+  const open=n=>lessonUnlocked(n) && !!lessonHref(n);
+  if(window.GC_ID && typeof GC_ID.lessonPlan==='function') return GC_ID.lessonPlan(open, lessonDone);
+  for(let i=1;i<=17;i++){ if(open(i) && !lessonDone(i)) return {current:i, behind:null}; }
+  return {current:null, behind:null};
+}
+// שיעור הכיתה, ואם אין (כבר הושלם) - השיעור שלא הושלם. אליו מצביעים «הבא בתור» והטutorial.
 function nextLessonToDo(){
-  const r=resumeLesson();
-  if(r) return r;
-  for(let i=1;i<=17;i++){ if(lessonUnlocked(i) && !lessonDone(i) && lessonHref(i)) return i; }
-  return null; // הכל הושלם / השאר עוד לא נבנו
+  const p=lessonPlanNow();
+  return p.current || p.behind || null; // null = הכל הושלם / ממתינים למורה / השאר עוד לא נבנו
 }
 function renderStudentLessons(){
   const grid=document.getElementById('student-lessons-grid');
   if(!grid) return;
   const phaseBorder={1:'border-green-400',2:'border-lime-400',3:'border-sky-400',4:'border-amber-400'};
-  const next=nextLessonToDo();
+  const plan=lessonPlanNow();
+  const next=plan.current || plan.behind || null;
   let doneCount=0;
   grid.innerHTML=LESSONS.map(l=>{
     const done=lessonDone(l.n);
@@ -553,17 +560,25 @@ function renderStudentLessons(){
       ${isNext?'<div class="absolute top-2 left-2 bg-lime-500 text-white text-xs font-black px-2 py-0.5 rounded-full">הבא בתור</div>':''}
       <a href="${href}" class="block flex-1">
         <p class="text-2xl mb-1">${l.icon}</p><p class="font-black">שיעור ${l.n}</p><p class="text-xs text-gray-500">${lessonEsc(l.sub)}</p>
-        <span class="text-xs ${done?'text-green-600':'text-lime-600'} font-bold">${done?'הושלם ✅ · לשפר':(l.n===resumeLesson()?'באמצע - להמשיך':'פתוח - התחילו!')}</span>
+        <span class="text-xs ${done?'text-green-600':'text-lime-600'} font-bold">${done?'הושלם ✅ · לשפר':(l.n===plan.behind?'לא הושלם - להשלים':l.n===resumeLesson()?'באמצע - להמשיך':'פתוח - התחילו!')}</span>
       </a>
     </div>`;
   }).join('');
   const note=document.getElementById('lessons-progress-note');
   if(note) note.textContent = doneCount>0 ? `הושלמו ${doneCount} מתוך 17 שיעורים` : 'לחצו על שיעור 1 כדי להתחיל';
-  // CTA ראשי ב-hero - לשיעור הבא בתור (לא תמיד שיעור 1)
+  // CTA ב-hero: שיעור הכיתה ראשי; אם יש גם שיעור קודם שלא הושלם - כפתור שני «להשלים» (בחירה)
   const cta=document.getElementById('hero-next-cta');
+  const behindCta=document.getElementById('hero-behind-cta');
+  if(behindCta){
+    const show=!!(plan.current && plan.behind);
+    behindCta.classList.toggle('hidden', !show);
+    if(show){ behindCta.href=lessonHref(plan.behind); behindCta.textContent='↩️ להשלים את שיעור '+plan.behind; }
+  }
   if(cta){
-    if(next && next===resumeLesson()){ cta.href=lessonHref(next); cta.textContent='🚀 להמשיך משיעור '+next; }
-    else if(next){ cta.href=lessonHref(next); cta.textContent='🚀 '+(doneCount>0?'להמשיך לשיעור ':'להתחיל בשיעור ')+next; }
+    if(plan.current && plan.behind){ cta.href=lessonHref(plan.current); cta.textContent='🚀 להמשיך עם הכיתה - שיעור '+plan.current; }
+    else if(plan.current && plan.current===resumeLesson()){ cta.href=lessonHref(plan.current); cta.textContent='🚀 להמשיך משיעור '+plan.current; }
+    else if(plan.current){ cta.href=lessonHref(plan.current); cta.textContent='🚀 '+(doneCount>0?'להמשיך לשיעור ':'להתחיל בשיעור ')+plan.current; }
+    else if(plan.behind){ cta.href=lessonHref(plan.behind); cta.textContent='↩️ להשלים את שיעור '+plan.behind; }
     else { cta.href='#lessons-section'; cta.textContent = doneCount>=17 ? '🏆 כל השיעורים הושלמו!' : waitingForTeacher() ? '⏳ ממתינים למורה' : '✅ כל הכבוד! השיעור הבא בקרוב'; }
   }
 }
@@ -601,7 +616,7 @@ function maybeStartHomeTutorial(){
   function ready(){
     if(document.getElementById('gc-id-modal')){ setTimeout(ready,300); return; }
     if(!window.GC || !GC.Tutorial) return;
-    const next=nextLessonToDo()||1; // השיעור הפתוח הנמוך ביותר שעוד לא הושלם
+    const next=nextLessonToDo()||1; // שיעור הכיתה (או השיעור שלא הושלם)
     GC.Tutorial.start('home', [
       { target: null, emoji: '🌱', wait: 'next',
         text: 'פה הבית של גדלים למחר.' },

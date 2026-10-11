@@ -32,12 +32,47 @@
     try { return JSON.parse(localStorage.getItem('passport1') || '{}').resume || null; } catch (e) { return null; }
   };
 
-  // ניווט אחרי כניסה עם קוד קיים: לשיעור של resume אם פתוח ולא הושלם; אחרת לשיעור הפתוח
-  // הנמוך ביותר שלא הושלם; אחרת לשיעור הפתוח הגבוה ביותר. לעולם לא מעבר ל-gc_unlocked_through.
+  // תמונת מצב לבחירה «להשלים או להמשיך עם הכיתה» (משותף ל-index.html ולכניסה עם קוד):
+  // current = השיעור של הכיתה = השיעור הפתוח הגבוה ביותר (null אם כבר הושלם).
+  // behind  = שיעור פתוח שלפניו שלא הושלם: השיעור שבו עצרו (resume) אם מתאים, אחרת הנמוך ביותר.
+  // open(n)/done(n) מגיעים מהקורא (index.html יודע על לומדות שעוד לא נבנו, למשל).
+  GC_ID.lessonPlan = function (open, done) {
+    let top = 0;
+    for (let i = 17; !top && i >= 1; i--) if (open(i)) top = i;
+    const current = top && !done(top) ? top : null;
+    const limit = current || 18;
+    const r = GC_ID.getResume();
+    let behind = (r && r.lesson < limit && open(r.lesson) && !done(r.lesson)) ? r.lesson : null;
+    for (let i = 1; !behind && i < limit; i++) if (open(i) && !done(i)) behind = i;
+    return { current: current, behind: behind, top: top || null };
+  };
+
+  function lessonUrl(n, elementary) {
+    return ROOT + (elementary ? 'elementary/lessons/' : 'lessons/') + 'lesson-' + (n < 10 ? '0' + n : n) + '.html';
+  }
+  // חלון בחירה: להשלים שיעור שלא הושלם או להמשיך עם הכיתה
+  function showLessonChoice(behind, current, elementary) {
+    const o = document.createElement('div');
+    o.id = 'gc-lesson-choice';
+    o.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100000;display:flex;align-items:center;justify-content:center;padding:16px;font-family:Heebo,sans-serif;direction:rtl;';
+    const btn = 'display:block;width:100%;box-sizing:border-box;border:none;padding:12px;border-radius:12px;font-weight:900;font-size:.95rem;cursor:pointer;margin-top:10px;font-family:inherit;';
+    o.innerHTML = '<div style="background:white;border-radius:24px;max-width:380px;width:100%;padding:24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">' +
+      '<div style="font-size:2rem;">🌱</div>' +
+      '<h2 style="font-weight:900;font-size:1.2rem;color:#166534;margin:4px 0;">איפה ממשיכים?</h2>' +
+      '<p style="font-size:.88rem;color:#4b5563;margin:0 0 6px;">שיעור ' + behind + ' עוד לא הושלם. הכיתה כבר בשיעור ' + current + '.</p>' +
+      '<button type="button" id="gc-lc-current" style="' + btn + 'background:#166534;color:white;">🚀 להמשיך עם הכיתה - שיעור ' + current + '</button>' +
+      '<button type="button" id="gc-lc-behind" style="' + btn + 'background:#f3f4f6;color:#333;">↩️ להשלים את שיעור ' + behind + '</button>' +
+      '</div>';
+    document.body.appendChild(o);
+    document.getElementById('gc-lc-current').onclick = function () { location.href = lessonUrl(current, elementary); };
+    document.getElementById('gc-lc-behind').onclick = function () { location.href = lessonUrl(behind, elementary); };
+  }
+
+  // ניווט אחרי כניסה עם קוד קיים. יש גם שיעור שלא הושלם וגם שיעור כיתה מתקדם יותר - בוחרים;
+  // אחרת ישר לשיעור היחיד הרלוונטי. לעולם לא מעבר ל-gc_unlocked_through.
   GC_ID.goToResume = function () {
     return GC_ID.loadRoster().then(function () {
       const unlocked = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
-      const r = GC_ID.getResume();
       const id = GC_ID.getIdentity();
       const s = id && window.GC_ROSTER && GC_ROSTER.schoolByName ? GC_ROSTER.schoolByName(id.school) : null;
       const elementary = !!(s && s.track === 'elementary');
@@ -45,11 +80,9 @@
         return n >= 1 && n <= Math.min(17, unlocked) && (!elementary || GC_ID.ELEMENTARY_READY.indexOf(n) !== -1);
       };
       const done = function (n) { return localStorage.getItem('lesson' + n + '_completed') === '1'; };
-      let n = (r && open(r.lesson) && !done(r.lesson)) ? r.lesson : 0;
-      for (let i = 1; !n && i <= 17; i++) if (open(i) && !done(i)) n = i;
-      for (let i = 17; !n && i >= 1; i--) if (open(i)) n = i;
-      if (!n) n = 1;
-      location.href = ROOT + (elementary ? 'elementary/lessons/' : 'lessons/') + 'lesson-' + (n < 10 ? '0' + n : n) + '.html';
+      const plan = GC_ID.lessonPlan(open, done);
+      if (plan.behind && plan.current) { showLessonChoice(plan.behind, plan.current, elementary); return; }
+      location.href = lessonUrl(plan.behind || plan.current || plan.top || 1, elementary);
     });
   };
 
@@ -278,9 +311,8 @@
       const pull = canPull ? GC_SYNC.pullMine().catch(function () {}) : Promise.resolve();
       const timeout = new Promise(function (resolve) { setTimeout(resolve, 6000); });
       const fallback = function () { location.href = ROOT + 'lessons/lesson-01.html'; };
-      Promise.race([pull, timeout])
-        .then(function () { return GC_ID.goToResume(); }, function () { return GC_ID.goToResume(); })
-        .catch(fallback);
+      const go = function () { overlay.remove(); return GC_ID.goToResume(); };
+      Promise.race([pull, timeout]).then(go, go).catch(fallback);
     };
     document.getElementById('gc-id-skip').onclick = function () {
       sessionStorage.setItem('gc_id_skipped', '1');
