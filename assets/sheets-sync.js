@@ -437,7 +437,7 @@
     const hide = document.createElement('style');
     hide.textContent = 'body{visibility:hidden!important}';
     document.head.appendChild(hide);
-    const home = (location.pathname.indexOf('/elementary/') !== -1 ? '../../' : '../') + 'index.html#lessons-section';
+    const home = (/\/elementary(-bilingual)?\//.test(location.pathname) ? '../../' : '../') + 'index.html#lessons-section';
     const lock = function () {
       document.body.innerHTML =
         '<div dir="rtl" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;font-family:Heebo,sans-serif;background:#f0fdf4;">' +

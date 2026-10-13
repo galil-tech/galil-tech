@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<!--
+  גרסת שלב א' דו-לשונית (ערבית + עברית) – ממתינה לביקורת מורה דובר/ת ערבית.
+  نسخة ثنائية اللغة – المرحلة الأولى – بانتظار مراجعة معلّم/ة ناطق/ة بالعربية.
+  מבוסס על elementary/lessons/lesson-01.html. אותו lessonId (1) ואותם מפתחות תשובה –
+  עלים/דרכון/מיקום אחרון משותפים לגרסה העברית (אותו תלמיד, אותו שיעור).
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الدرس 1 | שיעור 1 – לגדל אוכל לכולם | מסלול יסודי דו-לשוני</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Noto+Sans+Arabic:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת (כמו elementary/lessons) -->
+  <link rel="stylesheet" href="../../assets/core.css">
+  <script src="../../assets/core.js"></script>
+  <script src="../../assets/points.config.js"></script>
+  <script src="../../data/roster.js"></script>
+  <script src="../../assets/identity.js"></script>
+  <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="../../data/sheets-config.js"></script>
+  <script src="../../assets/sheets-sync.js"></script>
+  <style>
+    /* ── דו-לשוני: Heebo אין בו אותיות ערביות, אז כל תו ערבי (גם ב-JS/SVG/placeholder) נופל ל-Noto ── */
+    * { font-family: 'Heebo', 'Noto Sans Arabic', sans-serif; }
+    .ar { display:block; font-family:'Noto Sans Arabic','Heebo',sans-serif; line-height:1.55; }
+    .he { display:block; font-size:.82em; font-weight:500; opacity:.78; line-height:1.35; margin-top:1px; }
+    .bi-inline .ar, .bi-inline .he { display:inline; }
+    .bi-inline .he::before { content:' · '; }
+    #mascot-bubble { white-space:pre-line; }
+
+    /* ── סגנונות ייחודיים לשיעור 1 יסודי ── */
+    .guess-btn { border:2px solid #d1fae5; cursor:pointer; transition:all .2s; border-radius:16px; background:white; }
+    .guess-btn:hover:not([disabled]) { border-color:#84cc16; background:#f0fdf4; }
+    .guess-btn.chosen { border-color:#166534; background:#dcfce7; font-weight:900; }
+    .guess-btn[disabled] { cursor:default; }
+    .stair { border-radius:14px 14px 0 0; transition:all .4s; }
+    .stair.on { background:#bbf7d0; border-color:#16a34a; }
+    .stair.now { box-shadow:0 0 0 4px rgba(132,204,22,.45); }
+    .pick-btn { border:2px solid #e5e7eb; cursor:pointer; transition:all .2s; border-radius:12px; background:white; }
+    .pick-btn:hover:not([disabled]) { border-color:#84cc16; background:#f0fdf4; }
+    .pick-btn.ok  { background:#dcfce7; border-color:#16a34a; font-weight:900; }
+    .pick-btn.no  { background:#fee2e2; border-color:#dc2626; }
+    .chain-line { display:block; width:14px; height:3px; background:#d1d5db; border-radius:2px; flex-shrink:0; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-lime-50 min-h-screen">
+
+<!-- MASCOT (GC.Tutorial תלוי בו) -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:250px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:210px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../../index.html" class="hover:text-lime-300" aria-label="الرئيسية · דף הבית">🏠</a>
+      <a href="../../index.html#lessons-section" class="hover:text-lime-300">🌱 الدروس · שיעורים</a>
+      <a href="../../leaves.html" class="hover:text-lime-300">🏆 الأوراق · עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-lime-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">المرحلة 1 – الإنبات · פאזה 1 – נביטה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">الدرس 1 من 17 · שיעור 1 מתוך 17</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">ابتدائي · عربي–عبري · יסודי דו-לשוני</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">
+      <span class="ar">🌍 نزرع طعامًا للجميع</span>
+      <span class="he">לגדל אוכל לכולם</span>
+    </h1>
+    <p class="text-green-200">
+      <span class="ar">أعداد كبيرة · رسم بياني · حاوية تزرع الخضار</span>
+      <span class="he">מספרים גדולים · גרף · מכולה שמגדלת ירקות</span>
+    </p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-green-300 mb-1">
+        <span id="plabel">المرحلة 1 من 6 · שלב 1 מתוך 6</span>
+        <span>🌿 <b id="lc">0</b> أوراق · עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: سلّم الأعداد / מדרגות המספרים ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🪜</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900"><span class="ar">سُلَّم الأعداد</span><span class="he">מדרגות המספרים</span></h2>
+        <p class="text-gray-500 text-sm"><span class="ar">نبدأ قريبًا من البيت ونصعد حتى العالم كله. أولًا نخمّن، ثم نكتشف.</span><span class="he">מתחילים קרוב לבית ועולים עד כל העולם. קודם מנחשים, אחר כך מגלים.</span></p>
+      </div>
+    </div>
+
+    <div class="flex items-end justify-center gap-1 md:gap-2 mb-2" id="stairs"></div>
+    <p class="text-center text-xs text-gray-400 mb-5"><span class="ar">الدرجات ليست بحجمها الحقيقي، وإلّا لما اتّسع العالم في الشاشة! 😄</span><span class="he">המדרגות לא לפי הגודל האמיתי. אחרת העולם לא היה נכנס במסך! 😄</span></p>
+
+    <div id="ladder-box" class="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+      <p class="font-black text-lg text-green-900 mb-3" id="ladder-q"></p>
+      <div class="grid grid-cols-3 gap-3" id="ladder-opts"></div>
+      <div id="ladder-fb" class="hidden mt-4 rounded-xl p-4 text-sm font-bold"></div>
+
+      <div id="ratio-box" class="hidden mt-4 bg-white border-2 border-gray-100 rounded-xl p-4">
+        <p class="font-bold mb-3" id="ratio-q"></p>
+        <div class="grid grid-cols-3 gap-3" id="ratio-opts"></div>
+        <div id="ratio-fb" class="hidden mt-3 rounded-xl p-3 text-sm"></div>
+      </div>
+
+      <button id="ladder-next" class="hidden mt-4 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-2xl font-black" onclick="ladderNext()"><span class="ar">إلى الدرجة التالية ⬆️</span><span class="he">למדרגה הבאה</span></button>
+    </div>
+
+    <!-- كم هو المليار؟ -->
+    <div id="count-box" class="reveal mt-5 bg-purple-50 border-2 border-purple-200 rounded-2xl p-5">
+      <p class="font-black text-lg text-purple-900 mb-1"><span class="ar">🔢 كم هو المليون؟ وكم هو المليار؟</span><span class="he">כמה זה בעצם מיליון? ומיליארד?</span></p>
+      <p class="text-sm text-gray-700 mb-4"><span class="ar">تخيّلوا أنكم تعدّون رقمًا واحدًا كل ثانية: واحد، اثنان، ثلاثة... بلا توقّف، بلا نوم وبلا أكل.</span><span class="he">דמיינו שסופרים מספר אחד בכל שנייה, בלי לעצור. לא לישון, לא לאכול.</span></p>
+
+      <p class="font-bold mb-2"><span class="ar">كم من الوقت نحتاج لنصل إلى مليون؟</span><span class="he">כמה זמן ייקח להגיע למיליון?</span></p>
+      <div class="grid grid-cols-3 gap-3 mb-2" id="cnt1">
+        <button class="pick-btn p-3 text-sm font-bold" data-ok="0" onclick="countAns('cnt1',this)"><span class="ar">ساعة</span><span class="he">שעה</span></button>
+        <button class="pick-btn p-3 text-sm font-bold" data-ok="1" onclick="countAns('cnt1',this)"><span class="ar">حوالي 11 يومًا</span><span class="he">בערך 11 ימים</span></button>
+        <button class="pick-btn p-3 text-sm font-bold" data-ok="0" onclick="countAns('cnt1',this)"><span class="ar">100 سنة</span><span class="he">100 שנה</span></button>
+      </div>
+      <p id="fb-cnt1" class="hidden text-sm mb-4 text-purple-900 font-bold"><span class="ar">حوالي 11 يومًا وليلة من العدّ بلا توقّف!</span><span class="he">בערך 11 ימים ולילות של ספירה בלי הפסקה!</span></p>
+
+      <div id="cnt2-wrap" class="reveal">
+        <p class="font-bold mb-2"><span class="ar">وللوصول إلى مليار؟</span><span class="he">ולהגיע למיליארד?</span></p>
+        <div class="grid grid-cols-3 gap-3 mb-2" id="cnt2">
+          <button class="pick-btn p-3 text-sm font-bold" data-ok="0" onclick="countAns('cnt2',this)"><span class="ar">حوالي شهر</span><span class="he">בערך חודש</span></button>
+          <button class="pick-btn p-3 text-sm font-bold" data-ok="0" onclick="countAns('cnt2',this)"><span class="ar">حوالي سنة</span><span class="he">בערך שנה</span></button>
+          <button class="pick-btn p-3 text-sm font-bold" data-ok="1" onclick="countAns('cnt2',this)"><span class="ar">حوالي 31 سنة</span><span class="he">בערך 31 שנה</span></button>
+        </div>
+        <p id="fb-cnt2" class="hidden text-sm text-purple-900 font-bold"><span class="ar">حوالي 31 سنة! أكثر من كل عمركم. وفي العالم حوالي 8 مليارات شخص، وكلّهم يحتاجون إلى الطعام. 🍽️</span><span class="he">בערך 31 שנה! יותר מכל החיים שלכם. ובעולם יש בערך 8 מיליארד אנשים, וכולם צריכים לאכול.</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)"><span class="ar">إلى الرسم البياني ←</span><span class="he">לגרף</span></button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: قراءة رسم بياني / קריאת גרף ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">📈</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900"><span class="ar">ماذا يخبرنا الرسم البياني؟</span><span class="he">מה הגרף מספר?</span></h2>
+        <p class="text-gray-500 text-sm"><span class="ar">فقط ننظر ونقرأ. لا حاجة للرسم.</span><span class="he">רק מסתכלים וקוראים. לא צריך לצייר.</span></p>
+      </div>
+    </div>
+
+    <div class="bg-gray-50 rounded-2xl p-4 mb-2">
+      <p class="font-black text-center text-gray-800 mb-2"><span class="ar">كم شخصًا يعيش في العالم؟</span><span class="he">כמה אנשים חיים בעולם?</span></p>
+      <!-- הגרף נשאר LTR (שנים משמאל לימין) -->
+      <svg viewBox="0 -22 430 290" class="w-full max-w-xl mx-auto block" dir="ltr" role="img" aria-label="عدد سكان العالم يرتفع من حوالي 2.5 مليار سنة 1950 إلى حوالي 8 مليارات اليوم، والتوقّع لسنة 2050 حوالي 10 مليارات · מספר האנשים בעולם עולה מ-2.5 מיליארד ב-1950 ל-8 מיליארד היום, ותחזית ל-2050 כ-10 מיליארד">
+        <g stroke="#e5e7eb" stroke-width="1">
+          <line x1="60" y1="210" x2="400" y2="210"/>
+          <line x1="60" y1="170" x2="400" y2="170"/>
+          <line x1="60" y1="130" x2="400" y2="130"/>
+          <line x1="60" y1="90"  x2="400" y2="90"/>
+          <line x1="60" y1="50"  x2="400" y2="50"/>
+          <line x1="60" y1="10"  x2="400" y2="10"/>
+        </g>
+        <line x1="60" y1="210" x2="400" y2="210" stroke="#374151" stroke-width="2"/>
+        <line x1="60" y1="210" x2="60" y2="30" stroke="#374151" stroke-width="2"/>
+        <g font-size="12" fill="#6b7280" text-anchor="end">
+          <text x="54" y="214">0</text>
+          <text x="54" y="174">2</text>
+          <text x="54" y="134">4</text>
+          <text x="54" y="94">6</text>
+          <text x="54" y="54">8</text>
+          <text x="54" y="14">10</text>
+        </g>
+        <g font-size="12" fill="#6b7280" text-anchor="middle">
+          <text x="60"  y="228">1950</text>
+          <text x="145" y="228">1975</text>
+          <text x="230" y="228">2000</text>
+          <text x="315" y="228">اليوم</text>
+          <text x="315" y="241" font-size="10">היום</text>
+          <text x="400" y="228">2050</text>
+        </g>
+        <!-- שמות הצירים: ערבית מעל, עברית מתחת -->
+        <text x="230" y="254" font-size="13" font-weight="700" fill="#166534" text-anchor="middle">السنة</text>
+        <text x="230" y="267" font-size="11" fill="#166534" text-anchor="middle" opacity=".8">שנה</text>
+        <text x="12" y="120" font-size="12" font-weight="700" fill="#166534" text-anchor="middle" transform="rotate(-90 12 120)">مليار شخص</text>
+        <text x="26" y="120" font-size="10" fill="#166534" text-anchor="middle" opacity=".8" transform="rotate(-90 26 120)">מיליארד אנשים</text>
+        <polyline points="60,160 145,130 230,90 315,48" fill="none" stroke="#16a34a" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+        <g fill="#16a34a"><circle cx="60" cy="160" r="4"/><circle cx="145" cy="130" r="4"/><circle cx="230" cy="90" r="4"/><circle cx="315" cy="48" r="5"/></g>
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#f59e0b"/></marker></defs>
+        <line x1="315" y1="48" x2="392" y2="14" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#arr)"/>
+        <text x="355" y="70" font-size="11" fill="#b45309" text-anchor="middle">توقّع · תחזית</text>
+        <circle cx="400" cy="10" r="5" fill="#f59e0b" stroke="white" stroke-width="2"/>
+        <text x="362" y="-6" font-size="12" font-weight="700" fill="#b45309" text-anchor="middle">~10 مليار · מיליארד</text>
+      </svg>
+    </div>
+    <p class="text-center text-xs text-gray-400 mb-5"><span class="ar">الخط الأخضر = ما حدث فعلًا. السهم البرتقالي المتقطّع = ما نتوقّع أن يحدث.</span><span class="he">הקו הירוק = מה שכבר קרה. החץ הכתום המקווקו = מה שחושבים שיקרה.</span></p>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3"><span class="ar">❓ ما الذي يرتفع في الرسم مع الوقت؟</span><span class="he">מה עולה בגרף עם הזמן?</span></p>
+      <div class="grid grid-cols-3 gap-3" id="g1">
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,true,'g1')" data-correct="true"><span class="ar">عدد الناس</span><span class="he">מספר האנשים</span></div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'g1')"><span class="ar">عدد السيارات</span><span class="he">מספר המכוניות</span></div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'g1')"><span class="ar">غير مكتوب في الرسم</span><span class="he">לא כתוב בגרף</span></div>
+      </div>
+      <div id="fb-g1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="g1b-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-1"><span class="ar">❓ في سنة 1950، كم مليار شخص كان تقريبًا؟</span><span class="he">ב־1950 היו בערך כמה מיליארד אנשים?</span></p>
+      <p class="text-sm text-gray-500 mb-3"><span class="ar">ابحثوا عن أول نقطة على الخط، وانظروا إلى المحور الجانبي.</span><span class="he">מצאו את הנקודה הראשונה על הקו, והסתכלו על הציר בצד.</span></p>
+      <div class="grid grid-cols-3 gap-3" id="g1b">
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,true,'g1b')" data-correct="true">2</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'g1b')">8</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'g1b')">10</div>
+      </div>
+      <div id="fb-g1b" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="g2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-1"><span class="ar">❓ ماذا تُظهر المحاور؟</span><span class="he">מה מראים הצירים?</span></p>
+      <p class="text-sm text-gray-500 mb-3"><span class="ar">المحور الأفقي (تحت) · المحور العمودي (في الجانب)</span><span class="he">הציר השוכב (למטה) · הציר העומד (בצד)</span></p>
+      <div class="grid gap-3" id="g2">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'g2')" data-correct="true"><span class="ar">تحت: السنوات · في الجانب: عدد الناس</span><span class="he">למטה: שנים · בצד: כמה אנשים</span></div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'g2')"><span class="ar">تحت: عدد الناس · في الجانب: السنوات</span><span class="he">למטה: כמה אנשים · בצד: שנים</span></div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'g2')"><span class="ar">تحت: الأيام · في الجانب: كمية الطعام</span><span class="he">למטה: ימים · בצד: כמה אוכל</span></div>
+      </div>
+      <div id="fb-g2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      <p id="g2-note" class="hidden mt-3 text-sm text-green-800 bg-green-50 rounded-xl p-3"><span class="ar">💡 ما الذي يتغيّر بسبب ماذا؟ تمرّ السنوات، فيتغيّر عدد الناس.</span><span class="he">מה משתנה בגלל מה? עוברות השנים, ומספר האנשים משתנה.</span></p>
+    </div>
+
+    <div id="g3-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3"><span class="ar">❓ حسب السهم، في سنة 2050 سيكون في العالم...</span><span class="he">לפי החץ, בשנת 2050 יהיו בעולם...</span></p>
+      <div class="grid grid-cols-3 gap-3" id="g3">
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,true,'g3')" data-correct="true"><span class="ar">ناس أكثر</span><span class="he">יותר אנשים</span></div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'g3')"><span class="ar">ناس أقلّ</span><span class="he">פחות אנשים</span></div>
+        <div class="quiz-opt p-3 text-center font-bold" onclick="ansQ(this,false,'g3')"><span class="ar">نفس العدد</span><span class="he">אותו דבר</span></div>
+      </div>
+      <div id="fb-g3" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="g4-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mt-4">
+      <p class="font-bold text-lg mb-3"><span class="ar">❓ ما الذي لا يكبر في هذا الرسم — وهذه هي المشكلة؟</span><span class="he">מה לא גדל בגרף הזה — וזו הבעיה?</span></p>
+      <div class="grid gap-3" id="g4">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'g4')"><span class="ar">👥 عدد الناس</span><span class="he">מספר האנשים</span></div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'g4')" data-correct="true"><span class="ar">🟫 الأرض الزراعية</span><span class="he">האדמה לחקלאות</span></div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'g4')"><span class="ar">📅 عدد السنوات</span><span class="he">מספר השנים</span></div>
+      </div>
+      <div id="fb-g4" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      <div id="g3-after" class="hidden mt-4 bg-amber-50 border-2 border-amber-200 rounded-xl p-4 text-sm text-gray-800">
+        <span class="ar">الناس يزدادون، وكلّهم يحتاجون إلى الطعام. لكن <b>الأرض الزراعية لا تكبر</b>. فكيف نزرع طعامًا أكثر على نفس الأرض؟ 🤔</span>
+        <span class="he">עוד ועוד אנשים, וכולם צריכים לאכול. אבל <b>האדמה לחקלאות לא גדלה</b>. אז איך נגדל יותר אוכל על אותה אדמה?</span>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3)"><span class="ar">فكرة إسرائيلية ←</span><span class="he">רעיון ישראלי</span></button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: Vertical Field ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">📦</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900"><span class="ar">خضار داخل حاوية</span><span class="he">ירקות בתוך מכולה</span></h2>
+        <p class="text-gray-500 text-sm"><span class="ar">نقرأ · نشاهد · نجيب</span><span class="he">קוראים · צופים · עונים</span></p>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-700 to-lime-600 text-white rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🇮🇱</span>
+        <h3 class="font-black text-xl">Vertical Field <span class="font-normal text-base">(فيرتيكال فيلد · ורטיקל פילד)</span></h3>
+      </div>
+      <p class="text-green-50 leading-relaxed mb-3">
+        <span class="ar">شركة إسرائيلية لها فكرة خاصة: <b>أن تزرع الخضار داخل حاوية</b>. الحاوية صندوق معدني ضخم، مثل الصناديق التي تُحمَّل على السفن.</span>
+        <span class="he">חברה ישראלית עם רעיון מיוחד: <b>לגדל ירקות בתוך מכולה</b>. מכולה היא קופסת מתכת ענקית, כמו אלה שמעמיסים על אוניות.</span>
+      </p>
+      <p class="text-green-50 leading-relaxed mb-4">
+        <span class="ar">داخل الحاوية <b>تربة حقيقية</b>، ومصابيح بدل الشمس، وحاسوب يهتمّ بالماء. ويمكن وضعها داخل المدينة.</span>
+        <span class="he">בפנים יש <b>אדמה אמיתית</b>, מנורות במקום שמש, ומחשב שדואג למים. אפשר לשים אותה בתוך העיר.</span>
+      </p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">📦</span><span class="ar">حاوية</span><span class="he">מכולה</span></div>
+        <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">🟫</span><span class="ar">تربة</span><span class="he">אדמה</span></div>
+        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">21</b><span class="ar">يومًا حتى تنضج الخضار</span><span class="he">ימים עד שהירק מוכן</span></div>
+      </div>
+    </div>
+
+    <!-- הסרטון מוקרן ע"י המורה. ה-embed נטען רק אחרי לחיצה. -->
+    <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-5 mb-5 text-center">
+      <p class="font-black text-lg text-slate-800 mb-1"><span class="ar">📽️ المعلّم/ة يعرض الفيديو للجميع.</span><span class="he">המורה מקרין לכולם.</span></p>
+      <p class="text-sm text-gray-600 mb-3"><span class="ar">لا تشغّلوه وحدكم إلّا إذا طلب المعلّم/ة ذلك.</span><span class="he">אל תפעילו לבד אלא אם המורה אמר.</span></p>
+      <button id="vf-open" class="bg-white border-2 border-slate-300 hover:border-green-500 text-slate-700 px-5 py-2 rounded-xl text-sm font-bold" onclick="openVideo('vf-video','vf-open')"><span class="ar">المعلّم/ة سمح بالفتح ▶</span><span class="he">המורה אמר לפתוח</span></button>
+      <div id="vf-video" class="hidden rounded-2xl overflow-hidden mt-4" style="position:relative;padding-top:56.25%;">
+        <iframe data-src="https://www.youtube-nocookie.com/embed/SztIV-AyQZ8" title="Vertical Field" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3"><span class="ar">❓ أين تزرع Vertical Field الخضار؟</span><span class="he">איפה Vertical Field מגדלים את הירקות?</span></p>
+      <div class="grid gap-3" id="vf1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'vf1')"><span class="ar">🌾 في حقل كبير بعيد عن المدينة</span><span class="he">בשדה ענק, רחוק מהעיר</span></div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'vf1')" data-correct="true"><span class="ar">📦 داخل حاوية في المدينة</span><span class="he">בתוך מכולה, בעיר</span></div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'vf1')"><span class="ar">🚢 على سفينة في البحر</span><span class="he">על אונייה בים</span></div>
+      </div>
+      <div id="fb-vf1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="vf2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3"><span class="ar">❓ بعد كم يومًا تقريبًا تصبح الخضار في الحاوية جاهزة؟</span><span class="he">אחרי כמה ימים, בערך, הירקות במכולה מוכנים?</span></p>
+      <div class="grid grid-cols-3 gap-3" id="vf2">
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'vf2')">3</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,true,'vf2')" data-correct="true">21</div>
+        <div class="quiz-opt p-4 text-center font-black text-2xl" onclick="ansQ(this,false,'vf2')">100</div>
+      </div>
+      <div id="fb-vf2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)"><span class="ar">طريق الخضار ←</span><span class="he">הדרך של הירק</span></button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: سلسلة قصيرة / שרשרת קצרה (4 תחנות) ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🚚</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900"><span class="ar">كيف تصل الخضار إلى السوبرماركت؟</span><span class="he">איך ירק מגיע לסופר?</span></h2>
+        <p class="text-gray-500 text-sm"><span class="ar">اسحبوا كل محطة إلى مكانها. نبدأ بالحقل وننتهي بالسوبرماركت.</span><span class="he">גררו כל תחנה למקום שלה. מתחילים בשדה ומסיימים בסופר.</span></p>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-3 mb-5" id="chain-bank">
+      <div class="drag-item px-4 py-2 font-bold text-center" draggable="true" data-val="field"><span class="ar">🌾 حقل في الجليل</span><span class="he">שדה בגליל</span></div>
+      <div class="drag-item px-4 py-2 font-bold text-center" draggable="true" data-val="pack"><span class="ar">📦 تغليف ونقل</span><span class="he">אריזה והסעה</span></div>
+      <div class="drag-item px-4 py-2 font-bold text-center" draggable="true" data-val="dist"><span class="ar">🏭 توزيع</span><span class="he">הפצה</span></div>
+      <div class="drag-item px-4 py-2 font-bold text-center" draggable="true" data-val="store"><span class="ar">🛒 سوبرماركت</span><span class="he">סופר</span></div>
+    </div>
+
+    <!-- כיוון בכיתוב (בלי חצים). השדה מימין, הסופר משמאל. -->
+    <div class="max-w-xl mx-auto mb-1 flex items-center gap-2 text-xs font-bold text-gray-500">
+      <span>🌾 من الحقل · מהשדה</span><span class="flex-1 border-t-2 border-dashed border-gray-300"></span><span>إلى السوبرماركت · אל הסופר 🛒</span>
+    </div>
+    <div class="flex items-center justify-center gap-1 md:gap-2 mb-5" id="chain-zones">
+      <div class="drop-zone h-24 w-24 md:w-32 p-1" data-correct="field" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChain(event,this)"><span class="text-gray-400 text-xs font-bold">حقل · שדה</span></div>
+      <span class="chain-line"></span>
+      <div class="drop-zone h-24 w-24 md:w-32 p-1" data-correct="pack" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChain(event,this)"></div>
+      <span class="chain-line"></span>
+      <div class="drop-zone h-24 w-24 md:w-32 p-1" data-correct="dist" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChain(event,this)"></div>
+      <span class="chain-line"></span>
+      <div class="drop-zone h-24 w-24 md:w-32 p-1" data-correct="store" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChain(event,this)"><span class="text-gray-400 text-xs font-bold">سوبرماركت · סופר</span></div>
+    </div>
+
+    <div id="chain-done" class="hidden">
+      <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 mb-4 text-center">
+        <p class="font-black text-xl text-lime-800 mb-2"><span class="ar">🎉 ممتاز! هذا هو طريق الخضار.</span><span class="he">מצוין! זו הדרך של הירק.</span></p>
+        <p class="text-gray-700"><span class="ar">من الحقل إلى السوبرماركت عدّة محطات. في كل محطة يمرّ وقت، والخضار تسافر كثيرًا.</span><span class="he">מהשדה עד הסופר יש כמה תחנות. בכל תחנה עובר זמן, והירק נוסע הרבה.</span></p>
+      </div>
+
+      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+        <p class="font-bold text-lg mb-3"><span class="ar">❓ أين تختصر Vertical Field هذا الطريق؟</span><span class="he">איפה בדרך הזו Vertical Field מקצרים?</span></p>
+        <div class="grid gap-3" id="short1">
+          <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'short1')" data-correct="true"><span class="ar">📦🛒 تزرع قرب الرفّ، قريبًا من السوبرماركت</span><span class="he">מגדלים ליד המדף, קרוב לסופר</span></div>
+          <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'short1')"><span class="ar">🚚 ترسل الخضار إلى مكان أبعد</span><span class="he">שולחים את הירקות רחוק יותר</span></div>
+          <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'short1')"><span class="ar">⚓ تضيف محطة أخرى: ميناء</span><span class="he">מוסיפים עוד תחנה: נמל</span></div>
+        </div>
+        <div id="fb-short1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+
+      <div id="tech-wrap" class="reveal bg-sky-50 border-2 border-sky-200 rounded-2xl p-5">
+        <p class="font-bold text-lg mb-1"><span class="ar">🤖 أين تضيفون مساعدة من آلة؟</span><span class="he">איפה הייתם מוסיפים עזרה של מכונה?</span></p>
+        <p class="text-sm text-gray-500 mb-3"><span class="ar">مثلًا: آلة تقطف، آلة تغلّف، حاسوب يفحص... لا يوجد جواب خاطئ. اكتبوا بالعربية أو بالعبرية.</span><span class="he">למשל: מכונה שקוטפת, שאורזת, מחשב שבודק... אין תשובה לא נכונה. אפשר לכתוב בערבית או בעברית.</span></p>
+        <textarea data-answer-key="l01e_tech" rows="2" placeholder="كنت سأضيف آلة في... · הייתי מוסיף/ה מכונה ב..." class="w-full border-2 border-sky-200 rounded-xl p-3 outline-none resize-none focus:border-sky-500"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)"><span class="ar">جوازي الزراعي ←</span><span class="he">הדרכון שלי</span></button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: جواز السفر الزراعي / דרכון ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">📔</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900"><span class="ar">جوازي الزراعي</span><span class="he">הדרכון החקלאי שלי</span></h2>
+        <p class="text-gray-500 text-sm"><span class="ar">الصفحة الأولى. الجواز يرافقكم طوال السنة.</span><span class="he">עמוד ראשון. הדרכון ילווה אתכם כל השנה.</span></p>
+      </div>
+    </div>
+
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-6 mb-5">
+      <p class="text-sm text-gray-600 mb-5"><span class="ar">اكتبوا جملة قصيرة، <b>بالعربية أو بالعبرية</b> – كما تحبّون. 🙂</span><span class="he">כתבו משפט קצר, <b>בערבית או בעברית</b> – איך שנוח לכם.</span></p>
+      <div class="space-y-4">
+        <div>
+          <label for="p-name" class="block font-bold text-gray-700 mb-2"><span class="ar">📛 ما اسمي؟ (اسم أو لقب)</span><span class="he">איך קוראים לי? (שם פרטי או כינוי)</span></label>
+          <input id="p-name" data-answer-key="name" type="text" maxlength="30" placeholder="مثلًا: نور · למשל: נועה" class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
+        </div>
+        <div>
+          <label for="p-why" class="block font-bold text-gray-700 mb-2"><span class="ar">🌱 لماذا أنا هنا؟</span><span class="he">למה אני פה?</span></label>
+          <input id="p-why" data-answer-key="why" type="text" maxlength="120" placeholder="أنا هنا لأنّ... · אני פה כי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
+        </div>
+        <div>
+          <label for="p-curious" class="block font-bold text-gray-700 mb-2"><span class="ar">🔮 ما أكثر شيء أحبّ أن أكتشفه؟</span><span class="he">מה הכי מעניין אותי לגלות?</span></label>
+          <input id="p-curious" data-answer-key="curious" type="text" maxlength="120" placeholder="أكثر شيء يهمّني... · הכי מעניין אותי..." class="w-full border-2 border-green-200 rounded-xl p-3 text-lg outline-none focus:border-green-500">
+        </div>
+      </div>
+      <button onclick="savePassport()" class="mt-5 w-full bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg transition-colors"><span class="ar">📔 حفظ الجواز</span><span class="he">שמירת הדרכון</span></button>
+    </div>
+
+    <div id="passport-saved" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-6 text-center">
+      <p class="text-4xl mb-2">📔✨</p>
+      <p class="font-black text-xl text-lime-800 mb-1"><span class="ar">تمّ حفظ الجواز!</span><span class="he">הדרכון נשמר!</span></p>
+      <p class="text-gray-600 text-sm"><span class="ar">في كل درس نضيف إليه صفحة.</span><span class="he">בכל שיעור נוסיף לו עמוד.</span></p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)"><span class="ar">مكاننا ←</span><span class="he">המקום שלנו</span></button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: مكاننا + نجم الشمال / סיור מערכת + כוכב הצפון ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🏁</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900"><span class="ar">مكاننا + نجم الشمال</span><span class="he">המקום שלנו + כוכב הצפון</span></h2>
+        <p class="text-gray-500 text-sm"><span class="ar">مع المعلّم/ة، في الصف</span><span class="he">עם המורה, בכיתה</span></p>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-5">
+      <p class="font-black text-lg text-green-900 mb-3"><span class="ar">💧 هل يوجد في الصف نظام ماء للخضار؟</span><span class="he">יש בכיתה מערכת מים לירקות?</span></p>
+      <div class="grid grid-cols-2 gap-3" id="sys-choice">
+        <button class="pick-btn p-3 font-bold" onclick="chooseSystem(true,this)"><span class="ar">✅ نعم، يوجد</span><span class="he">כן, יש מערכת</span></button>
+        <button class="pick-btn p-3 font-bold" onclick="chooseSystem(false,this)"><span class="ar">🕐 ليس بعد</span><span class="he">עוד אין מערכת</span></button>
+      </div>
+    </div>
+
+    <div id="sys-yes" class="hidden bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-lime-900 mb-1"><span class="ar">🔍 ابحثوا في نظام الصف عن:</span><span class="he">מצאו במערכת של הכיתה:</span></h3>
+      <p class="text-xs text-gray-500 mb-3"><span class="ar">ننظر ونشير. نلمس فقط إذا قال المعلّم/ة. ضعوا ✅ على كل ما وجدتم:</span><span class="he">מסתכלים ומצביעים. נוגעים רק אם המורה אומר/ת. סמנו ✅ כל מה שמצאתם:</span></p>
+      <div class="space-y-2">
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkMission(this,0)">
+          <span class="mission-icon text-2xl">⬜</span> <span><span class="ar">💧 خزّان الماء</span><span class="he">מאגר המים</span></span>
+        </div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkMission(this,1)">
+          <span class="mission-icon text-2xl">⬜</span> <span><span class="ar">⚙️ المضخّة (تحرّك الماء)</span><span class="he">המשאבה (מזיזה את המים)</span></span>
+        </div>
+        <div class="mission-card p-3 flex items-center gap-3" onclick="checkMission(this,2)">
+          <span class="mission-icon text-2xl">⬜</span> <span><span class="ar">🌱 مكان الشتلات</span><span class="he">המקום לשתילים</span></span>
+        </div>
+      </div>
+      <div id="mission-done" class="hidden mt-3 bg-lime-100 rounded-xl p-3 text-center font-bold text-lime-800">
+        <span class="ar">🏆 وجدتم كل شيء! هذه مزرعتنا طوال السنة.</span><span class="he">מצאתם הכל! זו החווה שלנו לכל השנה.</span>
+      </div>
+    </div>
+
+    <div id="sys-no" class="hidden bg-sky-50 border-2 border-sky-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-sky-900 mb-1"><span class="ar">🗺️ نبحث عن مكان لمزرعتنا</span><span class="he">מחפשים מקום לחווה שלנו</span></h3>
+      <p class="text-xs text-gray-500 mb-4"><span class="ar">لا يوجد نظام بعد؟ ممتاز، إذًا أنتم تخطّطون أين سيكون.</span><span class="he">עוד אין מערכת? מעולה, אז אתם מתכננים איפה היא תהיה.</span></p>
+
+      <p class="font-bold mb-2"><span class="ar">1. أين في المدرسة أنسب مكان لزراعة الخضار؟</span><span class="he">איפה בבית הספר הכי הגיוני לגדל ירקות?</span></p>
+      <div class="grid grid-cols-3 gap-2 mb-1" id="pl1">
+        <button class="pick-btn p-2 text-sm font-bold" data-ok="1" onclick="placeAns('pl1',this)"><span class="ar">☀️ قرب نافذة مشمسة</span><span class="he">ליד חלון עם שמש</span></button>
+        <button class="pick-btn p-2 text-sm font-bold" data-ok="0" onclick="placeAns('pl1',this)"><span class="ar">🏠 على السطح</span><span class="he">על הגג</span></button>
+        <button class="pick-btn p-2 text-sm font-bold" data-ok="0" onclick="placeAns('pl1',this)"><span class="ar">⚽ في ساحة يركض فيها الأولاد</span><span class="he">בחצר שילדים רצים בה</span></button>
+      </div>
+      <p id="fb-pl1" class="hidden text-sm text-sky-900 font-bold mb-4"><span class="ar">قرب نافذة مشمسة: يوجد ضوء، ونستطيع فحص النباتات كل يوم. السطح يحتاج شخصًا بالغًا معكم، وفي الساحة يدوسون عليها.</span><span class="he">ליד חלון עם שמש: יש אור, ואפשר לבדוק את הצמחים כל יום. לגג צריך מבוגר, ובחצר דורכים עליהם.</span></p>
+
+      <div id="pl2-wrap" class="reveal">
+        <p class="font-bold mb-2 mt-3"><span class="ar">2. ماذا يجب أن يكون قريبًا؟</span><span class="he">מה חייבים שיהיה קרוב?</span></p>
+        <div class="grid grid-cols-3 gap-2 mb-1" id="pl2">
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="0" onclick="placeAns('pl2',this)"><span class="ar">⚽ ملعب كرة قدم</span><span class="he">מגרש כדורגל</span></button>
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="1" onclick="placeAns('pl2',this)"><span class="ar">🔌💧 كهرباء وماء</span><span class="he">חשמל ומים</span></button>
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="0" onclick="placeAns('pl2',this)"><span class="ar">☕ غرفة المعلّمين</span><span class="he">חדר מורים</span></button>
+        </div>
+        <p id="fb-pl2" class="hidden text-sm text-sky-900 font-bold mb-4"><span class="ar">ماء لنملأ الخزّان، وكهرباء للمضخّة.</span><span class="he">מים כדי למלא את המאגר, וחשמל בשביל המשאבה.</span></p>
+      </div>
+
+      <div id="pl3-wrap" class="reveal">
+        <p class="font-bold mb-2 mt-3"><span class="ar">3. ما الذي قد يُتلف النباتات هناك؟</span><span class="he">מה עלול לקלקל את הצמחים שם?</span></p>
+        <div class="grid grid-cols-3 gap-2 mb-1" id="pl3">
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="1" onclick="placeAns('pl3',this)"><span class="ar">👟 الدَّوس عليها</span><span class="he">דריכות</span></button>
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="1" onclick="placeAns('pl3',this)"><span class="ar">🌑 ظلام طوال اليوم</span><span class="he">חושך כל היום</span></button>
+          <button class="pick-btn p-2 text-sm font-bold" data-ok="0" onclick="placeAns('pl3',this)"><span class="ar">👀 أن المعلّم/ة يراقب</span><span class="he">שהמורה צופה</span></button>
+        </div>
+        <p id="fb-pl3" class="hidden text-sm text-sky-900 font-bold"><span class="ar">الدَّوس والظلام كلاهما يُتلف النباتات. أمّا المعلّم/ة الذي يراقب فيساعد! 😄</span><span class="he">גם דריכות וגם חושך מקלקלים צמחים. מורה שצופה דווקא עוזר 😄</span></p>
+      </div>
+
+      <div id="place-done" class="hidden mt-4 bg-sky-100 rounded-xl p-3 text-center font-bold text-sky-900">
+        <span class="ar">🏆 لديكم خطّة! عندما يصل النظام، ستعرفون أين تضعونه.</span><span class="he">יש לכם תוכנית! כשתגיע המערכת, כבר תדעו איפה לשים אותה.</span>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">⭐</span>
+        <h3 class="font-black text-amber-900 text-xl"><span class="ar">نجم الشمال</span><span class="he">כוכב הצפון</span></h3>
+      </div>
+      <p class="text-sm text-gray-600 mb-2"><span class="ar">في نهاية السنة سيكون معرض. كل مجموعة ستعرض فيه شيئًا بنته.</span><span class="he">בסוף השנה תהיה תערוכה. כל קבוצה תציג שם משהו שבנתה.</span></p>
+      <p class="text-gray-800 font-bold text-lg mb-3"><span class="ar">ماذا تريدون أن تعرضوا في المعرض؟</span><span class="he">מה תרצו להראות בתערוכה בסוף השנה?</span></p>
+      <textarea data-answer-key="l01e_northstar" rows="2" placeholder="في المعرض أريد أن أعرض... · בתערוכה הייתי רוצה להראות..." class="w-full border-2 border-amber-200 rounded-xl p-3 outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+
+    <div class="bg-green-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3"><span class="ar">📚 ماذا تعلّمنا اليوم:</span><span class="he">מה למדנו היום:</span></h3>
+      <ul class="space-y-3 text-sm text-gray-700">
+        <li><span class="ar">🪜 في العالم حوالي 8 مليارات شخص. عدد ضخم!</span><span class="he">בעולם יש בערך 8 מיליארד אנשים. מספר ענק!</span></li>
+        <li><span class="ar">📈 الناس يزدادون، وكلّهم يحتاجون إلى الطعام.</span><span class="he">יש יותר ויותר אנשים, וכולם צריכים לאכול.</span></li>
+        <li><span class="ar">📦 Vertical Field تزرع الخضار في حاوية قرب السوبرماركت، فيصبح الطريق أقصر.</span><span class="he">Vertical Field מגדלים ירקות במכולה ליד הסופר, וכך הדרך מתקצרת.</span></li>
+      </ul>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 في الدرس القادم · בשיעור הבא:</p>
+      <p class="font-black text-lg"><span class="ar">«في الماضي كان كل الطعام يُزرع في حقول عادية. كيف وصلنا إلى حاويات داخل المدينة؟»</span><span class="he">"פעם כל האוכל גדל בשדות רגילים. איך הגענו למכולות בתוך העיר?"</span></p>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 الأوراق في الدرس 1 · עלים בשיעור 1:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">من 50 ورقة · מתוך 50 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4">
+    <a href="../../index.html#lessons-section" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600 text-center"><span class="ar">🏠 إلى صفحة الدروس</span><span class="he">לדף השיעורים</span></a>
+  </div>
+</div>
+
+<p class="text-center text-[11px] text-gray-400 mt-10">نسخة ثنائية اللغة – مرحلة أولى، بانتظار مراجعة معلّم/ة ناطق/ة بالعربية · גרסה דו-לשונית שלב א' – ממתינה לביקורת מורה דובר/ת ערבית</p>
+
+</div><!-- /max-w -->
+
+<script>
+// ── דו-לשוני: עזרים ──
+function bi(ar, he) { return `<span class="ar" lang="ar">${ar}</span><span class="he">${he}</span>`; }
+// הודעת מסקוט: ערבית בשורה הראשונה, עברית בשנייה (#mascot-bubble עם white-space:pre-line)
+function say2(ar, he, emoji) { mascotSay(ar + '\n' + he, emoji); }
+// «מרה/מרات» לפי המספר (3–10 רבים, אחרת יחיד)
+function marra(n) { return (n >= 3 && n <= 10) ? 'مرّات' : 'مرّة'; }
+
+// מחרוזות שנוצרות ב-core.js בעברית בלבד – עוקפים כאן בלי לגעת בקובץ המשותף
+(function patchCore() {
+  GC._updateHeader = function () {
+    const pl = document.getElementById('plabel');
+    if (pl) pl.textContent = `المرحلة ${GC._cur} من ${GC._steps} · שלב ${GC._cur} מתוך ${GC._steps}`;
+    const pb = document.getElementById('pbar');
+    if (pb) pb.style.width = Math.round((GC._cur / GC._steps) * 100) + '%';
+  };
+  const HE_OK = '✅ מצוין! +5 עלים 🌿', HE_NO = '❌ לא בדיוק – תשובה נכונה מסומנת בירוק';
+  const origAns = window.ansQ;
+  window.ansQ = function (el, correct, qid) {
+    origAns(el, correct, qid);
+    const fb = document.getElementById('fb-' + qid);
+    if (!fb) return;
+    // רק אם cascade לא כתב כבר משוב משלו (fbNote)
+    if (fb.textContent === HE_OK) fb.innerHTML = bi('✅ أحسنتم! +5 أوراق 🌿', 'מצוין! +5 עלים');
+    else if (fb.textContent === HE_NO) fb.innerHTML = bi('❌ ليس تمامًا – الجواب الصحيح بالأخضر', 'לא בדיוק – התשובה הנכונה בירוק');
+  };
+  // כפתורי הטutorial («הבנתי», «דלג») – מתורגמים ברגע שהם מופיעים
+  new MutationObserver(() => {
+    const nx = document.getElementById('gc-tut-next');
+    if (nx && !nx.dataset.bi) {
+      nx.dataset.bi = '1';
+      nx.textContent = nx.textContent.indexOf('לבד') !== -1 ? 'فهمت، سأكمل وحدي ← הבנתי, אמשיך לבד' : 'فهمت ← הבנתי';
+    }
+    document.querySelectorAll('body > button').forEach(b => {
+      if (b.textContent === 'דלג ✕') b.textContent = 'تخطٍّ · דלג ✕';
+    });
+  }).observe(document.body, { childList: true, subtree: true });
+})();
+
+// ── STEP 1: سلّم الأعداد ──
+// מספרים לפי elementary/teachers/teacher-01.html (הלמ"ס, אומדן 2026). ארה"ב/סין – מספרים עגולים.
+// ratio = «פי כמה בערך?» – מוצג כ-×N (מובן בשתי השפות).
+const LADDER = [
+  { ar:'أدميت', he:'אדמית', emoji:'🏡', sAr:'500', sHe:'500', rAr:'حوالي 500', rHe:'בערך 500',
+    opts:['50','500','5,000'], correct:1 },
+  { ar:'شلومي', he:'שלומי', emoji:'🏘️', sAr:'8,000', sHe:'8,000', rAr:'حوالي 8,000', rHe:'בערך 8,000',
+    opts:['800','8,000','80,000'], correct:1,
+    ratio:{ opts:[2,16,500], correct:1, n:16, eq:'500 × 16 = 8,000', note:null } },
+  { ar:'نهاريا', he:'נהריה', emoji:'🏙️', sAr:'70 ألف', sHe:'70 אלף', rAr:'حوالي 70,000', rHe:'בערך 70,000',
+    opts:['7,000','70,000','700,000'], correct:1,
+    ratio:{ opts:[9,90,900], correct:0, n:9, eq:'8,000 × 9 = 72,000', note:['قريب من 70,000','קרוב ל-70,000'] } },
+  { ar:'إسرائيل', he:'ישראל', emoji:'🇮🇱', sAr:'10 ملايين', sHe:'10 מיליון', rAr:'حوالي 10 ملايين', rHe:'בערך 10 מיליון',
+    opts:[['مليون','מיליון'],['10 ملايين','10 מיליון'],['100 مليون','100 מיליון']], correct:1,
+    ratio:{ opts:[3,14,140], correct:2, n:140, eq:'70,000 × 140 = 9,800,000', note:['تقريبًا 10 ملايين','כמעט 10 מיליון'] } },
+  { ar:'أمريكا', he:'ארה״ב', emoji:'🗽', sAr:'340 مليون', sHe:'340 מיליון', rAr:'حوالي 340 مليون', rHe:'בערך 340 מיליון',
+    opts:[['35 مليون','35 מיליון'],['340 مليون','340 מיליון'],['3 مليارات','3 מיליארד']], correct:1,
+    ratio:{ opts:[3,34,300], correct:1, n:34, eq:'10 × 34 = 340', note:['بالملايين','במיליונים'] } },
+  { ar:'الصين', he:'סין', emoji:'🏯', sAr:'1.4 مليار', sHe:'1.4 מיליארד', rAr:'حوالي 1.4 مليار', rHe:'בערך 1.4 מיליארד',
+    opts:[['14 مليون','14 מיליון'],['140 مليون','140 מיליון'],['1.4 مليار','1.4 מיליארד']], correct:2,
+    ratio:{ opts:[4,40,400], correct:0, n:4, eq:'340 × 4 = 1,360', note:['بالملايين، تقريبًا 1.4 مليار','במיליונים, כמעט 1.4 מיליארד'] } },
+  { ar:'العالم', he:'העולם', emoji:'🌍', sAr:'8 مليارات', sHe:'8 מיליארד', rAr:'حوالي 8 مليارات', rHe:'בערך 8 מיליארד',
+    opts:[['8 ملايين','8 מיליון'],['800 مليون','800 מיליון'],['8 مليارات','8 מיליארד']], correct:2,
+    ratio:{ opts:[2,6,60], correct:1, n:6, eq:'1.4 × 6 = 8.4', note:['بالمليارات، قريب من 8','במיליארדים, קרוב ל-8'] } },
+];
+const isWorld = l => l.he === 'העולם';
+const whereAr = l => isWorld(l) ? 'العالم كلّه' : l.ar;
+const whereHe = l => isWorld(l) ? 'כל העולם' : l.he;
+const inHe    = l => isWorld(l) ? 'בעולם' : 'ב' + l.he;
+const optHtml = o => Array.isArray(o) ? bi(o[0], o[1]) : o;
+let ladderIdx = 0;
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderStairs() {
+  const wrap = document.getElementById('stairs');
+  wrap.innerHTML = LADDER.map((l, i) => {
+    const revealed = i < ladderIdx || (i === ladderIdx && l._shown);
+    const cls = 'stair border-2 border-green-200 bg-green-50 flex flex-col items-center justify-end p-1 flex-1 max-w-[96px] min-w-0' +
+      (revealed ? ' on' : '') + (i === ladderIdx ? ' now' : '');
+    return `<div class="${cls}" style="height:${84 + i * 20}px">
+      <span class="text-xl md:text-2xl">${l.emoji}</span>
+      <span class="font-black text-[11px] md:text-sm text-green-900 leading-tight text-center">${l.ar}</span>
+      <span class="text-[9px] md:text-[11px] text-green-800 opacity-75 leading-tight">${l.he}</span>
+      <span class="text-[10px] md:text-xs text-gray-700 font-bold text-center leading-tight">${revealed ? l.sAr : '?'}</span>
+      ${revealed ? `<span class="text-[9px] md:text-[10px] text-gray-500 text-center leading-tight">${l.sHe}</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderLadderQuestion() {
+  const l = LADDER[ladderIdx];
+  document.getElementById('ladder-q').innerHTML =
+    bi(`${l.emoji} كم شخصًا يعيش في ${whereAr(l)}؟ خمّنوا!`, `כמה אנשים גרים ב${whereHe(l)}? נחשו!`);
+  document.getElementById('ladder-opts').innerHTML = l.opts.map((o, i) =>
+    `<button class="guess-btn p-3 md:p-4 text-base md:text-xl font-black" onclick="ladderGuess(${i},this)">${optHtml(o)}</button>`).join('');
+  document.getElementById('ladder-fb').classList.add('hidden');
+  document.getElementById('ratio-box').classList.add('hidden');
+  document.getElementById('ratio-fb').classList.add('hidden');
+  document.getElementById('ladder-next').classList.add('hidden');
+  renderStairs();
+}
+
+function ladderGuess(i, el) {
+  const l = LADDER[ladderIdx];
+  if (l._shown) return;
+  l._shown = true;
+  document.querySelectorAll('#ladder-opts .guess-btn').forEach(b => b.disabled = true);
+  el.classList.add('chosen');
+  GC.addLeaves(1, 'K'); // כל ניחוש = השתתפות
+  const ok = i === l.correct;
+  const fb = document.getElementById('ladder-fb');
+  fb.className = 'mt-4 rounded-xl p-4 text-sm font-bold ' + (ok ? 'bg-green-100 text-green-900' : 'bg-amber-50 text-amber-900');
+  fb.innerHTML = bi(
+    (ok ? '🎯 بالضبط! ' : '👀 العدد الحقيقي: ') + `في ${l.ar} يعيش ${l.rAr} شخص.`,
+    (ok ? 'בול! ' : 'המספר האמיתי: ') + `${inHe(l)} גרים ${l.rHe} אנשים.`);
+  renderStairs();
+  if (l.ratio) {
+    const prev = LADDER[ladderIdx - 1];
+    document.getElementById('ratio-q').innerHTML = bi(
+      `كم مرّة أكثر تقريبًا من الدرجة السابقة؟ (من ${prev.ar} إلى ${whereAr(l)})`,
+      `פי כמה בערך מהמדרגה הקודמת? (מ${prev.he} אל ${whereHe(l)})`);
+    document.getElementById('ratio-opts').innerHTML = l.ratio.opts.map((n, k) =>
+      `<button class="pick-btn p-3 text-base md:text-lg font-black" onclick="ratioAns(${k},this)"><span dir="ltr">×${n}</span></button>`).join('');
+    document.getElementById('ratio-box').classList.remove('hidden');
+  } else {
+    afterStair();
+  }
+}
+
+// «פי כמה בערך?» – בלי עלים (חוויה, לא מבחן)
+function ratioAns(k, el) {
+  const l = LADDER[ladderIdx], box = document.getElementById('ratio-box');
+  if (box.dataset.done === String(ladderIdx)) return;
+  box.dataset.done = String(ladderIdx);
+  const btns = box.querySelectorAll('.pick-btn');
+  btns.forEach(b => b.disabled = true);
+  const ok = k === l.ratio.correct;
+  el.classList.add(ok ? 'ok' : 'no');
+  if (!ok) btns[l.ratio.correct].classList.add('ok');
+  const prev = LADDER[ladderIdx - 1], n = l.ratio.n, note = l.ratio.note;
+  const fb = document.getElementById('ratio-fb');
+  fb.className = 'mt-3 rounded-xl p-3 text-sm font-bold ' + (ok ? 'bg-green-50 text-green-800' : 'bg-amber-50 text-amber-900');
+  // המשוואה ב-LTR, אחרת ה-RTL הופך את סדר המספרים
+  fb.innerHTML = bi(
+      (ok ? '✅ صحيح! ' : '👀 تقريبًا. ') + `عدد الناس في ${l.ar} أكبر بـ ${n} ${marra(n)} تقريبًا من ${prev.ar}.`,
+      (ok ? 'נכון! ' : 'כמעט. ') + `${inHe(l)} יש בערך פי ${n} יותר אנשים מאשר ${inHe(prev)}.`) +
+    `<span class="block font-normal mt-1">✔️ <span dir="ltr" class="inline-block font-black">${l.ratio.eq}</span>${note ? ' · ' + note[0] + ' · ' + note[1] : ''}</span>`;
+  afterStair();
+}
+
+function afterStair() {
+  if (ladderIdx < LADDER.length - 1) {
+    document.getElementById('ladder-next').classList.remove('hidden');
+  } else {
+    say2('8 مليارات! كيف نعدّ عددًا كهذا؟ 🤯', '8 מיליארד! איך סופרים כזה מספר?', '🌍');
+    GC.reveal('count-box');
+  }
+}
+
+function ladderNext() { ladderIdx++; renderLadderQuestion(); }
+
+function countAns(id, el) {
+  const box = document.getElementById(id);
+  if (box.dataset.done) return;
+  box.dataset.done = '1';
+  box.querySelectorAll('.pick-btn').forEach(b => b.disabled = true);
+  const ok = el.dataset.ok === '1';
+  el.classList.add(ok ? 'ok' : 'no');
+  if (!ok) box.querySelector('.pick-btn[data-ok="1"]').classList.add('ok');
+  document.getElementById('fb-' + id).classList.remove('hidden');
+  if (id === 'cnt1') GC.reveal('cnt2-wrap');
+  if (id === 'cnt2') { GC.showBtn('btn1'); say2('والآن نرى ذلك في الرسم البياني 📈', 'ועכשיו נראה את זה בגרף', '🌱'); }
+}
+
+function openVideo(boxId, btnId) {
+  const box = document.getElementById(boxId);
+  const f = box.querySelector('iframe');
+  if (f && !f.src) f.src = f.dataset.src;
+  box.classList.remove('hidden');
+  document.getElementById(btnId).classList.add('hidden');
+}
+
+// משוב עם הסבר (דורס את הטקסט הכללי של ansQ; העלים כבר נוספו)
+function fbNote(qid, ok, ar, he) {
+  const fb = document.getElementById('fb-' + qid);
+  if (fb) fb.innerHTML = bi((ok ? '✅ صحيح! ' : '👀 ') + ar, (ok ? 'נכון! ' : '') + he);
+}
+
+// ── STEP 4: שרשרת קצרה ──
+let chainOk = 0;
+function dropChain(e, zone) {
+  GC.handleDrop(e, zone, zone.dataset.correct, (src, z) => {
+    z.innerHTML = src.innerHTML;
+    z.classList.add('flex', 'flex-col', 'items-center', 'justify-center', 'text-center', 'text-xs', 'md:text-sm', 'font-bold');
+    chainOk++;
+    if (chainOk === 4) {
+      GC.addLeaves(5, 'S');
+      document.getElementById('chain-done').classList.remove('hidden');
+      say2('حقل، تغليف ونقل، توزيع، سوبرماركت. رائع! 🚚', 'שדה, אריזה, הפצה, סופר. יופי!', '🌱');
+    }
+  }, () => say2('تقريبًا! فكّروا: ماذا يحدث أولًا؟', 'כמעט! מה קורה קודם?', '🤔'));
+}
+
+// ── STEP 5: דרכון (passport1 דרך GC.savePassport) ──
+let passportSaved = false;
+function savePassport() {
+  if (passportSaved) return;
+  const name    = document.getElementById('p-name').value.trim();
+  const why     = document.getElementById('p-why').value.trim();
+  const curious = document.getElementById('p-curious').value.trim();
+  if (!name && !why && !curious) { say2('اكتبوا شيئًا واحدًا على الأقل 🙂', 'כתבו לפחות דבר אחד', '📔'); return; }
+  if (name)    GC.savePassport('name', name);
+  if (why)     GC.savePassport('why', why);
+  if (curious) GC.savePassport('curious', curious);
+  GC.savePassport('date1', new Date().toLocaleDateString('he-IL'));
+  if (name)    localStorage.setItem('studentName', name);
+  passportSaved = true;
+  document.getElementById('passport-saved').classList.remove('hidden');
+  GC.showBtn('btn5');
+  GC.addLeaves(5, 'S');
+  say2('تمّ حفظ الجواز! 📔', 'הדרכון נשמר!', '🌱');
+}
+
+// ── STEP 6: שני מסלולים ──
+let step6Leaves = false;
+function step6Reward(ar, he) {
+  if (step6Leaves) return;
+  step6Leaves = true;
+  GC.addLeaves(5, 'S');
+  say2(ar, he, '🌱');
+}
+
+function chooseSystem(has, el) {
+  document.querySelectorAll('#sys-choice .pick-btn').forEach(b => b.classList.remove('ok'));
+  el.classList.add('ok');
+  document.getElementById('sys-yes').classList.toggle('hidden', !has);
+  document.getElementById('sys-no').classList.toggle('hidden', has);
+}
+
+const missionsDone = [];
+function checkMission(el, idx) {
+  if (missionsDone.includes(idx)) return;
+  missionsDone.push(idx);
+  el.classList.add('done-card');
+  el.querySelector('.mission-icon').textContent = '✅';
+  if (missionsDone.length === 3) {
+    document.getElementById('mission-done').classList.remove('hidden');
+    step6Reward('وجدتم كل شيء! والآن نجم الشمال ⭐', 'מצאתם הכל! עכשיו כוכב הצפון');
+  }
+}
+
+function placeAns(id, el) {
+  const box = document.getElementById(id);
+  if (box.dataset.done) return;
+  box.dataset.done = '1';
+  box.querySelectorAll('.pick-btn').forEach(b => b.disabled = true);
+  const ok = el.dataset.ok === '1';
+  el.classList.add(ok ? 'ok' : 'no');
+  if (!ok) box.querySelectorAll('.pick-btn[data-ok="1"]').forEach(b => b.classList.add('ok'));
+  document.getElementById('fb-' + id).classList.remove('hidden');
+  if (id === 'pl1') GC.reveal('pl2-wrap');
+  if (id === 'pl2') GC.reveal('pl3-wrap');
+  if (id === 'pl3') {
+    document.getElementById('place-done').classList.remove('hidden');
+    step6Reward('لديكم خطّة! والآن نجم الشمال ⭐', 'יש תוכנית! עכשיו כוכב הצפון');
+  }
+}
+
+// ── INIT ──
+function init() {
+  GC.initLesson({
+    lessonId: 1,
+    steps: 6,
+    mascotMessages: {
+      1: 'مرحبًا! أنا جرجير 🌱 أولًا نخمّن، ثم نكتشف!\nשלום! אני גרגיר. קודם מנחשים, אחר כך מגלים!',
+      2: 'الرسم البياني صورة للأعداد. هيّا نقرأه 📈\nגרף הוא ציור של מספרים. בואו נקרא אותו',
+      3: 'فكرة إسرائيلية: خضار داخل حاوية! 📦\nרעיון ישראלי: ירקות בתוך מכולה!',
+      4: 'من أين تأتي خضار السوبرماركت؟ 🚚\nמאיפה מגיע הירק שבסופר?',
+      5: 'هذا جوازكم. اكتبوا ما تريدون 📔\nהדרכון שלכם. כתבו מה שבא לכם',
+      6: 'اقتربنا من النهاية! هل يوجد نظام في صفكم؟ ⭐\nכמעט סיימנו! יש לכם מערכת בכיתה?'
+    }
+  });
+
+  GC.registerCascades({
+    'g1':     () => GC.reveal('g1b-wrap'),
+    'g1b':    (ok) => { fbNote('g1b', ok, 'حوالي 2.5 مليار، الأقرب إلى 2.', 'בערך 2.5 מיליארד, הכי קרוב ל-2.'); GC.reveal('g2-wrap'); },
+    'g2':     () => { document.getElementById('g2-note').classList.remove('hidden'); GC.reveal('g3-wrap'); },
+    'g3':     () => GC.reveal('g4-wrap'),
+    'g4':     (ok) => {
+      fbNote('g4', ok, 'الناس يزدادون، لكن الأرض الزراعية تبقى تقريبًا كما هي.', 'אנשים יש יותר ויותר, אבל האדמה לחקלאות נשארת בערך אותו דבר.');
+      document.getElementById('g3-after').classList.remove('hidden'); GC.showBtn('btn2');
+      say2('ناس أكثر، والأرض نفسها. نحتاج إلى فكرة! 🍅', 'יותר אנשים, אותה אדמה. צריך רעיון!', '📈');
+    },
+    'vf1':    () => GC.reveal('vf2-wrap'),
+    'vf2':    () => { GC.showBtn('btn3'); say2('21 يومًا! في الحقل يستغرق ذلك وقتًا أطول بكثير', '21 יום! בשדה זה לוקח הרבה יותר', '📦'); },
+    'short1': () => { GC.reveal('tech-wrap'); GC.showBtn('btn4'); say2('بالضبط! نزرع قرب الرفّ، والطريق قصير 🛒', 'בדיוק! מגדלים ליד המדף, והדרך קצרה', '📦'); },
+  });
+
+  renderLadderQuestion();
+
+  const bank = document.getElementById('chain-bank');
+  shuffle(Array.from(bank.children)).forEach(el => bank.appendChild(el));
+  GC.initTouch('.drag-item', '.drop-zone', dropChain);
+
+  GC.bindOpenAnswers();
+
+  maybeStartTutorial();
+}
+
+// ── TUTORIAL (אותו id כמו בגרסה העברית – אותו פיצ'ר, לא רץ פעמיים לאותו תלמיד) ──
+function maybeStartTutorial() {
+  if (localStorage.getItem('gc_tutorial_l01e')) return;
+  function ready() {
+    if (document.getElementById('gc-id-modal')) { setTimeout(ready, 300); return; }
+    GC.Tutorial.start('l01e', [
+      { target: null, emoji: '🌱', wait: 'next',
+        text: 'مرحبًا! أنا جرجير. سأساعدكم في الدرس.\nשלום! אני גרגיר. אני אעזור לכם בשיעור.' },
+      { target: '#lc', emoji: '🌿', wait: 'next',
+        text: 'هنا نعدّ الأوراق. كل تخمين وكل جواب جيّد يضيف أوراقًا.\nכאן סופרים עלים. כל ניחוש ותשובה טובה מוסיפים עלים.' },
+      { target: '#ladder-opts .guess-btn', emoji: '🪜', wait: 'click',
+        text: 'الدرجة الأولى: كم شخصًا يعيش في أدميت؟ اضغطوا على تخمين.\nהמדרגה הראשונה: כמה אנשים גרים באדמית? לחצו על ניחוש.' },
+    ]);
+  }
+  if (document.readyState === 'complete') ready();
+  else window.addEventListener('load', ready);
+}
+
+init();
+</script>
+</body>
+</html>

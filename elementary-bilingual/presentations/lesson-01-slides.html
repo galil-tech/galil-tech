@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<!--
+  גרסת שלב א' דו-לשונית (ערבית + עברית) – ממתינה לביקורת מורה דובר/ת ערבית.
+  מצגת בסיס לשיעור 1 ביסודי (אין מצגת יסודי בעברית – נבנתה לפי teacher-01 + lesson-01).
+  משתמשת במנוע המשותף presentations/assets/slides-core.*  (חיצים/רווח = הבא, לחיצה = חשיפה).
+-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرس 1 – شرائح | שיעור 1 – מצגת | יסודי דו-לשוני</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Noto+Sans+Arabic:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../presentations/assets/slides-core.css">
+<style>
+  * { font-family:'Heebo','Noto Sans Arabic',sans-serif; }
+  .ar { display:block; font-family:'Noto Sans Arabic','Heebo',sans-serif; }
+  .he { display:block; font-size:.62em; font-weight:500; opacity:.75; margin-top:.2em; }
+  .stairs { display:flex; align-items:flex-end; gap:1.2%; height:62%; }
+  .stairs .card { flex:1; padding:3% 1%; display:flex; flex-direction:column; justify-content:flex-end; border-radius:14px 14px 0 0; }
+  .stairs .num { font-weight:900; color:#166534; font-size:clamp(.7rem,1.3vw,1.2rem); }
+</style>
+</head>
+<body>
+
+<div id="deck-title">الدرس 1 – نزرع طعامًا للجميع · שיעור 1 – לגדל אוכל לכולם</div>
+<div id="backdrop">
+
+  <!-- 1 – כותרת -->
+  <section class="slide active" data-name="1" style="background:linear-gradient(160deg,#f0fdf4 0%, #ecfccb 100%);">
+    <div class="topbar transparent">
+      <span class="eyebrow">الدرس 1 · שיעור 1 · גדלים למחר</span>
+      <span class="phase-chip">🌱 المرحلة 1 – الإنبات · נביטה</span>
+    </div>
+    <div class="stage-center">
+      <div>
+        <p style="font-size:clamp(2rem,5vw,4.5rem);">🌍</p>
+        <p class="h1" style="font-size:clamp(1.8rem,4vw,3.6rem);"><span class="ar">نزرع طعامًا للجميع</span><span class="he">לגדל אוכל לכולם</span></p>
+        <p class="body" style="margin-top:2%;"><span class="ar">أعداد كبيرة · رسم بياني · حاوية تزرع الخضار</span><span class="he">מספרים גדולים · גרף · מכולה שמגדלת ירקות</span></p>
+      </div>
+    </div>
+    <div class="mascot">🌱</div>
+  </section>
+
+  <!-- 2 – מדרגות המספרים: לחיצה חושפת כל מספר (קודם ניחוש בקול) -->
+  <section class="slide" data-name="2" data-steps="7">
+    <div class="topbar">
+      <span class="eyebrow">الدرس 1 · שיעור 1</span>
+      <span class="phase-chip">🪜 سلّم الأعداد · מדרגות המספרים</span>
+    </div>
+    <div class="stage-col">
+      <p class="h2" style="color:#14532d; margin-bottom:3%;"><span class="ar">كم شخصًا يعيش هنا؟ خمّنوا أولًا!</span><span class="he">כמה אנשים גרים כאן? קודם מנחשים!</span></p>
+      <div class="stairs">
+        <div class="card card-green" style="height:30%;"><p class="label label-green"><span class="ar">🏡 أدميت</span><span class="he">אדמית</span></p><p class="num rv" data-step="1">500</p></div>
+        <div class="card card-green" style="height:40%;"><p class="label label-green"><span class="ar">🏘️ شلومي</span><span class="he">שלומי</span></p><p class="num rv" data-step="2">8,000</p></div>
+        <div class="card card-green" style="height:50%;"><p class="label label-green"><span class="ar">🏙️ نهاريا</span><span class="he">נהריה</span></p><p class="num rv" data-step="3"><span class="ar">70 ألف</span><span class="he">70 אלף</span></p></div>
+        <div class="card card-lime" style="height:60%;"><p class="label label-lime"><span class="ar">🇮🇱 إسرائيل</span><span class="he">ישראל</span></p><p class="num rv" data-step="4"><span class="ar">10 ملايين</span><span class="he">10 מיליון</span></p></div>
+        <div class="card card-lime" style="height:72%;"><p class="label label-lime"><span class="ar">🗽 أمريكا</span><span class="he">ארה״ב</span></p><p class="num rv" data-step="5"><span class="ar">340 مليون</span><span class="he">340 מיליון</span></p></div>
+        <div class="card card-amber" style="height:85%;"><p class="label label-amber"><span class="ar">🏯 الصين</span><span class="he">סין</span></p><p class="num rv" data-step="6"><span class="ar">1.4 مليار</span><span class="he">1.4 מיליארד</span></p></div>
+        <div class="card card-gold pulse-at" data-step="7" style="height:100%;"><p class="label label-gold"><span class="ar">🌍 العالم</span><span class="he">העולם</span></p><p class="num rv" data-step="7"><span class="ar">8 مليارات</span><span class="he">8 מיליארד</span></p></div>
+      </div>
+      <p class="small" style="margin-top:1.5%;"><span class="ar">«كم مرّة أكثر من الدرجة السابقة؟» · الدرجات ليست بحجمها الحقيقي</span><span class="he">"פי כמה יותר מהקודמת?" · המדרגות לא בקנה מידה</span></p>
+    </div>
+    <div class="mascot">🌱</div>
+  </section>
+
+  <!-- 3 – כמה זה מיליארד -->
+  <section class="slide" data-name="3" data-steps="2">
+    <div class="topbar">
+      <span class="eyebrow">الدرس 1 · שיעור 1</span>
+      <span class="phase-chip">🔢 كم هو المليار؟ · כמה זה מיליארד?</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:4%;"><span class="ar">نعدّ رقمًا كل ثانية، بلا توقّف...</span><span class="he">סופרים מספר בכל שנייה, בלי לעצור...</span></p>
+      <div style="display:flex; gap:4%;">
+        <div class="card card-purple" style="flex:1;">
+          <p class="h2 label-purple"><span class="ar">حتى مليون؟</span><span class="he">עד מיליון?</span></p>
+          <p class="h1 rv" data-step="1" style="margin-top:4%;"><span class="ar">حوالي 11 يومًا</span><span class="he">בערך 11 ימים</span></p>
+        </div>
+        <div class="card card-purple pulse-at" data-step="2" style="flex:1;">
+          <p class="h2 label-purple"><span class="ar">حتى مليار؟</span><span class="he">עד מיליארד?</span></p>
+          <p class="h1 rv" data-step="2" style="margin-top:4%;"><span class="ar">حوالي 31 سنة!</span><span class="he">בערך 31 שנה!</span></p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🤯</div>
+  </section>
+
+  <!-- 4 – שאלת הבעיה -->
+  <section class="slide" data-name="4" style="background:linear-gradient(160deg,#f0fdf4 0%, #ecfccb 100%);">
+    <div class="topbar transparent">
+      <span class="eyebrow">الدرس 1 · שיעור 1</span>
+      <span class="phase-chip">💬 نقاش · דיון</span>
+    </div>
+    <div class="stage-center">
+      <div>
+        <p class="h1"><span class="ar">الناس يزدادون، لكن الأرض الزراعية لا تكبر —<br>فكيف نُطعم الجميع؟</span><span class="he">יש יותר אנשים, אבל האדמה לחקלאות לא גדלה —<br>אז איך נאכיל את כולם?</span></p>
+      </div>
+    </div>
+    <div class="mascot">🤔</div>
+  </section>
+
+  <!-- 5 – המסע של השנה -->
+  <section class="slide" data-name="5" data-steps="5">
+    <div class="topbar">
+      <span class="eyebrow">الدرس 1 · שיעור 1</span>
+      <span class="phase-chip">🗺️ مسارنا · המסע שלנו</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:4%;"><span class="ar">هذا مسارنا هذه السنة</span><span class="he">זה המסע שלנו השנה</span></p>
+      <div style="display:flex; align-items:center; gap:1.2%;">
+        <div class="rv card card-green" data-step="1" style="flex:1;"><p class="label label-green"><span class="ar">🌱 الإنبات</span><span class="he">נביטה</span></p></div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-lime" data-step="2" style="flex:1;"><p class="label label-lime"><span class="ar">🌿 النموّ</span><span class="he">צמיחה</span></p></div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card" data-step="3" style="flex:1; background:#fdf2f8; border:2px solid #fbcfe8;"><p class="label" style="color:#be185d;"><span class="ar">🌸 الإزهار</span><span class="he">פריחה</span></p></div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card" data-step="4" style="flex:1; background:#fef2f2; border:2px solid #fecaca;"><p class="label" style="color:#b91c1c;"><span class="ar">🍎 الثمار</span><span class="he">פירות</span></p></div>
+        <span class="seq-arrow">←</span>
+        <div class="rv card card-gold" data-step="5" style="flex:1;"><p class="label label-gold"><span class="ar">🏆 المعرض</span><span class="he">תערוכה</span></p></div>
+      </div>
+      <p class="body" style="margin-top:4%; text-align:center;"><span class="ar">⭐ نجم الشمال: ماذا تريدون أن تعرضوا في المعرض؟</span><span class="he">כוכב הצפון: מה תרצו להראות בתערוכה?</span></p>
+    </div>
+    <div class="mascot">🌱</div>
+  </section>
+
+  <!-- 6 – Vertical Field -->
+  <section class="slide" data-name="6" data-steps="3">
+    <div class="topbar">
+      <span class="eyebrow">الدرس 1 · שיעור 1</span>
+      <span class="phase-chip">🇮🇱 فكرة إسرائيلية · רעיון ישראלי</span>
+    </div>
+    <div class="stage-col">
+      <p class="h1"><span class="ar">Vertical Field: خضار داخل حاوية</span><span class="he">Vertical Field: ירקות בתוך מכולה</span></p>
+      <p class="body" style="margin:2% 0 4%;"><span class="ar">صندوق معدني ضخم، داخل المدينة، قريب من السوبرماركت</span><span class="he">קופסת מתכת ענקית, בתוך העיר, קרוב לסופר</span></p>
+      <div style="display:flex; gap:3%;">
+        <div class="rv card card-green" data-step="1" style="flex:1;"><p style="font-size:2.2rem;">📦</p><p class="h2 label-green"><span class="ar">حاوية</span><span class="he">מכולה</span></p></div>
+        <div class="rv card card-amber" data-step="2" style="flex:1;"><p style="font-size:2.2rem;">🟫💡</p><p class="h2 label-amber"><span class="ar">تربة + مصابيح</span><span class="he">אדמה + מנורות</span></p></div>
+        <div class="rv card card-lime" data-step="3" style="flex:1;"><p class="h1 label-lime">21</p><p class="h2 label-lime"><span class="ar">يومًا حتى تنضج</span><span class="he">ימים עד שהירק מוכן</span></p></div>
+      </div>
+    </div>
+    <div class="mascot">📦</div>
+  </section>
+
+  <!-- 7 – החווה שלנו + Teaser -->
+  <section class="slide" data-name="7" data-steps="1" style="background:linear-gradient(160deg,#f0fdf4 0%, #ecfccb 100%);">
+    <div class="topbar transparent">
+      <span class="eyebrow">الدرس 1 · שיעור 1</span>
+      <span class="phase-chip">🏁 الختام · סיום</span>
+    </div>
+    <div class="stage-center">
+      <div>
+        <p class="h1"><span class="ar">هذه ستكون مزرعتنا طوال السنة 🌿</span><span class="he">זו תהיה החווה שלנו כל השנה</span></p>
+        <div class="rv cue-card" data-step="1" style="margin-top:5%;">
+          <p class="small" style="color:#4d7c0f;">🔮 في الدرس القادم · בשיעור הבא</p>
+          <p class="h2" style="color:#14532d; margin-top:2%;"><span class="ar">«في الماضي كان كل الطعام يُزرع في حقول عادية.<br>كيف وصلنا إلى حاويات داخل المدينة؟»</span><span class="he">"פעם כל האוכל גדל בשדות רגילים. איך הגענו למכולות בתוך העיר?"</span></p>
+        </div>
+      </div>
+    </div>
+    <div class="mascot">🌱</div>
+  </section>
+
+</div>
+
+<div id="controls">
+  <button class="navbtn" onclick="slidesGo(-1)" aria-label="السابق · הקודם">→</button>
+  <span id="counter">1 / 7</span>
+  <div id="dots"></div>
+  <button class="navbtn" onclick="slidesGo(1)" aria-label="التالي · הבא">←</button>
+  <button class="navbtn" id="fsbtn" title="ملء الشاشة · מסך מלא">⛶</button>
+</div>
+
+<script src="../../presentations/assets/slides-core.js"></script>
+</body>
+</html>

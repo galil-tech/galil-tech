@@ -925,7 +925,7 @@ function mascotSay(msg, emoji) { GC.mascotSay(msg, emoji); }
     // השיעור הבא כבר נפתח (ראה check למטה). מקסימום העלים = גיימיפיקציה בלבד, לא חסם.
     // elementary/lessons/ יושב שתי רמות מתחת לשורש (lessons/ - רמה אחת).
     // השיעור הבא נפתח רק ע"י המדריך/ה (לוח המורה), לא בסיום השיעור.
-    const isElementary = location.pathname.indexOf('/elementary/') !== -1;
+    const isElementary = /\/elementary(-bilingual)?\//.test(location.pathname); // כולל המסלול הדו-לשוני
     const homeLink = '<a href="' + (isElementary ? '../../' : '../') + 'index.html#lessons-section" style="color:#d9f99d;font-weight:900;">לדף השיעורים ←</a>';
     const nextLine = lessonNum < 17
       ? '🔒 המורה יפתח את השיעור הבא. ' + homeLink

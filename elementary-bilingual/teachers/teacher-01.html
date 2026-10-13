@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<!--
+  גרסת שלב א' דו-לשונית (ערבית + עברית) – ממתינה לביקורת מורה דובר/ת ערבית.
+  מבוסס על elementary/teachers/teacher-01.html, מקוצר. תיאור הלומדה עודכן לפי
+  elementary/lessons/lesson-01.html (7 מדרגות, שאלות «פי כמה», שני מסלולים בשלב 6).
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دليل المعلّم – الدرس 1 | מערך שיעור 1 | יסודי דו-לשוני</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Noto+Sans+Arabic:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { font-family:'Heebo','Noto Sans Arabic',sans-serif; }
+    .ar { display:block; font-family:'Noto Sans Arabic','Heebo',sans-serif; line-height:1.6; }
+    .he { display:block; font-size:.85em; font-weight:500; opacity:.8; }
+    .say { background:#f0fdf4; border-right:4px solid #16a34a; border-radius:8px; padding:8px 12px; margin-top:6px; }
+    .say .ar { font-weight:700; color:#14532d; }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- TOP BAR -->
+<div class="bg-green-800 text-white py-5 px-8 flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-lg gap-3">
+  <div>
+    <span class="text-xs text-green-300">دليل المعلّم · ابتدائي · ثنائي اللغة · מערך שיעור · יסודי דו-לשוני</span>
+    <h1 class="text-2xl font-black"><span class="ar">الدرس 1 – التحدّي الكبير: طعام للجميع</span><span class="he">שיעור 1 – האתגר הגדול: לגדל אוכל לכולם</span></h1>
+  </div>
+  <div class="flex gap-3 flex-wrap">
+    <span class="bg-white/20 px-4 py-2 rounded-xl text-sm">⏱ 90 دقيقة · דקות</span>
+    <span class="bg-green-400 text-green-900 px-4 py-2 rounded-xl text-sm font-bold">المرحلة 1 – الإنبات · פאזה 1</span>
+    <a href="../lessons/lesson-01.html" class="bg-lime-400 text-green-900 px-4 py-2 rounded-xl text-sm font-bold hover:bg-lime-300">📱 درس الطالب · לומדה ↗</a>
+    <a href="../presentations/lesson-01-slides.html" class="bg-white/20 text-white px-4 py-2 rounded-xl text-sm">📽️ الشرائح · מצגת ↗</a>
+    <a href="../../elementary/teachers/teacher-01.html" class="bg-white/20 text-white px-4 py-2 rounded-xl text-sm">📄 המערך המלא בעברית</a>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-6 py-10 space-y-10">
+
+  <!-- הערת שימוש -->
+  <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 text-sm text-gray-800">
+    <p class="font-black text-amber-900 mb-2">🌍 על הגרסה הזו · عن هذه النسخة</p>
+    <span class="ar mb-2">هذه النسخة مخصّصة للاستعمال بالتوازي مع النسخة العبرية، وللصفوف المختلطة (طلاب يتكلّمون العربية والعبرية). المحتوى والمبنى نفسهما، والنص مختصر قليلًا.</span>
+    <span class="he mb-2">הגרסה מיועדת לשימוש במקביל לגרסה העברית ובכיתות מעורבות (דוברי ערבית ועברית). אותו תוכן ומבנה, מקוצר מעט. המשפטים במסגרת ירוקה (🗣️) הם מה שאומרים לכיתה – בשתי השפות.</span>
+    <p class="text-xs text-amber-800">⚠️ גרסת שלב א' – התרגום לערבית ממתין לביקורת מורה דובר/ת ערבית. · نسخة أولى – بانتظار مراجعة معلّم/ة ناطق/ة بالعربية.</p>
+    <p class="text-xs text-gray-600 mt-2">💾 הלומדה הדו-לשונית שומרת לאותו מקום כמו העברית (אותם עלים, אותו דרכון) – תלמיד יכול לעבור בין הגרסאות בלי לאבד התקדמות.</p>
+  </div>
+
+  <!-- GOALS -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-green-700 text-white p-6">
+      <h2 class="text-2xl font-black"><span class="ar">🎯 أهداف الدرس</span><span class="he">מטרות השיעור</span></h2>
+      <p class="text-green-200 text-sm">في نهاية الدرس الطالب... · בסוף השיעור התלמיד...</p>
+    </div>
+    <div class="p-6 grid md:grid-cols-2 gap-6 text-sm text-gray-700">
+      <div>
+        <h3 class="font-bold text-gray-800 mb-3">معرفة ومفاهيم · ידע ומושגים</h3>
+        <ul class="space-y-3">
+          <li>✅ <span class="ar">يعرف إلى أين نسير هذه السنة: معرض النماذج في النهاية.</span><span class="he">מבין לאן הולכים: תערוכת האבטיפוסים בסוף.</span></li>
+          <li>✅ <span class="ar">يشرح بكلماته أن عدد الناس في العالم يزداد، ولذلك نحتاج إلى طعام أكثر.</span><span class="he">מסביר במילים שלו שיש יותר אנשים, ולכן צריך יותר אוכל.</span></li>
+          <li>✅ <span class="ar">يشعر بحجم الأعداد الكبيرة: من بلدة قريبة حتى العالم كله.</span><span class="he">מקבל תחושת סדר גודל: מיישוב קרוב ועד כל העולם.</span></li>
+          <li>✅ <span class="ar">يعرف «طريق الطعام»: كل المحطات من الحقل إلى السوبرماركت.</span><span class="he">מכיר את "שרשרת האספקה": התחנות מהשדה לסופר.</span></li>
+          <li>✅ <span class="ar">يعرف شركة Vertical Field الإسرائيلية التي تزرع الخضار داخل حاويات في المدينة.</span><span class="he">מכיר את Vertical Field – ירקות במכולות בתוך העיר.</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-800 mb-3">مهارات · מיומנויות</h3>
+        <ul class="space-y-3">
+          <li>🔧 <span class="ar">يشير إلى أجزاء نظام الماء في الصف: الخزّان، المضخّة، مكان الشتلات.</span><span class="he">מצביע על חלקי המערכת: מאגר, משאבה, מקום לשתילים.</span></li>
+          <li>🔧 <span class="ar">يفتح «الجواز الزراعي» ويكتب فيه جملة أولى (بالعربية أو بالعبرية).</span><span class="he">פותח "דרכון חקלאי" וכותב משפט ראשון (בערבית או בעברית).</span></li>
+        </ul>
+        <h3 class="font-bold text-gray-800 mb-3 mt-5">تفكير · חשיבה</h3>
+        <ul class="space-y-3">
+          <li>💭 <span class="ar">يقارن بين الزراعة في الحقل والزراعة في حاوية داخل المدينة.</span><span class="he">משווה שדה מול מכולה בעיר.</span></li>
+          <li>💭 <span class="ar">يلاحظ أن كل درجة في السلّم هي قفزة «أضعاف»، وليست «قليلًا أكثر».</span><span class="he">מזהה שכל מדרגה היא קפיצה של "פי כמה", לא "עוד קצת".</span></li>
+        </ul>
+        <h3 class="font-bold text-gray-800 mb-3 mt-5">تلعيب · גיימיפיקציה</h3>
+        <ul class="space-y-2">
+          <li>🌿 <span class="ar">كل طالب يبدأ بمستوى «🌱 بذرة».</span><span class="he">כל תלמיד מתחיל ברמת "🌱 זרע".</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOSSARY -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-sky-700 text-white p-6">
+      <h2 class="text-2xl font-black"><span class="ar">📖 كلمات الدرس</span><span class="he">מילון מונחים לשיעור</span></h2>
+    </div>
+    <div class="p-6 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm text-center">
+      <div class="bg-sky-50 rounded-xl p-3"><span class="ar font-bold">زراعة</span><span class="he">חקלאות</span></div>
+      <div class="bg-sky-50 rounded-xl p-3"><span class="ar font-bold">طعام</span><span class="he">אוכל</span></div>
+      <div class="bg-sky-50 rounded-xl p-3"><span class="ar font-bold">مليون / مليار</span><span class="he">מיליון / מיליארד</span></div>
+      <div class="bg-sky-50 rounded-xl p-3"><span class="ar font-bold">رسم بياني</span><span class="he">גרף</span></div>
+      <div class="bg-sky-50 rounded-xl p-3"><span class="ar font-bold">حاوية</span><span class="he">מכולה</span></div>
+      <div class="bg-sky-50 rounded-xl p-3"><span class="ar font-bold">طريق الطعام (سلسلة التزويد)</span><span class="he">שרשרת אספקה</span></div>
+      <div class="bg-sky-50 rounded-xl p-3"><span class="ar font-bold">خزّان ماء · مضخّة · شتلة</span><span class="he">מאגר · משאבה · שתיל</span></div>
+      <div class="bg-sky-50 rounded-xl p-3"><span class="ar font-bold">الجواز الزراعي · نجم الشمال</span><span class="he">דרכון חקלאי · כוכב הצפון</span></div>
+    </div>
+  </div>
+
+  <!-- PREP -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-teal-700 text-white p-6">
+      <h2 class="text-2xl font-black"><span class="ar">🧰 تحضير قبل الدرس</span><span class="he">הכנה לפני השיעור</span></h2>
+    </div>
+    <div class="p-6 grid md:grid-cols-3 gap-6 text-sm text-gray-700">
+      <div>
+        <h3 class="font-bold mb-3">📽️ شرائح · מצגת</h3>
+        <ul class="space-y-2">
+          <li>📋 <span class="ar">شرائح الدرس الثنائية اللغة (سلّم الأعداد، مسار السنة، الحاوية).</span><span class="he">המצגת הדו-לשונית (מדרגות, ציר התוכנית, מכולה).</span></li>
+          <li>📋 <span class="ar">فيديو قصير عن Vertical Field + جهاز عرض وسمّاعات.</span><span class="he">סרטון Vertical Field + מקרן ורמקולים.</span></li>
+        </ul>
+        <div class="bg-slate-50 rounded-lg p-3 mt-3 text-xs text-gray-500">
+          <b>מקור המספרים:</b> אדמית ~500, שלומי ~8,000, נהריה ~70,000, ישראל ~10 מיליון (הלמ"ס, 2026), ארה"ב ~340 מיליון, סין ~1.4 מיליארד, עולם ~8 מיליארד. לבדוק מול cbs.gov.il לפני כל שנה.
+        </div>
+      </div>
+      <div>
+        <h3 class="font-bold mb-3">🌱 نظام الصف · מערכת הכיתה</h3>
+        <ul class="space-y-2">
+          <li>📋 <span class="ar">النظام مركّب ويبدو «حيًّا» (حتى بدون شتلات).</span><span class="he">המערכת מורכבת ונראית "חיה" (גם בלי שתילים).</span></li>
+          <li>📋 <span class="ar">حاسوب لكل زوج من الطلاب.</span><span class="he">מחשב לכל זוג.</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold mb-3">👥 مجموعات · קבוצות</h3>
+        <ul class="space-y-2">
+          <li>📋 <span class="ar">مجموعات ثابتة من 3–4 طلاب لكل السنة.</span><span class="he">קבוצות קבועות של 3–4 לכל השנה.</span></li>
+          <li>📋 <span class="ar">في صف مختلط: في كل مجموعة يُفضَّل طالب يتكلّم اللغتين (إن أمكن).</span><span class="he">בכיתה מעורבת: רצוי בכל קבוצה תלמיד/ה שמדבר/ת את שתי השפות (אם אפשר).</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-green-700 text-white p-6">
+      <h2 class="text-2xl font-black"><span class="ar">⏱ جدول زمني – 90 دقيقة</span><span class="he">לוח זמנים – 90 דקות</span></h2>
+    </div>
+    <div class="divide-y divide-gray-100">
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-green-100 text-green-800 font-black text-lg rounded-xl py-2">0–15</div></div>
+        <div class="flex-1 text-sm text-gray-700">
+          <h3 class="text-xl font-black mb-2"><span class="ar">🎤 افتتاح – سلّم الأعداد</span><span class="he">פתיחה – מדרגות המספרים</span><span class="text-xs font-normal text-gray-500">كل الصف · כל הכיתה</span></h3>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-3">
+            <p class="font-bold text-amber-900 mb-1">א. מדרגות המספרים (8 דק')</p>
+            <span class="he">בכל מדרגה: מנחשים בקול, ואז חושפים את המספר. מהקרוב לרחוק: אדמית ← שלומי ← נהריה ← ישראל ← העולם.</span>
+            <div class="say"><span class="ar">🗣️ «كم شخصًا يعيش في شلومي؟ خمّنوا!» … «كم مرّة أكثر من الدرجة السابقة؟»</span><span class="he">"כמה אנשים גרים בשלומי? נחשו!" … "פי כמה יותר מהמדרגה הקודמת?"</span></div>
+            <p class="text-xs text-gray-500 mt-2">המטרה היא תחושת "קפיצה ענקית", לא חישוב מדויק.</p>
+          </div>
+          <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-3">
+            <p class="font-bold text-purple-900 mb-1">ב. כמה זה מיליארד? (3 דק')</p>
+            <div class="say"><span class="ar">🗣️ «لو عددنا رقمًا كل ثانية بلا توقّف، كم نحتاج لنصل إلى مليون؟» (حوالي 11 يومًا) «وإلى مليار؟» (حوالي 31 سنة!)</span><span class="he">"אם נספור מספר בכל שנייה בלי לעצור – כמה זמן עד מיליון?" (~11 יום) "ועד מיליארד?" (~31 שנה!)</span></div>
+          </div>
+          <ul class="space-y-2">
+            <li>• <b>שקף:</b> <span class="say inline-block"><span class="ar">«الأرض في العالم لا تكبر – فكيف نُطعم ناسًا أكثر؟»</span><span class="he">"האדמה בעולם לא גדלה – אז איך נאכיל עוד אנשים?"</span></span></li>
+            <li>• <b>מבנה התוכנית:</b> 4 פאזות (إنبات، نموّ، إزهار، ثمار · נביטה, צמיחה, פריחה, פירות) ← תערוכה בסוף.</li>
+            <li>• <b>הצגת המערכת:</b> <span class="say inline-block"><span class="ar">«هذه ستكون مزرعتنا طوال السنة.»</span><span class="he">"זו תהיה החווה שלנו כל השנה."</span></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-blue-100 text-blue-800 font-black text-lg rounded-xl py-2">15–30</div></div>
+        <div class="flex-1 text-sm text-gray-700">
+          <h3 class="text-xl font-black mb-2"><span class="ar">💬 نقاش حول مشكلة</span><span class="he">דיון מבוסס בעיה</span><span class="text-xs font-normal text-gray-500">مجموعات من 4 · קבוצות של 4</span></h3>
+          <div class="space-y-3">
+            <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+              <p class="font-bold text-green-900">א. מה צריך כדי לגדל אוכל? (4 דק')</p>
+              <div class="say"><span class="ar">🗣️ «لو أردتم أن تزرعوا بطاطا، ماذا تحتاجون؟»</span><span class="he">"אם הייתם צריכים לגדל תפוח אדמה, מה הייתם צריכים?"</span></div>
+              <p class="text-xs text-gray-500 mt-1">← אדמה, מים, שמש, זמן, מישהו שיודע איך. לרשום על הלוח (אפשר בציורים – עוזר לשתי השפות).</p>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <p class="font-bold text-blue-900">ב. מה יש פחות ופחות? (4 דק')</p>
+              <div class="say"><span class="ar">🗣️ «الأرض الفارغة والماء النظيف يقلّان، لكننا نحتاج طعامًا أكثر. ماذا نفعل؟»</span><span class="he">"יש פחות אדמה פנויה ומים נקיים, אבל צריך יותר אוכל. מה עושים?"</span></div>
+            </div>
+            <div class="bg-amber-50 border border-amber-300 rounded-xl p-4">
+              <p class="font-bold text-amber-900">ג. שאלת הדיון המרכזית (7 דק')</p>
+              <div class="say"><span class="ar text-base">🗣️ «كيف نتأكّد أن هناك طعامًا كافيًا للجميع، حتى عندما تقلّ الأرض والماء؟»</span><span class="he">"איך נדאג שיהיה מספיק אוכל לכולם, גם כשיש פחות אדמה ומים?"</span></div>
+              <p class="text-xs text-gray-500 mt-2">רעיון אחד מכל קבוצה, בשפה שנוחה לה. צפוי: "לגדל בעיר", "מכשירים חכמים", "לא לבזבז".</p>
+              <div class="mt-3 bg-white rounded-lg p-3">
+                <p class="font-bold text-amber-800 mb-1">🔗 جسر للدرس · גשר לשיעור:</p>
+                <span class="ar">«اليوم سنتعرّف على شركة إسرائيلية تزرع الخضار... داخل حاويات، في قلب المدينة!»</span>
+                <span class="he">"היום נכיר חברה ישראלית שמגדלת ירקות... בתוך מכולות, בתוך העיר!"</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-purple-100 text-purple-800 font-black text-lg rounded-xl py-2">30–55</div></div>
+        <div class="flex-1 text-sm text-gray-700">
+          <h3 class="text-xl font-black mb-2"><span class="ar">📖 درس الحاسوب – عمل في أزواج</span><span class="he">לומדה – עבודה בזוגות</span><span class="text-xs font-normal text-gray-500">حاسوب لكل زوج · מחשב לכל זוג</span></h3>
+          <div class="bg-slate-50 rounded-xl p-4">
+            <p class="mb-2">📌 <b>מה יש בלומדה הדו-לשונית (<a href="../lessons/lesson-01.html" class="text-green-700 underline font-bold">lesson-01.html</a>, 6 שלבים):</b></p>
+            <ol class="space-y-1 list-decimal list-inside mr-4">
+              <li><b>سلّم الأعداد · מדרגות המספרים:</b> 7 מדרגות (אדמית ← שלומי ← נהריה ← ישראל ← ארה"ב ← סין ← העולם), ניחוש ואז שאלת «פי כמה בערך?» (מוצגת כ-×16 וכו'). בסוף: כמה זמן לספור למיליון ולמיליארד.</li>
+              <li><b>رسم بياني · גרף:</b> קריאה בלבד – אוכלוסיית העולם 1950 ← היום ← תחזית 2050, ו-5 שאלות. הגרף נשאר משמאל לימין; תוויות בשתי השפות.</li>
+              <li><b>Vertical Field:</b> טקסט קצר + סרטון (נפתח רק כשהמורה אומר/ת) + 2 שאלות.</li>
+              <li><b>طريق الخضار · שרשרת:</b> גרירת 4 תחנות (שדה ← אריזה והסעה ← הפצה ← סופר), "איפה Vertical Field מקצרים?", ושאלה פתוחה על מכונה.</li>
+              <li><b>الجواز · דרכון:</b> שם / למה אני פה / מה מעניין אותי – כותבים בערבית או בעברית.</li>
+              <li><b>مكاننا + نجم الشمال · המקום שלנו + כוכב הצפון:</b> יש מערכת ← סיור (מאגר, משאבה, שתילים); אין עדיין ← 3 שאלות על מיקום. ואז: "מה תרצו להראות בתערוכה?"</li>
+            </ol>
+            <p class="mt-2 text-xs text-gray-500">💡 בזוג מעורב: אחד/ת קורא/ת את השורה הערבית, השני/ה את העברית – ומחליטים יחד.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-lime-100 text-lime-800 font-black text-lg rounded-xl py-2">55–85</div></div>
+        <div class="flex-1 text-sm text-gray-700">
+          <h3 class="text-xl font-black mb-2"><span class="ar">🌿 مشروع – التعرّف على نظام الماء</span><span class="he">פרויקט – הצגת מערכת ההידרופוניקה</span><span class="text-xs font-normal text-gray-500">مجموعات · קבוצות</span></h3>
+          <div class="bg-lime-50 border border-lime-200 rounded-xl p-5 mb-4">
+            <p class="font-bold text-lime-900 mb-3">📋 مهام المجموعة · משימות הקבוצה:</p>
+            <div class="grid md:grid-cols-2 gap-2">
+              <div class="bg-white rounded-lg p-2"><span class="ar">أ. جولة حول نظام الصف</span><span class="he">סיור מודרך סביב המערכת</span></div>
+              <div class="bg-white rounded-lg p-2"><span class="ar">ب. نجد: الخزّان، المضخّة، مكان الشتلات</span><span class="he">זיהוי: מאגר, משאבה, מקום לשתילים</span></div>
+              <div class="bg-white rounded-lg p-2"><span class="ar">ج. كل مجموعة تختار اسمًا لمحطّتها</span><span class="he">כל קבוצה בוחרת שם לתחנה שלה</span></div>
+              <div class="bg-white rounded-lg p-2"><span class="ar">د. نكتب في الجواز: «نظامنا يبدو هكذا...»</span><span class="he">רישום בדרכון: "המערכת שלנו נראית כך..."</span></div>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+              <p class="font-bold text-red-800 mb-2">🚨 مشاكل شائعة · בעיות נפוצות:</p>
+              <ul class="space-y-2">
+                <li><b>נגיעה בהתלהבות במערכת:</b> כלל ברור מראש –
+                  <div class="say"><span class="ar">«ننظر ونشير، لا نلمس إلّا إذا قال المعلّم/ة.»</span><span class="he">"מסתכלים ומצביעים, לא נוגעים אלא אם המורה אומר/ת."</span></div></li>
+                <li><b>לא יודעים מה לכתוב בדרכון:</b> 2–3 משפטי פתיחה על הלוח בשתי השפות, או ציור.</li>
+              </ul>
+            </div>
+            <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+              <p class="font-bold text-green-800 mb-2">💡 للتعمّق · להעמקה:</p>
+              <div class="say"><span class="ar">«ماذا سيحدث لهذا النظام بعد شهر؟ بعد نصف سنة؟»</span><span class="he">"מה יקרה למערכת בעוד חודש? בעוד חצי שנה?"</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-yellow-100 text-yellow-800 font-black text-lg rounded-xl py-2">85–90</div></div>
+        <div class="flex-1 text-sm text-gray-700">
+          <h3 class="text-xl font-black mb-2"><span class="ar">🏁 بيانات + تشويق للدرس القادم</span><span class="he">נתונים + Teaser</span></h3>
+          <div class="grid md:grid-cols-3 gap-3">
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 2 דק'</p><span class="ar">نغلق الجواز لهذا الدرس.</span><span class="he">סוגרים את הדרכון לשיעור.</span></div>
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🌿 1 דק'</p><span class="ar">من اليوم نجمع أوراقًا – نبدأ بمستوى «بذرة» 🌱.</span><span class="he">מהיום אוספים עלים – מתחילים ב"זרע".</span></div>
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser 2 דק'</p>
+              <div class="say"><span class="ar">«في الماضي كان كل الطعام يُزرع في حقول عادية. كيف وصلنا إلى حاويات داخل المدينة؟»</span><span class="he">"פעם כל האוכל גדל בשדות רגילים – איך הגענו למכולות בתוך העיר?"</span></div>
+              <p class="text-xs text-gray-500 mt-1">לא לתת תשובה – זה שיעור 2.</p></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STARTUP -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-green-800 text-white p-6">
+      <h2 class="text-2xl font-black"><span class="ar">🇮🇱 Vertical Field – خلفية للمعلّم</span><span class="he">Vertical Field – רקע למורה</span></h2>
+    </div>
+    <div class="p-6 grid md:grid-cols-2 gap-6 text-sm text-gray-700">
+      <div>
+        <h3 class="font-bold text-gray-800 mb-2">من هم؟ · מי הם?</h3>
+        <span class="ar mb-2">شركة إسرائيلية تأسّست عام 2006. تزرع الخضار في تربة حقيقية داخل حاويات، ويمكن وضع الحاوية في أي مكان تقريبًا، حتى بدون حقل قريب.</span>
+        <span class="he">חברה ישראלית מ-2006. מגדלת ירקות באדמה אמיתית בתוך מכולות, שאפשר להציב כמעט בכל מקום, גם בלי שדה בסביבה.</span>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-800 mb-2">ماذا يحلّون؟ · מה הם פותרים?</h3>
+        <span class="ar mb-2">أكثر من 200 نوع من الخضار والأعشاب تنضج خلال حوالي 21 يومًا. توجد حاويات داخل فروع سوبرماركت في إسرائيل، فتصل الخضار من الحاوية إلى الرفّ مباشرة.</span>
+        <span class="he">200+ סוגי ירקות ועשבי תיבול, בשלים תוך כ-21 יום. יש מכולות בתוך סניפי סופר בישראל (רמי לוי) – מהמכולה ישר למדף. (שם הרשת – רקע למורה בלבד, לא מוצג לתלמידים.)</span>
+      </div>
+      <div class="md:col-span-2">
+        <h3 class="font-bold text-gray-800 mb-2">أسئلة للنقاش · שאלות לדיון:</h3>
+        <ul class="space-y-2">
+          <li class="say"><span class="ar">«لماذا نزرع الخضار في حاوية داخل المدينة، وليس في حقل بعيد؟»</span><span class="he">"למה לגדל במכולה בעיר ולא בשדה רחוק?"</span></li>
+          <li class="say"><span class="ar">«ما الجيّد في 21 يومًا فقط حتى تنضج الخضار؟»</span><span class="he">"מה טוב ב-21 יום בלבד עד שהירק בשל?"</span></li>
+          <li class="say"><span class="ar">«أين في بلدتكم كنتم ستضعون حاوية كهذه؟»</span><span class="he">"איפה ביישוב שלכם הייתם שמים מכולה כזו?"</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAMIFICATION -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-lime-600 text-white p-6">
+      <h2 class="text-2xl font-black"><span class="ar">🌿 التلعيب – الدرس 1</span><span class="he">גיימיפיקציה – שיעור 1</span></h2>
+    </div>
+    <div class="p-6">
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-sm">
+        <b class="text-amber-800">🎲 «سلّم الأعداد» · "מדרגות המספרים"</b> — הניחוש בכל מדרגה לפני החשיפה הוא חלק רשמי מהגיימיפיקציה (עלה על כל ניחוש, בלי קשר לנכונות).
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5 text-center text-sm">
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-green-600">15</div><span class="ar">المشاركة في النقاش</span><span class="he">השתתפות בדיון</span></div>
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-green-600">15</div><span class="ar">أسئلة الفهم</span><span class="he">שאלות הבנה</span></div>
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-green-600">10</div><span class="ar">فتح الجواز</span><span class="he">פתיחת דרכון</span></div>
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-green-600">10</div><span class="ar">جولة النظام</span><span class="he">סיור המערכת</span></div>
+      </div>
+      <div class="bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
+        <span class="text-2xl font-black text-lime-700">المجموع ~50 ورقة · סה"כ ~50 עלים 🌿</span>
+        <span class="text-gray-500 text-sm block mt-1">* מספר זמני – יחושב סופית אחרי כל 17 מערכי היסודי (ראה elementary/CLAUDE.md)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIFFERENTIATION -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-orange-600 text-white p-6">
+      <h2 class="text-2xl font-black"><span class="ar">♿ ملاءمات وتمايز</span><span class="he">התאמות ודיפרנציאציה</span></h2>
+    </div>
+    <div class="p-6 grid md:grid-cols-3 gap-6 text-sm text-gray-700">
+      <div>
+        <h3 class="font-bold text-red-700 mb-3">🐢 مَن يجد صعوبة · מתקשים</h3>
+        <ul class="space-y-2">
+          <li>• 2–3 דוגמאות מוכנות לפתיחה ("אדמה, מים..." · «تربة، ماء...»)</li>
+          <li>• לצייר או לכתוב מילה על פתק לפני שמדברים</li>
+          <li>• זיווג עם תלמיד/ה בטוח/ה יותר</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-blue-700 mb-3">🚀 المتقدّمون · מתקדמים</h3>
+        <ul class="space-y-2">
+          <li>• עוד מקום בעיר/בכפר שמתאים למכולה</li>
+          <li>• "כמה מכולות צריכה שכונה שלמה?"</li>
+          <li>• תפקיד "מנהל/ת דרכון" בקבוצה</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-orange-700 mb-3">🌍 صف ثنائي اللغة · כיתה דו-לשונית</h3>
+        <ul class="space-y-2">
+          <li>• כל שאלה בלומדה מופיעה בשתי השפות – לעודד זוגות מעורבים</li>
+          <li>• לקבל תשובות בעל-פה ובכתב בכל אחת מהשפות</li>
+          <li>• מילון המונחים למעלה – לתלות על הלוח</li>
+          <li>• תמונות וגרפים לפני טקסט</li>
+        </ul>
+      </div>
+    </div>
+    <div class="px-6 pb-6">
+      <div class="bg-pink-50 border-2 border-pink-200 rounded-2xl p-5 text-sm text-gray-700">
+        <h3 class="font-bold text-pink-700 mb-3 text-base"><span class="ar">🎈 ملاءمات للصفّين الثالث والرابع</span><span class="he">התאמות לכיתות ג'-ד'</span></h3>
+        <ul class="space-y-2">
+          <li>• <b>מדרגות:</b> 3 מדרגות בלבד (שלומי ← ישראל ← העולם), "הרבה יותר" במקום "פי כמה". במקום "31 שנה":
+            <div class="say"><span class="ar">«أكثر من كل عمركم، وعمر أهلكم، معًا!»</span><span class="he">"יותר מכל החיים שלכם, וגם של ההורים שלכם, ביחד!"</span></div></li>
+          <li>• <b>דיון:</b> שלבים א'+ב' ב-4 דקות, ואז במליאה:
+            <div class="say"><span class="ar">«ماذا نفعل حتى يكون لدى الجميع ما يكفي من الطعام؟»</span><span class="he">"מה נעשה כדי שלכולם יהיה מספיק לאכול?"</span></div></li>
+          <li>• <b>גרירה:</b> המורה מדגים/ה גרירה ראשונה על המסך לפני שהזוגות מנסים.</li>
+          <li>• <b>דרכון:</b> הכתבה בעל-פה או ציור במקום משפט.</li>
+          <li>• <b>סיור:</b> קבוצות של 2–3, שאלה אחת בעל-פה: «ماذا رأيتم؟ قولوا بكلمة واحدة» · "מה ראיתם? במילה אחת".</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="bg-white rounded-3xl shadow-lg p-6">
+    <h2 class="text-2xl font-black text-green-900 mb-4"><span class="ar">📝 ملاحظاتي للدرس</span><span class="he">הערות שלי לשיעור</span></h2>
+    <textarea rows="5" placeholder="ما الذي نجح، ما الذي يجب تحسينه... · מה עבד, מה לשפר, תגובות הכיתה..." class="w-full border-2 border-gray-200 rounded-2xl p-4 text-lg resize-none focus:border-green-400 focus:outline-none" onchange="saveNotes(this.value)" id="notes"></textarea>
+    <p class="text-xs text-gray-400 mt-1">يُحفظ تلقائيًا في المتصفّح · נשמר אוטומטית בדפדפן</p>
+  </div>
+
+  <p class="text-center text-xs text-gray-400">نسخة ثنائية اللغة – مرحلة أولى، بانتظار مراجعة معلّم/ة ناطق/ة بالعربية · גרסה דו-לשונית שלב א' – ממתינה לביקורת מורה דובר/ת ערבית</p>
+
+</div>
+
+<script>
+// מפתח נפרד מהגרסה העברית (el_t1notes) כדי לא לדרוס הערות
+function load(){ const n=localStorage.getItem('elb_t1notes'); if(n) document.getElementById('notes').value=n; }
+function saveNotes(v){ localStorage.setItem('elb_t1notes', v); }
+load();
+</script>
+</body>
+</html>
