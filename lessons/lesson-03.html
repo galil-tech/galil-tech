@@ -171,7 +171,7 @@
     </div>
 
     <div class="bg-yellow-50 border-r-4 border-yellow-400 rounded-2xl p-5 mb-5 text-gray-700">
-      <p class="text-lg font-black text-yellow-900 mb-3">☀️ + 💧 + CO₂ → 🍬 + O₂</p>
+      <p class="text-lg font-black text-yellow-900 mb-3 text-right" dir="ltr">☀️ + 💧 + CO₂ → 🍬 + O₂</p>
       <p class="mb-2">פוטוסינתזה = "צילום אור" ביוונית. הצמח לוקח:</p>
       <ul class="space-y-1 text-sm mr-4">
         <li>• <b>אור שמש</b> — אנרגיה לתהליך</li>
@@ -196,16 +196,20 @@
       </div>
 
       <!-- Equation with slots -->
-      <div class="flex flex-wrap items-center justify-center gap-2 text-center text-lg font-black">
+      <div class="flex flex-wrap items-center justify-center gap-2 text-center text-lg font-black" dir="ltr">
+        <div class="flex flex-wrap items-center justify-center gap-2">
         <div class="bg-yellow-100 rounded-xl px-4 py-3">☀️ אור</div>
         <span class="text-2xl text-gray-400">+</span>
         <div class="drop-zone w-36 h-14" data-correct="water" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
         <span class="text-2xl text-gray-400">+</span>
         <div class="drop-zone w-44 h-14" data-correct="co2" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
+        </div>
         <span class="text-2xl text-green-600 font-black">→</span>
+        <div class="flex flex-wrap items-center justify-center gap-2">
         <div class="drop-zone w-36 h-14" data-correct="sugar" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
         <span class="text-2xl text-gray-400">+</span>
         <div class="drop-zone w-36 h-14" data-correct="o2" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPhoto(event,this)"><span class="text-gray-400 text-sm">?</span></div>
+        </div>
       </div>
 
       <div id="photo-done" class="hidden mt-4 text-center">
@@ -394,7 +398,7 @@
       <h3 class="font-black text-green-900 mb-3">📚 מה למדנו היום:</h3>
       <ul class="space-y-2 text-sm text-gray-700">
         <li class="flex gap-2"><span class="text-green-600">🌿</span> 4 צרכי הצמח: אור, מים, דישון, חמצן</li>
-        <li class="flex gap-2"><span class="text-green-600">☀️</span> פוטוסינתזה: אור + מים + CO₂ → סוכר + O₂</li>
+        <li class="flex gap-2"><span class="text-green-600">☀️</span> פוטוסינתזה: אור + מים + CO₂ ← סוכר + O₂</li>
         <li class="flex gap-2"><span class="text-green-600">🧪</span> Supplant — AI שממליץ מתי ולכמה להשקות לפי צרכי הצמח בפועל</li>
         <li class="flex gap-2"><span class="text-green-600">🌱</span> השתיל האישי שלכם שתול! מהיום הוא תלוי בכם</li>
       </ul>
@@ -560,7 +564,7 @@ function dropPhoto(e, zone) {
       document.getElementById('photo-done').classList.remove('hidden');
       document.getElementById('q-photo2-wrap').classList.add('show');
       addLv(10);
-      mascotSay('משוואת הפוטוסינתזה מושלמת! ☀️→🍬', '🌿');
+      mascotSay('משוואת הפוטוסינתזה מושלמת! ☀️←🍬', '🌿');
     }
   } else {
     zone.classList.add('wrong-drop');
