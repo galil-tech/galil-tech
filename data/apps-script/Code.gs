@@ -56,55 +56,29 @@ const CLASS_UNLOCKS_KEY_FIELDS = ['school_id', 'class_id'];
 // כדי שפריסה ישנה (שלא מכירה את הסוגים האלה) לא תיפול ל-upsert של תלמיד ותיצור שורת זבל.
 const FEATURES = ['class_unlock', 'student_unlock'];
 
-function _sheet() {
+// מחזיר גיליון לפי שם, יוצר אותו אם חסר, ומוסיף לשורת הכותרות עמודות שנוספו לקוד אחרי
+// שהגיליון נוצר (למשל unlocked_through). בלי זה, גיליון ותיק לא שומר את השדה החדש בכלל,
+// ו-_raiseStudentsUnlock נכשל על עמודה -1 - כך פתיחת שיעור לכיתה החזירה שגיאה.
+function _getSheet(name, fields) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sh = ss.getSheetByName(SHEET_NAME);
+  let sh = ss.getSheetByName(name);
   if (!sh) {
-    sh = ss.insertSheet(SHEET_NAME);
-    sh.appendRow(FIELDS);
+    sh = ss.insertSheet(name);
+    sh.appendRow(fields);
+    return sh;
   }
+  const lastCol = sh.getLastColumn();
+  const headers = lastCol ? sh.getRange(1, 1, 1, lastCol).getValues()[0].map(String) : [];
+  const missing = fields.filter((f) => headers.indexOf(f) === -1);
+  if (missing.length) sh.getRange(1, headers.length + 1, 1, missing.length).setValues([missing]);
   return sh;
 }
 
-function _groupsSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sh = ss.getSheetByName(GROUPS_SHEET_NAME);
-  if (!sh) {
-    sh = ss.insertSheet(GROUPS_SHEET_NAME);
-    sh.appendRow(GROUPS_FIELDS);
-  }
-  return sh;
-}
-
-function _gallerySheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sh = ss.getSheetByName(GALLERY_SHEET_NAME);
-  if (!sh) {
-    sh = ss.insertSheet(GALLERY_SHEET_NAME);
-    sh.appendRow(GALLERY_FIELDS);
-  }
-  return sh;
-}
-
-function _teachersSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sh = ss.getSheetByName(TEACHERS_SHEET_NAME);
-  if (!sh) {
-    sh = ss.insertSheet(TEACHERS_SHEET_NAME);
-    sh.appendRow(TEACHERS_FIELDS);
-  }
-  return sh;
-}
-
-function _classUnlocksSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sh = ss.getSheetByName(CLASS_UNLOCKS_SHEET_NAME);
-  if (!sh) {
-    sh = ss.insertSheet(CLASS_UNLOCKS_SHEET_NAME);
-    sh.appendRow(CLASS_UNLOCKS_FIELDS);
-  }
-  return sh;
-}
+function _sheet() { return _getSheet(SHEET_NAME, FIELDS); }
+function _groupsSheet() { return _getSheet(GROUPS_SHEET_NAME, GROUPS_FIELDS); }
+function _gallerySheet() { return _getSheet(GALLERY_SHEET_NAME, GALLERY_FIELDS); }
+function _teachersSheet() { return _getSheet(TEACHERS_SHEET_NAME, TEACHERS_FIELDS); }
+function _classUnlocksSheet() { return _getSheet(CLASS_UNLOCKS_SHEET_NAME, CLASS_UNLOCKS_FIELDS); }
 
 // ערך הפתיחה הכיתתי (0 אם המדריך/ה לא פתח/ה כלום לכיתה הזו)
 function _classUnlockValue(school, classId) {
@@ -120,6 +94,7 @@ function _raiseStudentsUnlock(match, n) {
   const data = sh.getDataRange().getValues();
   const headers = data[0];
   const col = headers.indexOf('unlocked_through');
+  if (col === -1) return 0;
   const tsCol = headers.indexOf('last_updated');
   let changed = 0;
   for (let i = 1; i < data.length; i++) {
@@ -189,8 +164,10 @@ function doGet(e) {
   // צריך/ה לראות את כל הכיתה, לא רשומה אחת. דורש גם school+class כדי לא להחזיר הכל בטעות.
   if (p.type === 'class_progress') {
     if (!p.school || !p.class) return _json({ ok: false, error: 'school and class parameters required' });
+    const cls = _classUnlockValue(p.school, p.class);
     const rows = _rowsAsObjects(_sheet()).filter((r) =>
-      String(r.school_id) === p.school && String(r.class_id) === p.class);
+      String(r.school_id) === p.school && String(r.class_id) === p.class)
+      .map((r) => (cls > (Number(r.unlocked_through) || 0) ? Object.assign({}, r, { unlocked_through: cls }) : r));
     return _json({ ok: true, rows: rows });
   }
 

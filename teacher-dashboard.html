@@ -304,7 +304,13 @@ async function loadClass() {
   const classN = (resp && resp.classUnlockedThrough) || 0;
   document.getElementById('class-unlock-status').textContent = classN
     ? 'כרגע פתוח לכל הכיתה עד שיעור ' + classN : '';
-  renderClassTable(rows);
+  if (classN) document.getElementById('class-unlock-n').value = String(Math.min(17, classN + 1));
+  // מה שהתלמיד/ה מקבל/ת בפועל = max(ערך אישי, ערך כיתתי) - כמו ב-pullMine בשרת
+  renderClassTable(rows.map(r => {
+    const own = Number(r.unlocked_through) || 1;
+    return classN > own ? Object.assign({}, r, { unlocked_through: classN }) : r;
+  }));
+  return classN;
 }
 
 // ── פתיחת שיעור ע"י המדריך/ה ──────────────────────────────────────────────
@@ -325,6 +331,8 @@ function currentClass() {
 
 function unlockErrorText(resp) {
   if (resp && resp.error === 'server_outdated') return 'צריך קודם לעדכן את ה-Apps Script (Deploy → New version) - הפעולה לא בוצעה.';
+  // גיליון תלמידים בלי עמודת unlocked_through (פריסה לפני התיקון ב-Code.gs)
+  if (resp && /range|coordinates|טווח|קואורדינטות/i.test(String(resp.error || ''))) return 'צריך לעדכן את ה-Apps Script (Deploy → New version) כדי לפתוח לתלמיד/ה בודד/ת.';
   return 'הפתיחה נכשלה - נסו שוב. (' + ((resp && resp.error) || 'שגיאת רשת') + ')';
 }
 
@@ -342,9 +350,14 @@ async function unlockForClass() {
   if (resp && resp.ok) {
     status.textContent = `✅ נפתח לכיתה עד שיעור ${resp.unlocked_through} (עודכנו ${resp.students_updated} תלמידים; החדשים יקבלו בכניסה)`;
     loadClass();
-  } else {
-    status.textContent = '⚠️ ' + unlockErrorText(resp);
+    return;
   }
+  // פריסת Apps Script בלי עמודת unlocked_through בגיליון התלמידים: הערך הכיתתי כן נשמר
+  // (class_unlocks) ותלמידים מקבלים אותו בכניסה, אבל השרת מחזיר שגיאה. בודקים מה נשמר בפועל.
+  const saved = resp && resp.error !== 'server_outdated' ? await loadClass() : 0;
+  status.textContent = saved >= n
+    ? `✅ פתוח לכל הכיתה עד שיעור ${saved}. התלמידים יקבלו אותו כשירעננו את הדף / ייכנסו.`
+    : '⚠️ ' + unlockErrorText(resp);
 }
 
 async function unlockForStudent(code, name, current) {
