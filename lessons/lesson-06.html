@@ -96,7 +96,7 @@
       <span class="bg-lime-400/20 text-lime-300 text-xs px-3 py-1 rounded-full">← המשך משיעור 5</span>
     </div>
     <h1 class="text-4xl md:text-5xl font-black mb-2">📡 איך מדברים עם צמחים?</h1>
-    <p class="text-blue-200 text-lg">שפת הצמחים · חיישנים · ארדואינו · לוגיקת קוד · Phytech</p>
+    <p class="text-blue-200 text-lg">שפת הצמחים · חיישנים · בקר ESP32 · לוגיקת קוד · Phytech</p>
     <div class="mt-5">
       <div class="flex justify-between text-sm text-blue-300 mb-1">
         <span id="plabel">שלב 1 מתוך 8</span>
@@ -209,7 +209,7 @@
     <div class="bg-slate-800 text-white rounded-2xl p-5">
       <p class="font-black text-xl mb-3">💡 אז מה הבעיה?</p>
       <p class="text-slate-200">הצמח מדבר כל הזמן – אבל אנחנו לא יכולים לשבת לידו 24 שעות ביממה. צריך מישהו שישמע ויגיב במקומנו.</p>
-      <p class="text-blue-300 font-black text-xl mt-3">הפתרון: חיישן + ארדואינו = "אוזניים" לצמח 📡</p>
+      <p class="text-blue-300 font-black text-xl mt-3">הפתרון: חיישן + בקר = "אוזניים" לצמח 📡</p>
     </div>
   </div>
 
@@ -241,7 +241,7 @@
       </div>
     </div>
     <div class="bg-slate-50 border-r-4 border-slate-400 rounded-2xl p-6 mb-5 text-gray-700 leading-relaxed">
-      <p class="text-lg mb-4"><b>חיישן</b> ממיר תופעה פיזית למספר שמחשב יכול לקרוא. לבני אדם יש 5 חושים – לארדואינו עם חיישנים, כמה שרוצים.</p>
+      <p class="text-lg mb-4"><b>חיישן</b> ממיר תופעה פיזית למספר שמחשב יכול לקרוא. לבני אדם יש 5 חושים – לבקר עם חיישנים, כמה שרוצים.</p>
       <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center text-sm">
         <div class="bg-purple-50 rounded-xl p-3 border border-purple-200">
           <p class="text-2xl mb-1">⚗️</p><p class="font-bold text-purple-800">pH</p>
@@ -293,22 +293,22 @@
   </div>
   <div class="flex justify-between">
     <button onclick="goTo(1)" class="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold">→ חזרה</button>
-    <button onclick="goTo(3)" id="b2" class="hidden bg-slate-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">הארדואינו ←</button>
+    <button onclick="goTo(3)" id="b2" class="hidden bg-slate-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg">הבקר ←</button>
   </div>
 </div>
 
-<!-- ══ STEP 3: ארדואינו ══ -->
+<!-- ══ STEP 3: בקר ESP32 ══ -->
 <div class="step-panel" id="step-3">
   <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
     <div class="flex items-center gap-3 mb-5">
       <span class="text-4xl">🧠</span>
       <div>
-        <h2 class="text-3xl font-black text-gray-900">ארדואינו – המוח שמקשיב</h2>
+        <h2 class="text-3xl font-black text-gray-900">ESP32 – המוח שמקשיב</h2>
         <p class="text-gray-400 text-sm">🌿 עד 10 עלים</p>
       </div>
     </div>
     <div class="bg-blue-50 border-r-4 border-blue-500 rounded-2xl p-6 mb-5 text-gray-700 text-lg">
-      <p class="mb-3"><b>ארדואינו</b> הוא מחשב קטן (~₪50) שמחובר לעולם הפיזי. הוא קורא חיישנים, מחליט, ומפעיל ציוד.</p>
+      <p class="mb-3"><b>ESP32</b> הוא <b>בקר</b> – מחשב קטן (כמה עשרות שקלים) שמחובר לעולם הפיזי. הוא קורא חיישנים, מחליט, ומפעיל ציוד. בונוס: יש לו WiFi מובנה, כך שהוא יכול גם לשלוח נתונים לאינטרנט.</p>
       <div class="bg-white rounded-xl p-4 border border-blue-200 mt-3">
         <p class="font-bold text-blue-800 mb-2">🔄 הלולאה הבסיסית:</p>
         <div class="font-mono text-sm bg-slate-900 text-green-400 rounded-xl p-4 leading-loose">
@@ -323,7 +323,7 @@
 
     <!-- local video -->
     <div class="mb-5">
-      <p class="font-bold text-gray-700 mb-2">🎬 סרטון: ארדואינו בחקלאות (בעברית)</p>
+      <p class="font-bold text-gray-700 mb-2">🎬 סרטון: בקרים זעירים בחקלאות (בעברית) <span class="text-xs text-gray-400 font-normal">– בסרטון רואים לוח Arduino, "אח" של ה-ESP32; הרעיון זהה</span></p>
       <div class="rounded-2xl overflow-hidden bg-black">
         <video controls class="w-full rounded-2xl" style="max-height:340px">
           <source src="arduino.mp4" type="video/mp4">
@@ -336,12 +336,12 @@
     </div>
 
     <div class="bg-gray-50 rounded-2xl p-5">
-      <p class="font-bold text-lg mb-4">❓ מה ההבדל בין ארדואינו למחשב רגיל?</p>
+      <p class="font-bold text-lg mb-4">❓ מה ההבדל בין בקר (כמו ESP32) למחשב רגיל?</p>
       <div class="grid grid-cols-2 gap-3" id="q-a1">
-        <div class="qopt" onclick="pickQ('a1',this,false)">ארדואינו חכם יותר</div>
-        <div class="qopt" onclick="pickQ('a1',this,true)">ארדואינו מחובר לעולם הפיזי – חיישנים ומנועים</div>
-        <div class="qopt" onclick="pickQ('a1',this,false)">ארדואינו לא צריך קוד</div>
-        <div class="qopt" onclick="pickQ('a1',this,false)">ארדואינו יותר מהיר</div>
+        <div class="qopt" onclick="pickQ('a1',this,false)">הבקר חכם יותר</div>
+        <div class="qopt" onclick="pickQ('a1',this,true)">הבקר מחובר לעולם הפיזי – חיישנים ומנועים</div>
+        <div class="qopt" onclick="pickQ('a1',this,false)">הבקר לא צריך קוד</div>
+        <div class="qopt" onclick="pickQ('a1',this,false)">הבקר יותר מהיר</div>
       </div>
       <div id="fb-a1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
     </div>
@@ -470,7 +470,7 @@
         <p class="text-gray-400 text-sm">🌿 עד 15 עלים · גרום ל-2 התראות לפחות</p>
       </div>
     </div>
-    <p class="text-gray-500 text-sm mb-5">הארדואינו מחובר ל-5 חיישנים. הזיזו כל אחד – ראו מה קורה.</p>
+    <p class="text-gray-500 text-sm mb-5">ה-ESP32 מחובר ל-5 חיישנים. הזיזו כל אחד – ראו מה קורה.</p>
 
     <div class="grid md:grid-cols-5 gap-3 mb-5">
       <!-- pH -->
@@ -516,7 +516,7 @@
     </div>
 
     <div class="bg-slate-900 rounded-2xl p-4 mb-4">
-      <p class="text-slate-400 text-xs mb-2 font-mono">// הארדואינו מחליט:</p>
+      <p class="text-slate-400 text-xs mb-2 font-mono">// ה-ESP32 מחליט:</p>
       <div id="ard-dec" class="font-mono text-base text-green-400">✅ כל הערכים תקינים 🌱</div>
     </div>
 
@@ -611,12 +611,12 @@
     <h2 class="text-4xl font-black mb-2">עכשיו לפרויקט!</h2>
     <p class="text-slate-300 text-xl mb-5">השאר את המחשב – קח רק את הרשימה</p>
     <div class="bg-white/10 rounded-2xl p-5 text-right mb-5 space-y-3">
-      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m1"><div class="text-2xl">⚗️</div><div class="flex-1"><p class="font-bold">א. חבר מד pH לארדואינו</p><p class="text-slate-400 text-xs">לפי הסכמה – טמרל מד pH אנלוגי לפורט A0</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(1)"></div>
-      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m2"><div class="text-2xl">⚡</div><div class="flex-1"><p class="font-bold">ב. חבר מד EC לארדואינו</p><p class="text-slate-400 text-xs">מד EC אנלוגי לפורט A1</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(2)"></div>
-      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m3"><div class="text-2xl">🌡️</div><div class="flex-1"><p class="font-bold">ג. חבר חיישן טמפרטורה ולחות (DHT22) + אור (BH1750)</p><p class="text-slate-400 text-xs">לפי הסכמה על השולחן</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(3)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m1"><div class="text-2xl">⚗️</div><div class="flex-1"><p class="font-bold">א. חבר מד pH ל-ESP32</p><p class="text-slate-400 text-xs">לפי הסכמה – מד pH אנלוגי ל-GPIO 1 · מוצא עד 3.3V בלבד!</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(1)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m2"><div class="text-2xl">⚡</div><div class="flex-1"><p class="font-bold">ב. חבר מד EC ל-ESP32</p><p class="text-slate-400 text-xs">מד EC אנלוגי ל-GPIO 2 · מוצא עד 3.3V בלבד!</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(2)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m3"><div class="text-2xl">🌡️</div><div class="flex-1"><p class="font-bold">ג. חבר חיישן טמפרטורה ולחות (DHT22) + אור (BH1750)</p><p class="text-slate-400 text-xs">DHT22 DATA→GPIO 4 · BH1750 SDA→GPIO 8, SCL→GPIO 9 · חשמל מ-3V3</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(3)"></div>
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m4"><div class="text-2xl">📺</div><div class="flex-1"><p class="font-bold">ד. בקש מהמורה להעלות קוד – בדוק שמציג 5 ערכים</p><p class="text-slate-400 text-xs">pH · EC · טמפ' · לחות · אור</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(4)"></div>
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m5"><div class="text-2xl">📝</div><div class="flex-1"><p class="font-bold">ה. רשום את 5 הערכים ובדוק אם תקינים</p><p class="text-slate-400 text-xs">pH 5.5–6.5 | EC 1.2–2.0 | טמפ' 15–28°C | לחות 50–80% | אור 400–1000 lux</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(5)"></div>
-      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m6"><div class="text-2xl">📸</div><div class="flex-1"><p class="font-bold">ו. צלם את הארדואינו המחובר עם כל 5 החיישנים</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(6)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m6"><div class="text-2xl">📸</div><div class="flex-1"><p class="font-bold">ו. צלם את ה-ESP32 המחובר עם כל 5 החיישנים</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(6)"></div>
     </div>
     <div id="bonus-m" class="hidden bg-blue-400/20 border border-blue-300 rounded-2xl p-4 mb-5 text-right">
       <p class="font-bold text-blue-200">⭐ בונוס (+20 עלים)</p>
@@ -659,7 +659,7 @@
     <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6 text-xs">
       <div class="bg-green-50 rounded-xl p-3"><p class="text-xl">🌿</p><p class="font-bold">שפת צמחים</p><p class="text-gray-400">חזותי/כימי/פיזי</p></div>
       <div class="bg-slate-50 rounded-xl p-3"><p class="text-xl">👃</p><p class="font-bold">5 חיישנים</p><p class="text-gray-400">pH·EC·טמפ'·לחות·אור</p></div>
-      <div class="bg-blue-50 rounded-xl p-3"><p class="text-xl">🧠</p><p class="font-bold">ארדואינו</p><p class="text-gray-400">המוח שמקשיב</p></div>
+      <div class="bg-blue-50 rounded-xl p-3"><p class="text-xl">🧠</p><p class="font-bold">בקר ESP32</p><p class="text-gray-400">המוח שמקשיב</p></div>
       <div class="bg-orange-50 rounded-xl p-3"><p class="text-xl">💻</p><p class="font-bold">קוד אמיתי</p><p class="text-gray-400">if/delay/loop</p></div>
       <div class="bg-teal-50 rounded-xl p-3"><p class="text-xl">🇮🇱</p><p class="font-bold">Phytech</p><p class="text-gray-400">דנדרומטר</p></div>
     </div>
@@ -742,7 +742,7 @@ function pickQ(qid,el,correct){
     p1:{ok:'✅ נכון! עלים צהובים = ערוץ חזותי של מצוקה. הצמח "צועק" בצבע.',fail:'💡 לא בדיוק. עלים צהובים הם שינוי צבע = ערוץ חזותי.',lv:10},
     s1:{ok:'✅ נכון! חיישן עובד 24/7 – גם בלילה ובסופ"ש.',fail:'💡 היתרון הגדול הוא ניטור רציף, לא רק דיוק.',lv:10},
     s2:{ok:'✅ בדיוק! מחשב מבין מספרים. 4.2 = 4.2',fail:'💡 מחשבים עובדים עם מספרים. 4.2 = pH חומצי בצורת מספר.',lv:10},
-    a1:{ok:'✅ נכון! ארדואינו = גשר לעולם הפיזי.',fail:'💡 ארדואינו מחובר לחיישנים ומנועים – זה מה שמייחד אותו.',lv:10},
+    a1:{ok:'✅ נכון! בקר = גשר לעולם הפיזי.',fail:'💡 הבקר מחובר לחיישנים ומנועים – זה מה שמייחד אותו.',lv:10},
   };
   const d=fbMap[qid];
   if(d){

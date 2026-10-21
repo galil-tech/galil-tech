@@ -97,12 +97,12 @@
   <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
     <!-- Catch-up ramp -->
     <div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-4 mb-5 text-sm text-sky-900">
-      🪜 <b>רמפת השלמה (קבוצה שלא סיימה שיעור 7):</b> קיבלתם ארדואינו עם קוד if/else מוכן מהמורה — תתחילו ישירות משלב 4 של השיעור הזה (סגירת המעגל). אל תבזבזו זמן על קוד ישן.
+      🪜 <b>רמפת השלמה (קבוצה שלא סיימה שיעור 7):</b> קיבלתם ESP32 עם קוד if/else מוכן מהמורה — תתחילו ישירות משלב 4 של השיעור הזה (סגירת המעגל). אל תבזבזו זמן על קוד ישן.
     </div>
 
     <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-6">
       <p class="font-bold text-amber-900 mb-1">🔁 Teaser מהשיעור הקודם:</p>
-      <p class="text-gray-700 text-sm">"pH ו-EC יוצאים בו-זמנית — מה הארדואינו צריך לעשות קודם?" — ובכן, לא צריך לבחור: אפשר לבנות <b>מערכת שכל מרכיב בה שומר על השאר</b>. זו סינרגיה.</p>
+      <p class="text-gray-700 text-sm">"pH ו-EC יוצאים בו-זמנית — מה הבקר צריך לעשות קודם?" — ובכן, לא צריך לבחור: אפשר לבנות <b>מערכת שכל מרכיב בה שומר על השאר</b>. זו סינרגיה.</p>
     </div>
 
     <div class="flex items-center gap-3 mb-5">
@@ -252,7 +252,7 @@
       <div class="grid gap-3" id="q-bio1">
         <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-bio1')">אין קשר — BioBee הוא נושא נפרד לגמרי</div>
         <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-bio1')" data-correct="true">BioBee משתמשת בחרק אחד כדי לפתור בעיה שנגרמת על ידי חרק אחר — הטבע פותר את עצמו</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-bio1')">BioBee בנתה מערכת ארדואינו לניטור חרקים</div>
+        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-bio1')">BioBee בנתה בקר אלקטרוני לניטור חרקים</div>
         <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-bio1')">BioBee היא חברת רסס כימי מיוחד</div>
       </div>
       <div id="fb-q-bio1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
@@ -286,9 +286,9 @@
     </div>
 
     <div dir="ltr" class="bg-slate-800 rounded-2xl p-5 mb-5 font-mono text-sm text-green-400 leading-relaxed">
-      <p class="text-slate-400 mb-2">// מטרה: אם לחות &lt; 400, פתח ברז + שלח הודעה</p>
-      <p>int moisture = analogRead(A0);</p>
-      <p>if (moisture <span id="blank1" class="code-blank" onclick="fillBlank('blank1')">___</span> 400) {'{'}</p>
+      <p class="text-slate-400 mb-2">// מטרה: אם לחות &lt; 30%, פתח ברז + שלח הודעה</p>
+      <p>int moisture = map(analogRead(1), DRY, WET, 0, 100); <span class="text-slate-500">// GPIO 1 → %</span></p>
+      <p>if (moisture <span id="blank1" class="code-blank" onclick="fillBlank('blank1')">___</span> 30) {'{'}</p>
       <p>&nbsp;valve.write(90);  <span class="text-slate-500">// פתח ברז</span></p>
       <p>&nbsp;digitalWrite(buzzer, HIGH);</p>
       <p>{'}'} else {'{'}</p>
@@ -323,7 +323,7 @@
     <div id="code-done" class="reveal bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
       <p class="font-black text-lime-800 text-xl mb-2">✅ הקוד שלם! זה בדיוק מה שנבנה בפרויקט היום</p>
       <div dir="ltr" class="bg-slate-800 rounded-xl p-4 font-mono text-sm text-green-400 mt-3 text-right">
-        <p>if (moisture <b class="text-lime-400">&lt;</b> 400) {'{'}</p>
+        <p>if (moisture <b class="text-lime-400">&lt;</b> 30) {'{'}</p>
         <p>&nbsp;valve.write(90); &nbsp;// פתוח</p>
         <p>{'}'} else {'{'}</p>
         <p>&nbsp;valve.write(<b class="text-lime-400">0</b>); &nbsp;// סגור</p>
@@ -355,7 +355,7 @@
       <h3 class="font-black text-lime-900 mb-3">📋 משימות הקבוצה</h3>
       <div class="space-y-2" id="loop-missions">
         <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,0)">
-          <span class="loop-icon text-2xl">⬜</span> א. חיברנו חיישן לחות/מפלס מים לארדואינו
+          <span class="loop-icon text-2xl">⬜</span> א. חיברנו חיישן לחות אדמה ל-ESP32 (GPIO 1)
         </div>
         <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,1)">
           <span class="loop-icon text-2xl">⬜</span> ב. חיברנו Servo/LED+זמזם כ"ברז + הודעה"
@@ -517,7 +517,7 @@ function checkCodeDone(){
   if(code1Ok&&code2Ok){
     document.getElementById('code-done').classList.add('show');
     document.getElementById('btn4').classList.remove('hidden');
-    mascotSay('קוד מושלם! < 400 → פתח. else → סגור','💻');
+    mascotSay('קוד מושלם! < 30% → פתח. else → סגור','💻');
   }
 }
 function fillBlank(id){mascotSay('בחרו תשובה מהרשת!','💻');}

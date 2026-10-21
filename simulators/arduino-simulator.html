@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>סימולטור ארדואינו | גדלים למחר</title>
+  <title>סימולטור ESP32 | גדלים למחר</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
@@ -68,7 +68,7 @@
 <div class="max-w-5xl mx-auto px-4 py-8">
 
   <div class="text-center mb-8">
-    <h1 class="text-4xl font-black text-gray-900 mb-2">⚙️ סימולטור ארדואינו</h1>
+    <h1 class="text-4xl font-black text-gray-900 mb-2">⚙️ סימולטור ESP32</h1>
     <p class="text-gray-500">למד מתח וזרם · גלה את הפינים · חבר רכיבים · בדוק לפני המציאות</p>
     <div class="flex justify-center gap-1 mt-1 text-sm text-green-700">🌿 <span id="lc">0</span> עלים</div>
   </div>
@@ -162,7 +162,7 @@
         <input type="range" min="0" max="10" value="0" id="power-sl" oninput="updatePower(this.value)"
           class="w-full h-4 rounded-full accent-blue-600 cursor-pointer">
         <div class="flex justify-between text-xs text-gray-400 mt-2 px-1">
-          <span>0V – כבוי</span><span>3.3V – מינימום</span><span>5V – ארדואינו</span><span>9–12V – סוללה</span>
+          <span>0V – כבוי</span><span>3.3V – ESP32</span><span>5V – USB</span><span>9–12V – סוללה</span>
         </div>
       </div>
 
@@ -175,7 +175,7 @@
           <div class="flex items-center gap-4 mb-3">
             <div class="led led-off" id="dig-led" style="width:40px;height:40px"></div>
             <div class="flex-1">
-              <div class="flex justify-between text-xs mb-1"><span>0V (LOW)</span><span>5V (HIGH)</span></div>
+              <div class="flex justify-between text-xs mb-1"><span>0V (LOW)</span><span>3.3V (HIGH)</span></div>
               <div class="bg-gray-200 rounded-full h-6 relative cursor-pointer" onclick="toggleDigital()" id="dig-track">
                 <div class="absolute top-1 left-1 w-4 h-4 rounded-full bg-gray-500 transition-all duration-300" id="dig-thumb"></div>
               </div>
@@ -187,39 +187,39 @@
             </div>
           </div>
           <div class="bg-white rounded-xl p-3 text-xs">
-            <p class="font-bold mb-1">בארדואינו:</p>
-            <code class="text-green-700">pinMode(9, OUTPUT);</code><br>
-            <code class="text-blue-700">digitalWrite(9, HIGH); // 5V</code><br>
-            <code class="text-gray-500">digitalWrite(9, LOW);  // 0V</code>
+            <p class="font-bold mb-1">ב-ESP32:</p>
+            <code class="text-green-700">pinMode(5, OUTPUT);</code><br>
+            <code class="text-blue-700">digitalWrite(5, HIGH); // 3.3V</code><br>
+            <code class="text-gray-500">digitalWrite(5, LOW);  // 0V</code>
           </div>
-          <p class="text-xs text-gray-500 mt-2">📌 פינים: D2–D13 | שימוש: LED, Servo, ברז</p>
+          <p class="text-xs text-gray-500 mt-2">📌 פינים: GPIO 4–7, 15 | שימוש: LED, זמזם, Servo</p>
         </div>
 
         <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5">
           <h3 class="font-black text-blue-800 mb-3">📊 אנלוגי (Analog)</h3>
-          <p class="text-sm text-gray-600 mb-3">ערך רציף: <b>0 עד 1023</b> (10 ביט). כמו ווליום – כל ערך ביניים אפשרי.</p>
+          <p class="text-sm text-gray-600 mb-3">ערך רציף: <b>0 עד 4095</b> (12 ביט). כמו ווליום – כל ערך ביניים אפשרי.</p>
           <!-- visual slider -->
           <div class="flex items-center gap-4 mb-3">
             <div class="text-3xl" id="ana-icon">🌡️</div>
             <div class="flex-1">
-              <div class="flex justify-between text-xs mb-1"><span>0</span><span>512</span><span>1023</span></div>
-              <input type="range" min="0" max="1023" value="512" id="ana-sl" oninput="updateAnalog(this.value)"
+              <div class="flex justify-between text-xs mb-1"><span>0</span><span>2048</span><span>4095</span></div>
+              <input type="range" min="0" max="4095" value="2048" id="ana-sl" oninput="updateAnalog(this.value)"
                 class="w-full h-3 rounded-full accent-blue-600">
             </div>
             <div class="text-center">
-              <div class="text-xl font-black" id="ana-val">512</div>
-              <div class="text-xs text-gray-400">≈ 2.5V</div>
+              <div class="text-xl font-black" id="ana-val">2048</div>
+              <div class="text-xs text-gray-400">≈ 1.65V</div>
             </div>
           </div>
           <div class="bg-gray-200 rounded-full h-4 overflow-hidden mb-3">
             <div class="h-4 bg-gradient-to-r from-blue-300 to-blue-600 rounded-full transition-all duration-300" id="ana-bar" style="width:50%"></div>
           </div>
           <div class="bg-white rounded-xl p-3 text-xs">
-            <p class="font-bold mb-1">בארדואינו:</p>
-            <code class="text-blue-700">int val = analogRead(A0); // 0–1023</code><br>
-            <code class="text-green-700">float ph = val * (14.0/1023); // → pH</code>
+            <p class="font-bold mb-1">ב-ESP32:</p>
+            <code class="text-blue-700">int val = analogRead(1); // 0–4095</code><br>
+            <code class="text-green-700">float ph = val * (14.0/4095); // → pH</code>
           </div>
-          <p class="text-xs text-gray-500 mt-2">📌 פינים: A0–A5 | שימוש: pH, EC, טמפ'</p>
+          <p class="text-xs text-gray-500 mt-2">📌 פינים: GPIO 1–2 (ADC1) | שימוש: pH, EC, לחות אדמה</p>
         </div>
       </div>
 
@@ -229,15 +229,15 @@
         <div class="grid md:grid-cols-3 gap-4 text-sm text-gray-600">
           <div class="bg-white rounded-xl p-4 text-center">
             <p class="text-3xl mb-2">🔴</p><p class="font-bold text-red-700 mb-1">ללא נגד</p>
-            <p>LED מקבל זרם של ~100mA – נשרף תוך שניות!</p>
+            <p>זרם גבוה מדי – LED נשרף, והפין של הבקר עלול להיפגע!</p>
           </div>
           <div class="bg-white rounded-xl p-4 text-center">
             <p class="text-3xl mb-2">🟠</p><p class="font-bold text-orange-700 mb-1">נגד 220Ω</p>
-            <p>LED מקבל ~18mA – בדיוק נכון לנורה בהירה</p>
+            <p>ב-3.3V: LED מקבל ~6mA – נורה ברורה ובטוחה לפין</p>
           </div>
           <div class="bg-white rounded-xl p-4 text-center">
             <p class="text-3xl mb-2">💡</p><p class="font-bold text-green-700 mb-1">הנוסחה</p>
-            <p>R = V / I<br>220 = 5V / 0.023A</p>
+            <p>R = (V − V<sub>LED</sub>) / I<br>220Ω ≈ (3.3V − 2V) / 0.006A</p>
           </div>
         </div>
         <div class="mt-3 bg-white rounded-xl p-3 text-xs text-gray-600">
@@ -251,212 +251,48 @@
   <!-- ══ TAB 2: PINS ══ -->
   <div class="tab-panel" id="tab-pins">
     <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
-      <h2 class="text-2xl font-black text-gray-900 mb-2">🧩 לוח ארדואינו Uno – לחץ על כל פין</h2>
-      <p class="text-gray-500 text-sm mb-5">הלוח מצויר בדיוק כמו הלוח האמיתי שבידיכם</p>
+      <h2 class="text-2xl font-black text-gray-900 mb-2">🧩 לוח ESP32-S3 – לחץ על כל פין</h2>
+      <p class="text-gray-500 text-sm mb-5">סידור הפינים לפי לוח ESP32-S3-DevKitC-1. בלוח אחר – בדקו את המספרים המודפסים ליד הפינים.</p>
 
-      <!-- ARDUINO UNO SVG -->
+      <!-- ESP32-S3 SVG (pins drawn by buildBoard()) -->
       <div class="overflow-x-auto">
-        <svg viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-2xl mx-auto block">
+        <svg id="esp-board" viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-3xl mx-auto block" style="min-width:560px;direction:ltr">
           <!-- PCB body -->
-          <rect x="10" y="20" width="660" height="240" rx="8" fill="#1a5276" stroke="#0d3349" stroke-width="2"/>
-          <!-- inner PCB details -->
-          <rect x="20" y="30" width="640" height="220" rx="6" fill="#1f618d" stroke="#154360" stroke-width="1" stroke-dasharray="4,4" opacity=".4"/>
-
-          <!-- USB port -->
-          <rect x="15" y="100" width="30" height="50" rx="4" fill="#555" stroke="#333" stroke-width="1.5"/>
-          <rect x="18" y="108" width="24" height="34" rx="2" fill="#777"/>
-          <text x="30" y="165" text-anchor="middle" fill="#aaa" font-size="6" font-family="monospace">USB</text>
-
-          <!-- Power jack -->
-          <ellipse cx="30" cy="210" rx="14" ry="14" fill="#333" stroke="#222" stroke-width="1.5"/>
-          <ellipse cx="30" cy="210" rx="6" ry="6" fill="#555"/>
-          <text x="30" y="232" text-anchor="middle" fill="#aaa" font-size="6" font-family="monospace">PWR</text>
-
-          <!-- ATmega chip -->
-          <rect x="240" y="100" width="120" height="80" rx="4" fill="#1a1a1a" stroke="#333" stroke-width="1.5"/>
-          <text x="300" y="143" text-anchor="middle" fill="#666" font-size="8" font-family="monospace">ATmega328P</text>
-          <text x="300" y="155" text-anchor="middle" fill="#444" font-size="6" font-family="monospace">Arduino Uno</text>
-
-          <!-- Crystal -->
-          <rect x="200" y="130" width="24" height="14" rx="3" fill="#c8a900" stroke="#a07800" stroke-width="1"/>
-          <text x="212" y="140" text-anchor="middle" fill="#fff" font-size="5">16MHz</text>
-
-          <!-- Reset button -->
-          <circle cx="400" cy="50" r="8" fill="#cc0000" stroke="#990000" stroke-width="1.5"/>
-          <text x="400" y="68" text-anchor="middle" fill="#ccc" font-size="7" font-family="monospace">RESET</text>
-
-          <!-- Built-in LED (pin 13) -->
-          <circle cx="580" cy="50" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1" id="builtin-led-svg"/>
-          <text x="580" y="68" text-anchor="middle" fill="#ccc" font-size="7">LED L</text>
-
-          <!-- ── POWER HEADER (top-left area) ── -->
-          <text x="80" y="38" fill="#84cc16" font-size="8" font-weight="bold" font-family="monospace">POWER</text>
-          <!-- pin rows -->
-          <!-- IOref -->
-          <g class="pin-clickable" onclick="showPinInfo('ioref')">
-            <circle cx="80" cy="52" r="5" fill="#555" stroke="#888" stroke-width="1.5"/>
-            <text x="80" y="70" text-anchor="middle" fill="#9ca3af" font-size="6.5" font-family="monospace">IOREF</text>
-          </g>
-          <!-- RESET -->
-          <g class="pin-clickable" onclick="showPinInfo('rst')">
-            <circle cx="100" cy="52" r="5" fill="#555" stroke="#888" stroke-width="1.5"/>
-            <text x="100" y="70" text-anchor="middle" fill="#9ca3af" font-size="6.5" font-family="monospace">RST</text>
-          </g>
-          <!-- 3.3V -->
-          <g class="pin-clickable" onclick="showPinInfo('33v')">
-            <circle cx="120" cy="52" r="6" fill="#f97316" stroke="#ea580c" stroke-width="1.5"/>
-            <text x="120" y="70" text-anchor="middle" fill="#fdba74" font-size="6.5" font-family="monospace">3.3V</text>
-          </g>
-          <!-- 5V -->
-          <g class="pin-clickable" onclick="showPinInfo('5v')">
-            <circle cx="140" cy="52" r="6" fill="#dc2626" stroke="#b91c1c" stroke-width="1.5"/>
-            <text x="140" y="70" text-anchor="middle" fill="#fca5a5" font-size="6.5" font-family="monospace">5V</text>
-          </g>
-          <!-- GND x2 -->
-          <g class="pin-clickable" onclick="showPinInfo('gnd')">
-            <circle cx="160" cy="52" r="6" fill="#1f2937" stroke="#374151" stroke-width="1.5"/>
-            <text x="160" y="70" text-anchor="middle" fill="#9ca3af" font-size="6.5" font-family="monospace">GND</text>
-          </g>
-          <g class="pin-clickable" onclick="showPinInfo('gnd')">
-            <circle cx="180" cy="52" r="6" fill="#1f2937" stroke="#374151" stroke-width="1.5"/>
-            <text x="180" y="70" text-anchor="middle" fill="#9ca3af" font-size="6.5" font-family="monospace">GND</text>
-          </g>
-          <!-- Vin -->
-          <g class="pin-clickable" onclick="showPinInfo('vin')">
-            <circle cx="200" cy="52" r="5" fill="#555" stroke="#888" stroke-width="1.5"/>
-            <text x="200" y="70" text-anchor="middle" fill="#9ca3af" font-size="6.5" font-family="monospace">Vin</text>
-          </g>
-
-          <!-- ── ANALOG HEADER (bottom) ── -->
-          <text x="80" y="245" fill="#60a5fa" font-size="8" font-weight="bold" font-family="monospace">ANALOG IN</text>
-          <!-- A0 -->
-          <g class="pin-clickable" onclick="showPinInfo('a0')">
-            <circle cx="80" cy="232" r="6" fill="#1d4ed8" stroke="#2563eb" stroke-width="1.5" id="pin-a0"/>
-            <text x="80" y="218" text-anchor="middle" fill="#93c5fd" font-size="6.5" font-family="monospace">A0</text>
-          </g>
-          <!-- A1 -->
-          <g class="pin-clickable" onclick="showPinInfo('a1')">
-            <circle cx="100" cy="232" r="6" fill="#1d4ed8" stroke="#2563eb" stroke-width="1.5" id="pin-a1"/>
-            <text x="100" y="218" text-anchor="middle" fill="#93c5fd" font-size="6.5" font-family="monospace">A1</text>
-          </g>
-          <!-- A2 -->
-          <g class="pin-clickable" onclick="showPinInfo('a2')">
-            <circle cx="120" cy="232" r="6" fill="#1d4ed8" stroke="#3b82f6" stroke-width="1.5"/>
-            <text x="120" y="218" text-anchor="middle" fill="#93c5fd" font-size="6.5" font-family="monospace">A2</text>
-          </g>
-          <!-- A3 -->
-          <g class="pin-clickable" onclick="showPinInfo('a3')">
-            <circle cx="140" cy="232" r="6" fill="#1d4ed8" stroke="#3b82f6" stroke-width="1.5"/>
-            <text x="140" y="218" text-anchor="middle" fill="#93c5fd" font-size="6.5" font-family="monospace">A3</text>
-          </g>
-          <!-- A4 SDA -->
-          <g class="pin-clickable" onclick="showPinInfo('a4')">
-            <circle cx="160" cy="232" r="6" fill="#0891b2" stroke="#0e7490" stroke-width="1.5"/>
-            <text x="160" y="218" text-anchor="middle" fill="#67e8f9" font-size="6.5" font-family="monospace">A4</text>
-          </g>
-          <!-- A5 SCL -->
-          <g class="pin-clickable" onclick="showPinInfo('a5')">
-            <circle cx="180" cy="232" r="6" fill="#0891b2" stroke="#0e7490" stroke-width="1.5"/>
-            <text x="180" y="218" text-anchor="middle" fill="#67e8f9" font-size="6.5" font-family="monospace">A5</text>
-          </g>
-
-          <!-- ── DIGITAL HEADER (right side, top) ── -->
-          <text x="420" y="38" fill="#84cc16" font-size="8" font-weight="bold" font-family="monospace">DIGITAL I/O</text>
-
-          <!-- D0 RX -->
-          <g class="pin-clickable" onclick="showPinInfo('d0')">
-            <circle cx="420" cy="52" r="5" fill="#374151" stroke="#6b7280" stroke-width="1.5"/>
-            <text x="420" y="70" text-anchor="middle" fill="#9ca3af" font-size="6" font-family="monospace">0~RX</text>
-          </g>
-          <!-- D1 TX -->
-          <g class="pin-clickable" onclick="showPinInfo('d1')">
-            <circle cx="440" cy="52" r="5" fill="#374151" stroke="#6b7280" stroke-width="1.5"/>
-            <text x="440" y="70" text-anchor="middle" fill="#9ca3af" font-size="6" font-family="monospace">1~TX</text>
-          </g>
-          <!-- D2 -->
-          <g class="pin-clickable" onclick="showPinInfo('d2')">
-            <circle cx="460" cy="52" r="5" fill="#374151" stroke="#6b7280" stroke-width="1.5"/>
-            <text x="460" y="70" text-anchor="middle" fill="#9ca3af" font-size="6" font-family="monospace">D2</text>
-          </g>
-          <!-- D3 PWM -->
-          <g class="pin-clickable" onclick="showPinInfo('d3')">
-            <circle cx="480" cy="52" r="5" fill="#374151" stroke="#84cc16" stroke-width="1.5"/>
-            <text x="480" y="70" text-anchor="middle" fill="#9ca3af" font-size="6" font-family="monospace">3~</text>
-          </g>
-          <!-- D4 -->
-          <g class="pin-clickable" onclick="showPinInfo('d4')">
-            <circle cx="500" cy="52" r="5" fill="#374151" stroke="#6b7280" stroke-width="1.5"/>
-            <text x="500" y="70" text-anchor="middle" fill="#9ca3af" font-size="6" font-family="monospace">D4</text>
-          </g>
-          <!-- D5 PWM -->
-          <g class="pin-clickable" onclick="showPinInfo('d5')">
-            <circle cx="520" cy="52" r="5" fill="#374151" stroke="#84cc16" stroke-width="1.5"/>
-            <text x="520" y="70" text-anchor="middle" fill="#9ca3af" font-size="6" font-family="monospace">5~</text>
-          </g>
-          <!-- D6 SERVO -->
-          <g class="pin-clickable" onclick="showPinInfo('d6')">
-            <circle cx="540" cy="52" r="6" fill="#0369a1" stroke="#0ea5e9" stroke-width="2" id="pin-d6"/>
-            <text x="540" y="70" text-anchor="middle" fill="#7dd3fc" font-size="6" font-family="monospace">6~⚙</text>
-          </g>
-          <!-- D7 -->
-          <g class="pin-clickable" onclick="showPinInfo('d7')">
-            <circle cx="560" cy="52" r="5" fill="#374151" stroke="#6b7280" stroke-width="1.5"/>
-            <text x="560" y="70" text-anchor="middle" fill="#9ca3af" font-size="6" font-family="monospace">D7</text>
-          </g>
-          <!-- D8 -->
-          <g class="pin-clickable" onclick="showPinInfo('d8')">
-            <circle cx="580" cy="52" r="5" fill="#374151" stroke="#6b7280" stroke-width="1.5"/>
-            <text x="580" y="70" text-anchor="middle" fill="#9ca3af" font-size="6" font-family="monospace">D8</text>
-          </g>
-          <!-- D9 LED RED -->
-          <g class="pin-clickable" onclick="showPinInfo('d9')">
-            <circle cx="600" cy="52" r="7" fill="#7f1d1d" stroke="#ef4444" stroke-width="2" id="pin-d9"/>
-            <text x="600" y="70" text-anchor="middle" fill="#fca5a5" font-size="6" font-family="monospace">9~🔴</text>
-          </g>
-          <!-- D10 LED GREEN -->
-          <g class="pin-clickable" onclick="showPinInfo('d10')">
-            <circle cx="620" cy="52" r="7" fill="#14532d" stroke="#22c55e" stroke-width="2" id="pin-d10"/>
-            <text x="620" y="70" text-anchor="middle" fill="#86efac" font-size="6" font-family="monospace">10~💚</text>
-          </g>
-          <!-- D11 PWM -->
-          <g class="pin-clickable" onclick="showPinInfo('d11')">
-            <circle cx="640" cy="52" r="5" fill="#374151" stroke="#84cc16" stroke-width="1.5"/>
-            <text x="640" y="70" text-anchor="middle" fill="#9ca3af" font-size="6" font-family="monospace">11~</text>
-          </g>
-          <!-- D12 -->
-          <g class="pin-clickable" onclick="showPinInfo('d12')">
-            <circle cx="660" cy="52" r="5" fill="#374151" stroke="#6b7280" stroke-width="1.5"/>
-            <text x="660" y="70" text-anchor="middle" fill="#9ca3af" font-size="6" font-family="monospace">D12</text>
-          </g>
-
-          <!-- ── DIGITAL BOTTOM ROW ── -->
-          <!-- GND digital -->
-          <g class="pin-clickable" onclick="showPinInfo('gnd')">
-            <circle cx="420" cy="232" r="6" fill="#1f2937" stroke="#374151" stroke-width="1.5"/>
-            <text x="420" y="218" text-anchor="middle" fill="#9ca3af" font-size="6.5" font-family="monospace">GND</text>
-          </g>
-          <!-- D13 built-in -->
-          <g class="pin-clickable" onclick="showPinInfo('d13')">
-            <circle cx="440" cy="232" r="5" fill="#374151" stroke="#fbbf24" stroke-width="1.5"/>
-            <text x="440" y="218" text-anchor="middle" fill="#fde68a" font-size="6" font-family="monospace">D13</text>
-          </g>
-
-          <!-- Voltage regulator -->
-          <rect x="380" y="180" width="35" height="50" rx="3" fill="#333" stroke="#555" stroke-width="1"/>
-          <text x="397" y="210" text-anchor="middle" fill="#888" font-size="6" font-family="monospace">REG</text>
-
-          <!-- Legend -->
-          <rect x="430" y="190" width="220" height="60" rx="6" fill="rgba(0,0,0,.3)" stroke="#334155" stroke-width="1"/>
-          <text x="540" y="206" text-anchor="middle" fill="#84cc16" font-size="8" font-weight="bold">מקרא</text>
-          <circle cx="445" cy="218" r="5" fill="#dc2626"/>
-          <text x="455" y="221" fill="#fca5a5" font-size="7">5V / 3.3V – כוח</text>
-          <circle cx="445" cy="232" r="5" fill="#1d4ed8"/>
-          <text x="455" y="235" fill="#93c5fd" font-size="7">A0–A5 – אנלוגי</text>
-          <circle cx="555" cy="218" r="5" fill="#374151" stroke="#84cc16" stroke-width="1.5"/>
-          <text x="566" y="221" fill="#d1fae5" font-size="7">~ = PWM</text>
-          <circle cx="555" cy="232" r="5" fill="#14532d" stroke="#22c55e" stroke-width="1.5"/>
-          <text x="566" y="235" fill="#86efac" font-size="7">⭐ = בשימוש היום</text>
+          <rect x="10" y="30" width="680" height="200" rx="8" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+          <!-- module + antenna -->
+          <rect x="34" y="88" width="190" height="84" rx="4" fill="#94a3b8" stroke="#64748b" stroke-width="1.5"/>
+          <rect x="34" y="88" width="44" height="84" rx="4" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
+          <path d="M44 100 h24 v10 h-24 v10 h24 v10 h-24 v10 h24 v10 h-24" fill="none" stroke="#475569" stroke-width="2"/>
+          <text x="150" y="126" text-anchor="middle" fill="#1e293b" font-size="11" font-weight="bold" font-family="monospace">ESP32-S3</text>
+          <text x="150" y="141" text-anchor="middle" fill="#334155" font-size="7" font-family="monospace">WROOM-1 · WiFi + BT</text>
+          <!-- buttons -->
+          <rect x="560" y="92" width="22" height="16" rx="3" fill="#475569"/><circle cx="571" cy="100" r="4" fill="#e2e8f0"/>
+          <text x="571" y="120" text-anchor="middle" fill="#cbd5e1" font-size="7" font-family="monospace">BOOT</text>
+          <rect x="560" y="150" width="22" height="16" rx="3" fill="#475569"/><circle cx="571" cy="158" r="4" fill="#e2e8f0"/>
+          <text x="571" y="178" text-anchor="middle" fill="#cbd5e1" font-size="7" font-family="monospace">RST</text>
+          <!-- RGB LED -->
+          <circle cx="520" cy="130" r="5" fill="#a3e635" stroke="#65a30d"/>
+          <text x="520" y="146" text-anchor="middle" fill="#cbd5e1" font-size="6" font-family="monospace">RGB</text>
+          <!-- USB-C x2 -->
+          <rect x="652" y="86" width="34" height="22" rx="8" fill="#9ca3af" stroke="#6b7280"/>
+          <text x="640" y="100" text-anchor="end" fill="#cbd5e1" font-size="7" font-family="monospace">USB</text>
+          <rect x="652" y="152" width="34" height="22" rx="8" fill="#9ca3af" stroke="#6b7280"/>
+          <text x="640" y="166" text-anchor="end" fill="#cbd5e1" font-size="7" font-family="monospace">UART</text>
+          <g id="esp-pins"></g>
         </svg>
+      </div>
+
+      <!-- LEGEND -->
+      <div class="flex flex-wrap gap-x-5 gap-y-2 justify-center text-xs text-gray-600 mt-4">
+        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full inline-block" style="background:#f97316"></span>3V3 – כוח לחיישנים</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full inline-block" style="background:#dc2626"></span>5V – רק ל-Servo</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full inline-block" style="background:#111827"></span>GND</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full inline-block border-2" style="background:#14532d;border-color:#a3e635"></span>⭐ בשימוש בשיעורים 6–8</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full inline-block border-2 border-dashed" style="background:#450a0a;border-color:#f87171"></span>🚫 לא לחבר</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full inline-block" style="background:#475569"></span>פנוי</span>
+      </div>
+      <div class="mt-3 bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-900 text-center">
+        ⚡ <b>ה-ESP32 עובד ב-3.3V.</b> אף פין GPIO לא מקבל יותר מ-3.3V – 5V לפין GPIO עלול לשרוף את הבקר.
       </div>
 
       <!-- PIN INFO BOX -->
@@ -485,34 +321,34 @@
 
       <!-- board with drop zones -->
       <div class="bg-slate-700 rounded-2xl p-5 mb-4">
-        <p class="text-white text-sm font-bold mb-4 text-center">לוח הארדואינו – גרור לכאן:</p>
+        <p class="text-white text-sm font-bold mb-4 text-center">לוח ה-ESP32 – גרור לכאן:</p>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">פין 9 (OUTPUT)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-d9" data-answer="led-red" data-pin="D9">D9 🔴</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 5 (OUTPUT)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-d9" data-answer="led-red" data-pin="GPIO5">GPIO 5 🔴</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">פין 10 (OUTPUT)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-d10" data-answer="led-green" data-pin="D10">D10 💚</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 6 (OUTPUT)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-d10" data-answer="led-green" data-pin="GPIO6">GPIO 6 💚</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">A0 (אנלוגי)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-a0" data-answer="ph-sensor" data-pin="A0">A0 ⚗️</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 1 (אנלוגי)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-a0" data-answer="ph-sensor" data-pin="GPIO1">GPIO 1 ⚗️</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">A1 (אנלוגי)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-a1" data-answer="ec-sensor" data-pin="A1">A1 ⚡</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 2 (אנלוגי)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-a1" data-answer="ec-sensor" data-pin="GPIO2">GPIO 2 ⚡</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">D2 (קלט)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-d2" data-answer="dht22" data-pin="D2">D2 🌡️</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 4 (קלט)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-d2" data-answer="dht22" data-pin="GPIO4">GPIO 4 🌡️</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">D6~ (PWM)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-d6" data-answer="servo" data-pin="D6">D6~ 🔧</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 15 (Servo)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-d6" data-answer="servo" data-pin="GPIO15">GPIO 15 🔧</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">בין D9 ל-LED</p>
+            <p class="text-slate-400 text-xs text-center mb-1">בין GPIO 5 ל-LED</p>
             <div class="drop-target h-16 rounded-xl" id="dz-res" data-answer="resistor" data-pin="R">🟠 נגד</div>
           </div>
         </div>
@@ -531,7 +367,7 @@
         <h3 class="font-black text-amber-900 mb-3">⚠️ 3 כללי זהב לחיבור אמיתי:</h3>
         <div class="space-y-2 text-sm text-gray-700">
           <div class="flex gap-3 bg-white rounded-xl p-3 items-start"><span class="text-red-500 font-black flex-shrink-0">1.</span><span><b>נתק חשמל תמיד</b> לפני שמחבר או מנתק רכיב כלשהו.</span></div>
-          <div class="flex gap-3 bg-white rounded-xl p-3 items-start"><span class="text-red-500 font-black flex-shrink-0">2.</span><span><b>בדוק פעמיים לפי הצבעים:</b> אדום = VCC (5V), שחור/חום = GND, כתום/צהוב = Signal.</span></div>
+          <div class="flex gap-3 bg-white rounded-xl p-3 items-start"><span class="text-red-500 font-black flex-shrink-0">2.</span><span><b>בדוק פעמיים לפי הצבעים:</b> אדום = VCC (3V3 לחיישנים, 5V רק ל-Servo), שחור/חום = GND, כתום/צהוב = Signal.</span></div>
           <div class="flex gap-3 bg-white rounded-xl p-3 items-start"><span class="text-red-500 font-black flex-shrink-0">3.</span><span><b>LED תמיד דרך נגד</b> – ללא נגד = LED נשרף תוך שניות.</span></div>
         </div>
       </div>
@@ -625,44 +461,68 @@ function toggleDigital(){
 // ── ANALOG SLIDER ──
 function updateAnalog(v){
   document.getElementById('ana-val').textContent=v;
-  document.getElementById('ana-bar').style.width=(v/1023*100)+'%';
-  const volt=(v/1023*5).toFixed(2);
+  document.getElementById('ana-bar').style.width=(v/4095*100)+'%';
+  const volt=(v/4095*3.3).toFixed(2);
   document.getElementById('ana-val').nextElementSibling&&(document.getElementById('ana-val').nextElementSibling.textContent='≈ '+volt+'V');
   // update voltage label beside value
-  const labels={0:'0V (מינ.)',256:'~1.25V',512:'~2.5V',768:'~3.75V',1023:'5V (מקס.)'};
-  const icon=v<200?'❄️':v<400?'🌡️':v<700?'🌡️':v<900?'🌶️':'🔥';
+  const icon=v<800?'❄️':v<2800?'🌡️':v<3600?'🌶️':'🔥';
   document.getElementById('ana-icon').textContent=icon;
 }
 
-// ── PIN INFO ──
+// ── PIN INFO (ESP32-S3-DevKitC-1) ──
+// header rows, left → right (pin 1 at the antenna end)
+const J1=['3v3','3v3','rst','4','5','6','7','15','16','17','18','8','3','46','9','10','11','12','13','14','5v','gnd'];
+const J3=['gnd','43','44','1','2','42','41','40','39','38','37','36','35','0','45','48','47','21','20','19','gnd','gnd'];
 const pinDB={
-  '5v':{title:'5V – ספק כוח',color:'#ef4444',body:'מספק 5 וולט לרכיבים. חיישן DHT22, BH1750, ומד pH ניזונים מפין זה. <b>אסור לחבר ישירות ל-GND!</b>',use:''},
-  '33v':{title:'3.3V – ספק כוח נמוך',color:'#f97316',body:'מספק 3.3 וולט. מתאים לרכיבים רגישים. בארדואינו Uno יש מגביל זרם של 50mA.',use:''},
+  '5v':{title:'5V – מתח USB',color:'#ef4444',body:'5 וולט ישירות מה-USB. <b>רק להזנת Servo/מנוע</b> – לעולם לא לפין GPIO ולא לחיישנים שמחוברים לפיני GPIO. אסור לחבר ישירות ל-GND!',use:'⭐ שיעורים 7–8: חשמל ל-Servo'},
+  '3v3':{title:'3V3 – ספק כוח 3.3V',color:'#f97316',body:'מתח העבודה של ה-ESP32. מזינים מכאן את DHT22, BH1750, חיישן לחות האדמה והפוטנציומטר. <b>אסור לחבר ישירות ל-GND!</b>',use:'⭐ שיעורים 6–8: חשמל לחיישנים'},
   'gnd':{title:'GND – אדמה (0V)',color:'#6b7280',body:'המוליך השלילי. <b>כל רכיב חייב חיבור GND</b>. בלי GND אין מעגל סגור ולא יעבור זרם.',use:''},
-  'ioref':{title:'IOREF',color:'#6b7280',body:'מגדיר את מתח ה-I/O של הלוח. לא בשימוש בשיעורים אלה.',use:''},
-  'rst':{title:'RST – Reset',color:'#6b7280',body:'חיבור ל-GND מאפס את הארדואינו. כמו כפתור הפעלה מחדש.',use:''},
-  'vin':{title:'Vin – כניסת מתח חיצוני',color:'#f97316',body:'ניתן לחבר כאן סוללה 7–12V. הארדואינו ייוצב פנימית ל-5V.',use:''},
-  'd0':{title:'D0 – RX (קבלת נתונים)',color:'#6b7280',body:'חלק מיחידת ה-Serial. לא להשתמש בו אם מחוברים ל-USB!',use:''},
-  'd1':{title:'D1 – TX (שליחת נתונים)',color:'#6b7280',body:'חלק מיחידת ה-Serial. לא להשתמש בו אם מחוברים ל-USB!',use:''},
-  'd2':{title:'D2 – קלט דיגיטלי',color:'#16a34a',body:'פין דיגיטלי רגיל. מתאים ל-DHT22 (חיישן טמפ\' ולחות). 0V = LOW, 5V = HIGH.',use:'⭐ שיעור 7: חיישן DHT22'},
-  'd3':{title:'D3~ – PWM',color:'#84cc16',body:'פין עם PWM (Pulse Width Modulation) – שולח אות מהבהב מהיר שמדמה עוצמה משתנה. analogWrite(3, 128) = ~50% עוצמה.',use:''},
-  'd4':{title:'D4 – דיגיטלי',color:'#6b7280',body:'פין דיגיטלי רגיל. INPUT או OUTPUT.',use:''},
-  'd5':{title:'D5~ – PWM',color:'#84cc16',body:'PWM. ניתן לשלוט בעוצמת נורה, מהירות מנוע.',use:''},
-  'd6':{title:'D6~ – Servo / PWM',color:'#0ea5e9',body:'⭐ בשיעור הזה: Servo (ברז). הספריה <code>Servo.h</code> שולטת בזווית 0–180°. valve.write(90) = פתוח, write(0) = סגור.',use:'⭐ שיעור 7: ברז Servo'},
-  'd7':{title:'D7 – דיגיטלי',color:'#6b7280',body:'פין דיגיטלי. OUTPUT או INPUT.',use:''},
-  'd8':{title:'D8 – דיגיטלי',color:'#6b7280',body:'פין דיגיטלי. OUTPUT או INPUT.',use:''},
-  'd9':{title:'D9~ – LED אדום ⭐',color:'#ef4444',body:'⭐ בשיעור הזה: LED אדום. <code>digitalWrite(9, HIGH)</code> = LED דולק. עם נגד 220Ω בחיבור! PWM = שליטה בבהירות.',use:'⭐ שיעור 7: LED אדום (בעיה)'},
-  'd10':{title:'D10~ – LED ירוק ⭐',color:'#22c55e',body:'⭐ בשיעור הזה: LED ירוק. <code>digitalWrite(10, HIGH)</code> = LED ירוק דולק = הכל תקין!',use:'⭐ שיעור 7: LED ירוק (תקין)'},
-  'd11':{title:'D11~ – PWM / MOSI',color:'#84cc16',body:'PWM וגם SPI (MOSI). שימוש ברמה מתקדמת.',use:''},
-  'd12':{title:'D12 – MISO',color:'#6b7280',body:'דיגיטלי וגם SPI (MISO). שימוש ברמה מתקדמת.',use:''},
-  'd13':{title:'D13 – LED מובנה',color:'#fbbf24',body:'מחובר ל-LED קטן על הלוח (LED "L"). נהדר לבדיקה: <code>digitalWrite(13, HIGH)</code> ותראה LED דולק על הלוח.',use:'שימוש: בדיקה מהירה'},
-  'a0':{title:'A0 – מד pH ⭐',color:'#7c3aed',body:'⭐ בשיעור הזה: חיישן pH. <code>analogRead(A0)</code> מחזיר 0–1023. המרה: <code>ph = val * (14.0/1023)</code>. רזולוציה: ~0.014 יחידות pH.',use:'⭐ שיעור 7: מד pH'},
-  'a1':{title:'A1 – מד EC ⭐',color:'#7c3aed',body:'⭐ בשיעור הזה: חיישן EC. analogRead(A1) ממיר את המוליכות החשמלית של המים למספר.',use:'⭐ שיעור 7: מד EC'},
-  'a2':{title:'A2 – אנלוגי פנוי',color:'#3b82f6',body:'פין אנלוגי פנוי לחיישנים נוספים. 10-bit = 1024 ערכים אפשריים.',use:''},
-  'a3':{title:'A3 – אנלוגי פנוי',color:'#3b82f6',body:'פין אנלוגי פנוי.',use:''},
-  'a4':{title:'A4 – SDA (I2C)',color:'#0891b2',body:'קו נתונים של פרוטוקול I2C. חיישן BH1750 (אור) ו-DS3231 (שעון) משתמשים בזה. חבר לפין SDA של הרכיב.',use:'⭐ שיעור 6: חיישן BH1750 (אור)'},
-  'a5':{title:'A5 – SCL (I2C)',color:'#0891b2',body:'קו שעון של I2C. תמיד ביחד עם A4/SDA. גם A4 וגם A5 נדרשים לפרוטוקול I2C.',use:'⭐ שיעור 6: חיישן BH1750 (אור)'},
+  'rst':{title:'RST – Reset',color:'#6b7280',body:'מאפס את הבקר, כמו כפתור RST על הלוח. לא בשימוש בשיעורים.',use:''},
+  '1':{title:'GPIO 1 – אנלוגי (ADC1) ⭐',color:'#7c3aed',body:'⭐ חיישן pH / פוטנציומטר ("pH"), וביסודי – חיישן לחות אדמה. <code>analogRead(1)</code> מחזיר 0–4095 (12 ביט). המרה: <code>ph = val * (14.0/4095)</code>. מתח כניסה: עד 3.3V בלבד!',use:'⭐ שיעורים 6–8: pH / לחות אדמה'},
+  '2':{title:'GPIO 2 – אנלוגי (ADC1) ⭐',color:'#7c3aed',body:'⭐ חיישן EC. <code>analogRead(2)</code> ממיר את המוליכות של המים למספר 0–4095. מתח כניסה: עד 3.3V בלבד!',use:'⭐ שיעור 6: מד EC'},
+  '4':{title:'GPIO 4 – DHT22 ⭐',color:'#0891b2',body:'⭐ קו DATA של חיישן הטמפרטורה והלחות. <code>DHT dht(4, DHT22);</code>. חיישן "חשוף" צריך נגד 10kΩ בין DATA ל-3V3.',use:'⭐ שיעור 6: חיישן DHT22'},
+  '5':{title:'GPIO 5 – LED אדום ⭐',color:'#ef4444',body:'⭐ LED אדום. <code>digitalWrite(5, HIGH)</code> = 3.3V = LED דולק. תמיד דרך נגד 220Ω!',use:'⭐ שיעור 7: LED אדום (בעיה)'},
+  '6':{title:'GPIO 6 – LED ירוק ⭐',color:'#22c55e',body:'⭐ LED ירוק. <code>digitalWrite(6, HIGH)</code> = LED ירוק דולק = הכל תקין! תמיד דרך נגד 220Ω.',use:'⭐ שיעור 7: LED ירוק (תקין)'},
+  '7':{title:'GPIO 7 – זמזם ⭐',color:'#f59e0b',body:'⭐ זמזם אקטיבי ("הודעה"). <code>digitalWrite(7, HIGH)</code> = צפצוף.',use:'⭐ שיעורים 7–8: זמזם'},
+  '8':{title:'GPIO 8 – SDA (I2C) ⭐',color:'#0891b2',body:'קו הנתונים של I2C. חיישן האור BH1750 מתחבר כאן. בקוד: <code>Wire.begin(8, 9);</code>',use:'⭐ שיעור 6: BH1750 (אור)'},
+  '9':{title:'GPIO 9 – SCL (I2C) ⭐',color:'#0891b2',body:'קו השעון של I2C. תמיד ביחד עם GPIO 8 (SDA).',use:'⭐ שיעור 6: BH1750 (אור)'},
+  '15':{title:'GPIO 15 – Servo ⭐',color:'#0ea5e9',body:'⭐ אות ה-Servo (ברז). ספריית <code>ESP32Servo</code>: <code>valve.attach(15); valve.write(90)</code> = פתוח, <code>write(0)</code> = סגור. חשמל ל-Servo מ-5V.',use:'⭐ שיעורים 7–8: ברז Servo'},
 };
+const AVOID={
+  '0':'פין אתחול (BOOT). אם מחובר אליו משהו – הלוח עלול לא לעלות או לא לקבל קוד.',
+  '3':'פין אתחול (strapping). עדיף להשאיר פנוי.',
+  '45':'פין אתחול (strapping) – קובע מתח לזיכרון. להשאיר פנוי.',
+  '46':'פין אתחול (strapping). להשאיר פנוי.',
+  '19':'קו USB (D−). תפוס בתקשורת USB עם המחשב.',
+  '20':'קו USB (D+). תפוס בתקשורת USB עם המחשב.',
+  '35':'בלוחות עם זיכרון PSRAM מורחב – תפוס על ידי הזיכרון.',
+  '36':'בלוחות עם זיכרון PSRAM מורחב – תפוס על ידי הזיכרון.',
+  '37':'בלוחות עם זיכרון PSRAM מורחב – תפוס על ידי הזיכרון.',
+  '43':'TX – שליחת נתוני Serial דרך חיבור ה-UART. לא להשתמש.',
+  '44':'RX – קבלת נתוני Serial דרך חיבור ה-UART. לא להשתמש.',
+  '48':'מחובר לנורת ה-RGB שעל הלוח (בחלק מהגרסאות). עדיף להשאיר פנוי.',
+};
+Object.entries(AVOID).forEach(([k,v])=>{pinDB[k]={title:'GPIO '+k+' – 🚫 לא לחבר',color:'#f87171',body:v,use:'',avoid:true};});
+[...J1,...J3].forEach(k=>{if(!pinDB[k])pinDB[k]={title:'GPIO '+k+' – פנוי',color:'#94a3b8',body:'פין דיגיטלי פנוי (INPUT/OUTPUT). לא בשימוש בשיעורים 6–8.',use:''};});
+const pinLabel=k=>({'3v3':'3V3','5v':'5V','gnd':'GND','rst':'RST','43':'TX','44':'RX'})[k]||k;
+function pinStyle(k){
+  if(k==='3v3')return{fill:'#f97316',stroke:'#ea580c',dash:''};
+  if(k==='5v')return{fill:'#dc2626',stroke:'#b91c1c',dash:''};
+  if(k==='gnd')return{fill:'#111827',stroke:'#4b5563',dash:''};
+  const d=pinDB[k];
+  if(d.avoid)return{fill:'#450a0a',stroke:'#f87171',dash:'2,2'};
+  if(d.use)return{fill:d.color,stroke:'#a3e635',dash:''};
+  return{fill:'#475569',stroke:'#64748b',dash:''};
+}
+function buildBoard(){
+  const g=document.getElementById('esp-pins');let h='';
+  [[J1,48,66],[J3,212,198]].forEach(([row,cy,ty])=>row.forEach((k,i)=>{
+    const cx=52+i*28,s=pinStyle(k),star=pinDB[k].use&&!['3v3','5v','gnd'].includes(k);
+    h+=`<g class="pin-clickable" onclick="showPinInfo('${k}')"><circle cx="${cx}" cy="${cy}" r="${star?7:6}" fill="${s.fill}" stroke="${s.stroke}" stroke-width="2"${s.dash?` stroke-dasharray="${s.dash}"`:''}/>`+
+       `<text x="${cx}" y="${ty}" text-anchor="middle" fill="${star?'#d9f99d':'#cbd5e1'}" font-size="7.5" font-weight="${star?'bold':'normal'}" font-family="monospace">${pinLabel(k)}</text></g>`;
+  }));
+  g.innerHTML=h;
+}
 function showPinInfo(id){
   const d=pinDB[id];if(!d)return;
   const box=document.getElementById('pin-info-box');
@@ -712,11 +572,11 @@ function dropConnect(zone,val,src){
 
 // ── QUIZ ──
 const qs=[
-  {q:'מה ההבדל בין מתח לזרם?',opts:['אותו דבר – שם שונה','מתח = לחץ (V), זרם = כמות שזורמת (A/mA)','מתח = AC, זרם = DC','אין הבדל בארדואינו'],ans:1,exp:'מתח (V) = כמה "לחץ" יש. זרם (A/mA) = כמה אלקטרונים עוברים. כמו לחץ מים לעומת כמות המים.'},
-  {q:'pH = 4.8 – איזה פין לחיבור החיישן?',opts:['D9 – דיגיטלי','5V – כוח','A0 – אנלוגי','GND'],ans:2,exp:'pH הוא ערך רציף (3–9). צריך פין אנלוגי A0 שקורא 0–1023.'},
-  {q:'LED מחובר ל-D9 – אין נגד. מה יקרה?',opts:['LED ידלק חזק','LED לא ידלק','LED יישרף תוך שניות','ארדואינו יישרף'],ans:2,exp:'ללא נגד, הזרם גדול מדי (~100mA). LED מיועד ל-20mA. הנגד 220Ω מגביל לכ-20mA.'},
-  {q:'מה analogRead(A0) מחזיר?',opts:['מתח בוולט (0–5)','מספר בין 0 ל-1023','HIGH או LOW בלבד','שם החיישן'],ans:1,exp:'analogRead מחזיר 0–1023 (10 ביט). להמרה לוולט: val * (5.0/1023).'},
-  {q:'Servo מחובר לפין D6. מה הפקודה לפתיחת ברז?',opts:['digitalWrite(6, HIGH)','analogWrite(6, 90)','valve.write(90)','pinMode(6, OPEN)'],ans:2,exp:'ספריית Servo.h מגדירה אובייקט. valve.write(90) = 90 מעלות = ברז פתוח. write(0) = סגור.'},
+  {q:'מה ההבדל בין מתח לזרם?',opts:['אותו דבר – שם שונה','מתח = לחץ (V), זרם = כמות שזורמת (A/mA)','מתח = AC, זרם = DC','אין הבדל בבקר'],ans:1,exp:'מתח (V) = כמה "לחץ" יש. זרם (A/mA) = כמה אלקטרונים עוברים. כמו לחץ מים לעומת כמות המים.'},
+  {q:'pH = 4.8 – איזה פין לחיבור החיישן?',opts:['GPIO 5 – דיגיטלי','5V – כוח','GPIO 1 – אנלוגי','GND'],ans:2,exp:'pH הוא ערך רציף (3–9). צריך פין אנלוגי – GPIO 1 קורא 0–4095.'},
+  {q:'LED מחובר ל-GPIO 5 – אין נגד. מה יקרה?',opts:['LED ידלק חזק','LED לא ידלק','LED יישרף (והפין ייפגע)','שום דבר'],ans:2,exp:'ללא נגד הזרם גבוה מדי – ה-LED נשרף והפין של הבקר עלול להיפגע. נגד 220Ω ב-3.3V מגביל לכ-6mA.'},
+  {q:'ב-ESP32, מה analogRead(1) מחזיר?',opts:['מתח בוולט (0–3.3)','מספר בין 0 ל-4095','HIGH או LOW בלבד','שם החיישן'],ans:1,exp:'ב-ESP32 analogRead מחזיר 0–4095 (12 ביט). להמרה לוולט: val * (3.3/4095).'},
+  {q:'Servo מחובר ל-GPIO 15. מה הפקודה לפתיחת ברז?',opts:['digitalWrite(15, HIGH)','analogWrite(15, 90)','valve.write(90)','pinMode(15, OPEN)'],ans:2,exp:'ספריית ESP32Servo מגדירה אובייקט. valve.write(90) = 90 מעלות = ברז פתוח. write(0) = סגור.'},
 ];
 let qScore=0;
 function buildQuiz(){
@@ -751,6 +611,7 @@ function answerQ(qi,ai){
 function resetQuiz(){qScore=0;document.getElementById('quiz-result').classList.add('hidden');buildQuiz();}
 
 // init
+buildBoard();
 buildQuiz();
 document.getElementById('lc').textContent=lv;
 </script>

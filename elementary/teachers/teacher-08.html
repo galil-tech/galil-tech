@@ -34,7 +34,7 @@
 
   <div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-5 text-sm text-sky-900">
     <p class="font-bold mb-1">🪜 רמפת השלמה (5 דק', לפני תחילת השיעור):</p>
-    <p>קבוצה שלא הצליחה להדליק LED בשיעור 7 לא צריכה להישאר מאחור. תנו לה ארדואינו עם קוד כבר מועלה ועובד (מתוך ערכת החומרה הרזרבית) – כך היא מתחילה משיעור 8 מאותה נקודת זינוק, ומתמקדת בסגירת המעגל החדש.</p>
+    <p>קבוצה שלא הצליחה להדליק LED בשיעור 7 לא צריכה להישאר מאחור. תנו לה ESP32 עם קוד כבר מועלה ועובד (מתוך ערכת החומרה הרזרבית) – כך היא מתחילה משיעור 8 מאותה נקודת זינוק, ומתמקדת בסגירת המעגל החדש.</p>
   </div>
 
   <!-- GOALS -->
@@ -55,7 +55,7 @@
       <div>
         <h3 class="font-bold text-gray-700 mb-3 text-sm uppercase">מיומנויות – סגירת מעגל</h3>
         <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">🔧 <span><b>בונה מעגל שלם:</b> חיישן (לחות/מים) → ארדואינו → ברז/הודעה</span></li>
+          <li class="flex gap-2">🔧 <span><b>בונה מעגל שלם:</b> חיישן (לחות/מים) → בקר ESP32 → ברז/הודעה</span></li>
           <li class="flex gap-2">🔧 <span>רואה שהמעגל מגיב לבד לשינוי, בלי שאף אחד לוחץ כפתור</span></li>
         </ul>
       </div>
@@ -84,8 +84,8 @@
       <div>
         <h3 class="font-bold mb-3">⚡ ציוד המעגל</h3>
         <ul class="space-y-2 text-gray-600">
-          <li class="flex gap-2">📋 <span>ארדואינו + חיישן לחות/מפלס מים (משיעור 6)</span></li>
-          <li class="flex gap-2">📋 <span>Servo/ברז קטן, או LED+זמזם כהדמיית "הודעה" (משיעור 7)</span></li>
+          <li class="flex gap-2">📋 <span>ESP32-S3 + חיישן לחות האדמה הקיבולי (משיעור 6, GPIO 1)</span></li>
+          <li class="flex gap-2">📋 <span><b>מומלץ ביסודי:</b> LED+זמזם כ"הודעה" (משיעור 7: GPIO 5 / 6 / 7). Servo/ברז קטן – אופציונלי, והמורה מחבר אותו (GPIO 15, חשמל מ-5V0)</span></li>
           <li class="flex gap-2">📋 <span>קוד מוכן מראש (המורה מעלה, לא התלמידים)</span></li>
           <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ בדקו שהמעגל המלא עובד פעם אחת לפני השיעור!</li>
           <li class="flex gap-2 mt-2">🧰 <span><b>ערכת חומרה רזרבית אחת לכיתה</b> – גם לרמפת ההשלמה למעלה</span></li>
@@ -94,9 +94,11 @@
       <div>
         <h3 class="font-bold mb-3">💻 קוד – למורה בלבד</h3>
         <div class="bg-slate-800 rounded-xl p-4 font-mono text-xs text-green-400 leading-relaxed">
-          <p class="text-slate-400">// זהה בעיקרון למערך הכללי</p>
-          <p>// אם לחות נמוכה → פתח ברז + הודעה</p>
-          <p>// אחרת → סגור ברז</p>
+          <p class="text-slate-400">// זהה למערך הכללי (ESP32-S3)</p>
+          <p>// חיישן לחות → GPIO 1 (0–4095, גבוה = יבש)</p>
+          <p>// אם יבש → LED אדום + זמזם (+ פתח ברז)</p>
+          <p>// אחרת → LED ירוק (+ סגור ברז)</p>
+          <p>// בלי Servo? מחקו את שורות valve</p>
         </div>
       </div>
       <div>
@@ -182,8 +184,8 @@
           <div class="bg-lime-50 border border-lime-200 rounded-xl p-5 mb-4">
             <p class="font-bold text-lime-900 mb-3">📋 משימות הקבוצה (זה הלב של השיעור!):</p>
             <div class="grid md:grid-cols-2 gap-2 text-sm">
-              <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות/מפלס מים</div>
-              <div class="bg-white rounded-lg p-2">ב. חיבור Servo/LED+זמזם כ"ברז+הודעה"</div>
+              <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות האדמה – 3 חוטים לפי צבע (כמו בשיעור 6)</div>
+              <div class="bg-white rounded-lg p-2">ב. חיבור LED+זמזם כ"הודעה" (ו-Servo כ"ברז", אם המורה חיבר)</div>
               <div class="bg-white rounded-lg p-2 border-2 border-purple-200"><b>ג. בקשו מהמורה להעלות את הקוד</b></div>
               <div class="bg-white rounded-lg p-2 border-2 border-blue-200"><b>ד. הוכיחו שהמעגל סגור:</b> שנו את ערך החיישן וצפו בברז/הודעה מגיבים לבד</div>
               <div class="bg-white rounded-lg p-2">ה. דונו: איזו מערכת שלישית הייתם מוסיפים?</div>
@@ -312,6 +314,11 @@
         </ul>
       </div>
     </div>
+  </div>
+
+  <!-- HARDWARE NOTE -->
+  <div class="bg-slate-100 border border-slate-300 rounded-2xl p-4 text-xs text-slate-600">
+    🔧 <b>עודכן ל-ESP32-S3 (מסלול יסודי):</b> חיישן לחות→GPIO 1 · LED→GPIO 5/6 · זמזם→GPIO 7 · Servo (אופציונלי)→GPIO 15, מתח 3.3V, ADC 0–4095. המורה מעלה את הקוד; התלמידים מחברים וקוראים ערכים. פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
   </div>
 
   <!-- NOTES -->

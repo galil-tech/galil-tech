@@ -47,7 +47,7 @@
       <span class="bg-lime-400/20 text-lime-300 text-xs px-3 py-1 rounded-full">כלי אישי</span>
     </div>
     <h1 class="text-4xl md:text-5xl font-black mb-2">📡 סימולטור החיישנים שלי</h1>
-    <p class="text-blue-200 text-lg">5 חיישנים · הארדואינו מחליט בזמן אמת · תרגול לפני הבדיקה האמיתית</p>
+    <p class="text-blue-200 text-lg">5 חיישנים · ה-ESP32 מחליט בזמן אמת · תרגול לפני הבדיקה האמיתית</p>
   </div>
 </div>
 
@@ -63,7 +63,7 @@
   <!-- TAB 1: SIMULATOR -->
   <div class="tab-panel active" id="tab-sim">
 
-    <p class="text-gray-500 text-sm mb-6">הזיזו כל סליידר – הארדואינו מגיב בזמן אמת. נסו לגרום לכל סוגי ההתראות!</p>
+    <p class="text-gray-500 text-sm mb-6">הזיזו כל סליידר – ה-ESP32 מגיב בזמן אמת. נסו לגרום לכל סוגי ההתראות!</p>
 
     <!-- 5 sensor cards -->
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -120,10 +120,10 @@
       </div>
     </div>
 
-    <!-- Arduino decision panel -->
+    <!-- ESP32 decision panel -->
     <div class="bg-slate-900 rounded-2xl p-6 mb-6">
       <div class="flex justify-between items-center mb-3">
-        <p class="text-slate-400 text-xs font-mono">// הארדואינו מחליט:</p>
+        <p class="text-slate-400 text-xs font-mono">// ה-ESP32 מחליט:</p>
         <span class="text-xs text-slate-500" id="alert-count">0 התראות</span>
       </div>
       <div id="arduino-dec" class="font-mono text-lg text-green-400 leading-relaxed">✅ כל הערכים תקינים – הצמח בסדר 🌱</div>

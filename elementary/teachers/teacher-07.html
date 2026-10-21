@@ -42,7 +42,7 @@
         <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase">מיומנויות – בסימולטור בלוקים</h3>
         <ul class="space-y-2 text-sm text-gray-600">
           <li class="flex gap-2">🎮 <span><b>גרירה בלבד:</b> סידור 3-4 בלוקי "אם...אז..." לסדר נכון (בסימולטור ויזואלי מפושט, בסגנון הסימולטור הכללי) – בלי כתיבת קוד ובלי בחירה מרשימת מילים באנגלית</span></li>
-          <li class="flex gap-2">🔌 <span><b>חיבור אמיתי:</b> LED דרך נגד "מגן" לארדואינו</span></li>
+          <li class="flex gap-2">🔌 <span><b>חיבור אמיתי:</b> LED דרך נגד "מגן" לבקר ESP32 (+ זמזם, אם יש)</span></li>
         </ul>
       </div>
     </div>
@@ -55,10 +55,11 @@
       <div>
         <h3 class="font-bold mb-3">⚡ חשמל ורכיבים</h3>
         <ul class="space-y-2 text-gray-600">
-          <li>📋 ארדואינו × קבוצות</li>
+          <li>📋 לוח ESP32-S3 × קבוצות + חיישן לחות האדמה משיעור 6</li>
           <li>📋 LED אדום × 1 לקבוצה</li>
           <li>📋 LED ירוק × 1 לקבוצה</li>
-          <li>📋 נגד "מגן" × 2 לקבוצה</li>
+          <li>📋 נגד "מגן" (220Ω) × 2 לקבוצה</li>
+          <li>📋 (מומלץ) זמזם אקטיבי (Active Buzzer) שעובד ב-3.3V × 1 לקבוצה</li>
           <li>📋 Breadboard וכבלי חיבור, או – אם קיים – ערכת חיבורי "תקע" צבעוניים (מומלץ לגיל הזה, ראו הערה בשיעור 6)</li>
           <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ ודאו שכל LED מגיע עם נגד "מגן"!</li>
           <li class="flex gap-2 mt-2">🧰 <span><b>ערכת חומרה רזרבית אחת לכיתה</b> – למקרה תקלה</span></li>
@@ -66,24 +67,52 @@
       </div>
       <div>
         <h3 class="font-bold mb-3">💻 קוד – המורה בלבד</h3>
-        <p class="text-gray-600 mb-2">התלמידים לא כותבים קוד היום. המורה מעלה מראש קוד מוכן (זהה בעיקרון לזה שבמערך הכללי – LED אדום/ירוק לפי טווח pH). התלמידים עובדים רק עם בלוקים ויזואליים בלומדה, ועם ה-LED הפיזי.</p>
-        <div class="bg-slate-800 rounded-xl p-3 text-xs text-green-400">
-          <p class="text-slate-400">// לשימוש המורה בלבד – זהה למערך הכללי</p>
-          <p>// אם pH לא בטווח → LED אדום</p>
-          <p>// אם pH בטווח → LED ירוק</p>
+        <p class="text-gray-600 mb-2">התלמידים לא כותבים קוד היום. המורה מעלה מראש קוד מוכן (אותה לוגיקה כמו במערך הכללי – LED אדום/ירוק – אבל לפי <b>לחות האדמה</b> במקום pH, כי ביסודי עובדים עם חיישן הלחות). התלמידים עובדים רק עם בלוקים ויזואליים בלומדה, ועם ה-LED הפיזי.</p>
+        <div class="bg-slate-800 rounded-xl p-3 text-xs text-green-400 font-mono" dir="ltr">
+          <p class="text-slate-400">// teacher only · ESP32S3 Dev Module</p>
+          <p>int soilPin=1, ledRed=5, ledGreen=6, buzzer=7;</p>
+          <p>int DRY = 2500; <span class="text-slate-500">// example – calibrate!</span></p>
+          <p>void setup() {'{'}</p>
+          <p>&nbsp;pinMode(ledRed, OUTPUT);</p>
+          <p>&nbsp;pinMode(ledGreen, OUTPUT);</p>
+          <p>&nbsp;pinMode(buzzer, OUTPUT);</p>
+          <p>{'}'}</p>
+          <p>void loop() {'{'}</p>
+          <p>&nbsp;int raw = analogRead(soilPin); <span class="text-slate-500">// 0–4095</span></p>
+          <p>&nbsp;if (raw &gt; DRY) {'{'} <span class="text-slate-500">// high = dry</span></p>
+          <p>&nbsp;&nbsp;digitalWrite(ledRed, HIGH);</p>
+          <p>&nbsp;&nbsp;digitalWrite(ledGreen, LOW);</p>
+          <p>&nbsp;&nbsp;digitalWrite(buzzer, HIGH);</p>
+          <p>&nbsp;{'}'} else {'{'}</p>
+          <p>&nbsp;&nbsp;digitalWrite(ledRed, LOW);</p>
+          <p>&nbsp;&nbsp;digitalWrite(ledGreen, HIGH);</p>
+          <p>&nbsp;&nbsp;digitalWrite(buzzer, LOW);</p>
+          <p>&nbsp;{'}'}</p>
+          <p>&nbsp;delay(1000);</p>
+          <p>{'}'}</p>
         </div>
+        <p class="text-xs text-gray-500 mt-2">💡 <b>כיול DRY:</b> קחו את הערך ה"יבש" וה"רטוב" שנמדדו בשיעור 6 – וקבעו את DRY באמצע ביניהם.</p>
       </div>
       <div>
         <h3 class="font-bold mb-3">📐 חיבורים (למורה)</h3>
         <div class="space-y-2 text-xs">
           <div class="bg-red-50 border border-red-200 rounded-xl p-3">
             <p class="font-bold text-red-700 mb-1">🔴 LED אדום</p>
-            <p>חיבור לפין 9, דרך הנגד "המגן"</p>
+            <p>GPIO 5 → נגד "מגן" → רגל ארוכה · רגל קצרה → GND</p>
           </div>
           <div class="bg-green-50 border border-green-200 rounded-xl p-3">
             <p class="font-bold text-green-700 mb-1">💚 LED ירוק</p>
-            <p>אותו חיבור, פין 10</p>
+            <p>אותו חיבור, GPIO 6</p>
           </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
+            <p class="font-bold text-amber-700 mb-1">🔔 זמזם (אופציונלי)</p>
+            <p>+ (רגל ארוכה) → GPIO 7 · – → GND</p>
+          </div>
+          <div class="bg-sky-50 border border-sky-200 rounded-xl p-3">
+            <p class="font-bold text-sky-700 mb-1">💧 חיישן לחות (משיעור 6)</p>
+            <p>VCC → 3V3 · GND → GND · AOUT → GPIO 1</p>
+          </div>
+          <p class="text-gray-500">⚡ הכל ב-3.3V. אם יש ערכת "תקע" (Grove וכד') – חברו לשקעים המתאימים לאותם GPIO והתלמידים רק תוקעים.</p>
         </div>
       </div>
     </div>
@@ -118,8 +147,8 @@
           <h3 class="text-xl font-black mb-2">💬 דיון – Teaser מהשיעור הקודם</h3>
           <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm">
             <p class="font-bold text-blue-900 mb-1">❓ שאלת הדיון:</p>
-            <p class="text-lg font-bold">"עד עכשיו הארדואינו רק מדד ודיווח. מה צריך לקרות כדי שהוא יעשה משהו בעצמו?"</p>
-            <p class="text-gray-500 mt-2">תשובה צפויה: לחבר אותו ל"ידיים" – נורה, ברז, מאוורר. זה מה שנבנה היום.</p>
+            <p class="text-lg font-bold">"עד עכשיו הבקר רק מדד ודיווח. מה צריך לקרות כדי שהוא יעשה משהו בעצמו?"</p>
+            <p class="text-gray-500 mt-2">תשובה צפויה: לחבר אותו ל"ידיים" – נורה, זמזם, ברז, מאוורר. זה מה שנבנה היום.</p>
           </div>
         </div>
       </div>
@@ -160,7 +189,7 @@
               <div class="bg-white rounded-lg p-2">א. חיבור LED אדום עם הנגד "המגן"</div>
               <div class="bg-white rounded-lg p-2">ב. חיבור LED ירוק עם הנגד "המגן"</div>
               <div class="bg-white rounded-lg p-2 border-2 border-orange-200"><b>ג. העלאת קוד – המורה עושה!</b></div>
-              <div class="bg-white rounded-lg p-2">ד. צפו: איזה LED דולק עכשיו?</div>
+              <div class="bg-white rounded-lg p-2">ד. צפו: החיישן באדמה רטובה – איזה LED דולק? הוציאו אותו לאוויר – מה קרה?</div>
               <div class="bg-white rounded-lg p-2">ה. צלמו את שניהם</div>
             </div>
           </div>
@@ -170,7 +199,8 @@
               <ul class="space-y-1 text-xs text-gray-600">
                 <li><b>LED לא דולק:</b> קראו למורה – בדיקת כיוון רגלי LED</li>
                 <li><b>שניהם דולקים:</b> קוד לא הועלה</li>
-                <li><b>LED חלש/לא דולק בכלל:</b> קראו למורה</li>
+                <li><b>LED חלש/לא דולק בכלל:</b> קראו למורה (ב-3.3V ה-LED מעט פחות בהיר – זה תקין)</li>
+                <li><b>האדום לא נדלק גם ביבש:</b> המורה מכייל מחדש את DRY בקוד</li>
               </ul>
             </div>
             <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-sm">
@@ -269,6 +299,11 @@
         </ul>
       </div>
     </div>
+  </div>
+
+  <!-- HARDWARE NOTE -->
+  <div class="bg-slate-100 border border-slate-300 rounded-2xl p-4 text-xs text-slate-600">
+    🔧 <b>עודכן ל-ESP32-S3 (מסלול יסודי):</b> LED אדום→GPIO 5 · ירוק→GPIO 6 · זמזם→GPIO 7 · חיישן לחות→GPIO 1, מתח 3.3V, ADC 0–4095 (גבוה = יבש, סף בכיול). פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
   </div>
 
   <!-- NOTES -->

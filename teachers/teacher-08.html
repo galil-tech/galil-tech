@@ -35,7 +35,7 @@
 
   <div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-5 text-sm text-sky-900">
     <p class="font-bold mb-1">🪜 רמפת השלמה (5 דק', לפני תחילת השיעור):</p>
-    <p>קבוצה שלא הצליחה להדליק את ה-LED בשיעור 7 לא צריכה להישאר מאחור היום. תנו לה ארדואינו עם קוד if/else בסיסי כבר מועלה ועובד (מתוך ערכת החומרה הרזרבית, או עותק שהמורה שמר משיעור 7) – כך היא מתחילה משיעור 8 מאותה נקודת זינוק כמו כל קבוצה אחרת, ומתמקדת בסגירת מעגל הבקרה החדש, לא בתיקון קוד ישן.</p>
+    <p>קבוצה שלא הצליחה להדליק את ה-LED בשיעור 7 לא צריכה להישאר מאחור היום. תנו לה ESP32 עם קוד if/else בסיסי כבר מועלה ועובד (מתוך ערכת החומרה הרזרבית, או עותק שהמורה שמר משיעור 7) – כך היא מתחילה משיעור 8 מאותה נקודת זינוק כמו כל קבוצה אחרת, ומתמקדת בסגירת מעגל הבקרה החדש, לא בתיקון קוד ישן.</p>
   </div>
 
   <!-- GOALS -->
@@ -56,7 +56,7 @@
       <div>
         <h3 class="font-bold text-gray-700 mb-3 text-sm uppercase">מיומנויות מעשיות – סגירת מעגל בקרה</h3>
         <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">🔧 <span><b>בונה מעגל שלם:</b> חיישן (לחות/מפלס מים) → ארדואינו (if/else משיעור 7) → ברז/הודעה</span></li>
+          <li class="flex gap-2">🔧 <span><b>בונה מעגל שלם:</b> חיישן (לחות/מפלס מים) → בקר ESP32 (if/else משיעור 7) → ברז/הודעה</span></li>
           <li class="flex gap-2">🔧 <span>בודק שהמעגל מגיב אוטומטית לשינוי בערך החיישן, בלי התערבות ידנית</span></li>
         </ul>
       </div>
@@ -85,37 +85,44 @@
       <div>
         <h3 class="font-bold mb-3">⚡ ציוד מעגל הבקרה</h3>
         <ul class="space-y-2 text-gray-600">
-          <li class="flex gap-2">📋 <span>ארדואינו + חיישן לחות/מפלס מים (מה ששימש בשיעור 6)</span></li>
-          <li class="flex gap-2">📋 <span>Servo/ברז מיניאטורי או LED+זמזם כהדמיית "הודעה" (מה ששימש בשיעור 7)</span></li>
+          <li class="flex gap-2">📋 <span>ESP32-S3 + חיישן לחות אדמה קיבולי (AOUT→GPIO 1, VCC→3V3)</span></li>
+          <li class="flex gap-2">📋 <span>Servo/ברז מיניאטורי (GPIO 15, חשמל מ-5V0) או LED+זמזם אקטיבי כהדמיית "הודעה" (LED→GPIO 5, זמזם→GPIO 7)</span></li>
           <li class="flex gap-2">📋 <span>קוד בסיס מוכן מראש (מבוסס על if/else משיעור 7) – העלו יום לפני</span></li>
           <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ בדקו שהמעגל המלא (חיישן+בקר+ברז) עובד פעם אחת לפני השיעור!</li>
-          <li class="flex gap-2 mt-2">🧰 <span><b>ערכת חומרה רזרבית אחת לכל כיתה</b> (ארדואינו/חיישן/Servo חלופיים) – למקרה תקלה, וגם לרמפת ההשלמה למעלה</span></li>
+          <li class="flex gap-2 mt-2">🧰 <span><b>ערכת חומרה רזרבית אחת לכל כיתה</b> (ESP32/חיישן/Servo חלופיים) – למקרה תקלה, וגם לרמפת ההשלמה למעלה</span></li>
         </ul>
       </div>
       <div>
-        <h3 class="font-bold mb-3">💻 קוד לארדואינו (מלא, אפשר להעתיק כמו שהוא)</h3>
+        <h3 class="font-bold mb-3">💻 קוד ל-ESP32-S3 (מלא, אפשר להעתיק כמו שהוא)</h3>
         <div class="bg-slate-800 rounded-xl p-4 font-mono text-xs text-green-400 leading-relaxed">
           <p class="text-slate-400">// סגירת מעגל: חיישן → בקר → ברז+הודעה</p>
-          <p>#include &lt;Servo.h&gt;</p>
+          <p>#include &lt;ESP32Servo.h&gt; <span class="text-slate-500">// ספריית ESP32Servo</span></p>
           <p>Servo valve;</p>
-          <p>const int buzzer = 8;</p>
+          <p>const int soilPin = 1; <span class="text-slate-500">// ADC1</span></p>
+          <p>const int buzzer = 7;</p>
+          <p>const int DRY = 2500; <span class="text-slate-500">// כיול: ערך באוויר</span></p>
+          <p>const int WET = 1200; <span class="text-slate-500">// כיול: ערך במים</span></p>
           <p>&nbsp;</p>
           <p>void setup() {'{'}</p>
-          <p>&nbsp;valve.attach(9); <span class="text-slate-500">// פין ה-Servo</span></p>
+          <p>&nbsp;valve.attach(15); <span class="text-slate-500">// GPIO 15</span></p>
           <p>&nbsp;pinMode(buzzer, OUTPUT);</p>
           <p>{'}'}</p>
           <p>&nbsp;</p>
           <p>void loop() {'{'}</p>
-          <p>&nbsp;int moisture = analogRead(A0);</p>
-          <p>&nbsp;if (moisture &lt; 400) {'{'}</p>
+          <p>&nbsp;int raw = analogRead(soilPin); <span class="text-slate-500">// 0–4095</span></p>
+          <p>&nbsp;int moisture = constrain(</p>
+          <p>&nbsp;&nbsp;map(raw, DRY, WET, 0, 100), 0, 100); <span class="text-slate-500">// %</span></p>
+          <p>&nbsp;if (moisture &lt; 30) {'{'}</p>
           <p>&nbsp;&nbsp;valve.write(90); <span class="text-slate-500">// פותח ברז</span></p>
           <p>&nbsp;&nbsp;digitalWrite(buzzer, HIGH); <span class="text-slate-500">// הודעה</span></p>
           <p>&nbsp;{'}'} else {'{'}</p>
           <p>&nbsp;&nbsp;valve.write(0);</p>
           <p>&nbsp;&nbsp;digitalWrite(buzzer, LOW);</p>
           <p>&nbsp;{'}'}</p>
+          <p>&nbsp;delay(500);</p>
           <p>{'}'}</p>
         </div>
+        <p class="text-xs text-gray-500 mt-2">💡 חיישן קיבולי: <b>גבוה = יבש</b>. <code>map</code> הופך את זה ל"אחוז לחות" (0 = יבש, 100 = רטוב). DRY/WET – מדדו פעם אחת בכיתה (חיישן באוויר / בכוס מים) ועדכנו.</p>
       </div>
       <div>
         <h3 class="font-bold mb-3">🌿 חממה/קומפוסט</h3>
@@ -140,7 +147,7 @@
           <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎤</span><h3 class="text-xl font-black">פתיחה – חיבור לשיעור 7</h3><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">כל הכיתה</span></div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-3">
             <p class="font-bold text-amber-900 mb-1">🔁 תזכורת משיעור 7 (Teaser):</p>
-            <p class="text-sm text-gray-700">"שאלנו: אם pH וגם EC יוצאים בו-זמנית – מה הארדואינו צריך לעשות קודם? היום נרחיב את זה – לא רק שני חיישנים, אלא מערכות שלמות שמדברות ביניהן."</p>
+            <p class="text-sm text-gray-700">"שאלנו: אם pH וגם EC יוצאים בו-זמנית – מה הבקר צריך לעשות קודם? היום נרחיב את זה – לא רק שני חיישנים, אלא מערכות שלמות שמדברות ביניהן."</p>
           </div>
           <ul class="text-sm text-gray-600 space-y-1">
             <li>• <b>שקף 1:</b> דוגמת סינרגיה פשוטה: דגי אקוופוניקה ↔ צמחים ↔ חיידקים</li>
@@ -198,8 +205,8 @@
           <div class="bg-lime-50 border border-lime-200 rounded-xl p-5 mb-4">
             <p class="font-bold text-lime-900 mb-3">📋 משימות הקבוצה (זה הלב הטכני של השיעור!):</p>
             <div class="grid md:grid-cols-2 gap-2 text-sm">
-              <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות/מפלס מים לארדואינו</div>
-              <div class="bg-white rounded-lg p-2">ב. חיבור Servo/LED+זמזם כ"ברז+הודעה"</div>
+              <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות אדמה ל-ESP32 (AOUT→GPIO 1, VCC→3V3)</div>
+              <div class="bg-white rounded-lg p-2">ב. חיבור Servo (GPIO 15) או LED+זמזם (GPIO 5 / GPIO 7) כ"ברז+הודעה"</div>
               <div class="bg-white rounded-lg p-2 border-2 border-purple-200"><b>ג. בקש מהמורה להעלות את קוד המעגל</b></div>
               <div class="bg-white rounded-lg p-2 border-2 border-blue-200"><b>ד. הוכיחו שהמעגל סגור:</b> שנו את ערך החיישן וצפו בברז/הודעה מגיבים אוטומטית</div>
               <div class="bg-white rounded-lg p-2">ה. דונו: איזו מערכת שלישית תרצו לחבר למעגל הזה?</div>
@@ -210,10 +217,11 @@
             <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
               <ul class="space-y-1 text-gray-600">
-                <li><b>הברז/Servo לא מגיב:</b> בדקו חיבור החשמל ל-5V, לא ל-3.3V</li>
+                <li><b>הברז/Servo לא מגיב:</b> חשמל ה-Servo מפין 5V0 (לא 3V3), האות ל-GPIO 15, והספרייה היא ESP32Servo</li>
+                <li><b>הלוח מתאפס כשה-Servo זז:</b> ה-Servo מושך זרם – כבל USB איכותי, או ספק 5V נפרד ל-Servo עם GND משותף ללוח</li>
                 <li><b>החיישן נותן ערך קבוע:</b> ודאו שהוא נוגע בפועל במצע/במים</li>
-                <li><b>שני התנאים (if/else) לא מתחלפים:</b> בדקו את ערך הסף בקוד מול הערך האמיתי שנקרא</li>
-                <li><b>⚠️ בטיחות:</b> שמרו על לוח הארדואינו עצמו יבש – רק קצה החיישן צריך לגעת במים/במצע הרטוב</li>
+                <li><b>שני התנאים (if/else) לא מתחלפים:</b> בדקו את ערכי DRY/WET בקוד מול הערכים האמיתיים שנקראו (Serial Monitor, 115200)</li>
+                <li><b>⚠️ בטיחות:</b> שמרו על לוח ה-ESP32 עצמו יבש – רק קצה החיישן צריך לגעת במים/במצע הרטוב</li>
               </ul>
             </div>
             <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-sm">
@@ -323,6 +331,11 @@
         </ul>
       </div>
     </div>
+  </div>
+
+  <!-- HARDWARE NOTE -->
+  <div class="bg-slate-100 border border-slate-300 rounded-2xl p-4 text-xs text-slate-600">
+    🔧 <b>עודכן ל-ESP32-S3:</b> פינים (חיישן לחות→GPIO 1 · Servo→GPIO 15 · זמזם→GPIO 7 · LED→GPIO 5/6), מתח 3.3V (Servo מ-5V0), סקיילינג ADC 0–4095 + map לאחוזים (במקום סף 400 בסקאלת 0–1023). פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
   </div>
 
   <!-- NOTES -->

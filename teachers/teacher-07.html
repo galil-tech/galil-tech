@@ -48,7 +48,7 @@
           <li class="flex gap-2">🎮 <span><b>שלב א' – גרירה:</b> 6 בלוקי if/else לסדר נכון</span></li>
           <li class="flex gap-2">🔤 <span><b>שלב ב' – בחירה מ-3:</b> OUTPUT/HIGH/1000</span></li>
           <li class="flex gap-2">✍️ <span><b>שלב ג' – כתיבה:</b> מילה אחת: ph / 5.5 / HIGH</span></li>
-          <li class="flex gap-2">🔌 <span><b>חיבור אמיתי:</b> LED דרך נגד 220Ω לפין 9/10</span></li>
+          <li class="flex gap-2">🔌 <span><b>חיבור אמיתי:</b> LED דרך נגד 220Ω ל-GPIO 5 / GPIO 6 של ה-ESP32</span></li>
         </ul>
       </div>
     </div>
@@ -61,29 +61,31 @@
       <div>
         <h3 class="font-bold mb-3">⚡ חשמל ורכיבים</h3>
         <ul class="space-y-2 text-gray-600">
-          <li>📋 ארדואינו Uno × קבוצות</li>
+          <li>📋 לוח ESP32-S3 (למשל DevKitC-1) × קבוצות + כבל USB-C</li>
+          <li>📋 פוטנציומטר 10kΩ × 1 לקבוצה – "פרוקסי" ל-pH (מסובבים = משנים pH)</li>
           <li>📋 LED אדום × 1 לקבוצה</li>
           <li>📋 LED ירוק × 1 לקבוצה</li>
           <li>📋 נגד 220Ω × 2 לקבוצה</li>
           <li>📋 Breadboard × קבוצה</li>
           <li>📋 כבלי חיבור (Jumper)</li>
           <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ וודא שכל LED מגיע עם נגד!</li>
-          <li class="flex gap-2 mt-2">🧰 <span><b>ערכת חומרה רזרבית אחת לכל כיתה</b> (ארדואינו/LED/נגד חלופיים) – למקרה תקלה</span></li>
+          <li class="flex gap-2 mt-2">🧰 <span><b>ערכת חומרה רזרבית אחת לכל כיתה</b> (ESP32/LED/נגד חלופיים) – למקרה תקלה</span></li>
         </ul>
       </div>
       <div>
-        <h3 class="font-bold mb-3">💻 קוד לארדואינו</h3>
+        <h3 class="font-bold mb-3">💻 קוד ל-ESP32-S3</h3>
         <div class="bg-slate-800 rounded-xl p-4 font-mono text-xs text-green-400 leading-relaxed">
-          <p class="text-slate-400 mb-2">// העלה לפני השיעור!</p>
-          <p>int ledRed = 9;</p>
-          <p>int ledGreen = 10;</p>
+          <p class="text-slate-400 mb-2">// העלה לפני השיעור! לוח: ESP32S3 Dev Module</p>
+          <p>int ledRed = 5;</p>
+          <p>int ledGreen = 6;</p>
+          <p>int phPin = 1; <span class="text-slate-500">// ADC1</span></p>
           <p>void setup() {'{'}</p>
           <p>&nbsp;pinMode(ledRed, OUTPUT);</p>
           <p>&nbsp;pinMode(ledGreen, OUTPUT);</p>
           <p>{'}'}</p>
           <p>void loop() {'{'}</p>
-          <p>&nbsp;float ph = analogRead(A0)</p>
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;* (14.0/1023);</p>
+          <p>&nbsp;float ph = analogRead(phPin)</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;* (14.0/4095); <span class="text-slate-500">// 12 ביט: 0–4095</span></p>
           <p>&nbsp;if (ph &lt; 5.5 || ph &gt; 6.5) {'{'}</p>
           <p>&nbsp;&nbsp;digitalWrite(ledRed, HIGH);</p>
           <p>&nbsp;&nbsp;digitalWrite(ledGreen, LOW);</p>
@@ -99,21 +101,26 @@
         <h3 class="font-bold mb-3">📐 חיבורים</h3>
         <div class="space-y-2 text-xs">
           <div class="bg-red-50 border border-red-200 rounded-xl p-3">
-            <p class="font-bold text-red-700 mb-1">🔴 LED אדום (פין 9)</p>
-            <p>5V → נגד 220Ω → רגל ארוכה LED</p>
+            <p class="font-bold text-red-700 mb-1">🔴 LED אדום (GPIO 5)</p>
+            <p>GPIO 5 → נגד 220Ω → רגל ארוכה LED</p>
             <p>רגל קצרה LED → GND</p>
           </div>
           <div class="bg-green-50 border border-green-200 rounded-xl p-3">
-            <p class="font-bold text-green-700 mb-1">💚 LED ירוק (פין 10)</p>
-            <p>אותו חיבור, פין שונה</p>
+            <p class="font-bold text-green-700 mb-1">💚 LED ירוק (GPIO 6)</p>
+            <p>אותו חיבור, GPIO 6</p>
           </div>
           <div class="bg-purple-50 border border-purple-200 rounded-xl p-3">
-            <p class="font-bold text-purple-700 mb-1">⚗️ מד pH (A0)</p>
-            <p>VCC→5V · GND→GND · Signal→A0</p>
+            <p class="font-bold text-purple-700 mb-1">⚗️ "pH" – פוטנציומטר (GPIO 1)</p>
+            <p>קצה אחד→3V3 · קצה שני→GND · רגל אמצעית→GPIO 1</p>
+            <p class="text-gray-500 mt-1">מד pH אמיתי: רק מודול שהמוצא שלו עד 3.3V (או דרך מחלק מתח). <b>לעולם לא 5V לפין GPIO.</b></p>
           </div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
-            <p class="font-bold text-amber-700 mb-1">⚙️ Servo בונוס (D6~)</p>
-            <p>אדום→5V · שחור→GND · כתום→D6</p>
+            <p class="font-bold text-amber-700 mb-1">⚙️ Servo בונוס (GPIO 15)</p>
+            <p>אדום→5V (פין 5V0/VBUS) · חום→GND · כתום→GPIO 15</p>
+            <p class="text-gray-500 mt-1">ספרייה: <code>ESP32Servo</code> (לא Servo.h)</p>
+          </div>
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-blue-900">
+            ⚡ <b>3.3V:</b> ה-ESP32 מוציא 3.3V (לא 5V) – LED עם 220Ω יאיר מעט חלש יותר מבארדואינו, וזה תקין. כל אות שנכנס לפין GPIO – עד 3.3V בלבד.
           </div>
         </div>
       </div>
@@ -137,8 +144,8 @@
             📷 הציגו כאן תמונה/סרטון של LED שרוף שתביאו בעצמכם (לדוגמה חיפוש תמונות, או צילום מ-LED ששרפתם פעם בעבר) – לא לשרוף LED חדש בכיתה רק בשביל ההדגמה.
           </div>
           <ul class="text-sm text-gray-600 space-y-1">
-            <li>• שקף: דיגיטלי (0/1) vs אנלוגי (0–1023) עם דוגמה של מתג לעומת ווליום</li>
-            <li>• שקף: פינים על הלוח – D9/D10/A0/GND/5V</li>
+            <li>• שקף: דיגיטלי (0/1) vs אנלוגי (0–4095 ב-ESP32) עם דוגמה של מתג לעומת ווליום</li>
+            <li>• שקף: פינים על הלוח – GPIO 5 / GPIO 6 / GPIO 1 / GND / 3V3</li>
           </ul>
         </div>
       </div>
@@ -149,7 +156,7 @@
           <h3 class="text-xl font-black mb-2">💬 דיון – Teaser מהשיעור הקודם</h3>
           <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm">
             <p class="font-bold text-blue-900 mb-1">❓ שאלת הדיון:</p>
-            <p class="text-lg font-bold">"עד עכשיו הארדואינו רק קרא ודיווח. מה צריך לקרות כדי שהוא יפעל לבד?"</p>
+            <p class="text-lg font-bold">"עד עכשיו ה-ESP32 רק קרא ודיווח. מה צריך לקרות כדי שהוא יפעל לבד?"</p>
             <p class="text-gray-500 mt-2">תשובה צפויה: חיבור ל"ידיים" – LED, ברז, מאוורר. זה מה שנבנה היום.</p>
           </div>
         </div>
@@ -164,7 +171,7 @@
               <p class="font-bold mb-2">📋 שלבים:</p>
               <ol class="space-y-1 text-gray-600 list-decimal list-inside text-xs">
                 <li>גשר – מתח=מים + שאלה</li>
-                <li>לוח ארדואינו אינטראקטיבי + פינים</li>
+                <li>מדריך חיבורים + פינים של ה-ESP32</li>
                 <li>🎮 גרירת 6 בלוקי if/else</li>
                 <li>🔤 בחירה מ-3 (OUTPUT/HIGH/1000)</li>
                 <li>✍️ כתיבת מילה אחת (ph/5.5/HIGH)</li>
@@ -193,11 +200,11 @@
           <div class="bg-lime-50 border border-lime-200 rounded-xl p-4 mb-3 text-sm">
             <p class="font-bold mb-2">📋 6 משימות:</p>
             <div class="grid grid-cols-2 gap-2 text-xs">
-              <div class="bg-white rounded-lg p-2">א. LED אדום → נגד → פין 9</div>
-              <div class="bg-white rounded-lg p-2">ב. LED ירוק → נגד → פין 10</div>
+              <div class="bg-white rounded-lg p-2">א. LED אדום → נגד → GPIO 5</div>
+              <div class="bg-white rounded-lg p-2">ב. LED ירוק → נגד → GPIO 6</div>
               <div class="bg-white rounded-lg p-2 border-2 border-orange-200"><b>ג. העלאת קוד – המורה עושה!</b></div>
-              <div class="bg-white rounded-lg p-2">ד. גרום ל-LED אדום לדלוק</div>
-              <div class="bg-white rounded-lg p-2">ה. גרום ל-LED ירוק לדלוק</div>
+              <div class="bg-white rounded-lg p-2">ד. סובבו את הפוטנציומטר ("pH") – גרמו ל-LED אדום לדלוק</div>
+              <div class="bg-white rounded-lg p-2">ה. סובבו חזרה לטווח – גרמו ל-LED ירוק לדלוק</div>
               <div class="bg-white rounded-lg p-2">ו. צלם שניהם</div>
             </div>
           </div>
@@ -207,13 +214,14 @@
               <ul class="space-y-1 text-xs text-gray-600">
                 <li><b>LED לא דולק:</b> בדוק כיוון רגלי LED</li>
                 <li><b>שניהם דולקים:</b> קוד לא הועלה</li>
-                <li><b>LED חלש:</b> נגד גדול מדי</li>
+                <li><b>LED חלש:</b> ב-3.3V זה צפוי מעט. חלש מאוד – נגד גדול מדי (ודאו 220Ω)</li>
+                <li><b>LED לא מגיב לפוטנציומטר:</b> הרגל האמצעית לא ב-GPIO 1, או קצה לא מחובר ל-3V3/GND</li>
                 <li><b>LED שרוף:</b> חובר ללא נגד</li>
               </ul>
             </div>
             <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-green-800 mb-2">💡 להעמקה:</p>
-              <p class="text-xs text-gray-600">"מה היה קורה אם pH וגם EC יוצאים ביחד? מה הארדואינו יעשה קודם?" → Teaser לשיעור 8.</p>
+              <p class="text-xs text-gray-600">"מה היה קורה אם pH וגם EC יוצאים ביחד? מה הבקר יעשה קודם?" → Teaser לשיעור 8.</p>
             </div>
           </div>
         </div>
@@ -302,6 +310,11 @@
         </ul>
       </div>
     </div>
+  </div>
+
+  <!-- HARDWARE NOTE -->
+  <div class="bg-slate-100 border border-slate-300 rounded-2xl p-4 text-xs text-slate-600">
+    🔧 <b>עודכן ל-ESP32-S3:</b> פינים (LED אדום→GPIO 5 · ירוק→GPIO 6 · "pH"→GPIO 1 · Servo→GPIO 15), מתח 3.3V, סקיילינג ADC 12 ביט (0–4095 במקום 0–1023). פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
   </div>
 
   <!-- NOTES -->
