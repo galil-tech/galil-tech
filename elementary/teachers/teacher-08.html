@@ -34,7 +34,7 @@
 
   <div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-5 text-sm text-sky-900">
     <p class="font-bold mb-1">🪜 רמפת השלמה (5 דק', לפני תחילת השיעור):</p>
-    <p>קבוצה שלא הצליחה להדליק LED בשיעור 7 לא צריכה להישאר מאחור. תנו לה ESP32 עם קוד כבר מועלה ועובד (מתוך ערכת החומרה הרזרבית) – כך היא מתחילה משיעור 8 מאותה נקודת זינוק, ומתמקדת בסגירת המעגל החדש.</p>
+    <p>קבוצה שלא הצליחה להדליק LED בשיעור 7 לא צריכה להישאר מאחור. תנו לה ESP32 מחווט, עם main.py כבר שמור ועובד (מתוך ערכת החומרה הרזרבית) – כך היא מתחילה משיעור 8 מאותה נקודת זינוק, ומתמקדת בסגירת המעגל החדש.</p>
   </div>
 
   <!-- GOALS -->
@@ -55,7 +55,7 @@
       <div>
         <h3 class="font-bold text-gray-700 mb-3 text-sm uppercase">מיומנויות – סגירת מעגל</h3>
         <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">🔧 <span><b>בונה מעגל שלם:</b> חיישן (לחות/מים) → בקר ESP32 → ברז/הודעה</span></li>
+          <li class="flex gap-2">🔧 <span><b>בונה מעגל שלם:</b> חיישן לחות → בקר ESP32 → הודעה (נורית + זמזם) → "ברז אנושי" (התלמיד משקה)</span></li>
           <li class="flex gap-2">🔧 <span>רואה שהמעגל מגיב לבד לשינוי, בלי שאף אחד לוחץ כפתור</span></li>
         </ul>
       </div>
@@ -80,26 +80,42 @@
     <div class="bg-teal-700 text-white p-6">
       <h2 class="text-2xl font-black">🧰 הכנה לפני השיעור</h2>
     </div>
+    <div class="px-6 pt-6">
+      <div class="bg-red-50 border-2 border-red-300 rounded-2xl p-4 text-sm text-red-800">
+        ⛔ <b>רק Thonny ו-MicroPython.</b> לא להעלות לבקר קוד מ-Arduino IDE – זה מוחק את MicroPython ואת הדרייברים.
+      </div>
+    </div>
     <div class="p-6 grid md:grid-cols-3 gap-6 text-sm">
       <div>
-        <h3 class="font-bold mb-3">⚡ ציוד המעגל</h3>
+        <h3 class="font-bold mb-3">⚡ ציוד המעגל (לקבוצה)</h3>
         <ul class="space-y-2 text-gray-600">
-          <li class="flex gap-2">📋 <span>ESP32-S3 + חיישן לחות האדמה הקיבולי (משיעור 6, GPIO 1)</span></li>
-          <li class="flex gap-2">📋 <span><b>מומלץ ביסודי:</b> LED+זמזם כ"הודעה" (משיעור 7: GPIO 5 / 6 / 7). Servo/ברז קטן – אופציונלי, והמורה מחבר אותו (GPIO 15, חשמל מ-5V0)</span></li>
-          <li class="flex gap-2">📋 <span>קוד מוכן מראש (המורה מעלה, לא התלמידים)</span></li>
+          <li class="flex gap-2">📋 <span>ESP32-S3 + חיישן לחות האדמה (משיעור 6: AOUT → GPIO 6)</span></li>
+          <li class="flex gap-2">📋 <span>זמזם (S → GPIO 5) + חוט מגע (GPIO 4) – משיעור 7</span></li>
+          <li class="flex gap-2">📋 <span>עציץ/כוס אדמה יבשה + כוס מים קטנה להשקיה</span></li>
+          <li class="flex gap-2">📋 <span>הנורית הצבעונית מובנית בלוח</span></li>
+          <li class="bg-amber-50 text-amber-800 rounded-lg p-2 mt-2">🚰 ביסודי ה"ברז" הוא התלמיד: הבקר מצפצף → התלמיד משקה → הנורית הופכת לירוקה. (בחטיבה מוסיפים Servo כברז אוטומטי.)</li>
           <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ בדקו שהמעגל המלא עובד פעם אחת לפני השיעור!</li>
           <li class="flex gap-2 mt-2">🧰 <span><b>ערכת חומרה רזרבית אחת לכיתה</b> – גם לרמפת ההשלמה למעלה</span></li>
         </ul>
       </div>
       <div>
-        <h3 class="font-bold mb-3">💻 קוד – למורה בלבד</h3>
-        <div class="bg-slate-800 rounded-xl p-4 font-mono text-xs text-green-400 leading-relaxed">
-          <p class="text-slate-400">// זהה למערך הכללי (ESP32-S3)</p>
-          <p>// חיישן לחות → GPIO 1 (0–4095, גבוה = יבש)</p>
-          <p>// אם יבש → LED אדום + זמזם (+ פתח ברז)</p>
-          <p>// אחרת → LED ירוק (+ סגור ברז)</p>
-          <p>// בלי Servo? מחקו את שורות valve</p>
-        </div>
+        <h3 class="font-bold mb-3">🐍 קוד – למורה בלבד (main.py)</h3>
+        <p class="text-gray-600 mb-2 text-xs">אותו קוד כמו בשיעור 7, עם מצב שלישי (צהוב) והפסקה בין צפצופים – בדיוק כמו בהדגמת המערכת של צוות החומרה. מחליפים רק את לולאת ה-<code>while</code>:</p>
+        <pre dir="ltr" class="bg-slate-800 rounded-xl p-3 text-xs text-green-400 font-mono overflow-x-auto">last_alarm = 0
+
+while True:
+    pct = soil.read_percent()
+    if pct &lt; 30:                 # dry → red
+        led.red()
+        if time.time() - last_alarm &gt;= 3:
+            buzzer.alarm_beep(count=5, freq=1000, beep_ms=100)
+            last_alarm = time.time()
+    elif pct &lt;= 60:              # ok → yellow
+        led.yellow()
+    else:                         # wet → green
+        led.green()
+    time.sleep_ms(500)</pre>
+        <p class="text-xs text-gray-500 mt-2">💡 אחרי חיבור USB: כיול בנגיעה כמו בשיעור 7 (אדום = אוויר, ירוק = מים).</p>
       </div>
       <div>
         <h3 class="font-bold mb-3">🌿 חממה/קומפוסט</h3>
@@ -131,7 +147,7 @@
             <p class="text-sm text-gray-700">"זוכרים את הדגים והצמחים משיעור 5? הדגים 'מלכלכים' את המים, והצמחים משתמשים בלכלוך הזה כאוכל, ומחזירים מים נקיים לדגים. כולם מרוויחים! למצב הזה, שבו מערכת אחת עוזרת לשנייה, קוראים <b>סינרגיה</b>."</p>
           </div>
           <ul class="text-sm text-gray-600 space-y-1 mt-3">
-            <li>• <b>שקף:</b> "היום נבנה מעגל שלם – לא רק נורה, אלא ברז שנפתח לבד"</li>
+            <li>• <b>שקף:</b> "היום נבנה מעגל שלם – הבקר מרגיש, מחליט ומזעיק אותנו להשקות"</li>
           </ul>
         </div>
       </div>
@@ -185,9 +201,9 @@
             <p class="font-bold text-lime-900 mb-3">📋 משימות הקבוצה (זה הלב של השיעור!):</p>
             <div class="grid md:grid-cols-2 gap-2 text-sm">
               <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות האדמה – 3 חוטים לפי צבע (כמו בשיעור 6)</div>
-              <div class="bg-white rounded-lg p-2">ב. חיבור LED+זמזם כ"הודעה" (ו-Servo כ"ברז", אם המורה חיבר)</div>
-              <div class="bg-white rounded-lg p-2 border-2 border-purple-200"><b>ג. בקשו מהמורה להעלות את הקוד</b></div>
-              <div class="bg-white rounded-lg p-2 border-2 border-blue-200"><b>ד. הוכיחו שהמעגל סגור:</b> שנו את ערך החיישן וצפו בברז/הודעה מגיבים לבד</div>
+              <div class="bg-white rounded-lg p-2">ב. חיבור הזמזם וחוט המגע (כמו בשיעור 7) – המורה בודק</div>
+              <div class="bg-white rounded-lg p-2 border-2 border-purple-200"><b>ג. מחברים USB ומכיילים בנגיעה</b> (הקוד כבר שמור על הבקר)</div>
+              <div class="bg-white rounded-lg p-2 border-2 border-blue-200"><b>ד. הוכיחו שהמעגל סגור:</b> החיישן באדמה יבשה → צפצוף ואדום → משקים → צהוב/ירוק. הבקר הגיב לבד</div>
               <div class="bg-white rounded-lg p-2">ה. דונו: איזו מערכת שלישית הייתם מוסיפים?</div>
               <div class="bg-white rounded-lg p-2">ו. צילום המעגל השלם לקיר</div>
             </div>
@@ -196,7 +212,8 @@
             <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
               <ul class="space-y-1 text-gray-600">
-                <li><b>הברז/Servo לא מגיב:</b> קראו למורה – בדיקת חיבור</li>
+                <li><b>הנורית לא מתחלפת אחרי ההשקיה:</b> חכו כמה שניות שהמים יחלחלו; אם עדיין לא – כיול מחדש (נתקו וחברו USB)</li>
+                <li><b>הזמזם שקט:</b> קראו למורה – S לא ב-GPIO 5</li>
                 <li><b>החיישן נותן ערך קבוע:</b> ודאו שהוא נוגע בפועל במצע/במים</li>
               </ul>
             </div>
@@ -213,7 +230,7 @@
         <div class="flex-1">
           <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🏁</span><h3 class="text-xl font-black">נתונים + Teaser</h3></div>
           <div class="grid md:grid-cols-3 gap-3 text-sm">
-            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 נתונים (2 דק')</p><p class="text-gray-500">מתי הברז נפתח? כמה זמן עבר עד התגובה?</p></div>
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 נתונים (2 דק')</p><p class="text-gray-500">באיזה אחוז הבקר צפצף? כמה זמן עבר מההשקיה עד שהנורית התחלפה?</p></div>
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🌿 עלים (1 דק')</p><p class="text-gray-500">הכריזו על קבוצות שהוכיחו מעגל סגור.</p></div>
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-gray-500 font-medium">"בנינו מעגל בקרה בקרקע. אבל מה אם נרצה לראות את כל השדה מלמעלה?" ← אל תתנו תשובה, זה שיעור 9</p></div>
           </div>
@@ -318,7 +335,7 @@
 
   <!-- HARDWARE NOTE -->
   <div class="bg-slate-100 border border-slate-300 rounded-2xl p-4 text-xs text-slate-600">
-    🔧 <b>עודכן ל-ESP32-S3 (מסלול יסודי):</b> חיישן לחות→GPIO 1 · LED→GPIO 5/6 · זמזם→GPIO 7 · Servo (אופציונלי)→GPIO 15, מתח 3.3V, ADC 0–4095. המורה מעלה את הקוד; התלמידים מחברים וקוראים ערכים. פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
+    🔧 <b>עודכן ל-ESP32-S3 + MicroPython (מסלול יסודי):</b> חיישן לחות→GPIO 6 · זמזם פסיבי→GPIO 5 · חוט מגע→GPIO 4 · נורית RGB מובנית→GPIO 48, מתח 3.3V, אדום/צהוב/ירוק לפי אחוז לחות (30% / 60%). בלי Servo ביסודי. פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
   </div>
 
   <!-- NOTES -->

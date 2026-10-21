@@ -286,15 +286,13 @@
     </div>
 
     <div dir="ltr" class="bg-slate-800 rounded-2xl p-5 mb-5 font-mono text-sm text-green-400 leading-relaxed">
-      <p class="text-slate-400 mb-2">// מטרה: אם לחות &lt; 30%, פתח ברז + שלח הודעה</p>
-      <p>int moisture = map(analogRead(1), DRY, WET, 0, 100); <span class="text-slate-500">// GPIO 1 → %</span></p>
-      <p>if (moisture <span id="blank1" class="code-blank" onclick="fillBlank('blank1')">___</span> 30) {'{'}</p>
-      <p>&nbsp;valve.write(90);  <span class="text-slate-500">// פתח ברז</span></p>
-      <p>&nbsp;digitalWrite(buzzer, HIGH);</p>
-      <p>{'}'} else {'{'}</p>
-      <p>&nbsp;valve.write(<span id="blank2" class="code-blank" onclick="fillBlank('blank2')">___</span>);</p>
-      <p>&nbsp;digitalWrite(buzzer, LOW);</p>
-      <p>{'}'}</p>
+      <p class="text-slate-400 mb-2"># מטרה: אם לחות &lt; 30%, פתח ברז + שלח הודעה (פייתון)</p>
+      <p>moisture = soil.read_percent()  <span class="text-slate-500"># GPIO 6 → %</span></p>
+      <p>if moisture <span id="blank1" class="code-blank" onclick="fillBlank('blank1')">___</span> 30:</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(90)  <span class="text-slate-500"># פתח ברז</span></p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;buzzer.alarm_beep(count=3, freq=1000, beep_ms=100)</p>
+      <p>else:</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(<span id="blank2" class="code-blank" onclick="fillBlank('blank2')">___</span>)</p>
     </div>
 
     <div class="grid md:grid-cols-2 gap-5 mb-5">
@@ -323,11 +321,10 @@
     <div id="code-done" class="reveal bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
       <p class="font-black text-lime-800 text-xl mb-2">✅ הקוד שלם! זה בדיוק מה שנבנה בפרויקט היום</p>
       <div dir="ltr" class="bg-slate-800 rounded-xl p-4 font-mono text-sm text-green-400 mt-3 text-right">
-        <p>if (moisture <b class="text-lime-400">&lt;</b> 30) {'{'}</p>
-        <p>&nbsp;valve.write(90); &nbsp;// פתוח</p>
-        <p>{'}'} else {'{'}</p>
-        <p>&nbsp;valve.write(<b class="text-lime-400">0</b>); &nbsp;// סגור</p>
-        <p>{'}'}</p>
+        <p>if moisture <b class="text-lime-400">&lt;</b> 30:</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(90) &nbsp;# פתוח</p>
+        <p>else:</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(<b class="text-lime-400">0</b>) &nbsp;# סגור</p>
       </div>
     </div>
   </div>
@@ -355,13 +352,13 @@
       <h3 class="font-black text-lime-900 mb-3">📋 משימות הקבוצה</h3>
       <div class="space-y-2" id="loop-missions">
         <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,0)">
-          <span class="loop-icon text-2xl">⬜</span> א. חיברנו חיישן לחות אדמה ל-ESP32 (GPIO 1)
+          <span class="loop-icon text-2xl">⬜</span> א. חיברנו חיישן לחות קרקע ל-ESP32 (AOUT → GPIO 6)
         </div>
         <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,1)">
-          <span class="loop-icon text-2xl">⬜</span> ב. חיברנו Servo/LED+זמזם כ"ברז + הודעה"
+          <span class="loop-icon text-2xl">⬜</span> ב. חיברנו Servo (GPIO 15) + זמזם (GPIO 5) + חוט מגע (GPIO 4) כ"ברז + הודעה + כפתור"
         </div>
         <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,2)">
-          <span class="loop-icon text-2xl">⬜</span> ג. המורה העלה את קוד המעגל
+          <span class="loop-icon text-2xl">⬜</span> ג. המורה הריץ את קוד המעגל ב-Thonny וכיילנו במגע (אוויר → מים)
         </div>
         <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,3)">
           <span class="loop-icon text-2xl">⬜</span> ד. <b>הוכחנו מעגל סגור:</b> שינינו ערך חיישן → הברז/הודעה הגיבו אוטומטית

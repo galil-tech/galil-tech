@@ -155,7 +155,7 @@
       </div>
       <div class="bg-green-800 text-white rounded-xl p-4 text-center">
         <p class="text-xl font-black">🎯 המטרה של היום:</p>
-        <p class="text-green-200">pH יצא מהטווח → LED אדום נדלק → ברז מים נפתח אוטומטית</p>
+        <p class="text-green-200">האדמה התייבשה → נורית אדומה + צפצוף → ברז מים נפתח אוטומטית</p>
         <p class="text-lime-300 font-bold mt-1">הצמח שלכם מפעיל מכונות בלי שתגעו!</p>
       </div>
     </div>
@@ -192,42 +192,46 @@
       <p class="font-black text-red-800 text-lg mb-3">⚠️ 3 כללי זהב לפני חיבור ה-ESP32:</p>
       <div class="space-y-2 text-sm text-gray-700">
         <div class="flex gap-3 bg-white rounded-xl p-3"><span class="text-red-500 font-black">1.</span><span><b>תמיד נתק את כבל ה-USB לפני שמחבר/מנתק כבלים.</b> ESP32 מחובר = לא נוגעים בפינים.</span></div>
-        <div class="flex gap-3 bg-white rounded-xl p-3"><span class="text-red-500 font-black">2.</span><span><b>אסור לחבר 3V3/5V ישירות ל-GND, ואסור להכניס 5V לפין GPIO.</b> ה-ESP32 עובד ב-3.3V – 5V ישרוף אותו. LED – תמיד דרך נגד.</span></div>
+        <div class="flex gap-3 bg-white rounded-xl p-3"><span class="text-red-500 font-black">2.</span><span><b>אסור לחבר 3V3/5V ישירות ל-GND, ואסור להכניס 5V לפין GPIO.</b> ה-ESP32 עובד ב-3.3V – 5V ישרוף אותו. LED חיצוני – תמיד דרך נגד.</span></div>
         <div class="flex gap-3 bg-white rounded-xl p-3"><span class="text-red-500 font-black">3.</span><span><b>בדוק פעמיים לפני שמחבר חשמל.</b> כבל אחד הפוך = חיישן מת.</span></div>
       </div>
     </div>
 
-    <!-- LED WIRING -->
+    <!-- BUZZER + SOIL WIRING -->
     <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-5 mb-5">
-      <h3 class="text-xl font-black text-yellow-900 mb-4">💡 חיבור LED (נורית)</h3>
+      <h3 class="text-xl font-black text-yellow-900 mb-4">🔔 חיבור זמזם + 💧 חיישן לחות</h3>
       <div class="grid md:grid-cols-2 gap-5">
         <div>
           <p class="font-bold text-gray-700 mb-3 text-sm">סכמת חיבור:</p>
           <div class="space-y-2">
             <div class="wire-row bg-white border border-gray-200">
-              <div class="wire-dot" style="background:#ef4444"></div>
-              <div><p class="font-bold text-sm">רגל ארוכה (+) של LED</p><p class="text-xs text-gray-400">→ נגד 220Ω → GPIO 5</p></div>
+              <div class="wire-dot" style="background:#f59e0b"></div>
+              <div><p class="font-bold text-sm">זמזם – רגל S (אות)</p><p class="text-xs text-gray-400">→ GPIO 5</p></div>
             </div>
             <div class="wire-row bg-white border border-gray-200">
               <div class="wire-dot" style="background:#1f2937"></div>
-              <div><p class="font-bold text-sm">רגל קצרה (–) של LED</p><p class="text-xs text-gray-400">→ GND (פין שחור)</p></div>
+              <div><p class="font-bold text-sm">זמזם – רגל – (מינוס)</p><p class="text-xs text-gray-400">→ GND</p></div>
+            </div>
+            <div class="wire-row bg-white border border-gray-200">
+              <div class="wire-dot" style="background:#0ea5e9"></div>
+              <div><p class="font-bold text-sm">חיישן לחות – AOUT (משיעור 6)</p><p class="text-xs text-gray-400">→ GPIO 6 · VCC → 3V3 · GND → GND</p></div>
             </div>
           </div>
           <div class="mt-3 bg-orange-50 rounded-xl p-3 text-sm text-orange-800">
-            ⚡ <b>למה נגד?</b> LED ללא נגד = זרם גדול מדי = LED שרוף (וגם פין פגוע). הנגד מגביל את הזרם. ב-3.3V של ה-ESP32 ה-LED מעט פחות בהיר – זה תקין.
+            🌈 <b>והנורית?</b> נורית ה-RGB כבר מובנית בלוח (GPIO 48) – לא צריך לחבר אותה, ואין צורך בנגד. LED רגיל שמחברים בעצמכם – תמיד דרך נגד!
           </div>
         </div>
-        <div dir="ltr" class="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400 leading-loose">
-          <p class="text-slate-400 text-xs mb-2">// הגדרה בקוד:</p>
-          <p><span class="text-blue-300">int</span> ledPin = <span class="text-yellow-300">5</span>; <span class="text-slate-500">// GPIO 5</span></p>
-          <p><span class="text-blue-300">void</span> setup() {'{'}</p>
-          <p>&nbsp;<span class="text-purple-300">pinMode</span>(ledPin, OUTPUT);</p>
-          <p>{'}'}</p>
-          <p class="mt-2">// הדלקה:</p>
-          <p><span class="text-purple-300">digitalWrite</span>(ledPin, <span class="text-yellow-300">HIGH</span>);</p>
-          <p>// כיבוי:</p>
-          <p><span class="text-purple-300">digitalWrite</span>(ledPin, <span class="text-yellow-300">LOW</span>);</p>
-        </div>
+        <pre dir="ltr" class="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400 leading-loose overflow-x-auto"><span class="text-slate-400"># הגדרה בקוד (MicroPython):</span>
+<span class="text-blue-300">from</span> ws2812_driver <span class="text-blue-300">import</span> WS2812LED
+<span class="text-blue-300">from</span> buzzer_driver <span class="text-blue-300">import</span> PassiveBuzzer
+led = WS2812LED(pin_num=<span class="text-yellow-300">48</span>, brightness=<span class="text-yellow-300">0.2</span>)
+buzzer = PassiveBuzzer(pin_num=<span class="text-yellow-300">5</span>)
+
+<span class="text-slate-400"># הדלקה וצפצוף:</span>
+led.<span class="text-purple-300">red</span>()
+buzzer.<span class="text-purple-300">alarm_beep</span>(count=<span class="text-yellow-300">3</span>, freq=<span class="text-yellow-300">1000</span>, beep_ms=<span class="text-yellow-300">100</span>)
+<span class="text-slate-400"># כיבוי:</span>
+led.<span class="text-purple-300">off</span>()</pre>
       </div>
     </div>
 
@@ -243,7 +247,7 @@
           <div class="space-y-2">
             <div class="wire-row bg-white border border-gray-200">
               <div class="wire-dot" style="background:#dc2626"></div>
-              <div><p class="font-bold text-sm">כבל אדום (VCC)</p><p class="text-xs text-gray-400">→ 5V (פין 5V0 בלוח – לא לפין GPIO!)</p></div>
+              <div><p class="font-bold text-sm">כבל אדום (VCC)</p><p class="text-xs text-gray-400">→ 5V (פין 5V בלוח – לא לפין GPIO!)</p></div>
             </div>
             <div class="wire-row bg-white border border-gray-200">
               <div class="wire-dot" style="background:#1f2937"></div>
@@ -258,18 +262,15 @@
             ✅ <b>Servo בטוח!</b> אין צורך בנגד. ה-Servo מגביל זרם לבד.
           </div>
         </div>
-        <div dir="ltr" class="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400 leading-loose">
-          <p class="text-slate-400 text-xs mb-2">// קוד Servo:</p>
-          <p><span class="text-yellow-300">#include</span> &lt;ESP32Servo.h&gt;</p>
-          <p><span class="text-blue-300">Servo</span> valve;</p>
-          <p><span class="text-blue-300">void</span> setup() {'{'}</p>
-          <p>&nbsp;valve.<span class="text-purple-300">attach</span>(<span class="text-yellow-300">15</span>);</p>
-          <p>{'}'}</p>
-          <p class="mt-2">// פתיחת ברז:</p>
-          <p>valve.<span class="text-purple-300">write</span>(<span class="text-yellow-300">90</span>);</p>
-          <p>// סגירה:</p>
-          <p>valve.<span class="text-purple-300">write</span>(<span class="text-yellow-300">0</span>);</p>
-        </div>
+        <pre dir="ltr" class="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400 leading-loose overflow-x-auto"><span class="text-slate-400"># קוד Servo (MicroPython):</span>
+<span class="text-blue-300">from</span> machine <span class="text-blue-300">import</span> Pin, PWM
+servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text-yellow-300">50</span>)
+
+<span class="text-blue-300">def</span> <span class="text-purple-300">valve</span>(angle):  <span class="text-slate-400"># 0 = סגור, 90 = פתוח</span>
+    servo.duty_ns(<span class="text-yellow-300">500000</span> + angle * <span class="text-yellow-300">2000000</span> // <span class="text-yellow-300">180</span>)
+
+<span class="text-purple-300">valve</span>(<span class="text-yellow-300">90</span>)  <span class="text-slate-400"># פתיחת ברז</span>
+<span class="text-purple-300">valve</span>(<span class="text-yellow-300">0</span>)   <span class="text-slate-400"># סגירה</span></pre>
       </div>
     </div>
 
@@ -277,8 +278,8 @@
     <div class="bg-green-50 border-2 border-green-300 rounded-2xl p-5">
       <p class="font-black text-green-800 mb-3">✅ רשימת בדיקה לפני הדלקה:</p>
       <div class="grid md:grid-cols-2 gap-2 text-sm" id="wiring-checklist">
-        <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> רגל ארוכה LED → נגד → GPIO 5</label>
-        <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> רגל קצרה LED → GND</label>
+        <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> זמזם: S → GPIO 5</label>
+        <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> חיישן לחות: AOUT → GPIO 6, VCC → 3V3</label>
         <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> אין כבלים מתוחים</label>
         <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> ה-ESP32 מנותק מה-USB בזמן חיבור</label>
       </div>
@@ -305,33 +306,30 @@
     </div>
 
     <div class="bg-slate-50 border-r-4 border-slate-400 rounded-2xl p-6 mb-5 text-gray-700 leading-relaxed">
-      <p class="text-lg mb-4">בשיעור 6 למדתם <code class="bg-slate-200 px-2 rounded text-sm">if</code>. עכשיו מוסיפים <code class="bg-slate-200 px-2 rounded text-sm">else</code> – "אחרת":</p>
-      <div dir="ltr" class="bg-slate-900 rounded-2xl p-5 font-mono text-sm leading-loose mb-4">
-        <p><span class="text-blue-300">float</span> ph = readSensor();</p>
-        <p class="mt-2"><span class="text-yellow-300">if</span> (ph &lt; 5.5) {'{'}  <span class="text-slate-500">// אם pH נמוך מדי</span></p>
-        <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledRed, <span class="text-red-400">HIGH</span>); <span class="text-slate-500">// נורה אדומה דולקת</span></p>
-        <p>&nbsp;&nbsp;valve.<span class="text-purple-300">write</span>(<span class="text-yellow-300">90</span>);  <span class="text-slate-500">// ברז נפתח</span></p>
-        <p>{'}'} <span class="text-yellow-300">else if</span> (ph &gt; 6.5) {'{'} <span class="text-slate-500">// אם בסיסי מדי</span></p>
-        <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledRed, <span class="text-red-400">HIGH</span>);</p>
-        <p>&nbsp;&nbsp;valve.<span class="text-purple-300">write</span>(<span class="text-yellow-300">0</span>); <span class="text-slate-500">// ברז סגור</span></p>
-        <p>{'}'} <span class="text-yellow-300">else</span> {'{'} <span class="text-slate-500">// הכל תקין</span></p>
-        <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledRed, <span class="text-red-400">LOW</span>); <span class="text-slate-500">// נורה כבויה</span></p>
-        <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledGreen, <span class="text-green-400">HIGH</span>); <span class="text-slate-500">// נורה ירוקה</span></p>
-        <p>{'}'}</p>
-      </div>
+      <p class="text-lg mb-4">בשיעור 6 למדתם <code class="bg-slate-200 px-2 rounded text-sm">if</code>. עכשיו מוסיפים <code class="bg-slate-200 px-2 rounded text-sm">elif</code> ("ואם לא – אז אם...") ו-<code class="bg-slate-200 px-2 rounded text-sm">else</code> – "אחרת". בפייתון אין סוגריים מסולסלים: <b>ההזחה</b> קובעת מה בתוך כל תנאי.</p>
+      <pre dir="ltr" class="bg-slate-900 rounded-2xl p-5 font-mono text-sm leading-loose mb-4 overflow-x-auto text-green-400">moisture = soil.read_percent()
+
+<span class="text-yellow-300">if</span> moisture &lt; 30:        <span class="text-slate-500"># אם האדמה יבשה מדי</span>
+    led.<span class="text-red-400">red</span>()             <span class="text-slate-500"># נורית אדומה</span>
+    valve(<span class="text-yellow-300">90</span>)            <span class="text-slate-500"># ברז נפתח</span>
+<span class="text-yellow-300">elif</span> moisture &gt; 80:      <span class="text-slate-500"># אם רטובה מדי</span>
+    led.<span class="text-blue-300">blue</span>()
+    valve(<span class="text-yellow-300">0</span>)             <span class="text-slate-500"># ברז סגור</span>
+<span class="text-yellow-300">else</span>:                    <span class="text-slate-500"># הכל תקין</span>
+    led.<span class="text-green-400">green</span>()           <span class="text-slate-500"># נורית ירוקה</span></pre>
     </div>
 
     <!-- DRAG: BUILD THE if/else -->
     <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-5 mb-4">
       <h3 class="text-xl font-black text-orange-900 mb-4">🎮 בנו את הקוד: גררו 6 בלוקים לסדר הנכון</h3>
-      <p class="text-sm text-gray-600 mb-4">המטרה: אם ה-pH מחוץ לטווח – הדלק אדום ופתח ברז. אחרת – הדלק ירוק.</p>
+      <p class="text-sm text-gray-600 mb-4">המטרה: אם האדמה יבשה (לחות מתחת ל-30%) – נורית אדומה ופתח ברז. אחרת – נורית ירוקה.</p>
       <div id="code-bank" class="flex flex-wrap gap-3 mb-5 p-4 bg-slate-100 rounded-2xl">
-        <div class="code-block" draggable="true" data-val="read">📡 ph = קרא_חיישן()</div>
-        <div class="code-block" draggable="true" data-val="if">🤔 אם ph מחוץ לטווח 5.5–6.5:</div>
-        <div class="code-block" draggable="true" data-val="red">🔴 הדלק LED אדום</div>
+        <div class="code-block" draggable="true" data-val="read">📡 לחות = קרא_חיישן()</div>
+        <div class="code-block" draggable="true" data-val="if">🤔 אם לחות מתחת ל-30:</div>
+        <div class="code-block" draggable="true" data-val="red">🔴 נורית אדומה</div>
         <div class="code-block" draggable="true" data-val="valve">🚿 פתח ברז</div>
         <div class="code-block" draggable="true" data-val="else">🔁 אחרת:</div>
-        <div class="code-block" draggable="true" data-val="green">💚 הדלק LED ירוק + סגור ברז</div>
+        <div class="code-block" draggable="true" data-val="green">💚 נורית ירוקה + סגור ברז</div>
       </div>
       <div class="bg-slate-900 rounded-2xl p-5 space-y-2">
         <div class="flex gap-3 items-center">
@@ -383,27 +381,26 @@
     </div>
 
     <div class="bg-slate-800 rounded-2xl p-4 mb-5 text-sm text-slate-300">
-      🎯 <b class="text-white">המשימה:</b> קוד שבודק EC ומפעיל LED אדום אם נמוך מ-1.2 או ירוק אם תקין
+      🎯 <b class="text-white">המשימה:</b> קוד פייתון שבודק לחות קרקע – אם מתחת ל-30%: נורית אדומה ופתיחת ברז. אחרת: נורית ירוקה.
     </div>
 
-    <div class="bg-slate-900 rounded-2xl p-5 font-mono text-sm leading-loose" dir="ltr">
-      <p><span class="text-blue-300">float</span> ec = readEC();</p>
-      <p class="mt-2"><span class="text-yellow-300">if</span> (ec <span id="blank1-wrap">&lt;</span> <input type="text" class="code-blank w-16" id="blank1" placeholder="?" onkeydown="checkBlank(event,'blank1','1.2')"> ) {'{'}</p>
-      <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(<span id="blank2-wrap"><input type="text" class="code-blank w-20" id="blank2" placeholder="?" onkeydown="checkBlank(event,'blank2','ledRed')"></span>, HIGH);</p>
-      <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledGreen, <span id="blank3-wrap"><input type="text" class="code-blank w-16" id="blank3" placeholder="?" onkeydown="checkBlank(event,'blank3','LOW')"></span>);</p>
-      <p>{'}'} <span class="text-yellow-300">else</span> {'{'}</p>
-      <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(ledRed, LOW);</p>
-      <p>&nbsp;&nbsp;<span class="text-purple-300">digitalWrite</span>(<span id="blank4-wrap"><input type="text" class="code-blank w-24" id="blank4" placeholder="?" onkeydown="checkBlank(event,'blank4','ledGreen')"></span>, <span id="blank5-wrap"><input type="text" class="code-blank w-16" id="blank5" placeholder="?" onkeydown="checkBlank(event,'blank5','HIGH')"></span>);</p>
-      <p>{'}'}</p>
+    <div class="bg-slate-900 rounded-2xl p-5 font-mono text-sm leading-loose text-green-400" dir="ltr">
+      <p>moisture = soil.read_percent()</p>
+      <p class="mt-2"><span class="text-yellow-300">if</span> moisture &lt; <input type="text" class="code-blank w-16" id="blank1" placeholder="?" onkeydown="checkBlank(event,'blank1','30')">:</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;led.<input type="text" class="code-blank w-20" id="blank2" placeholder="?" onkeydown="checkBlank(event,'blank2','red')">()</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(<input type="text" class="code-blank w-16" id="blank3" placeholder="?" onkeydown="checkBlank(event,'blank3','90')">)</p>
+      <p><input type="text" class="code-blank w-20" id="blank4" placeholder="?" onkeydown="checkBlank(event,'blank4','else')">:</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;led.<input type="text" class="code-blank w-24" id="blank5" placeholder="?" onkeydown="checkBlank(event,'blank5','green')">()</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(0)</p>
     </div>
 
     <div class="mt-4 bg-blue-50 rounded-xl p-3 text-sm text-blue-800">
-      💡 <b>רמז:</b> המשתנים הם: <code>ledRed</code>, <code>ledGreen</code>, ערכים: <code>HIGH</code> / <code>LOW</code>, סף EC: <code>1.2</code>
+      💡 <b>רמז:</b> צבעי הנורית: <code>red</code> / <code>green</code> · סף הלחות: <code>30</code> · זווית ברז פתוח: <code>90</code> · "אחרת" בפייתון: <code>else</code>
     </div>
 
     <div id="blanks-progress" class="mt-3 text-sm text-gray-500">0 מתוך 5 נכונים ✓</div>
     <div id="blanks-done" class="hidden mt-4 bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
-      <p class="text-xl font-black text-lime-700">💻 +30 עלים! כתבת קוד אמיתי!</p>
+      <p class="text-xl font-black text-lime-700">💻 +30 עלים! כתבת קוד פייתון אמיתי!</p>
       <p class="text-sm text-gray-500 mt-1">זה בדיוק הקוד שרץ על ה-ESP32 שלכם עכשיו</p>
     </div>
     <div id="bonus-q-7"></div>
@@ -485,7 +482,7 @@
 
         <!-- decision -->
         <div class="bg-slate-700 rounded-xl p-3 text-left" dir="ltr">
-          <p class="text-slate-400 text-xs mb-1 font-mono">// ESP32 decision:</p>
+          <p class="text-slate-400 text-xs mb-1 font-mono"># ESP32 decision:</p>
           <div class="text-green-400 font-mono text-xs" id="led-decision">✅ All OK</div>
         </div>
       </div>
@@ -581,45 +578,45 @@
   <div class="bg-green-800 text-white rounded-3xl shadow-xl p-8 mb-5 text-center">
     <div class="text-6xl mb-3">⚙️</div>
     <h2 class="text-4xl font-black mb-2">עכשיו לפרויקט!</h2>
-    <p class="text-green-200 text-xl mb-2">גרמו לצמח להפעיל LED אמיתי!</p>
+    <p class="text-green-200 text-xl mb-2">גרמו לצמח להדליק נורית ולצפצף!</p>
     <p class="text-green-300 text-sm mb-5">השאר את המחשב – קח את הרשימה</p>
 
     <div class="bg-white/10 rounded-2xl p-5 text-right mb-5 space-y-3">
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m1">
         <div class="text-2xl">🔌</div>
-        <div class="flex-1"><p class="font-bold">א. חבר LED אדום ל-GPIO 5 דרך נגד 220Ω</p><p class="text-green-300 text-xs">רגל ארוכה → נגד → GPIO 5 | רגל קצרה → GND</p></div>
+        <div class="flex-1"><p class="font-bold">א. חבר את הזמזם</p><p class="text-green-300 text-xs">S → GPIO 5 | – → GND</p></div>
         <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(1)">
       </div>
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m2">
         <div class="text-2xl">💚</div>
-        <div class="flex-1"><p class="font-bold">ב. חבר LED ירוק ל-GPIO 6 דרך נגד 220Ω</p><p class="text-green-300 text-xs">אותו חיבור, GPIO 6</p></div>
+        <div class="flex-1"><p class="font-bold">ב. חבר את חיישן הלחות (משיעור 6)</p><p class="text-green-300 text-xs">AOUT → GPIO 6 | VCC → 3V3 | GND → GND</p></div>
         <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(2)">
       </div>
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m3">
         <div class="text-2xl">📺</div>
-        <div class="flex-1"><p class="font-bold">ג. בקש מהמורה להעלות קוד</p><p class="text-green-300 text-xs">קוד עם if/else לפי pH ו-EC</p></div>
+        <div class="flex-1"><p class="font-bold">ג. בקש מהמורה להריץ את הקוד ב-Thonny</p><p class="text-green-300 text-xs">כיול: חיישן באוויר → Enter, חיישן במים → Enter</p></div>
         <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(3)">
       </div>
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m4">
         <div class="text-2xl">🔴</div>
-        <div class="flex-1"><p class="font-bold">ד. גרום ל-LED האדום להידלק</p><p class="text-green-300 text-xs">הזז את pH מחוץ לטווח (שנה ב-simulator או בדיקה ידנית)</p></div>
+        <div class="flex-1"><p class="font-bold">ד. גרום לנורית להיות אדומה ולזמזם לצפצף</p><p class="text-green-300 text-xs">החיישן באדמה יבשה</p></div>
         <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(4)">
       </div>
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m5">
         <div class="text-2xl">💚</div>
-        <div class="flex-1"><p class="font-bold">ה. גרום ל-LED הירוק להידלק</p><p class="text-green-300 text-xs">החזר ערכים לטווח תקין</p></div>
+        <div class="flex-1"><p class="font-bold">ה. גרום לנורית להיות ירוקה</p><p class="text-green-300 text-xs">החיישן באדמה רטובה</p></div>
         <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(5)">
       </div>
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m6">
         <div class="text-2xl">📸</div>
-        <div class="flex-1"><p class="font-bold">ו. צלם: LED דולק + לוח ה-ESP32</p></div>
+        <div class="flex-1"><p class="font-bold">ו. צלם: הנורית דולקת + לוח ה-ESP32</p></div>
         <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(6)">
       </div>
     </div>
 
     <div id="bonus-m" class="hidden bg-yellow-400/20 border border-yellow-300 rounded-2xl p-4 mb-5 text-right">
       <p class="font-bold text-yellow-200">⭐ בונוס Servo (+20 עלים)</p>
-      <p class="text-white text-sm">אם יש Servo זמין – חבר אותו ל-GPIO 15 (חשמל מ-5V0) ובדוק שהוא נע כש-pH יוצא מהטווח</p>
+      <p class="text-white text-sm">אם יש Servo זמין – חבר אותו ל-GPIO 15 (חשמל מ-5V0) ובדוק שהוא נפתח כשהאדמה יבשה</p>
     </div>
     <p id="mp" class="text-green-200 mb-4">0 מתוך 6 ✓</p>
     <button onclick="goTo(8)" id="bm" class="hidden bg-lime-400 hover:bg-lime-300 text-green-900 px-12 py-5 rounded-2xl text-2xl font-black shadow-2xl">✅ הצמח פועל! ←</button>
@@ -803,7 +800,7 @@ document.querySelectorAll('.code-slot').forEach(slot=>{
     if(!dragging)return;dropOnSlot(slot,e.dataTransfer.getData('text/plain'));
   });
 });
-const codeLabels={read:'📡 ph = קרא_חיישן()',if:'🤔 אם ph מחוץ לטווח 5.5–6.5:',red:'🔴 הדלק LED אדום',valve:'🚿 פתח ברז',else:'🔁 אחרת:',green:'💚 הדלק LED ירוק + סגור ברז'};
+const codeLabels={read:'📡 לחות = קרא_חיישן()',if:'🤔 אם לחות מתחת ל-30:',red:'🔴 נורית אדומה',valve:'🚿 פתח ברז',else:'🔁 אחרת:',green:'💚 הדלק LED ירוק + סגור ברז'};
 const codePts={read:3,if:3,red:3,valve:3,else:3,green:5};
 function dropOnSlot(slot,val){
   if(slot.dataset.filled)return;
@@ -825,7 +822,7 @@ function dropOnSlot(slot,val){
 }
 
 // ── code blanks ──
-const blanksAnswers={blank1:'1.2',blank2:'ledRed',blank3:'LOW',blank4:'ledGreen',blank5:'HIGH'};
+const blanksAnswers={blank1:'30',blank2:'red',blank3:'90',blank4:'else',blank5:'green'};
 function checkBlank(e,id,answer){
   if(e.key!=='Enter')return;
   const inp=document.getElementById(id);
@@ -876,7 +873,7 @@ function updateLED(){
     valve.textContent='💧';
     document.getElementById('valve-status').textContent='ברז פתוח!';
     document.getElementById('valve-angle').textContent='90°';
-    dec.innerHTML='<span style="color:#f87171">if ('+reasons.join(' || ')+') → ledRed=HIGH, valve.write(90)</span>';
+    dec.innerHTML='<span style="color:#f87171">if ('+reasons.join(' || ')+'): led.red(); valve(90)</span>';
 
     if(!simLEDTriggered){simLEDTriggered=true;addLv(15);document.getElementById('sim-led-done').classList.remove('hidden');document.getElementById('b5').classList.remove('hidden');}
   } else {
@@ -890,7 +887,7 @@ function updateLED(){
     valve.textContent='🚫';
     document.getElementById('valve-status').textContent='סגור';
     document.getElementById('valve-angle').textContent='0°';
-    dec.innerHTML='<span style="color:#4ade80">else → ledGreen=HIGH, valve.write(0)</span>';
+    dec.innerHTML='<span style="color:#4ade80">else: led.green(); valve(0)</span>';
     if(simLEDTriggered)document.getElementById('b5').classList.remove('hidden');
   }
 }

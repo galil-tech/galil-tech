@@ -47,7 +47,7 @@
       <div>
         <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">מיומנויות מעשיות</h3>
         <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">🔧 <span>מחבר חיישן לחות אדמה (3 חוטים צבעוניים) לבקר ESP32, לפי סכמה פשוטה (חיבורי "תקע" אם קיימים)</span></li>
+          <li class="flex gap-2">🔧 <span>מחבר בעצמו חיישן לחות אדמה (3 חוטים) לבקר ESP32, לפי סכמה פשוטה</span></li>
           <li class="flex gap-2">🔧 <span>קורא ערכים ראשוניים (אדמה יבשה מול רטובה) ואומר אם הם "נראים תקינים"</span></li>
           <li class="flex gap-2">🔧 <span>מרכיב בלוק "אם...אז..." אחד פשוט בלומדה</span></li>
         </ul>
@@ -73,45 +73,56 @@
     <div class="bg-teal-700 text-white p-6">
       <h2 class="text-2xl font-black">🧰 הכנה לפני השיעור – חשוב מאוד!</h2>
     </div>
+    <div class="px-6 pt-6">
+      <div class="bg-red-50 border-2 border-red-300 rounded-2xl p-4 text-sm text-red-800">
+        ⛔ <b>רק Thonny ו-MicroPython.</b> לא להעלות לבקר קוד מ-Arduino IDE – זה מוחק את MicroPython ואת הדרייברים שהותקנו מראש.
+      </div>
+    </div>
     <div class="p-6 grid md:grid-cols-3 gap-6 text-sm">
       <div>
-        <h3 class="font-bold text-gray-800 mb-3">⚡ ציוד</h3>
+        <h3 class="font-bold text-gray-800 mb-3">⚡ ציוד לקבוצה</h3>
         <ul class="space-y-2 text-gray-600">
-          <li class="flex gap-2">📋 <span>לוח ESP32-S3 × מספר קבוצות + כבל USB-C</span></li>
-          <li class="flex gap-2">📋 <span><b>חיישן לחות אדמה קיבולי</b> (Capacitive Soil Moisture, 3 חוטים) לכל קבוצה – החיישן המרכזי ביסודי</span></li>
+          <li class="flex gap-2">📋 <span>לוח ESP32-S3 (MicroPython + דרייברים צרובים) + כבל USB-C של נתונים</span></li>
+          <li class="flex gap-2">📋 <span><b>חיישן לחות אדמה</b> (3 חוטים) – החיישן של השיעור</span></li>
+          <li class="flex gap-2">📋 <span>3 כבלי חיבור (Jumper)</span></li>
           <li class="flex gap-2">📋 <span>2 כוסות אדמה: אחת יבשה, אחת רטובה (להשוואה)</span></li>
-          <li class="flex gap-2">📋 <span>(אופציונלי, להדגמת מורה) DHT22 טמפ'+לחות אוויר על GPIO 4</span></li>
-          <li class="bg-blue-50 text-blue-800 rounded-lg p-2 mt-2">💡 <b>מומלץ לגיל הזה:</b> אם יש אפשרות – חיבורי "תקע" מוכנים וצבעוניים (כמו ערכות Grove/Crowbit) עדיפים על breadboard וכבלי jumper בודדים, שקשים יותר לאצבעות קטנות. זו המלצת ציוד, לא חובה.</li>
-          <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ בדקו/העלו קוד יום לפני! אל תגלו ביום השיעור שמשהו לא עובד.</li>
+          <li class="bg-amber-50 text-amber-800 rounded-lg p-2 mt-2">💡 הערכה מגיעה <b>לא מחווטת</b> – התלמידים מחברים בעצמם. זה הלב של השיעור.</li>
+          <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ שמרו את הקוד על כל הבקרים יום לפני, ובדקו ערכה אחת מחוברת!</li>
         </ul>
       </div>
       <div>
-        <h3 class="font-bold text-gray-800 mb-3">💻 מה המורה מכין (לא התלמידים)</h3>
-        <p class="text-gray-600 mb-2">התלמידים לא נוגעים בקוד טקסטואלי היום – רק גוררים בלוקים בלומדה. הקוד עצמו (קריאת חיישנים) מוכן מראש ומועלה ע"י המורה, בדיוק כמו בתוכנית לחטיבה.</p>
-        <div class="bg-slate-800 rounded-xl p-3 text-xs text-green-400">
-          <p class="text-slate-400">// לשימוש המורה בלבד · לוח: ESP32S3 Dev Module</p>
-          <p>const int soilPin = 1; <span class="text-slate-500">// ADC1</span></p>
-          <p>void setup() {'{'} Serial.begin(115200); {'}'}</p>
-          <p>void loop() {'{'}</p>
-          <p>&nbsp;int raw = analogRead(soilPin); <span class="text-slate-500">// 0–4095</span></p>
-          <p>&nbsp;Serial.println(raw);</p>
-          <p>&nbsp;delay(2000);</p>
-          <p>{'}'}</p>
-        </div>
-        <p class="text-xs text-gray-500 mt-2">💡 בחיישן קיבולי: <b>מספר גבוה = יבש</b>, מספר נמוך = רטוב. רשמו מראש את הערך באוויר (יבש) ובכוס מים (רטוב) – זה הכיול לשיעור 7–8.</p>
+        <h3 class="font-bold text-gray-800 mb-3">🐍 מה המורה מכין (לא התלמידים)</h3>
+        <p class="text-gray-600 mb-2">התלמידים לא כותבים קוד היום – רק גוררים בלוקים בלומדה. את הקוד המורה שומר מראש על כל בקר בשם <code>main.py</code>, כך שהוא רץ לבד ברגע שמחברים USB.</p>
+        <pre dir="ltr" class="bg-slate-800 rounded-xl p-3 text-xs text-green-400 font-mono overflow-x-auto"># main.py – לשימוש המורה בלבד
+import time
+from soil_moisture_driver import SoilMoistureSensor
+
+soil = SoilMoistureSensor(pin_num=6)  # AOUT → GPIO 6
+
+while True:
+    print(soil.read_raw())   # גבוה = יבש
+    time.sleep(2)</pre>
+        <ul class="text-xs text-gray-500 mt-2 space-y-1">
+          <li>• Thonny → Interpreter: <b>MicroPython (ESP32)</b>.</li>
+          <li>• File → Save as → <b>MicroPython device</b> → <code>main.py</code>.</li>
+          <li>• את הערכים רואים בחלון ה-Shell של Thonny (⏹ Stop/Restart ואז הקוד רץ).</li>
+          <li>💡 <b>מספר גבוה = יבש</b>, מספר נמוך = רטוב. רשמו את הערכים – נשתמש בהם בשיעור 7.</li>
+        </ul>
       </div>
       <div>
-        <h3 class="font-bold text-gray-800 mb-3">📐 חיבור (plug-and-play)</h3>
+        <h3 class="font-bold text-gray-800 mb-3">📐 חיבור – 3 חוטים בלבד</h3>
         <div class="bg-gray-50 rounded-xl p-3 text-xs space-y-1 mb-3">
           <p class="font-bold text-gray-700">חיישן לחות אדמה → ESP32:</p>
-          <p>🔴 VCC → 3V3 · ⚫ GND → GND · 🟡 AOUT → GPIO 1</p>
-          <p class="text-gray-500">⚡ רק 3V3 – לא 5V. החיישן נכנס לאדמה רק עד הקו המסומן עליו.</p>
+          <p>VCC → 3V3 · GND → GND · AOUT → GPIO 6</p>
+          <p class="text-gray-500">⚡ רק 3V3 – לא 5V. עובדים לפי הכיתוב על החיישן ועל הלוח (לא לפי צבע החוט).</p>
+          <p class="text-gray-500">🔌 מחברים חוטים רק כשכבל ה-USB מנותק. המורה בודק – ורק אז מחברים USB.</p>
+          <p class="text-gray-500">💧 הכוסות יציבות ורחוקות מהלוח. החיישן נכנס לאדמה רק עד הקו המסומן עליו.</p>
         </div>
         <h3 class="font-bold text-gray-800 mb-3">🖥️ ציוד נוסף</h3>
         <ul class="space-y-1 text-gray-600 text-xs">
           <li>📋 מחשב/טאבלט לכל זוג (לומדה)</li>
-          <li>📋 מחשב אחד להעלאת קוד (המורה בלבד)</li>
-          <li>🧰 <b>ערכת חומרה רזרבית אחת לכיתה</b> (ESP32 + חיישנים חלופיים)</li>
+          <li>📋 מחשב עם Thonny לקריאת הערכים (המורה עובר בין הקבוצות)</li>
+          <li>🧰 <b>ערכת חומרה רזרבית אחת לכיתה</b> (ESP32 + חיישן חלופי)</li>
         </ul>
       </div>
     </div>
@@ -202,9 +213,9 @@
           <div class="bg-lime-50 border border-lime-200 rounded-xl p-4 mb-4 text-sm">
             <p class="font-bold text-lime-800 mb-2">📋 4 משימות:</p>
             <div class="grid md:grid-cols-2 gap-2 text-xs">
-              <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות אדמה – 3 חוטים לפי צבע (3V3 / GND / GPIO 1)</div>
+              <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות אדמה – 3 חוטים (VCC→3V3 / GND→GND / AOUT→GPIO 6), המורה בודק לפני USB</div>
               <div class="bg-white rounded-lg p-2">ב. החיישן בכוס יבשה, ואז בכוס רטובה</div>
-              <div class="bg-white rounded-lg p-2 border-2 border-green-200"><b>ג. קריאת ערכים ראשונים</b> (הקוד כבר הועלה ע"י המורה) – איזה מספר גדול יותר?</div>
+              <div class="bg-white rounded-lg p-2 border-2 border-green-200"><b>ג. קריאת ערכים ראשונים</b> (הקוד כבר שמור על הבקר) – איזה מספר גדול יותר?</div>
               <div class="bg-white rounded-lg p-2">ד. צילום ה-ESP32 המחובר לקיר</div>
             </div>
           </div>
@@ -212,9 +223,9 @@
             <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
               <ul class="space-y-1 text-xs text-gray-600">
-                <li><b>הערך תקוע על 0 או 4095:</b> קראו למורה – חוט AOUT לא ב-GPIO 1, או חוט חשמל רופף</li>
+                <li><b>הערך תקוע על 0 או 65535:</b> קראו למורה – חוט AOUT לא ב-GPIO 6, או חוט חשמל רופף</li>
                 <li><b>אין הבדל בין יבש לרטוב:</b> ודאו שהחיישן נכנס לאדמה עד הקו</li>
-                <li><b>הלוח לא מזוהה:</b> נסו כבל USB-C אחר (כבל נתונים, לא רק טעינה)</li>
+                <li><b>Thonny לא רואה את הלוח:</b> נסו כבל USB-C אחר (כבל נתונים, לא רק טעינה), ואז ⏹ Stop/Restart</li>
               </ul>
             </div>
             <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm">
@@ -339,7 +350,7 @@
 
   <!-- HARDWARE NOTE -->
   <div class="bg-slate-100 border border-slate-300 rounded-2xl p-4 text-xs text-slate-600">
-    🔧 <b>עודכן ל-ESP32-S3 (מסלול יסודי):</b> חיישן לחות אדמה קיבולי → GPIO 1 (ADC1), מתח 3.3V, ערכים 0–4095 (גבוה = יבש). DHT22/BH1750 – אופציונלי להדגמה (GPIO 4 / SDA 8, SCL 9). פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
+    🔧 <b>עודכן ל-ESP32-S3 + MicroPython (מסלול יסודי):</b> חיישן לחות אדמה → GPIO 6, מתח 3.3V, קריאה גולמית 0–65535 (גבוה = יבש). המורה שומר <code>main.py</code> מראש; התלמידים מחווטים וקוראים ערכים. פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
   </div>
 
   <!-- NOTES -->

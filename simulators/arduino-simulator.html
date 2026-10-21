@@ -42,6 +42,7 @@
     .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
     /* info panel */
     #pin-info-box{transition:all .3s;min-height:60px;}
+    #pin-info-box code{direction:ltr;unicode-bidi:isolate;}
     /* reveal */
     .rev{display:none;animation:fadeUp .35s ease;}
     .rev.show{display:block;}
@@ -69,7 +70,7 @@
 
   <div class="text-center mb-8">
     <h1 class="text-4xl font-black text-gray-900 mb-2">⚙️ סימולטור ESP32</h1>
-    <p class="text-gray-500">למד מתח וזרם · גלה את הפינים · חבר רכיבים · בדוק לפני המציאות</p>
+    <p class="text-gray-500">למד מתח וזרם · גלה את הפינים · חבר רכיבים · בדוק לפני המציאות · MicroPython</p>
     <div class="flex justify-center gap-1 mt-1 text-sm text-green-700">🌿 <span id="lc">0</span> עלים</div>
   </div>
 
@@ -187,27 +188,27 @@
             </div>
           </div>
           <div class="bg-white rounded-xl p-3 text-xs">
-            <p class="font-bold mb-1">ב-ESP32:</p>
-            <code class="text-green-700">pinMode(5, OUTPUT);</code><br>
-            <code class="text-blue-700">digitalWrite(5, HIGH); // 3.3V</code><br>
-            <code class="text-gray-500">digitalWrite(5, LOW);  // 0V</code>
+            <p class="font-bold mb-1">ב-MicroPython:</p>
+            <code class="text-green-700">p = Pin(15, Pin.OUT)</code><br>
+            <code class="text-blue-700">p.value(1)  # 3.3V</code><br>
+            <code class="text-gray-500">p.value(0)  # 0V</code>
           </div>
-          <p class="text-xs text-gray-500 mt-2">📌 פינים: GPIO 4–7, 15 | שימוש: LED, זמזם, Servo</p>
+          <p class="text-xs text-gray-500 mt-2">📌 פלטים בערכה: GPIO 5 (זמזם), GPIO 15 (Servo), GPIO 48 (נורית RGB)</p>
         </div>
 
         <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5">
           <h3 class="font-black text-blue-800 mb-3">📊 אנלוגי (Analog)</h3>
-          <p class="text-sm text-gray-600 mb-3">ערך רציף: <b>0 עד 4095</b> (12 ביט). כמו ווליום – כל ערך ביניים אפשרי.</p>
+          <p class="text-sm text-gray-600 mb-3">ערך רציף: <b>0 עד 65535</b> (ב-MicroPython: <code>read_u16</code>). כמו ווליום – כל ערך ביניים אפשרי.</p>
           <!-- visual slider -->
           <div class="flex items-center gap-4 mb-3">
-            <div class="text-3xl" id="ana-icon">🌡️</div>
+            <div class="text-3xl" id="ana-icon">🌱</div>
             <div class="flex-1">
-              <div class="flex justify-between text-xs mb-1"><span>0</span><span>2048</span><span>4095</span></div>
-              <input type="range" min="0" max="4095" value="2048" id="ana-sl" oninput="updateAnalog(this.value)"
+              <div class="flex justify-between text-xs mb-1"><span>0</span><span>32768</span><span>65535</span></div>
+              <input type="range" min="0" max="65535" value="32768" id="ana-sl" oninput="updateAnalog(this.value)"
                 class="w-full h-3 rounded-full accent-blue-600">
             </div>
             <div class="text-center">
-              <div class="text-xl font-black" id="ana-val">2048</div>
+              <div class="text-xl font-black" id="ana-val">32768</div>
               <div class="text-xs text-gray-400">≈ 1.65V</div>
             </div>
           </div>
@@ -215,11 +216,11 @@
             <div class="h-4 bg-gradient-to-r from-blue-300 to-blue-600 rounded-full transition-all duration-300" id="ana-bar" style="width:50%"></div>
           </div>
           <div class="bg-white rounded-xl p-3 text-xs">
-            <p class="font-bold mb-1">ב-ESP32:</p>
-            <code class="text-blue-700">int val = analogRead(1); // 0–4095</code><br>
-            <code class="text-green-700">float ph = val * (14.0/4095); // → pH</code>
+            <p class="font-bold mb-1">ב-MicroPython:</p>
+            <code class="text-blue-700">val = ADC(Pin(6)).read_u16()  # 0–65535</code><br>
+            <code class="text-green-700">pct = soil.read_percent()  # → % לחות</code>
           </div>
-          <p class="text-xs text-gray-500 mt-2">📌 פינים: GPIO 1–2 (ADC1) | שימוש: pH, EC, לחות אדמה</p>
+          <p class="text-xs text-gray-500 mt-2">📌 בערכה: GPIO 6 = חיישן לחות קרקע (גבוה = יבש)</p>
         </div>
       </div>
 
@@ -310,13 +311,13 @@
 
       <!-- component bank -->
       <div class="flex flex-wrap gap-3 mb-6 p-4 bg-gray-100 rounded-2xl" id="comp-bank">
-        <div class="component" style="background:#fef2f2;border-color:#ef4444;color:#dc2626" draggable="true" data-val="led-red">🔴 LED אדום</div>
-        <div class="component" style="background:#f0fdf4;border-color:#22c55e;color:#16a34a" draggable="true" data-val="led-green">💚 LED ירוק</div>
-        <div class="component" style="background:#fffbeb;border-color:#f59e0b;color:#d97706" draggable="true" data-val="resistor">🟠 נגד 220Ω</div>
-        <div class="component" style="background:#eff6ff;border-color:#3b82f6;color:#2563eb" draggable="true" data-val="ph-sensor">⚗️ מד pH</div>
-        <div class="component" style="background:#f5f3ff;border-color:#7c3aed;color:#6d28d9" draggable="true" data-val="ec-sensor">⚡ מד EC</div>
-        <div class="component" style="background:#ecfdf5;border-color:#0891b2;color:#0e7490" draggable="true" data-val="dht22">🌡️ DHT22</div>
-        <div class="component" style="background:#fefce8;border-color:#65a30d;color:#4d7c0f" draggable="true" data-val="servo">🔧 Servo</div>
+        <div class="component" style="background:#fffbeb;border-color:#f59e0b;color:#d97706" draggable="true" data-val="buzzer">🔔 זמזם (S)</div>
+        <div class="component" style="background:#f5f3ff;border-color:#7c3aed;color:#6d28d9" draggable="true" data-val="touch">👆 חוט מגע</div>
+        <div class="component" style="background:#fff7ed;border-color:#f97316;color:#c2410c" draggable="true" data-val="soil-vcc">🔌 חיישן לחות – VCC</div>
+        <div class="component" style="background:#eff6ff;border-color:#3b82f6;color:#2563eb" draggable="true" data-val="soil">💧 חיישן לחות – AOUT</div>
+        <div class="component" style="background:#ecfdf5;border-color:#0891b2;color:#0e7490" draggable="true" data-val="lcd-sda">📟 מסך – SDA</div>
+        <div class="component" style="background:#ecfeff;border-color:#06b6d4;color:#0e7490" draggable="true" data-val="lcd-scl">📟 מסך – SCL</div>
+        <div class="component" style="background:#fefce8;border-color:#65a30d;color:#4d7c0f" draggable="true" data-val="servo">🔧 Servo (אות)</div>
       </div>
 
       <!-- board with drop zones -->
@@ -324,32 +325,32 @@
         <p class="text-white text-sm font-bold mb-4 text-center">לוח ה-ESP32 – גרור לכאן:</p>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">GPIO 5 (OUTPUT)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-d9" data-answer="led-red" data-pin="GPIO5">GPIO 5 🔴</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 5 (פלט)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-5" data-answer="buzzer" data-pin="GPIO5">GPIO 5</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">GPIO 6 (OUTPUT)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-d10" data-answer="led-green" data-pin="GPIO6">GPIO 6 💚</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 4 (מגע)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-4" data-answer="touch" data-pin="GPIO4">GPIO 4</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">GPIO 1 (אנלוגי)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-a0" data-answer="ph-sensor" data-pin="GPIO1">GPIO 1 ⚗️</div>
+            <p class="text-slate-400 text-xs text-center mb-1">3V3 (כוח)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-3v3" data-answer="soil-vcc" data-pin="3V3">3V3</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">GPIO 2 (אנלוגי)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-a1" data-answer="ec-sensor" data-pin="GPIO2">GPIO 2 ⚡</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 6 (אנלוגי)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-6" data-answer="soil" data-pin="GPIO6">GPIO 6</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">GPIO 4 (קלט)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-d2" data-answer="dht22" data-pin="GPIO4">GPIO 4 🌡️</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 8 (I2C)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-8" data-answer="lcd-sda" data-pin="GPIO8">GPIO 8</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">GPIO 15 (Servo)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-d6" data-answer="servo" data-pin="GPIO15">GPIO 15 🔧</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 9 (I2C)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-9" data-answer="lcd-scl" data-pin="GPIO9">GPIO 9</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">בין GPIO 5 ל-LED</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-res" data-answer="resistor" data-pin="R">🟠 נגד</div>
+            <p class="text-slate-400 text-xs text-center mb-1">GPIO 15 (PWM)</p>
+            <div class="drop-target h-16 rounded-xl" id="dz-15" data-answer="servo" data-pin="GPIO15">GPIO 15</div>
           </div>
         </div>
         <div id="connect-msg" class="hidden mt-3 text-center text-red-300 font-bold text-sm"></div>
@@ -461,11 +462,11 @@ function toggleDigital(){
 // ── ANALOG SLIDER ──
 function updateAnalog(v){
   document.getElementById('ana-val').textContent=v;
-  document.getElementById('ana-bar').style.width=(v/4095*100)+'%';
-  const volt=(v/4095*3.3).toFixed(2);
+  document.getElementById('ana-bar').style.width=(v/65535*100)+'%';
+  const volt=(v/65535*3.3).toFixed(2);
   document.getElementById('ana-val').nextElementSibling&&(document.getElementById('ana-val').nextElementSibling.textContent='≈ '+volt+'V');
   // update voltage label beside value
-  const icon=v<800?'❄️':v<2800?'🌡️':v<3600?'🌶️':'🔥';
+  const icon=v<20000?'💧':v<40000?'🌱':'🏜️';  // soil sensor: high = dry
   document.getElementById('ana-icon').textContent=icon;
 }
 
@@ -475,18 +476,16 @@ const J1=['3v3','3v3','rst','4','5','6','7','15','16','17','18','8','3','46','9'
 const J3=['gnd','43','44','1','2','42','41','40','39','38','37','36','35','0','45','48','47','21','20','19','gnd','gnd'];
 const pinDB={
   '5v':{title:'5V – מתח USB',color:'#ef4444',body:'5 וולט ישירות מה-USB. <b>רק להזנת Servo/מנוע</b> – לעולם לא לפין GPIO ולא לחיישנים שמחוברים לפיני GPIO. אסור לחבר ישירות ל-GND!',use:'⭐ שיעורים 7–8: חשמל ל-Servo'},
-  '3v3':{title:'3V3 – ספק כוח 3.3V',color:'#f97316',body:'מתח העבודה של ה-ESP32. מזינים מכאן את DHT22, BH1750, חיישן לחות האדמה והפוטנציומטר. <b>אסור לחבר ישירות ל-GND!</b>',use:'⭐ שיעורים 6–8: חשמל לחיישנים'},
+  '3v3':{title:'3V3 – ספק כוח 3.3V',color:'#f97316',body:'מתח העבודה של ה-ESP32. מזינים מכאן את חיישן לחות הקרקע (ובעתיד חיישנים נוספים). <b>אסור לחבר ישירות ל-GND!</b>',use:'⭐ שיעורים 6–8: חשמל לחיישנים'},
   'gnd':{title:'GND – אדמה (0V)',color:'#6b7280',body:'המוליך השלילי. <b>כל רכיב חייב חיבור GND</b>. בלי GND אין מעגל סגור ולא יעבור זרם.',use:''},
   'rst':{title:'RST – Reset',color:'#6b7280',body:'מאפס את הבקר, כמו כפתור RST על הלוח. לא בשימוש בשיעורים.',use:''},
-  '1':{title:'GPIO 1 – אנלוגי (ADC1) ⭐',color:'#7c3aed',body:'⭐ חיישן pH / פוטנציומטר ("pH"), וביסודי – חיישן לחות אדמה. <code>analogRead(1)</code> מחזיר 0–4095 (12 ביט). המרה: <code>ph = val * (14.0/4095)</code>. מתח כניסה: עד 3.3V בלבד!',use:'⭐ שיעורים 6–8: pH / לחות אדמה'},
-  '2':{title:'GPIO 2 – אנלוגי (ADC1) ⭐',color:'#7c3aed',body:'⭐ חיישן EC. <code>analogRead(2)</code> ממיר את המוליכות של המים למספר 0–4095. מתח כניסה: עד 3.3V בלבד!',use:'⭐ שיעור 6: מד EC'},
-  '4':{title:'GPIO 4 – DHT22 ⭐',color:'#0891b2',body:'⭐ קו DATA של חיישן הטמפרטורה והלחות. <code>DHT dht(4, DHT22);</code>. חיישן "חשוף" צריך נגד 10kΩ בין DATA ל-3V3.',use:'⭐ שיעור 6: חיישן DHT22'},
-  '5':{title:'GPIO 5 – LED אדום ⭐',color:'#ef4444',body:'⭐ LED אדום. <code>digitalWrite(5, HIGH)</code> = 3.3V = LED דולק. תמיד דרך נגד 220Ω!',use:'⭐ שיעור 7: LED אדום (בעיה)'},
-  '6':{title:'GPIO 6 – LED ירוק ⭐',color:'#22c55e',body:'⭐ LED ירוק. <code>digitalWrite(6, HIGH)</code> = LED ירוק דולק = הכל תקין! תמיד דרך נגד 220Ω.',use:'⭐ שיעור 7: LED ירוק (תקין)'},
-  '7':{title:'GPIO 7 – זמזם ⭐',color:'#f59e0b',body:'⭐ זמזם אקטיבי ("הודעה"). <code>digitalWrite(7, HIGH)</code> = צפצוף.',use:'⭐ שיעורים 7–8: זמזם'},
-  '8':{title:'GPIO 8 – SDA (I2C) ⭐',color:'#0891b2',body:'קו הנתונים של I2C. חיישן האור BH1750 מתחבר כאן. בקוד: <code>Wire.begin(8, 9);</code>',use:'⭐ שיעור 6: BH1750 (אור)'},
-  '9':{title:'GPIO 9 – SCL (I2C) ⭐',color:'#0891b2',body:'קו השעון של I2C. תמיד ביחד עם GPIO 8 (SDA).',use:'⭐ שיעור 6: BH1750 (אור)'},
-  '15':{title:'GPIO 15 – Servo ⭐',color:'#0ea5e9',body:'⭐ אות ה-Servo (ברז). ספריית <code>ESP32Servo</code>: <code>valve.attach(15); valve.write(90)</code> = פתוח, <code>write(0)</code> = סגור. חשמל ל-Servo מ-5V.',use:'⭐ שיעורים 7–8: ברז Servo'},
+  '4':{title:'GPIO 4 – חיישן מגע ⭐',color:'#7c3aed',body:'⭐ "כפתור" בלי חלקים זזים: חוט אחד, ונגיעה של יד משנה את הקיבוליות. <code>touch = TouchSensor(pin_num=4)</code> · <code>touch.is_touched()</code>. לא נוגעים בחוט ברגע ההפעלה (כיול אוטומטי).',use:'⭐ שיעורים 7–8: כפתור כיול'},
+  '5':{title:'GPIO 5 – זמזם ⭐',color:'#f59e0b',body:'⭐ זמזם פסיבי – צריך תדר (PWM) כדי לצפצף. <code>buzzer = PassiveBuzzer(pin_num=5)</code> · <code>buzzer.alarm_beep(count=3, freq=1000, beep_ms=100)</code>.',use:'⭐ שיעורים 7–8: "הודעה"'},
+  '6':{title:'GPIO 6 – חיישן לחות קרקע ⭐',color:'#0ea5e9',body:'⭐ כניסה אנלוגית. <code>soil = SoilMoistureSensor(pin_num=6)</code> · <code>soil.read_raw()</code> מחזיר 0–65535 (גבוה = יבש) · אחרי כיול: <code>soil.read_percent()</code>. מתח כניסה: עד 3.3V בלבד!',use:'⭐ שיעורים 6–8: לחות קרקע'},
+  '8':{title:'GPIO 8 – SDA (I2C)',color:'#0891b2',body:'קו הנתונים של I2C – מסך ה-LCD של הערכה (ובעתיד חיישנים נוספים).',use:'מסך LCD'},
+  '9':{title:'GPIO 9 – SCL (I2C)',color:'#0891b2',body:'קו השעון של I2C. תמיד ביחד עם GPIO 8 (SDA).',use:'מסך LCD'},
+  '15':{title:'GPIO 15 – Servo ⭐',color:'#0ea5e9',body:'⭐ אות ה-Servo (ברז, חטיבה). <code>servo = PWM(Pin(15), freq=50)</code>, והפונקציה <code>valve(90)</code> = פתוח, <code>valve(0)</code> = סגור. חשמל ל-Servo מ-5V.',use:'⭐ שיעורים 7–8: ברז Servo'},
+  '48':{title:'GPIO 48 – נורית RGB מובנית ⭐',color:'#22c55e',body:'⭐ נורית צבעונית שכבר על הלוח – אין מה לחבר ואין צורך בנגד. <code>led = WS2812LED(pin_num=48, brightness=0.2)</code> · <code>led.red()</code> / <code>led.green()</code> / <code>led.yellow()</code>.',use:'⭐ שיעורים 7–8: אדום / צהוב / ירוק'},
 };
 const AVOID={
   '0':'פין אתחול (BOOT). אם מחובר אליו משהו – הלוח עלול לא לעלות או לא לקבל קוד.',
@@ -500,7 +499,6 @@ const AVOID={
   '37':'בלוחות עם זיכרון PSRAM מורחב – תפוס על ידי הזיכרון.',
   '43':'TX – שליחת נתוני Serial דרך חיבור ה-UART. לא להשתמש.',
   '44':'RX – קבלת נתוני Serial דרך חיבור ה-UART. לא להשתמש.',
-  '48':'מחובר לנורת ה-RGB שעל הלוח (בחלק מהגרסאות). עדיף להשאיר פנוי.',
 };
 Object.entries(AVOID).forEach(([k,v])=>{pinDB[k]={title:'GPIO '+k+' – 🚫 לא לחבר',color:'#f87171',body:v,use:'',avoid:true};});
 [...J1,...J3].forEach(k=>{if(!pinDB[k])pinDB[k]={title:'GPIO '+k+' – פנוי',color:'#94a3b8',body:'פין דיגיטלי פנוי (INPUT/OUTPUT). לא בשימוש בשיעורים 6–8.',use:''};});
@@ -553,7 +551,7 @@ document.querySelectorAll('.drop-target').forEach(z=>{
   z.addEventListener('dragleave',()=>z.classList.remove('drag-over'));
   z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag-over');if(!dComp)return;dropConnect(z,e.dataTransfer.getData('text/plain'),dComp);});
 });
-const compLabels={'led-red':'🔴 LED אדום','led-green':'💚 LED ירוק','resistor':'🟠 נגד 220Ω','ph-sensor':'⚗️ מד pH','ec-sensor':'⚡ מד EC','dht22':'🌡️ DHT22','servo':'🔧 Servo'};
+const compLabels={'buzzer':'🔔 זמזם (S)','touch':'👆 חוט מגע','soil-vcc':'🔌 חיישן – VCC','soil':'💧 חיישן – AOUT','lcd-sda':'📟 מסך – SDA','lcd-scl':'📟 מסך – SCL','servo':'🔧 Servo'};
 function dropConnect(zone,val,src){
   if(zone.dataset.filled)return;
   if(val===zone.dataset.answer){
@@ -573,10 +571,10 @@ function dropConnect(zone,val,src){
 // ── QUIZ ──
 const qs=[
   {q:'מה ההבדל בין מתח לזרם?',opts:['אותו דבר – שם שונה','מתח = לחץ (V), זרם = כמות שזורמת (A/mA)','מתח = AC, זרם = DC','אין הבדל בבקר'],ans:1,exp:'מתח (V) = כמה "לחץ" יש. זרם (A/mA) = כמה אלקטרונים עוברים. כמו לחץ מים לעומת כמות המים.'},
-  {q:'pH = 4.8 – איזה פין לחיבור החיישן?',opts:['GPIO 5 – דיגיטלי','5V – כוח','GPIO 1 – אנלוגי','GND'],ans:2,exp:'pH הוא ערך רציף (3–9). צריך פין אנלוגי – GPIO 1 קורא 0–4095.'},
-  {q:'LED מחובר ל-GPIO 5 – אין נגד. מה יקרה?',opts:['LED ידלק חזק','LED לא ידלק','LED יישרף (והפין ייפגע)','שום דבר'],ans:2,exp:'ללא נגד הזרם גבוה מדי – ה-LED נשרף והפין של הבקר עלול להיפגע. נגד 220Ω ב-3.3V מגביל לכ-6mA.'},
-  {q:'ב-ESP32, מה analogRead(1) מחזיר?',opts:['מתח בוולט (0–3.3)','מספר בין 0 ל-4095','HIGH או LOW בלבד','שם החיישן'],ans:1,exp:'ב-ESP32 analogRead מחזיר 0–4095 (12 ביט). להמרה לוולט: val * (3.3/4095).'},
-  {q:'Servo מחובר ל-GPIO 15. מה הפקודה לפתיחת ברז?',opts:['digitalWrite(15, HIGH)','analogWrite(15, 90)','valve.write(90)','pinMode(15, OPEN)'],ans:2,exp:'ספריית ESP32Servo מגדירה אובייקט. valve.write(90) = 90 מעלות = ברז פתוח. write(0) = סגור.'},
+  {q:'חיישן הלחות מחזיר ערך רציף. לאיזה פין מחברים את AOUT?',opts:['GPIO 5 – זמזם','5V – כוח','GPIO 6 – אנלוגי','GND'],ans:2,exp:'לחות היא ערך רציף, לכן צריך פין אנלוגי – בערכה זה GPIO 6, שקורא 0–65535.'},
+  {q:'LED חיצוני מחובר לפין GPIO – בלי נגד. מה יקרה?',opts:['LED ידלק חזק','LED לא ידלק','LED יישרף (והפין ייפגע)','שום דבר'],ans:2,exp:'ללא נגד הזרם גבוה מדי – ה-LED נשרף והפין של הבקר עלול להיפגע. נגד 220Ω ב-3.3V מגביל לכ-6mA.'},
+  {q:'ב-MicroPython, מה soil.read_raw() מחזיר?',opts:['מתח בוולט (0–3.3)','מספר בין 0 ל-65535','True או False בלבד','שם החיישן'],ans:1,exp:'הקריאה הגולמית היא 0–65535 (read_u16). בחיישן הלחות: גבוה = יבש. אחרי כיול, read_percent() נותן אחוזים.'},
+  {q:'Servo מחובר ל-GPIO 15. איזו פקודה פותחת את הברז?',opts:['Pin(15).on()','print(90)','valve(90)','servo = 90'],ans:2,exp:'valve() היא פונקציה שכתבנו: היא שולחת ל-Servo אות PWM לזווית 90° = ברז פתוח. valve(0) = סגור.'},
 ];
 let qScore=0;
 function buildQuiz(){

@@ -308,7 +308,7 @@
       </div>
     </div>
     <div class="bg-blue-50 border-r-4 border-blue-500 rounded-2xl p-6 mb-5 text-gray-700 text-lg">
-      <p class="mb-3"><b>ESP32</b> הוא <b>בקר</b> – מחשב קטן (כמה עשרות שקלים) שמחובר לעולם הפיזי. הוא קורא חיישנים, מחליט, ומפעיל ציוד. בונוס: יש לו WiFi מובנה, כך שהוא יכול גם לשלוח נתונים לאינטרנט.</p>
+      <p class="mb-3"><b>ESP32</b> הוא <b>בקר</b> – מחשב קטן (כמה עשרות שקלים) שמחובר לעולם הפיזי. הוא קורא חיישנים, מחליט, ומפעיל ציוד. בונוס: יש לו WiFi מובנה, כך שהוא יכול גם לשלוח נתונים לאינטרנט. אנחנו נדבר איתו בשפת <b>פייתון</b> (MicroPython).</p>
       <div class="bg-white rounded-xl p-4 border border-blue-200 mt-3">
         <p class="font-bold text-blue-800 mb-2">🔄 הלולאה הבסיסית:</p>
         <div class="font-mono text-sm bg-slate-900 text-green-400 rounded-xl p-4 leading-loose">
@@ -363,13 +363,13 @@
       </div>
     </div>
     <div class="bg-slate-800 rounded-2xl p-4 mb-5 text-sm text-slate-300">
-      🎯 <b class="text-white">המשימה:</b> תוכנית שקוראת pH ושולחת התראה אם מתחת ל-5.5 (מחוץ לטווח שלמדנו!)
+      🎯 <b class="text-white">המשימה:</b> תוכנית שקוראת את לחות הקרקע ומצפצפת אם היא מתחת ל-30% (הצמח צמא!)
     </div>
     <div id="code-bank" class="flex flex-wrap gap-3 mb-5 p-4 bg-slate-100 rounded-2xl">
-      <div class="code-block" draggable="true" data-val="wait">⏱️ המתן(5000)</div>
-      <div class="code-block" draggable="true" data-val="read">📡 ph = קרא_חיישן()</div>
-      <div class="code-block" draggable="true" data-val="alert">🚨 שלח_התראה("pH נמוך!")</div>
-      <div class="code-block" draggable="true" data-val="if">🤔 אם ph &lt; 5.5:</div>
+      <div class="code-block" draggable="true" data-val="wait">⏱️ המתן(5)</div>
+      <div class="code-block" draggable="true" data-val="read">📡 לחות = קרא_חיישן()</div>
+      <div class="code-block" draggable="true" data-val="alert">🔔 צפצף!</div>
+      <div class="code-block" draggable="true" data-val="if">🤔 אם לחות &lt; 30:</div>
       <div class="code-block" draggable="true" data-val="loop">🔄 חזור לתחילה</div>
     </div>
     <div class="bg-slate-900 rounded-2xl p-5 space-y-2 mb-4">
@@ -400,52 +400,50 @@
     <div id="code-done" class="hidden">
       <div class="bg-slate-800 border border-blue-500 rounded-2xl p-5 text-center mb-4">
         <p class="text-xl font-black text-blue-400 mb-1">💻 +25 עלים! תוכנית מושלמת!</p>
-        <p class="text-slate-300 text-sm">עכשיו – רוצה לראות איך זה נראה בקוד אמיתי של Arduino?</p>
+        <p class="text-slate-300 text-sm">עכשיו – רוצה לראות איך זה נראה בקוד פייתון אמיתי, שרץ על ה-ESP32?</p>
         <button onclick="revealCode()" class="mt-3 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold">🎁 הצג קוד אמיתי!</button>
       </div>
 
       <!-- REAL CODE -->
       <div id="real-code" class="real-code">
         <div class="bg-slate-900 rounded-2xl p-5 border border-green-500">
-          <p class="text-green-400 font-bold text-sm mb-4">✅ זה בדיוק הקוד שכתבת – רק באנגלית של Arduino:</p>
+          <p class="text-green-400 font-bold text-sm mb-4">✅ זה בדיוק הקוד שכתבת – רק בפייתון (MicroPython):</p>
           <!-- header row -->
           <div class="flex mb-2 px-1">
-            <div class="w-1/2 text-left text-xs text-slate-500 font-bold">קוד Arduino (אנגלית) →</div>
+            <div class="w-1/2 text-left text-xs text-slate-500 font-bold">קוד פייתון →</div>
             <div class="w-1/2 text-right text-xs text-slate-500 font-bold">← פירוש בעברית</div>
           </div>
           <!-- code rows: always LTR layout: code on LEFT, Hebrew on RIGHT -->
           <div dir="ltr" class="font-mono text-sm leading-loose space-y-1">
 
             <div class="flex items-center gap-3">
-              <code class="text-blue-300 w-1/2 text-left">float ph = readSensor();</code>
-              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 1: קרא חיישן pH ושמור כמספר</span>
+              <code class="text-green-400 w-1/2 text-left">while True:</code>
+              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 5: "חזור לנצח" – בפייתון כותבים אותה למעלה, וכל מה שמתחתיה מוזח</span>
             </div>
 
             <div class="flex items-center gap-3">
-              <code class="text-yellow-300 w-1/2 text-left">if (ph &lt; 5.5) {</code>
-              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 2: אם pH מתחת ל-5.5...</span>
-            </div>
-
-            <div class="flex items-center gap-3 pl-6">
-              <code class="text-red-300 w-1/2 text-left">&nbsp;&nbsp;sendAlert("pH too low!");</code>
-              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 3: שלח התראה (בתוך ה-if)</span>
+              <code class="text-blue-300 w-1/2 text-left whitespace-pre">    moisture = soil.read_percent()</code>
+              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 1: קרא את חיישן הלחות ושמור כמספר (אחוזים)</span>
             </div>
 
             <div class="flex items-center gap-3">
-              <code class="text-slate-500 w-1/2 text-left">}</code>
-              <span class="text-slate-500 text-xs w-1/2 text-right" dir="rtl">סגירת תנאי ה-if</span>
+              <code class="text-yellow-300 w-1/2 text-left whitespace-pre">    if moisture &lt; 30:</code>
+              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 2: אם הלחות מתחת ל-30%...</span>
             </div>
 
             <div class="flex items-center gap-3">
-              <code class="text-gray-400 w-1/2 text-left">delay(5000);</code>
-              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 4: המתן 5 שניות (5000 מילישניות)</span>
+              <code class="text-red-300 w-1/2 text-left whitespace-pre">        buzzer.alarm_beep(count=3, freq=1000, beep_ms=100)</code>
+              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 3: צפצף (מוזח עוד = בתוך ה-if)</span>
             </div>
 
             <div class="flex items-center gap-3">
-              <code class="text-green-400 w-1/2 text-left">// loop() repeats ♾️</code>
-              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 5: loop() חוזר אוטומטית לנצח</span>
+              <code class="text-gray-400 w-1/2 text-left whitespace-pre">    time.sleep(5)</code>
+              <span class="text-slate-400 text-xs w-1/2 text-right" dir="rtl">שורה 4: המתן 5 שניות – ואז חוזרים למעלה ♾️</span>
             </div>
 
+          </div>
+          <div class="mt-4 bg-blue-900/30 rounded-xl p-3 text-blue-200 text-sm" dir="rtl">
+            🐍 <b>בפייתון אין סוגריים { }:</b> ההזחה (רווחים בתחילת השורה) היא שקובעת מה נמצא בתוך ה-if ומה בתוך הלולאה.
           </div>
           <div class="mt-4 bg-green-900/30 rounded-xl p-3 text-green-300 text-sm" dir="rtl">
             💡 <b>שימו לב:</b> הקוד שסידרתם בבלוקים = בדיוק הקוד שמתכנתים אמיתיים כותבים. אתם כבר מבינים קוד!
@@ -611,16 +609,16 @@
     <h2 class="text-4xl font-black mb-2">עכשיו לפרויקט!</h2>
     <p class="text-slate-300 text-xl mb-5">השאר את המחשב – קח רק את הרשימה</p>
     <div class="bg-white/10 rounded-2xl p-5 text-right mb-5 space-y-3">
-      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m1"><div class="text-2xl">⚗️</div><div class="flex-1"><p class="font-bold">א. חבר מד pH ל-ESP32</p><p class="text-slate-400 text-xs">לפי הסכמה – מד pH אנלוגי ל-GPIO 1 · מוצא עד 3.3V בלבד!</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(1)"></div>
-      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m2"><div class="text-2xl">⚡</div><div class="flex-1"><p class="font-bold">ב. חבר מד EC ל-ESP32</p><p class="text-slate-400 text-xs">מד EC אנלוגי ל-GPIO 2 · מוצא עד 3.3V בלבד!</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(2)"></div>
-      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m3"><div class="text-2xl">🌡️</div><div class="flex-1"><p class="font-bold">ג. חבר חיישן טמפרטורה ולחות (DHT22) + אור (BH1750)</p><p class="text-slate-400 text-xs">DHT22 DATA→GPIO 4 · BH1750 SDA→GPIO 8, SCL→GPIO 9 · חשמל מ-3V3</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(3)"></div>
-      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m4"><div class="text-2xl">📺</div><div class="flex-1"><p class="font-bold">ד. בקש מהמורה להעלות קוד – בדוק שמציג 5 ערכים</p><p class="text-slate-400 text-xs">pH · EC · טמפ' · לחות · אור</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(4)"></div>
-      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m5"><div class="text-2xl">📝</div><div class="flex-1"><p class="font-bold">ה. רשום את 5 הערכים ובדוק אם תקינים</p><p class="text-slate-400 text-xs">pH 5.5–6.5 | EC 1.2–2.0 | טמפ' 15–28°C | לחות 50–80% | אור 400–1000 lux</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(5)"></div>
-      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m6"><div class="text-2xl">📸</div><div class="flex-1"><p class="font-bold">ו. צלם את ה-ESP32 המחובר עם כל 5 החיישנים</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(6)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m1"><div class="text-2xl">💧</div><div class="flex-1"><p class="font-bold">א. חבר את חיישן לחות הקרקע ל-ESP32</p><p class="text-slate-400 text-xs">VCC → 3V3 · GND → GND · AOUT → GPIO 6 · ה-USB מנותק בזמן החיבור!</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(1)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m2"><div class="text-2xl">🔍</div><div class="flex-1"><p class="font-bold">ב. בדיקת חבר: כל חוט במקום הנכון?</p><p class="text-slate-400 text-xs">רק אחרי הבדיקה מחברים את כבל ה-USB</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(2)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m3"><div class="text-2xl">🐍</div><div class="flex-1"><p class="font-bold">ג. בקש מהמורה להריץ את הקוד ב-Thonny</p><p class="text-slate-400 text-xs">הערכים יופיעו בחלון ה-Shell</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(3)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m4"><div class="text-2xl">📺</div><div class="flex-1"><p class="font-bold">ד. מדוד 3 מצבים</p><p class="text-slate-400 text-xs">חיישן באוויר · באדמה יבשה · באדמה רטובה</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(4)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m5"><div class="text-2xl">📝</div><div class="flex-1"><p class="font-bold">ה. רשום את 3 הערכים – הגיוני?</p><p class="text-slate-400 text-xs">בחיישן הזה: מספר גבוה = יבש, מספר נמוך = רטוב</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(5)"></div>
+      <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m6"><div class="text-2xl">📸</div><div class="flex-1"><p class="font-bold">ו. צלם את ה-ESP32 עם החיישן המחובר</p></div><input type="checkbox" class="w-7 h-7 accent-blue-400" onchange="mc(6)"></div>
     </div>
     <div id="bonus-m" class="hidden bg-blue-400/20 border border-blue-300 rounded-2xl p-4 mb-5 text-right">
       <p class="font-bold text-blue-200">⭐ בונוס (+20 עלים)</p>
-      <p class="text-white text-sm">חמם את חיישן הטמפ' ביד – כמה עלה הערך?</p>
+      <p class="text-white text-sm">השקו מעט את האדמה היבשה כשהחיישן בתוכה – תוך כמה שניות המספר יורד?</p>
     </div>
     <p id="mp" class="text-slate-300 mb-4">0 מתוך 6 ✓</p>
     <button onclick="goTo(8)" id="bm" class="hidden bg-blue-500 hover:bg-blue-400 text-white px-12 py-5 rounded-2xl text-2xl font-black shadow-2xl">✅ סיימתי! ←</button>
@@ -633,9 +631,9 @@
     <h2 class="text-3xl font-black text-gray-900 mb-6">📊 נתוני החיישנים + קיר הכיתה</h2>
     <div class="grid md:grid-cols-2 gap-6 mb-6">
       <div class="space-y-4">
-        <div><label class="block font-bold text-gray-600 mb-1 text-sm">🌡️ טמפרטורה (°C)</label><input type="number" id="dt" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="24"></div>
-        <div><label class="block font-bold text-gray-600 mb-1 text-sm">💧 לחות (%)</label><input type="number" id="dh" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="65"></div>
-        <div><label class="block font-bold text-gray-600 mb-1 text-sm">☀️ אור (lux)</label><input type="number" id="dl" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="450"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">🌬️ חיישן הלחות באוויר (Raw)</label><input type="number" id="dt" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="50000"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">🟫 באדמה יבשה (Raw)</label><input type="number" id="dh" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="42000"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">💧 באדמה רטובה (Raw)</label><input type="number" id="dl" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="25000"></div>
         <div><label class="block font-bold text-gray-600 mb-1 text-sm">💬 הערה</label><textarea id="do" rows="2" class="w-full border-2 border-gray-200 rounded-xl p-4 resize-none"></textarea></div>
         <button onclick="submitData()" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-4 rounded-2xl font-bold text-lg">📡 שלח נתונים!</button>
         <div id="dfb" class="hidden p-4 rounded-xl text-sm"></div>
@@ -805,7 +803,7 @@ document.querySelectorAll('.code-slot').forEach(slot=>{
     if(!dragging)return;dropOnSlot(slot,e.dataTransfer.getData('text/plain'));
   });
 });
-const codeLabels={read:'📡 ph = קרא_חיישן()',if:'🤔 אם ph < 5.5:',alert:'🚨 שלח_התראה("pH נמוך!")',wait:'⏱️ המתן(5000)',loop:'🔄 חזור לתחילה'};
+const codeLabels={read:'📡 לחות = קרא_חיישן()',if:'🤔 אם לחות < 30:',alert:'🔔 צפצף!',wait:'⏱️ המתן(5)',loop:'🔄 חזור לתחילה'};
 function dropOnSlot(slot,val){
   if(slot.dataset.filled)return;
   if(val===slot.dataset.answer){
@@ -922,14 +920,13 @@ function submitData(){
   const t=document.getElementById('dt').value,h=document.getElementById('dh').value,l=document.getElementById('dl').value;
   if(!t||!h||!l){alert('מלא את כל השדות');return;}
   addLv(20);
-  const rec={name:sName,temp:t,hum:h,light:l,obs:document.getElementById('do').value,ts:Date.now()};
+  const rec={name:sName,air:t,dry:h,wet:l,obs:document.getElementById('do').value,ts:Date.now()};
   let all=JSON.parse(localStorage.getItem('cls6')||'[]');
   all=all.filter(r=>r.name!==sName);all.push(rec);localStorage.setItem('cls6',JSON.stringify(all));
-  if(window.GC) GC.pushPassport('measurements',{lesson:6,temp:parseFloat(t)||0,hum:parseFloat(h)||0,light:parseFloat(l)||0,obs:rec.obs,ts:rec.ts});
+  if(window.GC) GC.pushPassport('measurements',{lesson:6,soilAir:parseFloat(t)||0,soilDry:parseFloat(h)||0,soilWet:parseFloat(l)||0,obs:rec.obs,ts:rec.ts});
   let msg='<p class="font-bold text-slate-800 text-lg mb-1">✅ נתונים נשמרו! +20 עלים 🌿</p>';
-  if(parseFloat(t)>28)msg+='<p class="text-red-600">⚠️ טמפ\' גבוהה.</p>';
-  if(parseFloat(h)<50)msg+='<p class="text-orange-500">💡 לחות נמוכה.</p>';
-  if(parseFloat(l)<400)msg+='<p class="text-yellow-600">💡 אור חלש.</p>';
+  if(parseFloat(l)>=parseFloat(h))msg+='<p class="text-orange-500">💡 הערך הרטוב אמור להיות נמוך מהיבש – בדקו את החיבור ואת עומק החיישן.</p>';
+  else msg+='<p class="text-green-600">✅ רטוב נמוך מיבש – החיישן עובד!</p>';
   const fb=document.getElementById('dfb');fb.classList.remove('hidden');
   fb.className='p-4 rounded-xl bg-slate-50 border border-slate-200 text-sm';fb.innerHTML=msg;
   renderFeed();renderLB();
@@ -938,7 +935,7 @@ function renderFeed(){
   const data=JSON.parse(localStorage.getItem('cls6')||'[]');
   const feed=document.getElementById('feed');
   if(!data.length){feed.innerHTML='<p class="text-gray-400 text-center py-4 text-sm">עדיין אין נתונים</p>';return;}
-  feed.innerHTML=data.slice(-5).reverse().map(r=>`<div class="bg-gray-50 rounded-xl p-3 border"><p class="font-bold text-sm">${r.name}</p><p class="text-xs text-gray-500">🌡️${r.temp}°C · 💧${r.hum}% · ☀️${r.light}lux</p>${r.obs?'<p class="text-xs text-gray-400 italic">"'+r.obs+'"</p>':''}</div>`).join('');
+  feed.innerHTML=data.slice(-5).reverse().map(r=>`<div class="bg-gray-50 rounded-xl p-3 border"><p class="font-bold text-sm">${r.name}</p><p class="text-xs text-gray-500">${r.air!==undefined?'🌬️'+r.air+' · 🟫'+r.dry+' · 💧'+r.wet:'🌡️'+r.temp+'°C · 💧'+r.hum+'% · ☀️'+r.light+'lux'}</p>${r.obs?'<p class="text-xs text-gray-400 italic">"'+r.obs+'"</p>':''}</div>`).join('');
 }
 function renderLB(){
   const s=JSON.parse(localStorage.getItem('alv6')||'{}');
