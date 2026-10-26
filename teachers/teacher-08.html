@@ -91,9 +91,10 @@
         <h3 class="font-bold mb-3">⚡ ציוד מעגל הבקרה (לקבוצה)</h3>
         <ul class="space-y-2 text-gray-600">
           <li class="flex gap-2">📋 <span>ESP32-S3 + חיישן לחות קרקע (AOUT→GPIO 6, VCC→3V3)</span></li>
-          <li class="flex gap-2">📋 <span>Servo כ"ברז" (אות→GPIO 15, אדום→5V, חום→GND)</span></li>
-          <li class="flex gap-2">📋 <span>זמזם פסיבי כ"הודעה" (S→GPIO 5, –→GND)</span></li>
-          <li class="flex gap-2">📋 <span>חוט מגע: כבל Jumper אחד ל-GPIO 4, שהקצה השני שלו חשוף או מודבק לנייר כסף</span></li>
+          <li class="flex gap-2">📋 <span>Servo כ"ברז" (אות→GPIO 15, אדום→5V, חום→GND). אם Servo תקול או חסר – "ברז אנושי": התלמיד משקה כשהנורית אדומה</span></li>
+          <li class="bg-sky-50 text-sky-800 rounded-lg p-2">💡 לסרוו יש זרועות פלסטיק שמרכיבים על הציר (כולל בורג קטן). הרכיבו זרוע אחת – כך תנועת ה"ברז" ברורה ונראית לעין.</li>
+          <li class="flex gap-2">📋 <span>זמזם פסיבי כ"הודעה" (רגל + → GPIO 5, השנייה → GND; הפוך = צפצוף חלש)</span></li>
+          <li class="flex gap-2">📋 <span>חוט מגע: כבל Jumper אחד ל-GPIO 4, שהקצה השני מודבק לריבוע נייר כסף על קרטון – רחוק מהלוח, ולעולם לא בתוך ה-breadboard</span></li>
           <li class="flex gap-2">📋 <span>נורית ה-RGB המובנית בלוח (GPIO 48) – אין מה לחבר</span></li>
           <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ הריצו את המעגל המלא (חיישן+בקר+ברז) על ערכה אחת לפני השיעור!</li>
           <li class="flex gap-2 mt-2">🧰 <span><b>ערכת חומרה רזרבית אחת לכל כיתה</b> (ESP32/חיישן/Servo חלופיים) – למקרה תקלה, וגם לרמפת ההשלמה למעלה</span></li>
@@ -118,11 +119,17 @@ servo = PWM(Pin(15), freq=50)
 def valve(angle):                # 0 = סגור, 90 = פתוח
     servo.duty_ns(500000 + angle * 2000000 // 180)
 
+valve(0)                         # start closed
+
 def wait_for_touch():
-    while not touch.is_touched():
+    while touch.is_touched():      # wait for release first
+        time.sleep_ms(50)
+    while not touch.is_touched():  # wait for a new touch
         time.sleep_ms(50)
     buzzer.alarm_beep(count=1, freq=1000, beep_ms=80)
-    time.sleep_ms(500)
+    while touch.is_touched():      # wait until the finger lifts
+        time.sleep_ms(50)
+    time.sleep_ms(300)
 
 print("1. Sensor in AIR - touch the wire")
 led.red()
@@ -133,13 +140,16 @@ led.green()
 wait_for_touch()
 soil.calibrate_wet()
 
+last_alarm = 0
 while True:
     moisture = soil.read_percent()
     print("Moisture:", moisture, "%")
     if moisture &lt; 30:
         led.red()
         valve(90)
-        buzzer.alarm_beep(count=3, freq=1000, beep_ms=100)
+        if time.time() - last_alarm &gt;= 3:   # not every second
+            buzzer.alarm_beep(count=3, freq=1000, beep_ms=100)
+            last_alarm = time.time()
     elif moisture &lt;= 60:
         led.yellow()
         valve(0)
@@ -147,7 +157,7 @@ while True:
         led.green()
         valve(0)
     time.sleep(1)</pre>
-        <p class="text-xs text-gray-500 mt-2">💡 הלוגיקה זהה להדגמת המערכת המלאה של צוות החומרה (system_demo.py), בתוספת ה-Servo. לשמירה כתוכנית שרצה לבד בהדלקה: File → Save as → MicroPython device → <code>main.py</code>.</p>
+        <p class="text-xs text-gray-500 mt-2">💡 הלוגיקה זהה להדגמת המערכת המלאה של צוות החומרה (system_demo.py), בתוספת ה-Servo. <b>שמרו יום לפני על כל בקר</b> כתוכנית שרצה לבד בהדלקה: File → Save as → MicroPython device → <code>main.py</code>. כך 8 קבוצות לא מחכות למחשב אחד.</p>
       </div>
       <div>
         <h3 class="font-bold mb-3">🌿 חממה/קומפוסט</h3>
@@ -156,6 +166,15 @@ while True:
           <li class="flex gap-2">📋 <span>אם לא – תמונות/סרטון קצר יספיקו</span></li>
         </ul>
       </div>
+    </div>
+  </div>
+
+  <!-- ══ VISUALS ══ -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-600 text-white p-6"><h2 class="text-2xl font-black">🖼️ להמחשה: המעגל הסגור</h2><p class="text-slate-300 text-sm">מתוך מצגות ההדרכה של צוות החומרה – אפשר להקרין בכיתה</p></div>
+    <div class="p-6 grid md:grid-cols-2 gap-6">
+      <div><figure class="my-4"><img src="../assets/img/esp32/system-loop.jpg" alt="מערכת ניטור אוטונומית: חיישן, בקר, נורית, זמזם ומסך" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">המעגל הסגור (system_demo) – הבסיס לפרויקט היום</figcaption></figure></div>
+      <div><figure class="my-4"><img src="../assets/img/esp32/touch.jpg" alt="חיישן מגע ב-GPIO 4 וקוד הזיהוי" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">כפתור המגע לכיול</figcaption></figure></div>
     </div>
   </div>
 
@@ -172,7 +191,7 @@ while True:
           <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎤</span><h3 class="text-xl font-black">פתיחה – חיבור לשיעור 7</h3><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">כל הכיתה</span></div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-3">
             <p class="font-bold text-amber-900 mb-1">🔁 תזכורת משיעור 7 (Teaser):</p>
-            <p class="text-sm text-gray-700">"שאלנו: אם pH וגם EC יוצאים בו-זמנית – מה הבקר צריך לעשות קודם? היום נרחיב את זה – לא רק שני חיישנים, אלא מערכות שלמות שמדברות ביניהן."</p>
+            <p class="text-sm text-gray-700">"שאלנו: מי ישקה כשאף אחד לא בכיתה? התשובה: מערכת שבה כל חלק "מפרנס" את הבא – החיישן מזין את הבקר, הבקר פותח ברז, המים משנים את מה שהחיישן מודד. זו סינרגיה, וזה מעגל סגור."</p>
           </div>
           <ul class="text-sm text-gray-600 space-y-1">
             <li>• <b>שקף 1:</b> דוגמת סינרגיה פשוטה: דגי אקוופוניקה ↔ צמחים ↔ חיידקים</li>
@@ -231,8 +250,8 @@ while True:
             <p class="font-bold text-lime-900 mb-3">📋 משימות הקבוצה (זה הלב הטכני של השיעור!):</p>
             <div class="grid md:grid-cols-2 gap-2 text-sm">
               <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות קרקע ל-ESP32 (AOUT→GPIO 6, VCC→3V3)</div>
-              <div class="bg-white rounded-lg p-2">ב. חיבור Servo (GPIO 15, 5V) + זמזם (GPIO 5) + חוט מגע (GPIO 4)</div>
-              <div class="bg-white rounded-lg p-2 border-2 border-purple-200"><b>ג. המורה מריץ את קוד המעגל ב-Thonny</b> – הקבוצה מכיילת במגע (אוויר → מים)</div>
+              <div class="bg-white rounded-lg p-2">ב. חיבור Servo (GPIO 15, 5V) – עם זרוע על הציר – + זמזם (GPIO 5) + חוט מגע (GPIO 4)</div>
+              <div class="bg-white rounded-lg p-2 border-2 border-purple-200"><b>ג. הקוד כבר שמור על הבקר (main.py)</b> – המורה בודק חיווט, מחברים USB, והקבוצה מכיילת במגע (אוויר → מים)</div>
               <div class="bg-white rounded-lg p-2 border-2 border-blue-200"><b>ד. הוכיחו שהמעגל סגור:</b> שנו את ערך החיישן וצפו בברז/הודעה מגיבים אוטומטית</div>
               <div class="bg-white rounded-lg p-2">ה. דונו: איזו מערכת שלישית תרצו לחבר למעגל הזה?</div>
               <div class="bg-white rounded-lg p-2">ו. צילום המעגל השלם לקיר</div>
@@ -242,6 +261,7 @@ while True:
             <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
               <ul class="space-y-1 text-gray-600">
+                <li><b>⚠️ הלוח או החיישן מתחמם / ריח שרוף:</b> מנתקים USB מיד, לא נוגעים ברכיב החם, בודקים קצר (3V3/5V ל-GND, או VCC/GND הפוכים) ועוברים לערכה הרזרבית</li>
                 <li><b>הברז/Servo לא מגיב:</b> חשמל ה-Servo מפין 5V (לא 3V3), והאות ל-GPIO 15</li>
                 <li><b>הלוח מתאפס כשה-Servo זז:</b> ה-Servo מושך זרם – כבל USB איכותי, או ספק 5V נפרד ל-Servo עם GND משותף ללוח</li>
                 <li><b>החיישן נותן ערך קבוע:</b> ודאו שהוא נוגע בפועל במצע/במים</li>
@@ -267,6 +287,7 @@ while True:
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🌿 עלים (1 דק')</p><p class="text-gray-500">הכריזו על קבוצות שהוכיחו מעגל סגור בהצלחה.</p></div>
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-gray-500 font-medium">"בנינו מעגל בקרה בקרקע. אבל מה אם נרצה לראות את כל השדה מלמעלה, ולא רק נקודה אחת?" ← אל תתנו תשובה, זה שיעור 9</p></div>
           </div>
+          <div class="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm"><b>⭐ כוכב הצפון (1 דק'):</b> "איך זה רלוונטי לפרויקט שלי?" – איזה חלק במערכת שלכם "מפרנס" חלק אחר? ציירו את המעגל: חיישן → החלטה → פעולה → חיישן.</div>
         </div>
       </div>
 

@@ -39,7 +39,7 @@
     .syn-card:hover:not(.revealed){border-color:#10b981;background:#f0fdf4;transform:scale(1.02);}
     .syn-card.revealed{cursor:default;}
     /* Code blocks */
-    .code-blank{display:inline-block;border-bottom:2.5px solid #16a34a;min-width:80px;text-align:center;font-family:monospace;cursor:pointer;background:#f0fdf4;padding:2px 8px;border-radius:6px;}
+    .code-blank{display:inline-block;border-bottom:2.5px solid #16a34a;min-width:80px;text-align:center;font-family:monospace;cursor:pointer;background:#f0fdf4;color:#166534;padding:2px 8px;border-radius:6px;}
     .code-blank:hover{background:#dcfce7;}
     .code-blank.filled{background:#dcfce7;border-bottom-color:#16a34a;font-weight:bold;}
     /* Mission */
@@ -98,11 +98,12 @@
     <!-- Catch-up ramp -->
     <div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-4 mb-5 text-sm text-sky-900">
       🪜 <b>רמפת השלמה (קבוצה שלא סיימה שיעור 7):</b> קיבלתם ESP32 עם קוד if/else מוכן מהמורה — תתחילו ישירות משלב 4 של השיעור הזה (סגירת המעגל). אל תבזבזו זמן על קוד ישן.
+      <button type="button" onclick="maxReached=Math.max(maxReached,4);goTo(4)" class="mt-2 block bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-xl font-bold text-sm">⏩ דלגו לשלב 4</button>
     </div>
 
     <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-6">
       <p class="font-bold text-amber-900 mb-1">🔁 Teaser מהשיעור הקודם:</p>
-      <p class="text-gray-700 text-sm">"pH ו-EC יוצאים בו-זמנית — מה הבקר צריך לעשות קודם?" — ובכן, לא צריך לבחור: אפשר לבנות <b>מערכת שכל מרכיב בה שומר על השאר</b>. זו סינרגיה.</p>
+      <p class="text-gray-700 text-sm">"הבקר מצפצף שהאדמה יבשה – אבל אם אף אחד לא בכיתה, מי ישקה? מה צריך לחבר כדי שהמעגל ייסגר לבד?" — התשובה: מערכת שבה כל חלק "מפרנס" את הבא – החיישן מזין את הבקר, הבקר פותח ברז, המים משנים את מה שהחיישן מודד. זו סינרגיה, וזה מעגל סגור.</p>
     </div>
 
     <div class="flex items-center gap-3 mb-5">
@@ -285,6 +286,8 @@
       </div>
     </div>
 
+    <figure class="my-4"><img src="../assets/img/esp32/system-loop.jpg" alt="המערכת המלאה: חיישן קרקע, בקר ESP32, נורית, זמזם ומסך במעגל בקרה" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">המעגל הסגור: חיישן → בקר → פעולה → והחיישן מודד שוב</figcaption></figure>
+
     <div dir="ltr" class="bg-slate-800 rounded-2xl p-5 mb-5 font-mono text-sm text-green-400 leading-relaxed">
       <p class="text-slate-400 mb-2"># מטרה: אם לחות &lt; 30%, פתח ברז + שלח הודעה (פייתון)</p>
       <p>moisture = soil.read_percent()  <span class="text-slate-500"># GPIO 6 → %</span></p>
@@ -352,13 +355,13 @@
       <h3 class="font-black text-lime-900 mb-3">📋 משימות הקבוצה</h3>
       <div class="space-y-2" id="loop-missions">
         <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,0)">
-          <span class="loop-icon text-2xl">⬜</span> א. חיברנו חיישן לחות קרקע ל-ESP32 (AOUT → GPIO 6)
+          <span class="loop-icon text-2xl">⬜</span> א. USB מנותק → חיברנו חיישן לחות קרקע (VCC → 3V3, לא 5V! · GND → GND · AOUT → GPIO 6) → בדיקת חבר
         </div>
         <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,1)">
-          <span class="loop-icon text-2xl">⬜</span> ב. חיברנו Servo (GPIO 15) + זמזם (GPIO 5) + חוט מגע (GPIO 4) כ"ברז + הודעה + כפתור"
+          <span class="loop-icon text-2xl">⬜</span> ב. הרכבנו זרוע על ציר ה-Servo (כדי שהתנועה תיראה) וחיברנו אותו (GPIO 15, אדום ל-5V) – או "ברז אנושי" אם אין – + זמזם (GPIO 5) + חוט מגע (GPIO 4, על נייר כסף רחוק מהלוח)
         </div>
         <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,2)">
-          <span class="loop-icon text-2xl">⬜</span> ג. המורה הריץ את קוד המעגל ב-Thonny וכיילנו במגע (אוויר → מים)
+          <span class="loop-icon text-2xl">⬜</span> ג. חיברנו USB (הקוד שמור על הבקר) וכיילנו במגע (אוויר → מים)
         </div>
         <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,3)">
           <span class="loop-icon text-2xl">⬜</span> ד. <b>הוכחנו מעגל סגור:</b> שינינו ערך חיישן → הברז/הודעה הגיבו אוטומטית
@@ -491,8 +494,8 @@ function ansQ(el,correct,qid){
     'q-syn3':()=>{document.getElementById('btn2').classList.remove('hidden');mascotSay('זה המהות: הפסולת של אחד = המזון של השני','🗺️');},
     'q-bio1':()=>document.getElementById('q-bio2-wrap').classList.add('show'),
     'q-bio2':()=>{document.getElementById('btn3').classList.remove('hidden');mascotSay('BioBee — הטבע פותר את עצמו','🐝');},
-    'q-code1':()=>{if(correct){code1Ok=true;document.getElementById('blank1').textContent='<';document.getElementById('blank1').classList.add('filled');checkCodeDone();}},
-    'q-code2':()=>{if(correct){code2Ok=true;document.getElementById('blank2').textContent='0';document.getElementById('blank2').classList.add('filled');checkCodeDone();}}
+    'q-code1':()=>{code1Ok=true;document.getElementById('blank1').textContent='<';document.getElementById('blank1').classList.add('filled');checkCodeDone();},
+    'q-code2':()=>{code2Ok=true;document.getElementById('blank2').textContent='0';document.getElementById('blank2').classList.add('filled');checkCodeDone();}
   };
   if(cascades[qid]) cascades[qid]();
 }
@@ -544,7 +547,7 @@ function checkLoop(el,idx){
     loopLeaves=true;
     document.getElementById('loop-done').classList.remove('hidden');
     addLv(35);
-    mascotSay('מעגל סגור! זה מה שFieldIn עושה ב-300,000 דונם','🔌');
+    mascotSay('מעגל סגור! חיישן → בקר → פעולה, בלי שאף אחד נגע','🔌');
     checkStep5Done();
   }
 }

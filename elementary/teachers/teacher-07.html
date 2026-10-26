@@ -62,7 +62,7 @@
         <ul class="space-y-2 text-gray-600">
           <li>📋 לוח ESP32-S3 + חיישן לחות האדמה משיעור 6</li>
           <li>📋 מודול זמזם (2 חוטים)</li>
-          <li>📋 חוט "כפתור מגע": כבל אחד שהקצה שלו חשוף או מודבק לנייר כסף</li>
+          <li>📋 חוט "כפתור מגע": כבל אחד שהקצה שלו מודבק לריבוע נייר כסף על קרטון – רחוק מהלוח, ולעולם לא בתוך ה-breadboard</li>
           <li>📋 כוס אדמה יבשה, כוס אדמה רטובה, כוס מים (לכיול)</li>
           <li class="bg-amber-50 text-amber-800 rounded-lg p-2 mt-2">🌈 הנורית הצבעונית מובנית בלוח – לא צריך לחבר אותה ולא צריך נגד.</li>
           <li class="flex gap-2 mt-2">🧰 <span><b>ערכת חומרה רזרבית אחת לכיתה</b> – למקרה תקלה</span></li>
@@ -84,10 +84,14 @@ led = WS2812LED(pin_num=48, brightness=0.2)
 buzzer = PassiveBuzzer(pin_num=5)
 
 def wait_for_touch():
-    while not touch.is_touched():
+    while touch.is_touched():      # wait for release first
+        time.sleep_ms(50)
+    while not touch.is_touched():  # wait for a new touch
         time.sleep_ms(50)
     buzzer.alarm_beep(count=1, freq=1000, beep_ms=80)
-    time.sleep_ms(500)
+    while touch.is_touched():      # wait until the finger lifts
+        time.sleep_ms(50)
+    time.sleep_ms(300)
 
 led.red()             # 1. sensor in AIR
 wait_for_touch()
@@ -96,10 +100,13 @@ led.green()           # 2. sensor in WATER
 wait_for_touch()
 soil.calibrate_wet()
 
+last_alarm = 0
 while True:
     if soil.read_percent() &lt; 30:
         led.red()
-        buzzer.alarm_beep(count=3, freq=1000, beep_ms=100)
+        if time.time() - last_alarm &gt;= 3:   # not every second
+            buzzer.alarm_beep(count=3, freq=1000, beep_ms=100)
+            last_alarm = time.time()
     else:
         led.green()
     time.sleep(1)</pre>
@@ -114,7 +121,7 @@ while True:
           </div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
             <p class="font-bold text-amber-700 mb-1">🔔 זמזם</p>
-            <p>S → GPIO 5 · – → GND</p>
+            <p>הרגל עם סימן + (מדבקה קטנה, לא תמיד ברורה) → GPIO 5 (PWM) · הרגל השנייה → GND. חיבור הפוך = צפצוף חלש יותר.</p>
           </div>
           <div class="bg-purple-50 border border-purple-200 rounded-xl p-3">
             <p class="font-bold text-purple-700 mb-1">👆 חוט מגע</p>
@@ -127,6 +134,15 @@ while True:
           <p class="text-gray-500">⚡ הכל ב-3.3V. מחברים רק כשה-USB מנותק. לא נוגעים בחוט המגע בשנייה שמחברים USB (הבקר "לומד" אז איך נראה חוט בלי נגיעה).</p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ══ VISUALS ══ -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-600 text-white p-6"><h2 class="text-2xl font-black">🖼️ להמחשה</h2><p class="text-slate-300 text-sm">מתוך מצגות ההדרכה של צוות החומרה – אפשר להקרין בכיתה</p></div>
+    <div class="p-6 grid md:grid-cols-2 gap-6">
+      <div><figure class="my-4"><img src="../../assets/img/esp32/touch.jpg" alt="חיישן מגע ב-GPIO 4" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">חוט המגע – "כפתור" שלא מחליד</figcaption></figure></div>
+      <div><figure class="my-4"><img src="../../assets/img/esp32/rgb-led.jpg" alt="נורית RGB מובנית ב-GPIO 48" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">הנורית הצבעונית שעל הלוח</figcaption></figure></div>
     </div>
   </div>
 
@@ -159,8 +175,9 @@ while True:
           <h3 class="text-xl font-black mb-2">💬 דיון – Teaser מהשיעור הקודם</h3>
           <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm">
             <p class="font-bold text-blue-900 mb-1">❓ שאלת הדיון:</p>
+            <p class="text-gray-600 mb-2">🔗 זוכרים? שאלנו: "האדמה התייבשה – איך נגרום לבקר 'לדעת' להדליק נורית אדומה ולצפצף בעצמו?"</p>
             <p class="text-lg font-bold">"עד עכשיו הבקר רק מדד ודיווח. מה צריך לקרות כדי שהוא יעשה משהו בעצמו?"</p>
-            <p class="text-gray-500 mt-2">תשובה צפויה: לחבר אותו ל"ידיים" – נורה, זמזם, ברז, מאוורר. זה מה שנבנה היום.</p>
+            <p class="text-gray-500 mt-2">תשובה צפויה: לחבר אותו ל"ידיים" – נורית, זמזם. זה מה שנבנה היום.</p>
           </div>
         </div>
       </div>
@@ -198,7 +215,7 @@ while True:
           <div class="bg-lime-50 border border-lime-200 rounded-xl p-4 mb-3 text-sm">
             <p class="font-bold mb-2">📋 5 משימות:</p>
             <div class="grid grid-cols-2 gap-2 text-xs">
-              <div class="bg-white rounded-lg p-2">א. חיבור הזמזם (S → GPIO 5, – → GND)</div>
+              <div class="bg-white rounded-lg p-2">א. חיבור הזמזם (רגל + → GPIO 5, השנייה → GND)</div>
               <div class="bg-white rounded-lg p-2">ב. חיבור חוט המגע ל-GPIO 4 + בדיקת חיישן הלחות (GPIO 6)</div>
               <div class="bg-white rounded-lg p-2 border-2 border-orange-200"><b>ג. המורה בודק – מחברים USB – מכיילים בנגיעה</b> (אוויר → מים)</div>
               <div class="bg-white rounded-lg p-2">ד. צפו: החיישן באדמה רטובה – איזה צבע? באדמה יבשה – מה קרה?</div>
@@ -209,15 +226,16 @@ while True:
             <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
               <ul class="space-y-1 text-xs text-gray-600">
+                <li><b>⚠️ הלוח או החיישן מתחמם / ריח שרוף:</b> מנתקים USB מיד, לא נוגעים ברכיב החם, בודקים קצר (3V3/5V ל-GND, או VCC/GND הפוכים) ועוברים לערכה הרזרבית</li>
                 <li><b>הנורית לא נדלקת בכלל:</b> קראו למורה – בדיקת כבל ה-USB ושהקוד שמור כ-main.py</li>
                 <li><b>הנגיעה לא עושה כלום:</b> נגעו בחוט בזמן חיבור ה-USB – נתקו, חברו שוב בלי לגעת, ואז געו</li>
-                <li><b>הזמזם שקט:</b> קראו למורה – S לא ב-GPIO 5 או – לא ב-GND</li>
+                <li><b>הזמזם שקט או חלש:</b> קראו למורה – אולי הזמזם מחובר הפוך (רגל + צריכה להיות ב-GPIO 5)</li>
                 <li><b>הצבע לא משתנה בין יבש לרטוב:</b> נתקו וחברו USB וכיילו מחדש (קודם אוויר, אחר כך מים)</li>
               </ul>
             </div>
             <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-green-800 mb-2">💡 להעמקה:</p>
-              <p class="text-xs text-gray-600">"הבקר מצפצף שהאדמה יבשה – אבל מי ישקה אותה? מה עוד צריך לחבר כדי שזה יקרה לבד?" → Teaser לשיעור 8.</p>
+              <p class="text-xs text-gray-600">"הבקר מצפצף שהאדמה יבשה – אבל מי ישקה אותה?" → Teaser לשיעור 8.</p>
             </div>
           </div>
         </div>
@@ -230,8 +248,9 @@ while True:
           <div class="grid md:grid-cols-3 gap-3 text-sm">
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 נתונים (2 דק')</p><p class="text-xs text-gray-500">מה הנורית עשתה ביבש וברטוב? רשמו בדרכון.</p></div>
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🌿 עלים (1 דק')</p><p class="text-xs text-gray-500">מי מגיע לרמה חדשה?</p></div>
-            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-xs text-gray-700 font-medium">"מה יקרה אם שני מכשירים שונים צריכים להגיב לאותה בעיה, ביחד?" ← אל תתנו תשובה, זה שיעור 8</p></div>
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-xs text-gray-700 font-medium">"הבקר מצפצף שהאדמה יבשה – אבל אם אף אחד לא בכיתה, מי ישקה אותה?" ← אל תתנו תשובה, זה שיעור 8</p></div>
           </div>
+          <div class="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm"><b>⭐ כוכב הצפון (1 דק'):</b> "איך זה רלוונטי לפרויקט שלי?" – השלימו: "אם ___ אז הקופסה החכמה ___" – מה תרצו שהמערכת שלכם תעשה?</div>
         </div>
       </div>
     </div>

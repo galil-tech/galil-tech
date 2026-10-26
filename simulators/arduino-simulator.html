@@ -311,12 +311,10 @@
 
       <!-- component bank -->
       <div class="flex flex-wrap gap-3 mb-6 p-4 bg-gray-100 rounded-2xl" id="comp-bank">
-        <div class="component" style="background:#fffbeb;border-color:#f59e0b;color:#d97706" draggable="true" data-val="buzzer">🔔 זמזם (S)</div>
+        <div class="component" style="background:#fffbeb;border-color:#f59e0b;color:#d97706" draggable="true" data-val="buzzer">🔔 זמזם (רגל +)</div>
         <div class="component" style="background:#f5f3ff;border-color:#7c3aed;color:#6d28d9" draggable="true" data-val="touch">👆 חוט מגע</div>
         <div class="component" style="background:#fff7ed;border-color:#f97316;color:#c2410c" draggable="true" data-val="soil-vcc">🔌 חיישן לחות – VCC</div>
         <div class="component" style="background:#eff6ff;border-color:#3b82f6;color:#2563eb" draggable="true" data-val="soil">💧 חיישן לחות – AOUT</div>
-        <div class="component" style="background:#ecfdf5;border-color:#0891b2;color:#0e7490" draggable="true" data-val="lcd-sda">📟 מסך – SDA</div>
-        <div class="component" style="background:#ecfeff;border-color:#06b6d4;color:#0e7490" draggable="true" data-val="lcd-scl">📟 מסך – SCL</div>
         <div class="component" style="background:#fefce8;border-color:#65a30d;color:#4d7c0f" draggable="true" data-val="servo">🔧 Servo (אות)</div>
       </div>
 
@@ -341,14 +339,6 @@
             <div class="drop-target h-16 rounded-xl" id="dz-6" data-answer="soil" data-pin="GPIO6">GPIO 6</div>
           </div>
           <div>
-            <p class="text-slate-400 text-xs text-center mb-1">GPIO 8 (I2C)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-8" data-answer="lcd-sda" data-pin="GPIO8">GPIO 8</div>
-          </div>
-          <div>
-            <p class="text-slate-400 text-xs text-center mb-1">GPIO 9 (I2C)</p>
-            <div class="drop-target h-16 rounded-xl" id="dz-9" data-answer="lcd-scl" data-pin="GPIO9">GPIO 9</div>
-          </div>
-          <div>
             <p class="text-slate-400 text-xs text-center mb-1">GPIO 15 (PWM)</p>
             <div class="drop-target h-16 rounded-xl" id="dz-15" data-answer="servo" data-pin="GPIO15">GPIO 15</div>
           </div>
@@ -357,7 +347,7 @@
       </div>
 
       <!-- progress -->
-      <div id="connect-progress" class="text-center text-gray-500 text-sm mb-3">0 מתוך 7 רכיבים מחוברים</div>
+      <div id="connect-progress" class="text-center text-gray-500 text-sm mb-3">0 מתוך 5 רכיבים מחוברים</div>
       <div id="connect-done" class="hidden bg-lime-50 border border-lime-300 rounded-xl p-5 text-center">
         <p class="text-2xl font-black text-lime-700 mb-1">🎉 +30 עלים! חיברת הכל נכון!</p>
         <p class="text-gray-600 text-sm">עכשיו אתה מוכן לחבר את הלוח האמיתי!</p>
@@ -368,8 +358,8 @@
         <h3 class="font-black text-amber-900 mb-3">⚠️ 3 כללי זהב לחיבור אמיתי:</h3>
         <div class="space-y-2 text-sm text-gray-700">
           <div class="flex gap-3 bg-white rounded-xl p-3 items-start"><span class="text-red-500 font-black flex-shrink-0">1.</span><span><b>נתק חשמל תמיד</b> לפני שמחבר או מנתק רכיב כלשהו.</span></div>
-          <div class="flex gap-3 bg-white rounded-xl p-3 items-start"><span class="text-red-500 font-black flex-shrink-0">2.</span><span><b>בדוק פעמיים לפי הצבעים:</b> אדום = VCC (3V3 לחיישנים, 5V רק ל-Servo), שחור/חום = GND, כתום/צהוב = Signal.</span></div>
-          <div class="flex gap-3 bg-white rounded-xl p-3 items-start"><span class="text-red-500 font-black flex-shrink-0">3.</span><span><b>LED תמיד דרך נגד</b> – ללא נגד = LED נשרף תוך שניות.</span></div>
+          <div class="flex gap-3 bg-white rounded-xl p-3 items-start"><span class="text-red-500 font-black flex-shrink-0">2.</span><span><b>בדוק פעמיים לפי הכיתוב</b> על החיישן ועל הלוח – לא לפי צבע החוט. VCC/GND הפוכים = חיישן מת.</span></div>
+          <div class="flex gap-3 bg-white rounded-xl p-3 items-start"><span class="text-red-500 font-black flex-shrink-0">3.</span><span><b>5V רק לחוט האדום של ה-Servo</b> – חיישנים תמיד מ-3V3.</span></div>
         </div>
       </div>
     </div>
@@ -551,15 +541,15 @@ document.querySelectorAll('.drop-target').forEach(z=>{
   z.addEventListener('dragleave',()=>z.classList.remove('drag-over'));
   z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag-over');if(!dComp)return;dropConnect(z,e.dataTransfer.getData('text/plain'),dComp);});
 });
-const compLabels={'buzzer':'🔔 זמזם (S)','touch':'👆 חוט מגע','soil-vcc':'🔌 חיישן – VCC','soil':'💧 חיישן – AOUT','lcd-sda':'📟 מסך – SDA','lcd-scl':'📟 מסך – SCL','servo':'🔧 Servo'};
+const compLabels={'buzzer':'🔔 זמזם (רגל +)','touch':'👆 חוט מגע','soil-vcc':'🔌 חיישן – VCC','soil':'💧 חיישן – AOUT','lcd-sda':'📟 מסך – SDA','lcd-scl':'📟 מסך – SCL','servo':'🔧 Servo'};
 function dropConnect(zone,val,src){
   if(zone.dataset.filled)return;
   if(val===zone.dataset.answer){
     zone.textContent=compLabels[val]||val;zone.classList.add('filled-ok');zone.dataset.filled='true';
     src.classList.add('placed');src.setAttribute('draggable','false');
-    connectOk++;addLv(4);
-    document.getElementById('connect-progress').textContent=connectOk+' מתוך 7 רכיבים מחוברים';
-    if(connectOk===7){document.getElementById('connect-done').classList.remove('hidden');addLv(2);}
+    connectOk++;addLv(5);
+    document.getElementById('connect-progress').textContent=connectOk+' מתוך 5 רכיבים מחוברים';
+    if(connectOk===5){document.getElementById('connect-done').classList.remove('hidden');addLv(5);}
   } else {
     zone.classList.add('filled-wrong');setTimeout(()=>zone.classList.remove('filled-wrong'),500);
     const m=document.getElementById('connect-msg');m.classList.remove('hidden');

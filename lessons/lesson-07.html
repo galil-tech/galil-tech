@@ -128,14 +128,14 @@
     <div class="flex items-center gap-3 mb-5">
       <span class="text-4xl">🌱</span>
       <div>
-        <h2 class="text-3xl font-black text-gray-900">הצמח מדבר – הבקר פועל!</h2>
+        <h2 class="text-3xl font-black text-gray-900">החיישן מודד – הבקר פועל!</h2>
         <p class="text-gray-400 text-sm">← תשובה לשאלת הTeaser משיעור 6</p>
       </div>
     </div>
 
     <div class="bg-lime-50 border-r-4 border-lime-500 rounded-2xl p-5 mb-5">
       <p class="text-sm font-bold text-lime-700 mb-2">זוכרים את הTeaser משיעור 6?</p>
-      <p class="text-gray-700 text-lg font-bold">"הטמפרטורה עלתה מעל 30°C – איך תכתבו קוד שמפעיל מאוורר?"</p>
+      <p class="text-gray-700 text-lg font-bold">"האדמה התייבשה מתחת ל-30% – איך תכתבו קוד שמדליק נורית אדומה, מצפצף ופותח ברז?"</p>
       <p class="text-gray-500 text-sm mt-2">היום נבנה בדיוק את זה – ועוד יותר.</p>
     </div>
 
@@ -206,11 +206,11 @@
           <div class="space-y-2">
             <div class="wire-row bg-white border border-gray-200">
               <div class="wire-dot" style="background:#f59e0b"></div>
-              <div><p class="font-bold text-sm">זמזם – רגל S (אות)</p><p class="text-xs text-gray-400">→ GPIO 5</p></div>
+              <div><p class="font-bold text-sm">זמזם – רגל + (מדבקה קטנה, לא תמיד ברורה)</p><p class="text-xs text-gray-400">→ GPIO 5 (PWM)</p></div>
             </div>
             <div class="wire-row bg-white border border-gray-200">
               <div class="wire-dot" style="background:#1f2937"></div>
-              <div><p class="font-bold text-sm">זמזם – רגל – (מינוס)</p><p class="text-xs text-gray-400">→ GND</p></div>
+              <div><p class="font-bold text-sm">זמזם – הרגל השנייה</p><p class="text-xs text-gray-400">→ GND · חיבור הפוך = צפצוף חלש יותר</p></div>
             </div>
             <div class="wire-row bg-white border border-gray-200">
               <div class="wire-dot" style="background:#0ea5e9"></div>
@@ -233,6 +233,11 @@ buzzer.<span class="text-purple-300">alarm_beep</span>(count=<span class="text-y
 <span class="text-slate-400"># כיבוי:</span>
 led.<span class="text-purple-300">off</span>()</pre>
       </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-5">
+      <div><figure class="my-4"><img src="../assets/img/esp32/buzzer.jpg" alt="זמזם פסיבי מחובר ל-GPIO 5 וקוד הצפצוף" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">הזמזם – "הקול" של המערכת</figcaption></figure></div>
+      <div><figure class="my-4"><img src="../assets/img/esp32/rgb-led.jpg" alt="נורית RGB מובנית ב-GPIO 48 וקוד הצבעים" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">הנורית הצבעונית – כבר על הלוח</figcaption></figure></div>
     </div>
 
     <!-- SERVO WIRING (BONUS) -->
@@ -259,7 +264,7 @@ led.<span class="text-purple-300">off</span>()</pre>
             </div>
           </div>
           <div class="mt-3 bg-green-50 rounded-xl p-3 text-sm text-green-800">
-            ✅ <b>Servo בטוח!</b> אין צורך בנגד. ה-Servo מגביל זרם לבד.
+            💡 לסרוו יש זרועות פלסטיק שמרכיבים על הציר (כולל בורג קטן). הרכיבו זרוע אחת – כך תנועת ה"ברז" ברורה ונראית לעין.<br>⚠️ <b>ה-Servo מושך הרבה זרם:</b> אדום רק לפין 5V של הלוח (לא דרך פס ה-breadboard), חום ל-GND – לא להפוך. אם הלוח מתאפס – נתקו USB וקראו למורה.
           </div>
         </div>
         <pre dir="ltr" class="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400 leading-loose overflow-x-auto"><span class="text-slate-400"># קוד Servo (MicroPython):</span>
@@ -268,6 +273,8 @@ servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text
 
 <span class="text-blue-300">def</span> <span class="text-purple-300">valve</span>(angle):  <span class="text-slate-400"># 0 = סגור, 90 = פתוח</span>
     servo.duty_ns(<span class="text-yellow-300">500000</span> + angle * <span class="text-yellow-300">2000000</span> // <span class="text-yellow-300">180</span>)
+
+<span class="text-purple-300">valve</span>(<span class="text-yellow-300">0</span>)   <span class="text-slate-400"># מתחילים סגור</span>
 
 <span class="text-purple-300">valve</span>(<span class="text-yellow-300">90</span>)  <span class="text-slate-400"># פתיחת ברז</span>
 <span class="text-purple-300">valve</span>(<span class="text-yellow-300">0</span>)   <span class="text-slate-400"># סגירה</span></pre>
@@ -278,7 +285,7 @@ servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text
     <div class="bg-green-50 border-2 border-green-300 rounded-2xl p-5">
       <p class="font-black text-green-800 mb-3">✅ רשימת בדיקה לפני הדלקה:</p>
       <div class="grid md:grid-cols-2 gap-2 text-sm" id="wiring-checklist">
-        <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> זמזם: S → GPIO 5</label>
+        <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> זמזם: רגל + → GPIO 5, השנייה → GND</label>
         <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> חיישן לחות: AOUT → GPIO 6, VCC → 3V3</label>
         <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> אין כבלים מתוחים</label>
         <label class="flex gap-2 items-center bg-white rounded-xl p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 accent-green-600" onchange="wiringCheck()"> ה-ESP32 מנותק מה-USB בזמן חיבור</label>
@@ -318,6 +325,8 @@ servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text
 <span class="text-yellow-300">else</span>:                    <span class="text-slate-500"># הכל תקין</span>
     led.<span class="text-green-400">green</span>()           <span class="text-slate-500"># נורית ירוקה</span></pre>
     </div>
+
+<figure class="my-4"><img src="../assets/img/esp32/if-elif-else.jpg" alt="תרשים צנרת שמדגים if, elif ו-else לפי לחות הקרקע" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">if / elif / else – כמו צינורות עם ברזים: המים זורמים רק בדרך שהתנאי שלה נכון</figcaption></figure>
 
     <!-- DRAG: BUILD THE if/else -->
     <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-5 mb-4">
@@ -386,11 +395,11 @@ servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text
 
     <div class="bg-slate-900 rounded-2xl p-5 font-mono text-sm leading-loose text-green-400" dir="ltr">
       <p>moisture = soil.read_percent()</p>
-      <p class="mt-2"><span class="text-yellow-300">if</span> moisture &lt; <input type="text" class="code-blank w-16" id="blank1" placeholder="?" onkeydown="checkBlank(event,'blank1','30')">:</p>
-      <p>&nbsp;&nbsp;&nbsp;&nbsp;led.<input type="text" class="code-blank w-20" id="blank2" placeholder="?" onkeydown="checkBlank(event,'blank2','red')">()</p>
-      <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(<input type="text" class="code-blank w-16" id="blank3" placeholder="?" onkeydown="checkBlank(event,'blank3','90')">)</p>
-      <p><input type="text" class="code-blank w-20" id="blank4" placeholder="?" onkeydown="checkBlank(event,'blank4','else')">:</p>
-      <p>&nbsp;&nbsp;&nbsp;&nbsp;led.<input type="text" class="code-blank w-24" id="blank5" placeholder="?" onkeydown="checkBlank(event,'blank5','green')">()</p>
+      <p class="mt-2"><span class="text-yellow-300">if</span> moisture &lt; <input type="text" autocapitalize="off" autocomplete="off" spellcheck="false" class="code-blank w-16" id="blank1" placeholder="?" onkeydown="checkBlank(event,'blank1','30')">:</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;led.<input type="text" autocapitalize="off" autocomplete="off" spellcheck="false" class="code-blank w-20" id="blank2" placeholder="?" onkeydown="checkBlank(event,'blank2','red')">()</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(<input type="text" autocapitalize="off" autocomplete="off" spellcheck="false" class="code-blank w-16" id="blank3" placeholder="?" onkeydown="checkBlank(event,'blank3','90')">)</p>
+      <p><input type="text" autocapitalize="off" autocomplete="off" spellcheck="false" class="code-blank w-20" id="blank4" placeholder="?" onkeydown="checkBlank(event,'blank4','else')">:</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;led.<input type="text" autocapitalize="off" autocomplete="off" spellcheck="false" class="code-blank w-24" id="blank5" placeholder="?" onkeydown="checkBlank(event,'blank5','green')">()</p>
       <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(0)</p>
     </div>
 
@@ -401,7 +410,7 @@ servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text
     <div id="blanks-progress" class="mt-3 text-sm text-gray-500">0 מתוך 5 נכונים ✓</div>
     <div id="blanks-done" class="hidden mt-4 bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
       <p class="text-xl font-black text-lime-700">💻 +30 עלים! כתבת קוד פייתון אמיתי!</p>
-      <p class="text-sm text-gray-500 mt-1">זה בדיוק הקוד שרץ על ה-ESP32 שלכם עכשיו</p>
+      <p class="text-sm text-gray-500 mt-1">זה הלב של הקוד שרץ על ה-ESP32 שלכם (הקוד המלא אצל המורה)</p>
     </div>
     <div id="bonus-q-7"></div>
   </div>
@@ -427,11 +436,11 @@ servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text
       <div class="space-y-5">
         <div>
           <div class="flex justify-between mb-2">
-            <label class="font-bold text-gray-700">⚗️ pH</label>
-            <span class="font-black text-xl" id="sim-ph">6.0</span>
+            <label class="font-bold text-gray-700">💧 לחות קרקע</label>
+            <span class="font-black text-xl" id="sim-ph">50%</span>
           </div>
-          <input type="range" min="30" max="90" value="60" id="sim-ph-sl" oninput="updateLED()" class="w-full">
-          <div class="flex justify-between text-xs text-gray-400 mt-1"><span>3.0</span><span class="text-green-600 font-bold">5.5–6.5 ✅</span><span>9.0</span></div>
+          <input type="range" min="0" max="100" value="50" id="sim-ph-sl" oninput="updateLED()" class="w-full">
+          <div class="flex justify-between text-xs text-gray-400 mt-1"><span>0% יבש</span><span class="text-green-600 font-bold">30% ומעלה ✅</span><span>100% רטוב</span></div>
         </div>
         <div>
           <div class="flex justify-between mb-2">
@@ -579,12 +588,12 @@ servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text
     <div class="text-6xl mb-3">⚙️</div>
     <h2 class="text-4xl font-black mb-2">עכשיו לפרויקט!</h2>
     <p class="text-green-200 text-xl mb-2">גרמו לצמח להדליק נורית ולצפצף!</p>
-    <p class="text-green-300 text-sm mb-5">השאר את המחשב – קח את הרשימה</p>
+    <p class="text-green-300 text-sm mb-5">עוברים לעמדת הקבוצה: מחשב ה-Thonny + הערכה + הרשימה הזו</p>
 
     <div class="bg-white/10 rounded-2xl p-5 text-right mb-5 space-y-3">
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m1">
         <div class="text-2xl">🔌</div>
-        <div class="flex-1"><p class="font-bold">א. חבר את הזמזם</p><p class="text-green-300 text-xs">S → GPIO 5 | – → GND</p></div>
+        <div class="flex-1"><p class="font-bold">א. חבר את הזמזם</p><p class="text-green-300 text-xs">רגל + → GPIO 5 | השנייה → GND (הפוך = צפצוף חלש)</p></div>
         <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(1)">
       </div>
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m2">
@@ -594,7 +603,7 @@ servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text
       </div>
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m3">
         <div class="text-2xl">📺</div>
-        <div class="flex-1"><p class="font-bold">ג. בקש מהמורה להריץ את הקוד ב-Thonny</p><p class="text-green-300 text-xs">כיול: חיישן באוויר → Enter, חיישן במים → Enter</p></div>
+        <div class="flex-1"><p class="font-bold">ג. אחרי אישור המורה – הריצו את הקוד ב-Thonny (F5)</p><p class="text-green-300 text-xs">כיול: חיישן באוויר → Enter, חיישן במים → Enter</p></div>
         <input type="checkbox" class="w-7 h-7 accent-lime-400" onchange="mc(3)">
       </div>
       <div class="mission-card bg-white/10 rounded-xl p-4 flex items-center gap-3" id="m4">
@@ -616,7 +625,7 @@ servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text
 
     <div id="bonus-m" class="hidden bg-yellow-400/20 border border-yellow-300 rounded-2xl p-4 mb-5 text-right">
       <p class="font-bold text-yellow-200">⭐ בונוס Servo (+20 עלים)</p>
-      <p class="text-white text-sm">אם יש Servo זמין – חבר אותו ל-GPIO 15 (חשמל מ-5V0) ובדוק שהוא נפתח כשהאדמה יבשה</p>
+      <p class="text-white text-sm">אם יש Servo זמין – נתקו USB, חברו אותו ל-GPIO 15 (חשמל מ-5V) ובדקו שהוא נפתח כשהאדמה יבשה</p>
     </div>
     <p id="mp" class="text-green-200 mb-4">0 מתוך 6 ✓</p>
     <button onclick="goTo(8)" id="bm" class="hidden bg-lime-400 hover:bg-lime-300 text-green-900 px-12 py-5 rounded-2xl text-2xl font-black shadow-2xl">✅ הצמח פועל! ←</button>
@@ -629,9 +638,9 @@ servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text
     <h2 class="text-3xl font-black text-gray-900 mb-6">📊 נתונים + קיר הכיתה</h2>
     <div class="grid md:grid-cols-2 gap-6 mb-6">
       <div class="space-y-4">
-        <div><label class="block font-bold text-gray-600 mb-1 text-sm">⚗️ pH שנמדד</label><input type="number" id="d-ph" step="0.1" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="6.1"></div>
-        <div><label class="block font-bold text-gray-600 mb-1 text-sm">⚡ EC שנמדד</label><input type="number" id="d-ec" step="0.1" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="1.7"></div>
-        <div><label class="block font-bold text-gray-600 mb-1 text-sm">💡 מה ה-LED עשה?</label>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">💧 לחות הקרקע שנמדדה (%)</label><input type="number" id="d-ph" step="1" min="0" max="100" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="24"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">⚡ EC במערכת ההידרופונית (לא חובה)</label><input type="number" id="d-ec" step="0.1" class="w-full border-2 border-gray-200 rounded-xl p-4 text-xl" placeholder="1.7"></div>
+        <div><label class="block font-bold text-gray-600 mb-1 text-sm">💡 מה הנורית עשתה?</label>
           <select id="d-led" class="w-full border-2 border-gray-200 rounded-xl p-4 text-lg">
             <option value="">בחר...</option>
             <option value="green">ירוק – הכל תקין ✅</option>
@@ -668,15 +677,15 @@ servo = PWM(Pin(<span class="text-yellow-300">15</span>), freq=<span class="text
       <div class="bg-amber-50 rounded-xl p-3"><p class="text-xl">🐝</p><p class="font-bold">Beewise</p></div>
     </div>
     <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 mb-5 text-right">
-      <p class="font-bold text-amber-900 mb-3">🎯 כוכב הצפון: היום הקוד שלכם קיבל "ידיים" – יכולת לפעול, לא רק לדווח. זה בדיוק מה שיהיה בלב האבטיפוס שלכם. <b>איך זה רלוונטי לפרויקט שלי?</b></p>
+      <p class="font-bold text-amber-900 mb-3">🎯 כוכב הצפון: היום הקוד שלכם קיבל "ידיים". <b>איך זה רלוונטי לפרויקט שלי?</b> השלימו משפט אחד על האבטיפוס שלכם: "אם ___ אז הבקר ___".</p>
       <textarea id="north-star" rows="2" placeholder="זה רלוונטי לפרויקט שלנו כי..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
     </div>
     <div class="bg-green-800 text-white rounded-2xl p-5 mb-4 text-right">
       <p class="font-bold mb-1">🔮 שיעור 8: "סינרגיה – כשהמערכות מדברות ביניהן"</p>
-      <p class="text-green-200 text-sm">חיבור ה-pH, EC, חיישנים וה-LED לתוכנית אחת אחודה</p>
+      <p class="text-green-200 text-sm">חיישן → החלטה → ברז שנפתח לבד → החיישן מודד שוב: מעגל בקרה סגור</p>
     </div>
     <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-5 mb-5">
-      <p class="font-bold text-yellow-900">✍️ Teaser: <b>אם pH וגם EC יוצאים מהטווח בו-זמנית – מה הבקר צריך לעשות קודם?</b></p>
+      <p class="font-bold text-yellow-900">✍️ Teaser: <b>הבקר מצפצף שהאדמה יבשה – אבל אם אף אחד לא בכיתה, מי ישקה? מה צריך לחבר כדי שהמעגל ייסגר לבד?</b></p>
     </div>
     <div class="flex gap-4 justify-center">
       <a href="../wall.html" class="bg-green-700 text-white px-8 py-4 rounded-2xl font-bold">📸 קיר</a>
@@ -800,7 +809,7 @@ document.querySelectorAll('.code-slot').forEach(slot=>{
     if(!dragging)return;dropOnSlot(slot,e.dataTransfer.getData('text/plain'));
   });
 });
-const codeLabels={read:'📡 לחות = קרא_חיישן()',if:'🤔 אם לחות מתחת ל-30:',red:'🔴 נורית אדומה',valve:'🚿 פתח ברז',else:'🔁 אחרת:',green:'💚 הדלק LED ירוק + סגור ברז'};
+const codeLabels={read:'📡 לחות = קרא_חיישן()',if:'🤔 אם לחות מתחת ל-30:',red:'🔴 נורית אדומה',valve:'🚿 פתח ברז',else:'🔁 אחרת:',green:'💚 נורית ירוקה + סגור ברז'};
 const codePts={read:3,if:3,red:3,valve:3,else:3,green:5};
 function dropOnSlot(slot,val){
   if(slot.dataset.filled)return;
@@ -826,30 +835,31 @@ const blanksAnswers={blank1:'30',blank2:'red',blank3:'90',blank4:'else',blank5:'
 function checkBlank(e,id,answer){
   if(e.key!=='Enter')return;
   const inp=document.getElementById(id);
-  const val=inp.value.trim();
+  if(inp.readOnly)return;
+  const val=inp.value.trim().toLowerCase();
   if(val===answer){
-    inp.className='code-blank correct-fill';inp.readOnly=true;
+    inp.classList.remove('wrong-fill');inp.classList.add('correct-fill');inp.readOnly=true;
     blanksOk++;
     document.getElementById('blanks-progress').textContent=blanksOk+' מתוך 5 נכונים ✓';
     if(blanksOk===5){addLv(30);document.getElementById('blanks-done').classList.remove('hidden');document.getElementById('b4').classList.remove('hidden');}
   } else {
-    inp.className='code-blank wrong-fill';
-    setTimeout(()=>inp.className='code-blank',600);
+    inp.classList.add('wrong-fill');
+    setTimeout(()=>inp.classList.remove('wrong-fill'),600);
   }
 }
 
 // ── LED simulator ──
 let simLEDTriggered=false;
 function updateLED(){
-  const ph=parseInt(document.getElementById('sim-ph-sl').value)/10;
+  const moist=parseInt(document.getElementById('sim-ph-sl').value);
   const ec=parseInt(document.getElementById('sim-ec-sl').value)/10;
   const t=parseInt(document.getElementById('sim-temp-sl').value);
-  document.getElementById('sim-ph').textContent=ph.toFixed(1);
+  document.getElementById('sim-ph').textContent=moist+'%';
   document.getElementById('sim-ec').textContent=ec.toFixed(1);
   document.getElementById('sim-temp').textContent=t+'°C';
 
-  const phBad=ph<5.5||ph>6.5;
-  const ecBad=ec<1.2||ec>2.5;
+  const phBad=moist<30;
+  const ecBad=ec<1.2||ec>2.0;
   const tBad=t>28;
   const anyBad=phBad||ecBad||tBad;
 
@@ -867,13 +877,13 @@ function updateLED(){
     document.getElementById('led-red-status').textContent='דולק 🔴';
     document.getElementById('led-green-status').textContent='כבוי';
     const reasons=[];
-    if(phBad)reasons.push('pH='+ph.toFixed(1));
+    if(phBad)reasons.push('moisture='+moist+'%');
     if(ecBad)reasons.push('EC='+ec.toFixed(1));
     if(tBad)reasons.push('טמפ\'='+t+'°C');
-    valve.textContent='💧';
-    document.getElementById('valve-status').textContent='ברז פתוח!';
-    document.getElementById('valve-angle').textContent='90°';
-    dec.innerHTML='<span style="color:#f87171">if ('+reasons.join(' || ')+'): led.red(); valve(90)</span>';
+    valve.textContent=phBad?'💧':'🚫';
+    document.getElementById('valve-status').textContent=phBad?'ברז פתוח!':'סגור (האדמה לא יבשה)';
+    document.getElementById('valve-angle').textContent=phBad?'90°':'0°';
+    dec.innerHTML='<span style="color:#f87171">if '+reasons.join(' or ')+': led.red()'+(phBad?'; valve(90)':'')+'</span>';
 
     if(!simLEDTriggered){simLEDTriggered=true;addLv(15);document.getElementById('sim-led-done').classList.remove('hidden');document.getElementById('b5').classList.remove('hidden');}
   } else {
@@ -903,7 +913,8 @@ function submitBeewise(btn){
 
 // ── missions ──
 function mc(n){
-  mcCnt++;document.getElementById('m'+n).classList.add('done');addLv(7);
+  const card=document.getElementById('m'+n);if(card.classList.contains('done'))return;
+  mcCnt++;card.classList.add('done');addLv(7);
   document.getElementById('mp').textContent=mcCnt+' מתוך 6 ✓';
   if(mcCnt===3)document.getElementById('bonus-m').classList.remove('hidden');
   if(mcCnt===6){addLv(10);document.getElementById('bm').classList.remove('hidden');}
@@ -914,15 +925,15 @@ function submitData(){
   const ph=document.getElementById('d-ph').value;
   const ec=document.getElementById('d-ec').value;
   const led=document.getElementById('d-led').value;
-  if(!ph||!ec||!led){alert('מלא את כל השדות');return;}
+  if(!ph||!led){alert('מלא את הלחות ואת מה שהנורית עשתה');return;}
   addLv(20);
-  const rec={name:sName,ph,ec,led,obs:document.getElementById('d-obs').value,ts:Date.now()};
+  const rec={name:sName,moisture:ph,ec,led,obs:document.getElementById('d-obs').value,ts:Date.now()};
   let all=JSON.parse(localStorage.getItem('cls7')||'[]');
   all=all.filter(r=>r.name!==sName);all.push(rec);localStorage.setItem('cls7',JSON.stringify(all));
-  if(window.GC) GC.pushPassport('measurements',{lesson:7,ph:parseFloat(ph)||0,ec:parseFloat(ec)||0,led,obs:rec.obs,ts:rec.ts});
+  if(window.GC) GC.pushPassport('measurements',{lesson:7,moisture:parseFloat(ph)||0,ec:parseFloat(ec)||0,led,obs:rec.obs,ts:rec.ts});
   let msg='<p class="font-bold text-green-800 text-lg mb-1">✅ נתונים נשמרו! +20 עלים 🌿</p>';
-  if(parseFloat(ph)<5.5||parseFloat(ph)>6.5)msg+='<p class="text-red-600">⚠️ pH מחוץ לטווח – LED אדום אמור לדלוק!</p>';
-  else msg+='<p class="text-green-600">pH תקין 🌱</p>';
+  if(parseFloat(ph)<30)msg+='<p class="text-red-600">⚠️ האדמה יבשה – הנורית אמורה להיות אדומה ולצפצף!</p>';
+  else msg+='<p class="text-green-600">לחות תקינה – נורית ירוקה 🌱</p>';
   const fb=document.getElementById('dfb');fb.classList.remove('hidden');
   fb.className='p-4 rounded-xl bg-lime-50 border border-lime-200 text-sm';fb.innerHTML=msg;
   renderFeed();renderLB();
@@ -932,7 +943,7 @@ function renderFeed(){
   const feed=document.getElementById('feed');
   const icons={green:'💚',red:'🔴',both:'💡💚'};
   if(!data.length){feed.innerHTML='<p class="text-gray-400 text-center py-4 text-sm">עדיין אין נתונים</p>';return;}
-  feed.innerHTML=data.slice(-5).reverse().map(r=>`<div class="bg-gray-50 rounded-xl p-3 border"><p class="font-bold text-sm">${r.name} ${icons[r.led]||''}</p><p class="text-xs text-gray-500">pH:${r.ph} · EC:${r.ec}</p>${r.obs?'<p class="text-xs text-gray-400 italic">"'+r.obs+'"</p>':''}</div>`).join('');
+  feed.innerHTML=data.slice(-5).reverse().map(r=>`<div class="bg-gray-50 rounded-xl p-3 border"><p class="font-bold text-sm">${r.name} ${icons[r.led]||''}</p><p class="text-xs text-gray-500">${r.moisture!==undefined?'💧'+r.moisture+'%'+(r.ec?' · EC:'+r.ec:''):'pH:'+r.ph+' · EC:'+r.ec}</p>${r.obs?'<p class="text-xs text-gray-400 italic">"'+r.obs+'"</p>':''}</div>`).join('');
 }
 function renderLB(){
   const s=JSON.parse(localStorage.getItem('alv7')||'{}');

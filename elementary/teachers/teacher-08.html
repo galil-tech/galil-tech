@@ -90,8 +90,8 @@
         <h3 class="font-bold mb-3">⚡ ציוד המעגל (לקבוצה)</h3>
         <ul class="space-y-2 text-gray-600">
           <li class="flex gap-2">📋 <span>ESP32-S3 + חיישן לחות האדמה (משיעור 6: AOUT → GPIO 6)</span></li>
-          <li class="flex gap-2">📋 <span>זמזם (S → GPIO 5) + חוט מגע (GPIO 4) – משיעור 7</span></li>
-          <li class="flex gap-2">📋 <span>עציץ/כוס אדמה יבשה + כוס מים קטנה להשקיה</span></li>
+          <li class="flex gap-2">📋 <span>זמזם (רגל + → GPIO 5, השנייה → GND) + חוט מגע (GPIO 4) – משיעור 7</span></li>
+          <li class="flex gap-2">📋 <span>עציץ/כוס אדמה יבשה + כפית או מזרק להשקיה. הכוס על מגש, מגבת נייר על השולחן, והלוח במרחק 30 ס"מ לפחות</span></li>
           <li class="flex gap-2">📋 <span>הנורית הצבעונית מובנית בלוח</span></li>
           <li class="bg-amber-50 text-amber-800 rounded-lg p-2 mt-2">🚰 ביסודי ה"ברז" הוא התלמיד: הבקר מצפצף → התלמיד משקה → הנורית הופכת לירוקה. (בחטיבה מוסיפים Servo כברז אוטומטי.)</li>
           <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ בדקו שהמעגל המלא עובד פעם אחת לפני השיעור!</li>
@@ -127,6 +127,15 @@ while True:
     </div>
   </div>
 
+  <!-- ══ VISUALS ══ -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-600 text-white p-6"><h2 class="text-2xl font-black">🖼️ להמחשה</h2><p class="text-slate-300 text-sm">מתוך מצגות ההדרכה של צוות החומרה – אפשר להקרין בכיתה</p></div>
+    <div class="p-6 grid md:grid-cols-2 gap-6">
+      <div><figure class="my-4"><img src="../../assets/img/esp32/system-loop.jpg" alt="מערכת ניטור: חיישן, בקר, נורית וזמזם" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">המעגל הסגור – הבקר מרגיש, מחליט ומזעיק</figcaption></figure></div>
+      <div><figure class="my-4"><img src="../../assets/img/esp32/architecture.jpg" alt="קלט, בקר ופלט" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">כל החלקים שחיברנו עד עכשיו</figcaption></figure></div>
+    </div>
+  </div>
+
   <!-- TIMELINE -->
   <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
     <div class="bg-green-700 text-white p-6">
@@ -140,7 +149,7 @@ while True:
           <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎤</span><h3 class="text-xl font-black">פתיחה – חיבור לשיעור 7</h3><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">כל הכיתה</span></div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-3">
             <p class="font-bold text-amber-900 mb-1">🔁 תזכורת משיעור 7 (Teaser):</p>
-            <p class="text-sm text-gray-700">"שאלנו: מה יקרה אם שני מכשירים שונים צריכים להגיב לאותה בעיה, ביחד? היום נענה על זה – ונראה איך מערכות שלמות יכולות 'לדבר' אחת עם השנייה."</p>
+            <p class="text-sm text-gray-700">"שאלנו: מי ישקה כשאף אחד לא בכיתה? היום נבנה מעגל שבו כל חלק עוזר לחלק הבא: החיישן מרגיש, הבקר מזעיק, אנחנו משקים – והחיישן מרגיש שוב."</p>
           </div>
           <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
             <p class="font-bold text-purple-900 mb-1">🪜 מדרגת כניסה למושג "סינרגיה":</p>
@@ -200,7 +209,7 @@ while True:
           <div class="bg-lime-50 border border-lime-200 rounded-xl p-5 mb-4">
             <p class="font-bold text-lime-900 mb-3">📋 משימות הקבוצה (זה הלב של השיעור!):</p>
             <div class="grid md:grid-cols-2 gap-2 text-sm">
-              <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות האדמה – 3 חוטים לפי צבע (כמו בשיעור 6)</div>
+              <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות האדמה – 3 חוטים לפי הכיתוב על החיישן והלוח (כמו בשיעור 6)</div>
               <div class="bg-white rounded-lg p-2">ב. חיבור הזמזם וחוט המגע (כמו בשיעור 7) – המורה בודק</div>
               <div class="bg-white rounded-lg p-2 border-2 border-purple-200"><b>ג. מחברים USB ומכיילים בנגיעה</b> (הקוד כבר שמור על הבקר)</div>
               <div class="bg-white rounded-lg p-2 border-2 border-blue-200"><b>ד. הוכיחו שהמעגל סגור:</b> החיישן באדמה יבשה → צפצוף ואדום → משקים → צהוב/ירוק. הבקר הגיב לבד</div>
@@ -212,8 +221,9 @@ while True:
             <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
               <ul class="space-y-1 text-gray-600">
+                <li><b>⚠️ הלוח או החיישן מתחמם / ריח שרוף:</b> מנתקים USB מיד, לא נוגעים ברכיב החם, בודקים קצר (3V3/5V ל-GND, או VCC/GND הפוכים) ועוברים לערכה הרזרבית</li>
                 <li><b>הנורית לא מתחלפת אחרי ההשקיה:</b> חכו כמה שניות שהמים יחלחלו; אם עדיין לא – כיול מחדש (נתקו וחברו USB)</li>
-                <li><b>הזמזם שקט:</b> קראו למורה – S לא ב-GPIO 5</li>
+                <li><b>הזמזם שקט או חלש:</b> קראו למורה – רגל + צריכה להיות ב-GPIO 5 (חיבור הפוך = צפצוף חלש)</li>
                 <li><b>החיישן נותן ערך קבוע:</b> ודאו שהוא נוגע בפועל במצע/במים</li>
               </ul>
             </div>
@@ -234,6 +244,7 @@ while True:
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🌿 עלים (1 דק')</p><p class="text-gray-500">הכריזו על קבוצות שהוכיחו מעגל סגור.</p></div>
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-gray-500 font-medium">"בנינו מעגל בקרה בקרקע. אבל מה אם נרצה לראות את כל השדה מלמעלה?" ← אל תתנו תשובה, זה שיעור 9</p></div>
           </div>
+          <div class="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm"><b>⭐ כוכב הצפון (1 דק'):</b> "איך זה רלוונטי לפרויקט שלי?" – איזה חלק בפרויקט שלכם עוזר לחלק אחר?</div>
         </div>
       </div>
 

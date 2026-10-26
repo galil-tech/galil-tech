@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<div id="deck-title">שיעור 6 – איך מדברים עם צמחים?</div>
+<div id="deck-title">שיעור 6 – איך שומעים את הסביבה של הצמח?</div>
 <div id="backdrop">
 
   <!-- שקף 1 - ESP32 + חיישנים (תבנית F) -->
@@ -21,11 +21,9 @@
     <div class="stage-row" style="gap:4%;">
       <div style="flex:1;">
         <p class="h1">מה זה, לדעתכם?</p>
-        <p class="small" style="margin-top:14px;">קובץ: lesson-06-slide-1.jpg</p>
       </div>
-      <div class="img-slot" style="flex:1; height:70%;">
-        <span class="ph-icon">🖼️</span>
-        <span class="ph-text">ESP32-S3 + חיישנים</span>
+      <div class="img-slot" style="flex:1; height:70%; border:none;">
+        <img src="../assets/img/esp32/esp32-farm-photo.jpg" alt="לוח ESP32 על breadboard לצד חממה אנכית">
       </div>
     </div>
     <div class="mascot">🌿</div>
@@ -63,7 +61,7 @@
         <div class="rv card card-green" data-step="1" style="flex:1;">
           <p class="label label-green">1️⃣ קרא</p>
           <p class="body" style="margin-top:8px;">חיישן מודד ערך</p>
-          <p class="small" dir="ltr" style="margin-top:6px;font-family:monospace;">soil.read_raw()</p>
+          <p class="small" dir="ltr" style="margin-top:6px;font-family:monospace;">moisture = soil.read_percent()</p>
         </div>
         <span class="seq-arrow">←</span>
         <div class="rv card card-lime" data-step="2" style="flex:1;">

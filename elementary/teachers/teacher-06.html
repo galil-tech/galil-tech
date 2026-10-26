@@ -16,7 +16,7 @@
 <div class="bg-slate-800 text-white py-5 px-8 flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-lg gap-3">
   <div>
     <span class="text-xs text-slate-400">מערך שיעור · מסלול יסודי · גליל-טק</span>
-    <h1 class="text-2xl font-black">שיעור 6 – איך "מדברים" עם צמחים?</h1>
+    <h1 class="text-2xl font-black">שיעור 6 – איך "שומעים" את הסביבה של הצמח?</h1>
   </div>
   <div class="flex gap-3 flex-wrap">
     <span class="bg-white/20 px-4 py-2 rounded-xl text-sm">⏱ 90 דקות</span>
@@ -96,17 +96,22 @@
         <pre dir="ltr" class="bg-slate-800 rounded-xl p-3 text-xs text-green-400 font-mono overflow-x-auto"># main.py – לשימוש המורה בלבד
 import time
 from soil_moisture_driver import SoilMoistureSensor
+from ws2812_driver import WS2812LED
 
 soil = SoilMoistureSensor(pin_num=6)  # AOUT → GPIO 6
+led = WS2812LED(pin_num=48, brightness=0.2)
 
 while True:
+    led.blue()               # "אני מודד!" – משוב גם בלי מחשב
     print(soil.read_raw())   # גבוה = יבש
+    time.sleep_ms(300)
+    led.off()
     time.sleep(2)</pre>
         <ul class="text-xs text-gray-500 mt-2 space-y-1">
           <li>• Thonny → Interpreter: <b>MicroPython (ESP32)</b>.</li>
           <li>• File → Save as → <b>MicroPython device</b> → <code>main.py</code>.</li>
           <li>• את הערכים רואים בחלון ה-Shell של Thonny (⏹ Stop/Restart ואז הקוד רץ).</li>
-          <li>💡 <b>מספר גבוה = יבש</b>, מספר נמוך = רטוב. רשמו את הערכים – נשתמש בהם בשיעור 7.</li>
+          <li>💡 <b>מספר גבוה = יבש</b>, מספר נמוך = רטוב. רשמו את הערכים – נשווה אליהם בשיעור 7.</li>
         </ul>
       </div>
       <div>
@@ -121,10 +126,19 @@ while True:
         <h3 class="font-bold text-gray-800 mb-3">🖥️ ציוד נוסף</h3>
         <ul class="space-y-1 text-gray-600 text-xs">
           <li>📋 מחשב/טאבלט לכל זוג (לומדה)</li>
-          <li>📋 מחשב עם Thonny לקריאת הערכים (המורה עובר בין הקבוצות)</li>
+          <li>📋 <b>מחשב Windows/Mac עם Thonny לכל קבוצה</b> בשלב הפרויקט (לא טאבלט) – אפשר אחד ממחשבי הזוגות. הנורית הכחולה מהבהבת = הבקר מודד</li>
           <li>🧰 <b>ערכת חומרה רזרבית אחת לכיתה</b> (ESP32 + חיישן חלופי)</li>
         </ul>
       </div>
+    </div>
+  </div>
+
+  <!-- ══ VISUALS ══ -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-600 text-white p-6"><h2 class="text-2xl font-black">🖼️ להמחשה</h2><p class="text-slate-300 text-sm">מתוך מצגות ההדרכה של צוות החומרה – אפשר להקרין בכיתה</p></div>
+    <div class="p-6 grid md:grid-cols-2 gap-6">
+      <div><figure class="my-4"><img src="../../assets/img/esp32/esp32-farm-photo.jpg" alt="לוח ESP32 על breadboard לצד חממה אנכית" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">לפתיחה: "מה זה לדעתכם?"</figcaption></figure></div>
+      <div><figure class="my-4"><img src="../../assets/img/esp32/soil-moisture.jpg" alt="חיישן לחות קרקע ב-GPIO 6" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">חיישן לחות האדמה – החיישן של השיעור</figcaption></figure></div>
     </div>
   </div>
 
@@ -138,10 +152,10 @@ while True:
       <div class="p-6 flex gap-5">
         <div class="flex-shrink-0 text-center w-20"><div class="bg-green-100 text-green-800 font-black text-lg rounded-xl py-2">0–15</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
         <div class="flex-1">
-          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎤</span><h3 class="text-xl font-black">פתיחה – לצמח אין פה, אז איך הוא "מדבר"?</h3><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">כל הכיתה</span></div>
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎤</span><h3 class="text-xl font-black">פתיחה – איך יודעים מה קורה סביב הצמח?</h3><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">כל הכיתה</span></div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-3">
             <p class="font-bold text-amber-900 mb-1">🔁 תזכורת משיעור 5:</p>
-            <p class="text-sm text-gray-700">"מדדתם ביד את המים של הצמח. אבל מה יקרה אם ה-pH ישתנה בשעה 2 בלילה, כשאף אחד לא בכיתה?" (תשובה: אף אחד לא ידע!)</p>
+            <p class="text-sm text-gray-700">"זוכרים ששאלנו: אם הצמח לא מרגיש טוב – איך נדע לפני שרואים בעיניים? מדדתם ביד את המים, אבל מה יקרה בשעה 2 בלילה, כשאף אחד לא בכיתה? היום נכיר את מי שיודע: חיישן."</p>
           </div>
           <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-3">
             <p class="font-bold text-purple-900 mb-1">🪜 מדרגת כניסה למושג "חיישן" ו"בקר":</p>
@@ -172,8 +186,8 @@ while True:
                   <ul class="text-gray-500 space-y-1">
                     <li>מים באדמה → חיישן לחות אדמה (נחבר היום!)</li>
                     <li>מזון במים → מד EC (משיעור 5)</li>
-                    <li>טמפרטורה + לחות → חיישן אחד (DHT22)</li>
-                    <li>אור → חיישן אור (BH1750)</li>
+                    <li>חום ולחות אוויר → חיישן סביבה BME280 (הוא מודד גם לחץ אוויר – בינתיים לא צריך את זה)</li>
+                    <li>אור → חיישן BH1750 (בקרוב – מחכים להוראות מצוות החומרה)</li>
                   </ul>
                 </div>
                 <div class="bg-white rounded-lg p-3">
@@ -194,8 +208,8 @@ while True:
             <p class="mb-2">📌 <b>מפרט ללומדה (`elementary/lessons/lesson-06.html`, תיבנה בהמשך):</b></p>
             <ol class="space-y-1 list-decimal list-inside mr-4">
               <li>מה זה חיישן – קריאה קצרה + שאלה</li>
-              <li>הבקר (ESP32) – קריאה + סרטון קצר + שאלה</li>
-              <li><b>🎮 סימולטור "אם...אז..." (סימולטור ויזואלי, בסגנון arduino-simulator.html הכללי אך מפושט):</b> רק 2 בלוקים לגרירה – "אם חם מדי" → "הפעל מאוורר", בלי כתיבת קוד ובלי שורות טקסט</li>
+              <li>הבקר (ESP32) – קריאה + תמונות + שאלה</li>
+              <li><b>🎮 סימולטור "אם...אז..." (סימולטור ויזואלי, בסגנון arduino-simulator.html הכללי אך מפושט):</b> רק 2 בלוקים לגרירה – "אם האדמה יבשה" → "צפצף", בלי כתיבת קוד ובלי שורות טקסט</li>
               <li>🎮 סימולטור חיישן לחות אדמה עם גרף פשוט (יבש ↔ רטוב)</li>
               <li>🎮 תרחיש אחד + Phytech</li>
               <li>פרויקט (חיבור ומדידה)</li>
@@ -223,9 +237,10 @@ while True:
             <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
               <ul class="space-y-1 text-xs text-gray-600">
+                <li><b>⚠️ הלוח או החיישן מתחמם / ריח שרוף:</b> מנתקים USB מיד, לא נוגעים ברכיב החם, בודקים קצר (3V3/5V ל-GND, או VCC/GND הפוכים) ועוברים לערכה הרזרבית</li>
                 <li><b>הערך תקוע על 0 או 65535:</b> קראו למורה – חוט AOUT לא ב-GPIO 6, או חוט חשמל רופף</li>
                 <li><b>אין הבדל בין יבש לרטוב:</b> ודאו שהחיישן נכנס לאדמה עד הקו</li>
-                <li><b>Thonny לא רואה את הלוח:</b> נסו כבל USB-C אחר (כבל נתונים, לא רק טעינה), ואז ⏹ Stop/Restart</li>
+                <li><b>Thonny לא רואה את הלוח:</b> נסו כבל USB-C אחר (כבל נתונים, לא רק טעינה), או את שקע ה-USB-C השני בלוח, ואז ⏹ Stop/Restart</li>
               </ul>
             </div>
             <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm">
@@ -245,6 +260,7 @@ while True:
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🌿 עלים (1 דק')</p><p class="text-xs text-gray-500">מי מגיע לרמה חדשה?</p></div>
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-xs text-gray-700 font-medium">"האדמה התייבשה – הבקר צריך להדליק נורה אדומה ולצפצף. איך נגרום לו 'לדעת' לעשות את זה בעצמו?" ← אל תתנו תשובה, זה שיעור 7</p></div>
           </div>
+          <div class="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm"><b>⭐ כוכב הצפון (1 דק'):</b> "איך זה רלוונטי לפרויקט שלי?" – מה הייתם רוצים שחיישן יבדוק בשביל הצמח שלכם?</div>
         </div>
       </div>
 

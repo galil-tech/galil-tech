@@ -16,7 +16,7 @@
 <div class="bg-slate-800 text-white py-5 px-8 flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-lg gap-3">
   <div>
     <span class="text-xs text-slate-400">מערך שיעור · גליל-טק</span>
-    <h1 class="text-2xl font-black">שיעור 6 – איך מדברים עם צמחים?</h1>
+    <h1 class="text-2xl font-black">שיעור 6 – איך שומעים את הסביבה של הצמח?</h1>
   </div>
   <div class="flex gap-3 flex-wrap">
     <span class="bg-white/20 px-4 py-2 rounded-xl text-sm">⏱ 90 דקות</span>
@@ -38,7 +38,7 @@
       <div>
         <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">ידע ומושגים</h3>
         <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">✅ <span>מסביר מהו חיישן ומה ההבדל בין סוגי חיישנים (טמפ', לחות, אור)</span></li>
+          <li class="flex gap-2">✅ <span>מסביר מהו חיישן ומה ההבדל בין סוגי חיישנים (סביבה – BME280, אור – BH1750, לחות קרקע) – ושהחיישנים מודדים את <b>הסביבה</b> של הצמח</span></li>
           <li class="flex gap-2">✅ <span>מסביר מהו בקר ESP32 ומה תפקידו כ"מוח" בין חיישן לפעולה</span></li>
           <li class="flex gap-2">✅ <span>מבין את הלוגיקה הבסיסית של קוד: קרא → בדוק → פעל → חזור</span></li>
           <li class="flex gap-2">✅ <span>יודע את טווחי הנוחות לטמפרטורה (15–28°C), לחות (50–80%), אור (400–1000 lux) – ובמיוחד ללחות הקרקע, שאותה נמדוד היום</span></li>
@@ -90,7 +90,7 @@
           <li class="flex gap-2">📋 <span>חיישן לחות קרקע (3 חוטים: VCC / GND / AOUT)</span></li>
           <li class="flex gap-2">📋 <span>כבלי חיבור (Jumper wires)</span></li>
           <li class="flex gap-2">📋 <span>2 כוסות: אדמה יבשה ואדמה רטובה</span></li>
-          <li class="bg-amber-50 text-amber-800 rounded-lg p-2 mt-2">💡 הערכה מגיעה <b>לא מחווטת</b> – החיבור הוא חלק מהשיעור. חיישני טמפ'/אור ייכנסו לשיעור כשיגיעו.</li>
+          <li class="bg-amber-50 text-amber-800 rounded-lg p-2 mt-2">💡 הערכה מגיעה <b>לא מחווטת</b> – החיבור הוא חלק מהשיעור. חיישן הסביבה BME280 (טמפרטורה + לחות אוויר + לחץ ברומטרי – את נתון הלחץ אפשר להתעלם ממנו בשלב זה). חיישן BH1750 (אור) – ממתינים לעדכון דרייבר ודמו מצוות החומרה – אין עדיין חיווט וקוד.</li>
           <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ הריצו את הקוד על ערכה אחת לפחות יום לפני! אל תגלו ביום השיעור שמשהו לא עובד.</li>
         </ul>
       </div>
@@ -130,12 +130,23 @@ while True:
           <h3 class="font-bold text-gray-800 mb-2 mt-4">🖥️ מחשבים</h3>
           <ul class="space-y-1 text-gray-600 text-xs">
             <li>📋 מחשב/טאבלט לכל זוג (לומדה)</li>
-            <li>📋 מחשב עם Thonny לכל קבוצה (או מחשב מורה אחד שעובר בין הקבוצות)</li>
+            <li>📋 <b>מחשב Windows/Mac עם Thonny לכל קבוצה</b> (לא טאבלט – Thonny לא רץ עליו), נבדק מול הלוח יום לפני</li>
             <li>📋 פתח lessons/lesson-06.html לפני הכניסה</li>
             <li>🧰 <b>ערכת חומרה רזרבית אחת לכל כיתה</b> (ESP32 + חיישן חלופי)</li>
           </ul>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ══ VISUALS ══ -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-600 text-white p-6"><h2 class="text-2xl font-black">🖼️ להמחשה: Thonny וחיישן הלחות</h2><p class="text-slate-300 text-sm">מתוך מצגות ההדרכה של צוות החומרה – אפשר להקרין בכיתה</p></div>
+    <div class="p-6 grid md:grid-cols-2 gap-6">
+      <div><figure class="my-4"><img src="../assets/img/esp32/thonny.jpg" alt="מסך Thonny: עורך קוד, חלון Shell, סייר משתנים ומנהל חבילות" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">4 האזורים של Thonny</figcaption></figure></div>
+      <div><figure class="my-4"><img src="../assets/img/esp32/soil-moisture.jpg" alt="חיישן לחות קרקע ב-GPIO 6 וקוד הכיול" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">חיישן לחות הקרקע – החיישן של השיעור</figcaption></figure></div>
+      <div><figure class="my-4"><img src="../assets/img/esp32/architecture.jpg" alt="ארכיטקטורת החממה החכמה סביב ESP32-S3" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">לפתיחה: קלט → בקר → פלט</figcaption></figure></div>
+      <div><figure class="my-4"><img src="../assets/img/esp32/esp32-farm-photo.jpg" alt="לוח ESP32 על breadboard לצד חממה אנכית" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">לפתיחה: "מה זה לדעתכם?"</figcaption></figure></div>
     </div>
   </div>
 
@@ -162,15 +173,14 @@ while True:
             <p class="font-bold mb-1">תשובות שצפויות:</p>
             <ul class="text-gray-500 space-y-1">
               <li>מים → חיישן לחות קרקע (נחבר היום!) / מד EC</li>
-              <li>טמפרטורה → חיישן DHT22</li>
-              <li>לחות אוויר → DHT22 (כפול)</li>
-              <li>אור → BH1750</li>
+              <li>טמפרטורה + לחות אוויר → חיישן סביבה BME280 (טמפרטורה + לחות אוויר + לחץ ברומטרי – את נתון הלחץ אפשר להתעלם ממנו בשלב זה)</li>
+              <li>אור → חיישן BH1750 (אור) – ממתינים לעדכון דרייבר ודמו מצוות החומרה</li>
               <li>מינרלים → מד EC (מהשיעור הקודם)</li>
             </ul>
           </div>
           <div class="bg-white rounded-lg p-3">
             <p class="font-bold mb-1">גשר לשיעור:</p>
-            <p class="text-gray-500">"בדיוק! ואת כל אלה אפשר לחבר לבקר ESP32 אחד קטן. בואו נראה איך..."</p>
+            <p class="text-gray-500">"בדיוק! ואת כל אלה אפשר לחבר לבקר ESP32 אחד קטן. היום נתמקד בחיישן אחד – לחות קרקע – ונבין אותו לעומק."</p>
           </div>
         </div>
       </div>
@@ -218,7 +228,7 @@ while True:
               <p class="font-bold mb-2">📋 מה קורה בכל שלב:</p>
               <ol class="space-y-1 text-gray-600 list-decimal list-inside text-xs">
                 <li>מה זה חיישן – קריאה + 2 שאלות</li>
-                <li>הבקר (ESP32) – קריאה + סרטון + שאלה</li>
+                <li>הבקר (ESP32) – קריאה + תמונות + שאלה</li>
                 <li>🎮 גרירת בלוקי קוד (5 שורות)</li>
                 <li>🎮 סימולטור 3 חיישנים + גרף</li>
                 <li>🎮 תרחישים + Phytech</li>
@@ -252,7 +262,7 @@ while True:
             <div class="grid md:grid-cols-2 gap-2 text-xs">
               <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות הקרקע: VCC→3V3, GND→GND, AOUT→GPIO 6</div>
               <div class="bg-white rounded-lg p-2">ב. בדיקת חיבור של חבר מהקבוצה – ורק אז USB</div>
-              <div class="bg-white rounded-lg p-2 border-2 border-blue-200"><b>ג. הרצת הקוד ב-Thonny (F5)</b> – המורה עושה זאת!</div>
+              <div class="bg-white rounded-lg p-2 border-2 border-blue-200"><b>ג. המורה מאשר חיווט – הקבוצה מריצה F5 ב-Thonny</b></div>
               <div class="bg-white rounded-lg p-2 border-2 border-green-200"><b>ד. קריאת ערכים:</b> באוויר · אדמה יבשה · אדמה רטובה</div>
               <div class="bg-white rounded-lg p-2">ה. האם הערכים הגיוניים? (גבוה = יבש)</div>
               <div class="bg-white rounded-lg p-2">ו. צילום ה-ESP32 המחובר</div>
@@ -262,7 +272,8 @@ while True:
             <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
               <ul class="space-y-1 text-xs text-gray-600">
-                <li><b>Thonny לא מתחבר:</b> כבל USB-C של נתונים (לא רק טעינה), Interpreter = MicroPython (ESP32), הפורט הנכון, ואז ⏹ Stop/Restart</li>
+                <li><b>⚠️ הלוח או החיישן מתחמם / ריח שרוף:</b> מנתקים USB מיד, לא נוגעים ברכיב החם, בודקים קצר (3V3/5V ל-GND, או VCC/GND הפוכים) ועוברים לערכה הרזרבית</li>
+                <li><b>Thonny לא מתחבר:</b> כבל USB-C של נתונים (לא רק טעינה), Interpreter = MicroPython (ESP32), הפורט הנכון, ואז ⏹ Stop/Restart. עדיין לא? נסו את שקע ה-USB-C השני בלוח</li>
                 <li><b>Raw תקוע על 0 או 65535:</b> AOUT לא ב-GPIO 6, או חוט VCC/GND רופף</li>
                 <li><b>אין הבדל בין יבש לרטוב:</b> החיישן לא נכנס לאדמה עד הקו</li>
                 <li><b>ImportError: soil_moisture_driver:</b> הדרייבר חסר על הבקר (View → Files → MicroPython device) – החליפו לערכה הרזרבית ודווחו לרכז הטכני</li>
@@ -282,10 +293,11 @@ while True:
         <div class="flex-1">
           <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🏁</span><h3 class="text-xl font-black">נתונים + Teaser</h3></div>
           <div class="grid md:grid-cols-3 gap-3 text-sm">
-            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 נתונים (2 דק')</p><p class="text-xs text-gray-500">כל קבוצה מזינה ערכים. הצג ממוצע: "הטמפ' הממוצעת בכיתה היא..."</p></div>
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 נתונים (2 דק')</p><p class="text-xs text-gray-500">כל קבוצה מזינה ערכים. הצג ממוצע: "הערך הממוצע באדמה יבשה בכיתה הוא... וברטובה..."</p></div>
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🌿 עלים (1 דק')</p><p class="text-xs text-gray-500">הכריזו על הלידרבורד. מי מגיע לרמה חדשה?</p></div>
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-xs text-gray-700 font-medium">"האדמה התייבשה מתחת ל-30% – ה-ESP32 צריך להדליק נורית אדומה ולצפצף. <b>איך תכתבו את זה בקוד?"</b></p><p class="text-xs text-gray-400">אל תתנו תשובה. זה שיעור 7.</p></div>
           </div>
+          <div class="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm"><b>⭐ כוכב הצפון (1 דק'):</b> "איך זה רלוונטי לפרויקט שלי?" – איזה נתון אחד הכי חשוב לצמח בפרויקט שלכם? באיזה חיישן תמדדו אותו, ומה המספר שאומר "יש בעיה"?</div>
         </div>
       </div>
 
@@ -371,7 +383,7 @@ while True:
     </div>
     <div class="p-6">
       <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-sm">
-        <span class="font-bold text-amber-800">📡 מכניקה בעלת שם: "לוח נתונים חי"</span> — כל קבוצה מדווחת בזמן אמת 3 פרמטרים (טמפ׳/לחות/אור) ללוח כיתתי משותף.
+        <span class="font-bold text-amber-800">📡 מכניקה בעלת שם: "לוח נתונים חי"</span> — כל קבוצה מדווחת בזמן אמת 3 ערכי לחות גולמיים (אוויר / יבש / רטוב) ללוח כיתתי משותף.
       </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-center text-sm">
         <div class="bg-gray-50 rounded-xl p-4"><div class="text-2xl font-black text-slate-700">20</div><div class="text-gray-400 text-xs">שאלות חיישן + בקר</div></div>

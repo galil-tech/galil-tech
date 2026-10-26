@@ -91,16 +91,26 @@ soil.calibrate_dry()
 input("2. Sensor in WATER, press Enter")
 soil.calibrate_wet()
 
+last_alarm = 0
 while True:
     moisture = soil.read_percent()
     print("Moisture:", moisture, "%")
     if moisture &lt; 30:
         led.red()
-        buzzer.alarm_beep(count=3, freq=1000, beep_ms=100)
+        if time.time() - last_alarm &gt;= 3:   # not every second
+            buzzer.alarm_beep(count=3, freq=1000, beep_ms=100)
+            last_alarm = time.time()
     else:
         led.green()
     time.sleep(1)</pre>
         <p class="text-xs text-gray-500 mt-2">💡 מריצים ב-F5. את ה-Enter של הכיול לוחצים בחלון ה-Shell של Thonny. בונוס: הוסיפו <code>elif moisture &lt;= 60: led.yellow()</code>.</p>
+        <p class="text-xs font-bold text-gray-700 mt-3">⚙️ בונוס Servo (נתקו USB לפני החיבור!) – להוסיף לקוד:</p>
+        <pre dir="ltr" class="bg-slate-800 rounded-xl p-3 font-mono text-xs text-green-400 overflow-x-auto">from machine import Pin, PWM
+servo = PWM(Pin(15), freq=50)
+def valve(angle):
+    servo.duty_ns(500000 + angle * 2000000 // 180)
+valve(0)
+# inside the loop: valve(90) under "if", valve(0) under "else"</pre>
       </div>
       <div>
         <h3 class="font-bold mb-3">📐 חיבורים</h3>
@@ -111,7 +121,7 @@ while True:
           </div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
             <p class="font-bold text-amber-700 mb-1">🔔 זמזם פסיבי (GPIO 5)</p>
-            <p>S → GPIO 5 · – → GND (אם יש רגל VCC/+ → 3V3)</p>
+            <p>הרגל עם סימן + (מדבקה קטנה, לא תמיד ברורה) → GPIO 5 (PWM) · הרגל השנייה → GND. חיבור הפוך = צפצוף חלש יותר.</p>
           </div>
           <div class="bg-green-50 border border-green-200 rounded-xl p-3">
             <p class="font-bold text-green-700 mb-1">🌈 נורית RGB (GPIO 48)</p>
@@ -128,6 +138,17 @@ while True:
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ══ VISUALS ══ -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-600 text-white p-6"><h2 class="text-2xl font-black">🖼️ להמחשה: חשמל, זמזם, נורית ותנאים</h2><p class="text-slate-300 text-sm">מתוך מצגות ההדרכה של צוות החומרה – אפשר להקרין בכיתה</p></div>
+    <div class="p-6 grid md:grid-cols-2 gap-6">
+      <div><figure class="my-4"><img src="../assets/img/esp32/transistor-valve.jpg" alt="דיודה כשסתום חד-כיווני וטרנזיסטור כברז אלקטרוני" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">לפתיחה: אנלוגיית המים – הטרנזיסטור הוא "ברז אלקטרוני"</figcaption></figure></div>
+      <div><figure class="my-4"><img src="../assets/img/esp32/if-elif-else.jpg" alt="if/elif/else כצנרת עם ברזים לפי לחות" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">לשלב if/else</figcaption></figure></div>
+      <div><figure class="my-4"><img src="../assets/img/esp32/buzzer.jpg" alt="זמזם פסיבי ב-GPIO 5" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">הזמזם</figcaption></figure></div>
+      <div><figure class="my-4"><img src="../assets/img/esp32/rgb-led.jpg" alt="נורית RGB מובנית ב-GPIO 48" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">הנורית המובנית</figcaption></figure></div>
     </div>
   </div>
 
@@ -149,7 +170,7 @@ while True:
           </div>
           <ul class="text-sm text-gray-600 space-y-1">
             <li>• שקף: דיגיטלי (0/1) vs אנלוגי (0–65535 ב-MicroPython) עם דוגמה של מתג לעומת ווליום</li>
-            <li>• שקף: פינים על הלוח – GPIO 6 (חיישן) / GPIO 5 (זמזם) / GPIO 48 (נורית RGB) / GND / 3V3</li>
+            <li>• שקף: פינים על הלוח – GPIO 6 (חיישן) / GPIO 5 (זמזם) / GPIO 48 (נורית RGB) / GPIO 15 (Servo, בונוס) / GND / 3V3</li>
           </ul>
         </div>
       </div>
@@ -160,8 +181,9 @@ while True:
           <h3 class="text-xl font-black mb-2">💬 דיון – Teaser מהשיעור הקודם</h3>
           <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm">
             <p class="font-bold text-blue-900 mb-1">❓ שאלת הדיון:</p>
+            <p class="text-gray-600 mb-2">🔗 זוכרים? שאלנו: "האדמה התייבשה מתחת ל-30% – ה-ESP32 צריך להדליק נורית אדומה ולצפצף. איך תכתבו את זה בקוד?"</p>
             <p class="text-lg font-bold">"עד עכשיו ה-ESP32 רק קרא ודיווח. מה צריך לקרות כדי שהוא יפעל לבד?"</p>
-            <p class="text-gray-500 mt-2">תשובה צפויה: חיבור ל"ידיים" – LED, ברז, מאוורר. זה מה שנבנה היום.</p>
+            <p class="text-gray-500 mt-2">תשובה צפויה: חיבור ל"ידיים" – נורית, זמזם, ברז (Servo). זה מה שנבנה היום.</p>
           </div>
         </div>
       </div>
@@ -169,7 +191,7 @@ while True:
       <div class="p-6 flex gap-5">
         <div class="flex-shrink-0 w-20 text-center"><div class="bg-purple-100 text-purple-800 font-black text-lg rounded-xl py-2">30–55</div></div>
         <div class="flex-1">
-          <h3 class="text-xl font-black mb-2">💻 לומדה – 8 שלבים <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold align-middle">זוגות</span></h3>
+          <h3 class="text-xl font-black mb-2">💻 לומדה – 7 שלבים <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold align-middle">זוגות</span></h3>
           <div class="grid md:grid-cols-2 gap-4">
             <div class="bg-purple-50 rounded-xl p-4 text-sm">
               <p class="font-bold mb-2">📋 שלבים:</p>
@@ -203,9 +225,9 @@ while True:
           <div class="bg-lime-50 border border-lime-200 rounded-xl p-4 mb-3 text-sm">
             <p class="font-bold mb-2">📋 6 משימות:</p>
             <div class="grid grid-cols-2 gap-2 text-xs">
-              <div class="bg-white rounded-lg p-2">א. זמזם: S → GPIO 5, – → GND</div>
+              <div class="bg-white rounded-lg p-2">א. זמזם: רגל + → GPIO 5, השנייה → GND</div>
               <div class="bg-white rounded-lg p-2">ב. חיישן לחות: AOUT → GPIO 6 (בדיקה מול שיעור 6)</div>
-              <div class="bg-white rounded-lg p-2 border-2 border-orange-200"><b>ג. הרצת קוד + כיול – המורה עושה!</b> (אוויר → Enter, מים → Enter)</div>
+              <div class="bg-white rounded-lg p-2 border-2 border-orange-200"><b>ג. המורה מאשר חיווט – הקבוצה מריצה F5 ומכיילת</b> (אוויר → Enter, מים → Enter)</div>
               <div class="bg-white rounded-lg p-2">ד. חיישן באדמה יבשה → נורית אדומה + צפצוף</div>
               <div class="bg-white rounded-lg p-2">ה. חיישן באדמה רטובה → נורית ירוקה</div>
               <div class="bg-white rounded-lg p-2">ו. צלמו את שני המצבים</div>
@@ -215,16 +237,18 @@ while True:
             <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
               <ul class="space-y-1 text-xs text-gray-600">
+                <li><b>⚠️ הלוח או החיישן מתחמם / ריח שרוף:</b> מנתקים USB מיד, לא נוגעים ברכיב החם, בודקים קצר (3V3/5V ל-GND, או VCC/GND הפוכים) ועוברים לערכה הרזרבית</li>
                 <li><b>הנורית לא נדלקת בכלל:</b> הקוד לא רץ – בדקו את חלון ה-Shell (שגיאה? חיבור ל-Thonny?)</li>
                 <li><b>הנורית תמיד אדומה / תמיד ירוקה:</b> הכיול התבלבל – הריצו שוב: קודם אוויר, אחר כך מים</li>
-                <li><b>הזמזם שקט:</b> S לא ב-GPIO 5, או – לא ב-GND</li>
+                <li><b>הזמזם שקט:</b> רגל + לא ב-GPIO 5, או השנייה לא ב-GND</li>
+                <li><b>הזמזם חלש:</b> הזמזם מחובר הפוך – הפכו את שתי הרגליים (+ ל-GPIO 5)</li>
                 <li><b>ImportError:</b> דרייבר חסר על הבקר – ערכה רזרבית + דיווח לרכז הטכני</li>
                 <li><b>IndentationError:</b> הזחה לא אחידה בקוד</li>
               </ul>
             </div>
             <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-sm">
               <p class="font-bold text-green-800 mb-2">💡 להעמקה:</p>
-              <p class="text-xs text-gray-600">"מה היה קורה אם pH וגם EC יוצאים ביחד? מה הבקר יעשה קודם?" → Teaser לשיעור 8.</p>
+              <p class="text-xs text-gray-600">"הבקר מצפצף שהאדמה יבשה – אבל אם אף אחד לא בכיתה, מי ישקה? מה צריך לחבר כדי שהמעגל ייסגר לבד?" → Teaser לשיעור 8.</p>
             </div>
           </div>
         </div>
@@ -235,10 +259,11 @@ while True:
         <div class="flex-1">
           <h3 class="text-xl font-black mb-2">🏁 נתונים + Teaser</h3>
           <div class="grid md:grid-cols-3 gap-3 text-sm">
-            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 נתונים (2 דק')</p><p class="text-xs text-gray-500">מזינים pH, EC, מה ה-LED עשה. הצג ממוצע.</p></div>
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 נתונים (2 דק')</p><p class="text-xs text-gray-500">מזינים % לחות + מה הנורית עשתה. הצג ממוצע.</p></div>
             <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🌿 עלים (1 דק')</p><p class="text-xs text-gray-500">הכרזה על לידרבורד. מי מגיע לרמה חדשה?</p></div>
-            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-xs text-gray-700 font-medium">"pH וEC יוצאים בו-זמנית – מה קודם ולמה?"</p></div>
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-xs text-gray-700 font-medium">"הבקר מצפצף שהאדמה יבשה – אבל אם אף אחד לא בכיתה, מי ישקה? מה צריך לחבר כדי שהמעגל ייסגר לבד?"</p></div>
           </div>
+          <div class="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm"><b>⭐ כוכב הצפון (1 דק'):</b> "איך זה רלוונטי לפרויקט שלי?" – השלימו משפט אחד על האבטיפוס שלכם: "אם ___ אז הבקר ___".</div>
         </div>
       </div>
     </div>
