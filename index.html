@@ -420,18 +420,16 @@
 <script>
 // ── MODE ──
 let teacherMode=false;
-// סיסמה פשוטה למצב מורה (הוחלט ע"י המשתמש) - רק על כפתור "מורים" כאן, לא על קבצי
-// teachers/teacher-NN.html עצמם (URL ישיר אליהם עדיין פתוח, כמו קודם - היקף מצומצם בכוונה).
-// כמו admin-dashboard.html: לא אבטחה אמיתית, רק חסם-כניסה מזדמן לתלמידים.
-const TEACHER_PASSWORD='moradaat2026';
-
+// כפתור "מורים": הכניסה היא בסיסמת המדריך/ה האישית (data/roster.js) בלוח הבקרה
+// (teacher-dashboard.html). מי שעוד לא נכנס/ה מועבר/ת לשם; אחרי כניסה - מצב מורה כאן נפתח
+// בלי סיסמה נוספת (GC_SYNC.teacherLoggedIn). לא אבטחה אמיתית, רק חסם-כניסה מזדמן לתלמידים.
 function switchToTeacher(){
-  if(sessionStorage.getItem('gc_teacher_pw_ok')!=='1' && !(window.GC_SYNC && GC_SYNC.teacherLoggedIn())){
-    const pw=prompt('סיסמת מורה:');
-    if(pw===null) return; // ביטל - נשארים במצב תלמיד
-    if(pw!==TEACHER_PASSWORD){ alert('סיסמה שגויה'); return; }
-    sessionStorage.setItem('gc_teacher_pw_ok','1');
+  if(!(window.GC_SYNC && GC_SYNC.teacherLoggedIn())){
+    location.href='teacher-dashboard.html';
+    return;
   }
+  // לומדות פתוחות במצב מורה (lessonGate ב-sheets-sync.js בודק את הדגל הזה)
+  sessionStorage.setItem('gc_teacher_pw_ok','1');
   document.getElementById('body').className='bg-gray-50 mode-teacher';
   teacherMode=true;sessionStorage.setItem('teacher','1');
   if(window.GC_ID){
@@ -446,7 +444,10 @@ function switchToStudent(){
 }
 
 // restore teacher mode if was logged in (הסיסמה כבר אושרה השתא, sessionStorage 'teacher' משמש רק לזכור העדפת תצוגה)
-if(sessionStorage.getItem('teacher')==='1' && (sessionStorage.getItem('gc_teacher_pw_ok')==='1' || (window.GC_SYNC && GC_SYNC.teacherLoggedIn()))){switchToTeacher();}
+// ?teacher=1 = הגעה מכפתור "מערכי מורה" בלוח הבקרה
+if((sessionStorage.getItem('teacher')==='1' || new URLSearchParams(location.search).get('teacher')==='1') && window.GC_SYNC && GC_SYNC.teacherLoggedIn()){switchToTeacher();}
+// יציאה ממצב מורה מהפאנל הצף → חזרה למצב תלמיד
+document.addEventListener('gc-teacher-logout',()=>{sessionStorage.removeItem('gc_teacher_pw_ok');switchToStudent();});
 // זיהוי תלמיד/קבוצה (שלב 9ג) - רק במצב תלמיד, לא מציק במצב מורה
 if(window.GC_ID && sessionStorage.getItem('teacher')!=='1'){ GC_ID.ensureStudentIdentity(); }
 
