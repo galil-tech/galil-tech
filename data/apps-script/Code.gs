@@ -25,6 +25,7 @@ const FIELDS = [
   'ls1', 'ls2', 'ls3', 'ls4', 'ls5', 'ls6', 'ls7', 'ls8', 'ls9', 'ls10',
   'ls11', 'ls12', 'ls13', 'ls14', 'ls15', 'ls16', 'ls17',
   'leaves_spent', 'passport1', 'achievements', 'unlocked_through', 'last_updated',
+  'name_by_teacher',
 ];
 const KEY_FIELDS = ['track', 'school_id', 'class_id', 'code']; // מזהה ייחודי לשורה (upsert)
 
@@ -52,9 +53,15 @@ const CLASS_UNLOCKS_SHEET_NAME = 'class_unlocks';
 const CLASS_UNLOCKS_FIELDS = ['school_id', 'class_id', 'unlocked_through', 'last_updated'];
 const CLASS_UNLOCKS_KEY_FIELDS = ['school_id', 'class_id'];
 
-// הצד-לקוח בודק את הרשימה הזו (type=features) לפני ששולח class_unlock/student_unlock -
+// שם תצוגה לכיתה שהמדריך/ה בחר/ה (ניהול כיתה). class_id עצמו לא משתנה לעולם - הוא חלק
+// מהמפתח של שורות התלמידים; display_name רק מחליף את מה שמוצג.
+const CLASS_META_SHEET_NAME = 'class_meta';
+const CLASS_META_FIELDS = ['school_id', 'class_id', 'display_name', 'last_updated'];
+const CLASS_META_KEY_FIELDS = ['school_id', 'class_id'];
+
+// הצד-לקוח בודק את הרשימה הזו (type=features) לפני ששולח פעולת מדריך/ה -
 // כדי שפריסה ישנה (שלא מכירה את הסוגים האלה) לא תיפול ל-upsert של תלמיד ותיצור שורת זבל.
-const FEATURES = ['class_unlock', 'student_unlock'];
+const FEATURES = ['class_unlock', 'student_unlock', 'rename_student', 'set_group_name', 'class_meta'];
 
 // מחזיר גיליון לפי שם, יוצר אותו אם חסר, ומוסיף לשורת הכותרות עמודות שנוספו לקוד אחרי
 // שהגיליון נוצר (למשל unlocked_through). בלי זה, גיליון ותיק לא שומר את השדה החדש בכלל,
@@ -79,6 +86,27 @@ function _groupsSheet() { return _getSheet(GROUPS_SHEET_NAME, GROUPS_FIELDS); }
 function _gallerySheet() { return _getSheet(GALLERY_SHEET_NAME, GALLERY_FIELDS); }
 function _teachersSheet() { return _getSheet(TEACHERS_SHEET_NAME, TEACHERS_FIELDS); }
 function _classUnlocksSheet() { return _getSheet(CLASS_UNLOCKS_SHEET_NAME, CLASS_UNLOCKS_FIELDS); }
+function _classMetaSheet() { return _getSheet(CLASS_META_SHEET_NAME, CLASS_META_FIELDS); }
+
+// מעדכן שדות בשורות תלמידים לפי school+class+קוד (codes = רשימת קודים). לא נוגע במפתח.
+// מחזיר כמה שורות עודכנו.
+function _setStudentFields(school, classId, codes, values) {
+  const sh = _sheet();
+  const data = sh.getDataRange().getValues();
+  const headers = data[0];
+  const col = (h) => headers.indexOf(h);
+  const tsCol = col('last_updated');
+  const want = codes.map(String);
+  let changed = 0;
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][col('school_id')]) !== String(school) || String(data[i][col('class_id')]) !== String(classId)) continue;
+    if (want.indexOf(String(data[i][col('code')])) === -1) continue;
+    Object.keys(values).forEach((h) => { if (col(h) !== -1) sh.getRange(i + 1, col(h) + 1).setValue(values[h]); });
+    if (tsCol !== -1) sh.getRange(i + 1, tsCol + 1).setValue(new Date().toISOString());
+    changed++;
+  }
+  return changed;
+}
 
 // ערך הפתיחה הכיתתי (0 אם המדריך/ה לא פתח/ה כלום לכיתה הזו)
 function _classUnlockValue(school, classId) {
@@ -152,6 +180,12 @@ function doGet(e) {
     return _json({ ok: true, features: FEATURES });
   }
 
+  if (p.type === 'class_meta') {
+    let rows = _rowsAsObjects(_classMetaSheet());
+    if (p.school) rows = rows.filter((r) => String(r.school_id) === p.school);
+    return _json({ ok: true, rows: rows });
+  }
+
   if (p.type === 'groups') {
     let rows = _rowsAsObjects(_groupsSheet());
     if (p.school) rows = rows.filter((r) => String(r.school_id) === p.school);
@@ -205,7 +239,7 @@ function doGet(e) {
   // ב-token (כמו כל שאר ה-endpoint-ים, ראה ההערה למעלה) - לא הגנה אמיתית, רק חסם-כניסה
   // מזדמן. הגישה בפועל למסך הזה מוגנת גם בסיסמת מנהל/ת נפרדת בצד הלקוח (admin-dashboard.html).
   if (p.type === 'admin_students') {
-    return _json({ ok: true, rows: _rowsAsObjects(_sheet()), groups: _rowsAsObjects(_groupsSheet()), teachers: _rowsAsObjects(_teachersSheet()), class_unlocks: _rowsAsObjects(_classUnlocksSheet()) });
+    return _json({ ok: true, rows: _rowsAsObjects(_sheet()), groups: _rowsAsObjects(_groupsSheet()), teachers: _rowsAsObjects(_teachersSheet()), class_unlocks: _rowsAsObjects(_classUnlocksSheet()), class_meta: _rowsAsObjects(_classMetaSheet()) });
   }
 
   // הגנת פרטיות: קריאת שורות תלמידים (לא לוח קבוצות) דורשת code ספציפי - בלעדיו זו
@@ -343,6 +377,36 @@ function doPost(e) {
       return _json({ ok: true, students_updated: updated });
     }
 
+    // ── ניהול כיתה ע"י המדריך/ה (assets/teacher-panel.js) ──
+    // שינוי שם תלמיד/ה: מסמן name_by_teacher כדי שמכשיר התלמיד/ה לא ידרוס את השם בחזרה
+    // בסנכרון הבא (upsert רגיל משאיר את השם הקיים כשהדגל דולק; pullMine מאמץ אותו מקומית).
+    if (body.type === 'rename_student') {
+      const name = String(body.student_name || '').trim();
+      if (!body.school_id || !body.class_id || !body.code || !name) return _json({ ok: false, error: 'school_id, class_id, code, student_name required' });
+      const updated = _setStudentFields(body.school_id, body.class_id, [body.code], { student_name: name, name_by_teacher: '1' });
+      return _json(updated ? { ok: true, students_updated: updated } : { ok: false, error: 'student not found' });
+    }
+
+    // שיוך לזוג/קבוצה: codes = כל התלמידים שמקבלים את אותו group_name (איחוד), או קוד יחיד
+    // עם group_name חדש/ריק (פיצול). תלמידים לא שולחים group_name - רק המדריך/ה קובע/ת.
+    if (body.type === 'set_group_name') {
+      const codes = Array.isArray(body.codes) ? body.codes : (body.code ? [body.code] : []);
+      if (!body.school_id || !body.class_id || !codes.length) return _json({ ok: false, error: 'school_id, class_id, code(s) required' });
+      const updated = _setStudentFields(body.school_id, body.class_id, codes, { group_name: String(body.group_name || '').trim() });
+      return _json(updated ? { ok: true, students_updated: updated } : { ok: false, error: 'student not found' });
+    }
+
+    // שם תצוגה לכיתה - שורה אחת ל-school+class בגיליון class_meta
+    if (body.type === 'class_meta') {
+      if (!body.school_id || !body.class_id) return _json({ ok: false, error: 'school_id, class_id required' });
+      _upsert(_classMetaSheet(), CLASS_META_FIELDS, CLASS_META_KEY_FIELDS, body, (headers) => headers.map((h) => {
+        if (h === 'last_updated') return new Date().toISOString();
+        if (h === 'display_name') return String(body.display_name || '').trim();
+        return body[h] !== undefined ? body[h] : '';
+      }));
+      return _json({ ok: true });
+    }
+
     if (body.type === 'group') {
       // addLeaves מתווסף לסכום הקיים של הקבוצה (לא דורס) - תואם את addToGroup() ב-leaves.html
       const add = Number(body.addLeaves) || 0;
@@ -365,6 +429,10 @@ function doPost(e) {
     const LS_FIELDS = FIELDS.filter((h) => /^ls\d+$/.test(h)).concat(['leaves_spent', 'unlocked_through']);
     _upsert(_sheet(), FIELDS, KEY_FIELDS, body, (headers, existing) => headers.map((h, i) => {
       if (h === 'last_updated') return new Date().toISOString();
+      // שדות שרק המדריך/ה משנה (rename_student / set_group_name) - מכשיר התלמיד/ה לא דורס.
+      if (existing && h === 'name_by_teacher') return existing[i];
+      if (existing && h === 'student_name' && String(existing[headers.indexOf('name_by_teacher')]) === '1') return existing[i];
+      if (existing && h === 'group_name' && !body.group_name) return existing[i];
       if (LS_FIELDS.indexOf(h) !== -1) {
         const incoming = Number(body[h]) || 0;
         const current = existing ? Number(existing[i]) || 0 : 0;

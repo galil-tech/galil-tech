@@ -12,6 +12,7 @@
   <script src="data/roster.js"></script>
   <script src="assets/identity.js"></script>
   <script src="data/sheets-config.js"></script>
+  <script src="assets/teacher-panel.js"></script>
   <script src="assets/sheets-sync.js"></script>
   <style>
     *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
@@ -39,6 +40,11 @@
     <h1 class="text-xl font-black mb-2">לוח בקרה למורה</h1>
     <p class="text-sm text-gray-500 mb-6">גישה למדריכים ולרכז/ת המגמה בלבד</p>
     <input id="pw" type="password" placeholder="סיסמה" class="w-full border-2 rounded-xl p-3 mb-3 text-center" onkeydown="if(event.key==='Enter')tryLogin()">
+    <label class="flex items-center justify-center gap-2 text-sm text-gray-600 mb-3 cursor-pointer">
+      <input id="pw-remember" type="checkbox" class="w-4 h-4">
+      זכור במחשב הזה
+    </label>
+    <p class="text-xs text-gray-400 mb-3">במחשב של תלמיד/ה - לצאת בסוף השיעור (🍎 ← יציאה ממצב מורה).</p>
     <button onclick="tryLogin()" class="w-full bg-green-700 hover:bg-green-800 text-white rounded-xl p-3 font-bold">כניסה</button>
     <p id="pw-err" class="hidden text-red-600 text-sm mt-3">סיסמה שגויה</p>
     <a href="index.html" class="block mt-4 text-xs text-gray-400 hover:text-gray-600">← בחזרה לדף הבית</a>
@@ -63,6 +69,7 @@
       <button id="export-btn" onclick="exportData()" class="bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-amber-400">📤 יצא נתונים (JSON)</button>
       <button onclick="window.print()" class="bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-white/30">🖨️ הדפס</button>
       <a href="index.html" class="bg-white/20 text-white px-4 py-2 rounded-xl text-sm">← דף בית</a>
+      <button id="logout-btn" onclick="if(confirm('לצאת ממצב מורה במחשב הזה?'))GC_TPANEL.logout()" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-500">🚪 יציאה ממצב מורה</button>
     </div>
   </div>
 </nav>
@@ -78,6 +85,7 @@
       </div>
       <div class="flex gap-2 items-center flex-wrap">
         <select id="class-select" onchange="loadClass()" class="border-2 border-gray-200 rounded-xl px-3 py-2 text-sm font-bold"></select>
+        <button onclick="GC_TPANEL.renameClass(currentClass()).then(ok => ok && populateClassSelect())" class="bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-xl text-sm font-bold" title="שינוי שם התצוגה של הכיתה">✏️ שם כיתה</button>
         <button onclick="loadClass()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl text-sm font-bold">🔄 רענון</button>
       </div>
     </div>
@@ -229,11 +237,12 @@
 // ── LOGIN GATE (data/roster.js — GC_ROSTER.findTeacher) ─────────────────────
 function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c])); }
 
+// הסיסמה נשמרת ע"י GC_TPANEL (assets/teacher-panel.js): "זכור במחשב הזה" → localStorage,
+// אחרת sessionStorage. אותה כניסה מפעילה את הפאנל הצף "ניהול כיתה" בכל דף באתר.
 function tryLogin() {
   const v = document.getElementById('pw').value;
-  const res = window.GC_ROSTER && GC_ROSTER.findTeacher(v);
+  const res = window.GC_TPANEL && GC_TPANEL.login(v, document.getElementById('pw-remember').checked);
   if (res) {
-    sessionStorage.setItem('gc_teacher_dash_pw', v);
     enterPage(res);
   } else {
     document.getElementById('pw-err').classList.remove('hidden');
@@ -244,11 +253,20 @@ function enterPage(res) {
   document.getElementById('pw-gate').classList.add('hidden');
   document.getElementById('page').classList.remove('hidden');
   document.getElementById('class-teacher-label').textContent = res.label;
-  populateClassSelect(res.classes);
+  teacherClasses = res.classes;
+  populateClassSelect();
   loadClass();
+  GC_TPANEL.loadMeta().then(() => populateClassSelect());
   renderDashboard();
   maybeStartTeacherTutorial();
+  // אחרי שההדרכה הראשונה כבר נעשתה (לא שתי הדרכות בבת אחת); הכפתור הצף נבנה ב-DOMContentLoaded
+  setTimeout(() => { if (localStorage.getItem('gc_tutorial_teacher')) maybeStartPanelTutorial(); }, 600);
 }
+let teacherClasses = [];
+// יציאה (מהכפתור למעלה או מהפאנל הצף) → חזרה לשער הכניסה
+document.addEventListener('gc-teacher-logout', () => location.reload());
+// שינוי מהפאנל הצף (שם / זוג / פתיחה) → רענון הטבלה כאן
+document.addEventListener('gc-teacher-changed', () => loadClass());
 
 // ── TUTORIAL (רק אחרי כניסה מוצלחת, רק פעם אחת) ─────────────────────────────
 function maybeStartTeacherTutorial() {
@@ -271,17 +289,31 @@ function maybeStartTeacherTutorial() {
   GC.Tutorial.start('teacher', steps);
 }
 
+// פיצ'ר חדש (פאנל ניהול כיתה) - הדרכה קצרה נפרדת, גם למי שכבר עבר/ה את ההדרכה הראשונה
+function maybeStartPanelTutorial() {
+  if (!window.GC || !GC.Tutorial || !document.getElementById('gc-tp-fab')) return;
+  if (localStorage.getItem('gc_tutorial_teacher_panel')) return;
+  GC.Tutorial.start('teacher_panel', [
+    { target: '#gc-tp-fab', emoji: '🍎', wait: 'next',
+      text: 'חדש: ניהול כיתה. שינוי שם, זוגות ופתיחת שיעור - מכל דף באתר, גם ממחשב של תלמיד/ה.' },
+    { target: '#logout-btn', emoji: '🚪', wait: 'next',
+      text: 'סימנת "זכור במחשב הזה"? במחשב של תלמיד/ה - לצאת כאן בסוף השיעור.' },
+  ]);
+}
+
 (function () {
-  const savedPw = sessionStorage.getItem('gc_teacher_dash_pw');
-  const res = savedPw && window.GC_ROSTER && GC_ROSTER.findTeacher(savedPw);
+  const res = window.GC_TPANEL && GC_TPANEL.session();
   if (res) enterPage(res);
 })();
 
 // ── CLASS ROSTER (מהענן) ─────────────────────────────────────────────────
-function populateClassSelect(classes) {
+// רק הכיתות של המדריך/ה (GC_ROSTER.findTeacher). שם התצוגה מ-class_meta אם הוגדר.
+function populateClassSelect() {
   const sel = document.getElementById('class-select');
-  sel.innerHTML = classes.map((c, i) => `<option value="${i}">${esc(c.schoolName)} · כיתה ${esc(c.className)}</option>`).join('');
-  sel._classes = classes;
+  const keep = sel.value || '0';
+  sel.innerHTML = teacherClasses.map((c, i) => `<option value="${i}">${esc(GC_TPANEL.classLabel(c))}</option>`).join('');
+  sel._classes = teacherClasses;
+  sel.value = keep;
 }
 
 function syncEnabled() {
@@ -381,16 +413,31 @@ function classOpenAnswer(passportJson, key) {
   return p[key] || '';
 }
 
+// ניהול כיתה מהטבלה - אותן פעולות כמו בפאנל הצף (GC_TPANEL), נכתבות לגיליון
+let classRows = [];
+function manageRow(act, i) {
+  const fn = { rename: GC_TPANEL.renameStudent, group: GC_TPANEL.editGroup }[act];
+  fn(currentClass(), classRows[i]); // הצלחה → gc-teacher-changed → loadClass()
+}
+function mergeSelected() {
+  const sel = Array.from(document.querySelectorAll('#class-table-wrap [data-sel]:checked')).map(x => classRows[Number(x.dataset.sel)]);
+  GC_TPANEL.mergeGroup(currentClass(), sel);
+}
+
 function renderClassTable(rows) {
+  classRows = rows;
   const wrap = document.getElementById('class-table-wrap');
   if (!rows.length) {
     wrap.innerHTML = '<p class="text-gray-400 text-sm py-8 text-center">אין עדיין תלמידים בכיתה הזו בגיליון</p>';
     return;
   }
-  wrap.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-sm">
+  wrap.innerHTML = `<div class="flex justify-end mb-2"><button onclick="mergeSelected()" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-xs font-bold">🔗 איחוד המסומנים לזוג</button></div>
+    <div class="overflow-x-auto"><table class="w-full text-sm">
     <thead><tr class="text-right text-gray-400 border-b">
+      <th class="py-2 pl-1"><span class="sr-only">סימון</span></th>
       <th class="py-2 pl-3">שם</th>
       <th class="py-2 pl-3">קוד</th>
+      <th class="py-2 pl-3">זוג / קבוצה</th>
       <th class="py-2 pl-3">עלים ש׳1</th>
       <th class="py-2 pl-3">למה הצטרפתי</th>
       <th class="py-2 pl-3">מה הכי מסקרן</th>
@@ -398,10 +445,14 @@ function renderClassTable(rows) {
       <th class="py-2 pl-3">כוכב הצפון</th>
       <th class="py-2 pl-3">פתוח עד</th>
     </tr></thead>
-    <tbody>${rows.map(r => `
+    <tbody>${rows.map((r, i) => `
       <tr class="border-b last:border-0 align-top">
-        <td class="py-2 pl-3 font-bold">${esc(r.student_name)}</td>
+        <td class="py-2 pl-1"><input type="checkbox" data-sel="${i}" aria-label="סימון ${esc(r.student_name)}"></td>
+        <td class="py-2 pl-3 font-bold whitespace-nowrap">${esc(r.student_name)}
+          <button onclick="manageRow('rename',${i})" class="mr-1 text-xs bg-gray-100 hover:bg-gray-200 px-1.5 py-0.5 rounded" title="שינוי שם">✏️</button></td>
         <td class="py-2 pl-3 text-gray-400">${esc(r.code)}</td>
+        <td class="py-2 pl-3 whitespace-nowrap">${r.group_name ? esc(r.group_name) : '<span class="text-gray-300">—</span>'}
+          <button onclick="manageRow('group',${i})" class="mr-1 text-xs bg-gray-100 hover:bg-gray-200 px-1.5 py-0.5 rounded" title="שיוך / פיצול זוג">👥</button></td>
         <td class="py-2 pl-3 font-black text-green-700">${esc(r.ls1 || 0)}</td>
         <td class="py-2 pl-3">${esc(classOpenAnswer(r.passport1, 'why'))}</td>
         <td class="py-2 pl-3">${esc(classOpenAnswer(r.passport1, 'curious'))}</td>

@@ -119,6 +119,34 @@
 
 ---
 
+## חוקי יסוד (28.10.2026)
+
+### 1. RTL חובה בכל פלט מסמך/מצגת
+כל `.pptx` / `.docx` שנוצר יוצא RTL מוכן – אסור למסור קובץ שדורש לחיצה ידנית על כיוון הטקסט.
+- **PowerPoint:** בכל פסקה עברית – `p._pPr.set('rtl', '1')` + יישור לימין.
+- **Word:** `paragraph_format` עם bidi + `run.font.rtl = True` + הגדרות complex script (`szCs`, `rFonts cs`).
+
+### 2. מצב מורה – סיסמה פעם אחת + פאנל צף
+- כניסה ב-`teacher-dashboard.html` (סיסמת מדריך/ה או רכז/ת מ-`data/roster.js`). המפתח `gc_teacher_dash_pw`:
+  "זכור במחשב הזה" → `localStorage`, אחרת `sessionStorage`. "🚪 יציאה ממצב מורה" מנקה את שניהם.
+- `assets/teacher-panel.js` (`GC_TPANEL`) = הפאנל הצף "🍎 ניהול כיתה". `sheets-sync.js` טוען אותו אוטומטית בכל דף כשיש כניסה שמורה – כך אפשר לפעול גם ממחשב של תלמיד/ה בלי סיסמה שוב.
+- `index.html` (מצב מורה) ו-`teacher-class.html` מכבדים את אותה כניסה (`GC_SYNC.teacherLoggedIn()`).
+
+### 3. ניהול כיתה – רק הכיתות של המדריך/ה
+- הכיתות לפי `GC_ROSTER.findTeacher` בלבד. פעולות (בפאנל הצף ובטבלה בדשבורד):
+  שינוי שם תלמיד/ה · שיוך/פיצול/איחוד זוג (`group_name`) · שם תצוגה לכיתה · פתיחת שיעור (כיתה/תלמיד/ה).
+- Apps Script (`data/apps-script/Code.gs`): `rename_student`, `set_group_name` (קוד או `codes[]`), `class_meta` (גיליון `class_meta`, שדה `display_name`; `class_id` לא משתנה לעולם).
+- לקוח (`assets/sheets-sync.js`): `GC_SYNC.renameStudent` / `setGroupName` / `setClassDisplayName` / `pullClassMeta`.
+- שם שהמדריך/ה שינה/תה מסומן `name_by_teacher=1` – מכשיר התלמיד/ה לא דורס אותו, ו-`pullMine` מאמץ אותו מקומית. תלמידים לא שולחים `group_name`.
+- כל פעולה חדשה כזו נכנסת ל-`FEATURES` ב-Code.gs (הלקוח בודק לפני שליחה) ודורשת Deploy → New version.
+
+### כללים כלליים לנתונים
+- כל שינוי נתונים נכתב לגיליון (לא רק localStorage) – המחשבים בכיתה מתחלפים.
+- מפתח שורת תלמיד: `track + school_id + class_id + code` – לא לשנות.
+- אסור לשבור את לוגיקת ה-max ב-`unlocked_through` / `ls*` / `leaves_spent` (לעולם לא יורדים).
+
+---
+
 ## Workflow מומלץ: Grok ↔ Claude Code
 
 **עקרון:** מודל לעולם לא סוקר את העבודה של עצמו. הפרדת תפקידים = איכות גבוהה יותר.

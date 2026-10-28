@@ -3,6 +3,8 @@
 // לא פעיל כברירת מחדל — ראה data/sheets-config.js (enabled=false עד שיש Apps Script פרוס).
 (function () {
   const GC_SYNC = (window.GC_SYNC = {});
+  // שורש האתר, יחסית לקובץ הזה (לטעינת assets/teacher-panel.js מכל עומק תיקייה)
+  const ROOT = ((document.currentScript && document.currentScript.src) || '').replace(/assets\/sheets-sync\.js.*$/, '');
   let syncTimer = null;
   // השרת דורס passport1 בכל ערך לא-ריק שמגיע. במכשיר חדש passport1 מקומי עלול להכיל רק
   // resume (core.js) לפני שהמשיכה הסתיימה - לכן לא שולחים passport1 עד pullMine מוצלח בדף
@@ -22,7 +24,7 @@
       track: 'middle', // המסלול הזה (הראשי/חטיבה) — ראה docs/data-schema.md, "היררכיית ריבוי-מסלולים"
       school_id: id.school || '',
       class_id: id.className || '',
-      group_name: '',
+      // group_name לא נשלח - רק המדריך/ה קובע/ת אותו (set_group_name), והשרת שומר את הקיים
       student_name: id.name || '',
       code: id.code || '',
       leaves_spent: localStorage.getItem('leaves_spent') || '0',
@@ -108,6 +110,11 @@
       const remoteUnlocked = parseInt(row.unlocked_through || 1);
       if (remoteUnlocked > localUnlocked) localStorage.setItem('gc_unlocked_through', remoteUnlocked);
       mergePassport(row.passport1);
+      // שם שהמדריך/ה שינה/תה בגיליון (rename_student) גובר על השם המקומי
+      if (row.student_name && String(row.student_name) !== String(id.name || '')) {
+        const cur = GC_ID.getIdentity();
+        if (cur && cur.code === id.code) GC_ID.setIdentity(Object.assign({}, cur, { name: String(row.student_name) }));
+      }
       const localAch = localStorage.getItem('gc_achievements');
       if ((!localAch || localAch === '{}') && row.achievements && row.achievements !== '{}') {
         localStorage.setItem('gc_achievements', row.achievements);
@@ -316,7 +323,9 @@
       const rows = (resp.rows || []).filter(match);
       // ערך הפתיחה הכיתתי (0 אם אין / פריסה ישנה בלי class_unlocks)
       const cu = (resp.class_unlocks || []).filter(match)[0];
-      return Object.assign({}, resp, { rows: rows, classUnlockedThrough: cu ? Number(cu.unlocked_through) || 0 : 0 });
+      const meta = (resp.class_meta || []).filter(match)[0];
+      return Object.assign({}, resp, { rows: rows, classUnlockedThrough: cu ? Number(cu.unlocked_through) || 0 : 0,
+        classDisplayName: (meta && meta.display_name) || '' });
     });
   };
 
@@ -350,6 +359,28 @@
   };
   GC_SYNC.setStudentUnlock = function (school, classId, code, n) {
     return postUnlock('student_unlock', { school_id: school, class_id: classId, code: code, unlocked_through: n });
+  };
+
+  // ── ניהול כיתה ע"י מדריך/ה (assets/teacher-panel.js + teacher-dashboard.html) ──
+  // הכול נכתב לגיליון (המחשבים בכיתה מתחלפים) - לא רק ל-localStorage. עובר דרך postUnlock,
+  // כך שפריסת Apps Script ישנה מחזירה server_outdated במקום ליצור שורת זבל.
+  GC_SYNC.renameStudent = function (school, classId, code, name) {
+    return postUnlock('rename_student', { school_id: school, class_id: classId, code: code, student_name: name });
+  };
+  // codes = קוד אחד או מערך (איחוד כמה תלמידים לאותו זוג). groupName ריק = פיצול/הסרה.
+  GC_SYNC.setGroupName = function (school, classId, codes, groupName) {
+    return postUnlock('set_group_name', { school_id: school, class_id: classId,
+      codes: [].concat(codes), group_name: groupName || '' });
+  };
+  // שם תצוגה לכיתה (גיליון class_meta) - class_id עצמו לא משתנה
+  GC_SYNC.setClassDisplayName = function (school, classId, displayName) {
+    return postUnlock('class_meta', { school_id: school, class_id: classId, display_name: displayName || '' });
+  };
+  GC_SYNC.pullClassMeta = function () {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, rows: [], skipped: true });
+    return fetch(c.url + '?token=' + encodeURIComponent(c.token) + '&type=class_meta')
+      .then((r) => r.json()).catch((err) => ({ ok: false, error: String(err), rows: [] }));
   };
 
   // ── פתיחת שיעור מהמחשב של התלמיד/ה בסיסמת מורה ─────────────────────────────
@@ -418,6 +449,26 @@
       .then((r) => r.json())
       .catch((err) => ({ ok: false, error: String(err) }));
   };
+
+  // האם מדריך/ה כבר נכנס/ה (teacher-dashboard.html, "זכור במחשב הזה" או הטאב הנוכחי) -
+  // דפי מורה אחרים (index.html מצב מורה, teacher-class.html) מדלגים אז על בקשת הסיסמה.
+  GC_SYNC.teacherLoggedIn = function () {
+    let pw = '';
+    try { pw = localStorage.getItem('gc_teacher_dash_pw') || sessionStorage.getItem('gc_teacher_dash_pw') || ''; } catch (e) {}
+    return !!(pw && window.GC_ROSTER && GC_ROSTER.findTeacher(pw));
+  };
+
+  // פאנל מדריך/ה צף: נטען בכל דף שיש בו את הקובץ הזה, רק אם מדריך/ה כבר נכנס/ה
+  // (gc_teacher_dash_pw). כך אפשר לפעול גם ממחשב של תלמיד/ה בלי להקליד סיסמה שוב.
+  (function autoloadTeacherPanel() {
+    if (window.GC_TPANEL || !ROOT) return;
+    let saved = null;
+    try { saved = localStorage.getItem('gc_teacher_dash_pw') || sessionStorage.getItem('gc_teacher_dash_pw'); } catch (e) {}
+    if (!saved) return;
+    const s = document.createElement('script');
+    s.src = ROOT + 'assets/teacher-panel.js';
+    document.head.appendChild(s);
+  })();
 
   // ── נעילת כניסה ישירה ל-URL של לומדה (lessons/ + elementary/lessons/) ─────────
   // שיעור N מוצג רק אם N <= gc_unlocked_through (מה שהמדריך/ה פתח/ה, אחרי pullMine אם יש

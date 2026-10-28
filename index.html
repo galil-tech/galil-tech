@@ -426,7 +426,7 @@ let teacherMode=false;
 const TEACHER_PASSWORD='moradaat2026';
 
 function switchToTeacher(){
-  if(sessionStorage.getItem('gc_teacher_pw_ok')!=='1'){
+  if(sessionStorage.getItem('gc_teacher_pw_ok')!=='1' && !(window.GC_SYNC && GC_SYNC.teacherLoggedIn())){
     const pw=prompt('סיסמת מורה:');
     if(pw===null) return; // ביטל - נשארים במצב תלמיד
     if(pw!==TEACHER_PASSWORD){ alert('סיסמה שגויה'); return; }
@@ -446,7 +446,7 @@ function switchToStudent(){
 }
 
 // restore teacher mode if was logged in (הסיסמה כבר אושרה השתא, sessionStorage 'teacher' משמש רק לזכור העדפת תצוגה)
-if(sessionStorage.getItem('teacher')==='1' && sessionStorage.getItem('gc_teacher_pw_ok')==='1'){switchToTeacher();}
+if(sessionStorage.getItem('teacher')==='1' && (sessionStorage.getItem('gc_teacher_pw_ok')==='1' || (window.GC_SYNC && GC_SYNC.teacherLoggedIn()))){switchToTeacher();}
 // זיהוי תלמיד/קבוצה (שלב 9ג) - רק במצב תלמיד, לא מציק במצב מורה
 if(window.GC_ID && sessionStorage.getItem('teacher')!=='1'){ GC_ID.ensureStudentIdentity(); }
 
