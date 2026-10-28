@@ -127,18 +127,28 @@
 - **Word:** `paragraph_format` עם bidi + `run.font.rtl = True` + הגדרות complex script (`szCs`, `rFonts cs`).
 
 ### 2. מצב מורה – סיסמה פעם אחת + פאנל צף
-- כניסה ב-`teacher-dashboard.html` (סיסמת מדריך/ה או רכז/ת מ-`data/roster.js`). המפתח `gc_teacher_dash_pw`:
-  "זכור במחשב הזה" → `localStorage`, אחרת `sessionStorage`. "🚪 יציאה ממצב מורה" מנקה את שניהם.
+- כניסה ב-`teacher-dashboard.html` בסיסמה אישית שנבדקת בשרת (`GC_SYNC.teacherLogin` → token). המפתח `gc_teacher_session`:
+  "זכור במחשב הזה" → `localStorage` (14 יום), אחרת `sessionStorage` (12 שעות). "🚪 יציאה ממצב מורה" מנקה את שניהם.
+  `gc_teacher_dash_pw` = מפתח ישן, מומר אוטומטית (`migrateLegacyTeacher`). לא לכתוב אליו.
 - `assets/teacher-panel.js` (`GC_TPANEL`) = הפאנל הצף "🍎 ניהול כיתה". `sheets-sync.js` טוען אותו אוטומטית בכל דף כשיש כניסה שמורה – כך אפשר לפעול גם ממחשב של תלמיד/ה בלי סיסמה שוב.
 - `index.html` (מצב מורה) ו-`teacher-class.html` מכבדים את אותה כניסה (`GC_SYNC.teacherLoggedIn()`).
 
 ### 3. ניהול כיתה – רק הכיתות של המדריך/ה
-- הכיתות לפי `GC_ROSTER.findTeacher` בלבד. פעולות (בפאנל הצף ובטבלה בדשבורד):
+- הכיתות מגיעות מהשרת בכניסה (גיליון `teacher_auth`), ו-`GC_ROSTER.classesFor` רק מעשיר אותן לתצוגה. פעולות (בפאנל הצף ובטבלה בדשבורד):
   שינוי שם תלמיד/ה · שיוך/פיצול/איחוד זוג (`group_name`) · שם תצוגה לכיתה · פתיחת שיעור (כיתה/תלמיד/ה).
 - Apps Script (`data/apps-script/Code.gs`): `rename_student`, `set_group_name` (קוד או `codes[]`), `class_meta` (גיליון `class_meta`, שדה `display_name`; `class_id` לא משתנה לעולם).
 - לקוח (`assets/sheets-sync.js`): `GC_SYNC.renameStudent` / `setGroupName` / `setClassDisplayName` / `pullClassMeta`.
 - שם שהמדריך/ה שינה/תה מסומן `name_by_teacher=1` – מכשיר התלמיד/ה לא דורס אותו, ו-`pullMine` מאמץ אותו מקומית. תלמידים לא שולחים `group_name`.
 - כל פעולה חדשה כזו נכנסת ל-`FEATURES` ב-Code.gs (הלקוח בודק לפני שליחה) ודורשת Deploy → New version.
+- דשבורד: כרטיסי כיתות (`teacher_overview`, קריאה אחת) → טבלת כיתה (`class_progress`). אין ייבוא/ייצוא JSON.
+  "פעיל/ה היום" לפי `last_seen` (נכתב רק בסנכרון ממכשיר התלמיד/ה). `lsN>0` = אסף/ה עלים בשיעור, **לא** "סיים/ה".
+
+### 4. אבטחה – אימות מדריכים בשרת (28.10.2026)
+- **אין סיסמאות בקוד הלקוח** (הריפו ציבורי). סיסמאות = hash בגיליון `teacher_auth`. מגדירים אותן דרך עמודת `new_password` ותפריט הגיליון, לא דרך endpoint.
+- **כל פעולת מורה חדשה** בשרת עוברת `_guard(req, school, class)`, וקריאה חדשה של נתוני כיתה עוברת `teacher_token`. מה שמותר לרכז/ת בלבד: `{coordinatorOnly:true}`. בלקוח: `postUnlock` / `teacherGet` ב-sheets-sync.js, שמצרפים token ומבקשים סיסמה מחדש כשהוא פג.
+- **סודות רק ב-Script Properties** (`SHARED_SECRET`, `TOKEN_SECRET`, `LEGACY_TEACHER_AUTH`), לא ב-Code.gs.
+- `admin_students` (dump מלא) לרכז/ת בלבד. לא להשתמש בו לתצוגת כיתה.
+- מעבר, חזרה אחורה, מדריך/ה חדש/ה: `docs/teacher-auth-migration.md`.
 
 ### כללים כלליים לנתונים
 - כל שינוי נתונים נכתב לגיליון (לא רק localStorage) – המחשבים בכיתה מתחלפים.

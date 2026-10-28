@@ -20,6 +20,7 @@
   קוד מורה+כיתה ספציפי (assets/identity.js, GC_ID.ensureTeacherClassIdentity) - מורה
   שמלמד/ת כמה כיתות מחזיק/ה קוד נפרד לכל אחת, לא בוחר/ת מתוך רשימה.
 -->
+<!-- הסיסמה הכללית - תקופת מעבר בלבד, נמחקת בשלב ד (docs/teacher-auth-migration.md) -->
 <script>const TEACHER_PASSWORD='moradaat2026';</script>
 
 <div id="pw-gate" class="min-h-screen flex items-center justify-center px-6">
@@ -92,14 +93,20 @@
 </div>
 
 <script>
-function tryPw(){
+// סיסמה אישית → כניסה בשרת (מצב מורה מלא, כמו בלוח הבקרה). הסיסמה הכללית עדיין פותחת את
+// הדף בתקופת המעבר; אחרי שלב ד השרת ידחה את קצב ההתקדמות בלי כניסה אישית ויבקש סיסמה.
+async function tryPw(){
   const v=document.getElementById('pw').value;
+  const err=document.getElementById('pw-err');
   if(v===TEACHER_PASSWORD){
     sessionStorage.setItem('gc_teacher_pw_ok','1');
     enterPage();
-  } else {
-    document.getElementById('pw-err').classList.remove('hidden');
+    return;
   }
+  const resp=await GC_SYNC.teacherLogin(v,false);
+  if(resp && resp.ok){ sessionStorage.setItem('gc_teacher_pw_ok','1'); enterPage(); return; }
+  err.textContent=GC_SYNC.teacherLoginErrorText(resp);
+  err.classList.remove('hidden');
 }
 function enterPage(){
   document.getElementById('pw-gate').classList.add('hidden');
@@ -108,7 +115,7 @@ function enterPage(){
     GC_ID.ensureTeacherClassIdentity(function(){ init(); });
   }
 }
-// כניסה קודמת ללוח הבקרה (gc_teacher_dash_pw, כולל "זכור במחשב הזה") פותחת גם כאן בלי סיסמה
+// כניסה קודמת ללוח הבקרה (gc_teacher_session, כולל "זכור במחשב הזה") פותחת גם כאן בלי סיסמה
 if(sessionStorage.getItem('gc_teacher_pw_ok')==='1' || (window.GC_SYNC && GC_SYNC.teacherLoggedIn())){ enterPage(); }
 
 const LESSON_TITLES={1:'האתגר הגדול',2:'מהי חקלאות?',3:'הצמח צריך',4:'החקלאי צריך',5:'הידרופוניקה',6:'חיישנים',7:'if/else',8:'סינרגיה',9:'GIS',10:'רובוטיקה',11:'ביג דאטה',12:'AI בחקלאות',13:'Design Thinking',14:'אבטיפוס יום א׳',15:'אבטיפוס יום ב׳',16:'פיצ׳ינג',17:'סיכום'};

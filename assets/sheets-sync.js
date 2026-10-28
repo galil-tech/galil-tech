@@ -252,13 +252,9 @@
 
   // קצב התקדמות הכיתה - כל התלמידים/קבוצות ב-school+class הספציפיים, לא רק מה שהמורה
   // שומר/ת מקומית - זו בדיוק הנקודה של הפיצ'ר: לראות את כל הכיתה, לא רק את עצמו/ה.
+  // מוגן בשרת: רק המדריך/ה של הכיתה (teacher_token) - ראה teacherGet למטה.
   GC_SYNC.pullClassProgress = function (school, className) {
-    const c = cfg();
-    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, rows: [], skipped: true });
-    const url = c.url + '?token=' + encodeURIComponent(c.token) + '&type=class_progress' +
-      '&school=' + encodeURIComponent(school || '') +
-      '&class=' + encodeURIComponent(className || '');
-    return fetch(url).then((r) => r.json()).catch((err) => ({ ok: false, error: String(err), rows: [] }));
+    return teacherGet('class_progress', { school: school || '', class: className || '' });
   };
 
   // ── שלב 9ו: שיתוף בין כיתות ובתי ספר ────────────────────────────────────
@@ -302,31 +298,27 @@
       .catch((err) => ({ ok: false, error: String(err) }));
   };
 
-  // dump מלא לכל בתי הספר/המסלולים - למנהל/ת המגמה בלבד (admin-dashboard.html מפעיל את
-  // זה רק אחרי אישור סיסמת מנהל בצד הלקוח, לא נטען אוטומטית בטעינת הקובץ).
+  // dump מלא לכל בתי הספר/המסלולים - לרכז/ת המגמה בלבד (השרת דורש teacher_token עם
+  // role=coordinator; admin-dashboard.html נכנס דרך teacherLogin).
   GC_SYNC.pullAdminAll = function () {
-    const c = cfg();
-    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, rows: [], groups: [], skipped: true });
-    const url = c.url + '?token=' + encodeURIComponent(c.token) + '&type=admin_students';
-    return fetch(url).then((r) => r.json()).catch((err) => ({ ok: false, error: String(err), rows: [], groups: [] }));
+    return teacherGet('admin_students', {}).then((resp) => Object.assign({ rows: [], groups: [] }, resp));
   };
 
-  // רשימת תלמידי כיתה ספציפית למורה+כיתה מהרשימה (data/roster.js) - מפעיל dump מלא
-  // (pullAdminAll, אותו endpoint שמשמש את admin-dashboard.html) ומסנן בצד הלקוח לפי
-  // school_id+class_id, בלי לגעת ב-Apps Script.
+  // תלמידי כיתה אחת למדריך/ה (class_progress - השרת מסנן ובודק שהכיתה שלו/ה).
+  // לא משתמשים יותר ב-admin_students (dump של כל בתי הספר) לצורך הזה.
   GC_SYNC.pullClass = function (school, classId) {
-    return GC_SYNC.pullAdminAll().then(function (resp) {
+    return GC_SYNC.pullClassProgress(school, classId).then(function (resp) {
       if (!resp || !resp.ok) return resp;
-      const match = function (r) {
-        return String(r.school_id) === String(school) && String(r.class_id) === String(classId);
-      };
-      const rows = (resp.rows || []).filter(match);
-      // ערך הפתיחה הכיתתי (0 אם אין / פריסה ישנה בלי class_unlocks)
-      const cu = (resp.class_unlocks || []).filter(match)[0];
-      const meta = (resp.class_meta || []).filter(match)[0];
-      return Object.assign({}, resp, { rows: rows, classUnlockedThrough: cu ? Number(cu.unlocked_through) || 0 : 0,
-        classDisplayName: (meta && meta.display_name) || '' });
+      return Object.assign({}, resp, { rows: resp.rows || [],
+        classUnlockedThrough: Number(resp.class_unlocked_through) || 0,
+        classDisplayName: resp.display_name || '' });
     });
+  };
+
+  // מסך הכרטיסים בדשבורד - סיכום לכל הכיתות בקריאה אחת. classes = [{schoolName, classId}]
+  GC_SYNC.pullTeacherOverview = function (classes) {
+    const list = (classes || []).map((x) => ({ school: x.schoolName, class: x.classId }));
+    return teacherGet('teacher_overview', { classes: JSON.stringify(list) });
   };
 
   // ── פתיחת שיעור ע"י מדריך/ה (teacher-dashboard.html) ──────────────────────
@@ -344,13 +336,172 @@
     }
     return featuresPromise;
   };
-  function postUnlock(type, payload) {
+  // ── כניסת מדריך/ה (חוק יסוד 4: אימות בשרת) ──────────────────────────────────
+  // הכניסה (POST type=login) מחזירה token זמני חתום - 12 שעות, או 14 יום עם "זכור במחשב הזה".
+  // נשמר ב-gc_teacher_session ({token, exp, teacher}) - localStorage אם "זכור", אחרת sessionStorage.
+  // הסיסמה עצמה לא נשמרת. gc_teacher_dash_pw = המפתח הישן (סיסמה גלויה) - מומר אוטומטית
+  // ל-session בכניסה הבאה (migrateLegacyTeacher) ונמחק, כך שמדריכים מחוברים לא מרגישים במעבר.
+  const SESSION_KEY = 'gc_teacher_session';
+  const LEGACY_PW_KEY = 'gc_teacher_dash_pw';
+  const AUTH_ERRORS = ['auth_expired', 'auth_invalid', 'auth_required'];
+  function store(kind) { try { return kind === 'local' ? localStorage : sessionStorage; } catch (e) { return null; } }
+  function clearKey(key) { ['local', 'session'].forEach((k) => { const s = store(k); if (s) s.removeItem(key); }); }
+  function readSession(kind) {
+    const s = store(kind);
+    try { const o = s && JSON.parse(s.getItem(SESSION_KEY) || 'null'); return o && o.token ? o : null; } catch (e) { return null; }
+  }
+  // session תקף (לא פג) או null. remember = נשמר ב-localStorage.
+  GC_SYNC.teacherSession = function () {
+    const l = readSession('local'), s = readSession('session');
+    const o = (l && l.exp > Date.now()) ? Object.assign({ remember: true }, l)
+      : (s && s.exp > Date.now()) ? Object.assign({ remember: false }, s) : null;
+    return o;
+  };
+  GC_SYNC.teacherToken = function () { const s = GC_SYNC.teacherSession(); return s ? s.token : ''; };
+  function legacyPassword() {
+    const l = store('local'), s = store('session');
+    const lp = l && l.getItem(LEGACY_PW_KEY);
+    return lp ? { pw: lp, remember: true } : (s && s.getItem(LEGACY_PW_KEY)) ? { pw: s.getItem(LEGACY_PW_KEY), remember: false } : null;
+  }
+
+  // כניסה בשרת בלי לשמור session (גם לפתיחת שיעור ממחשב של תלמיד/ה). פריסה ישנה בלי
+  // teacher_auth הייתה מפילה type=login ל-upsert של תלמיד - לכן בודקים FEATURES קודם.
+  function serverLogin(pw, remember) {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, error: 'sync disabled' });
+    return GC_SYNC.getFeatures().then(function (features) {
+      if (!features.length) return { ok: false, error: 'network' };
+      if (features.indexOf('teacher_auth') === -1) return { ok: false, error: 'server_outdated' };
+      return fetch(c.url, { method: 'POST', body: JSON.stringify({ token: c.token, type: 'login', password: String(pw || '').trim(), remember: !!remember }) })
+        .then((r) => r.json());
+    }).catch((err) => ({ ok: false, error: String(err) }));
+  }
+  // כניסה למצב מורה (לוח הבקרה / חלון "הכניסה פגה"). סיסמת המורה הכללית לא מכניסה למצב מורה.
+  GC_SYNC.teacherLogin = function (pw, remember) {
+    return serverLogin(pw, remember).then(function (resp) {
+      if (!resp || !resp.ok) return resp || { ok: false };
+      if (resp.teacher && resp.teacher.role === 'general') return { ok: false, error: 'general_password' };
+      clearKey(SESSION_KEY);
+      clearKey(LEGACY_PW_KEY);
+      const target = store(remember ? 'local' : 'session');
+      if (target) target.setItem(SESSION_KEY, JSON.stringify({ token: resp.token, exp: resp.exp, teacher: resp.teacher }));
+      return resp;
+    });
+  };
+  GC_SYNC.teacherLogout = function () {
+    clearKey(SESSION_KEY);
+    clearKey(LEGACY_PW_KEY);
+  };
+  GC_SYNC.teacherLoginErrorText = function (resp) {
+    const e = resp && resp.error;
+    if (e === 'bad_password') return 'סיסמה שגויה';
+    if (e === 'general_password') return 'זו הסיסמה הכללית - לכניסה למצב מורה צריך את הסיסמה האישית שלך';
+    if (e === 'too_many_attempts') return 'יותר מדי ניסיונות שגויים. נסו שוב בעוד 10 דקות.';
+    if (e === 'server_outdated') return 'צריך קודם לעדכן את ה-Apps Script (Deploy → New version).';
+    if (e === 'sync disabled') return 'הסנכרון לגיליון כבוי במחשב הזה - אי אפשר להיכנס.';
+    return 'אין חיבור לשרת - נסו שוב.';
+  };
+  // המרה שקטה של כניסה ישנה (סיסמה שמורה) ל-session. סיסמה שכבר לא תקפה נמחקת.
+  let migratePromise = null;
+  GC_SYNC.migrateLegacyTeacher = function () {
+    const legacy = legacyPassword();
+    if (!legacy) return Promise.resolve(GC_SYNC.teacherSession());
+    if (GC_SYNC.teacherSession()) { clearKey(LEGACY_PW_KEY); return Promise.resolve(GC_SYNC.teacherSession()); }
+    if (!migratePromise) {
+      migratePromise = GC_SYNC.teacherLogin(legacy.pw, legacy.remember).then(function (resp) {
+        if (resp && /^(bad_password|general_password)$/.test(resp.error || '')) clearKey(LEGACY_PW_KEY);
+        migratePromise = null;
+        return GC_SYNC.teacherSession();
+      });
+    }
+    return migratePromise;
+  };
+
+  // חלון סיסמה (שדה מוסתר - הסיסמה לא נחשפת על המסך). check(pw) → Promise<{ok, error}>.
+  // מחזיר Promise<boolean>: true אחרי בדיקה מוצלחת, false בביטול.
+  function passwordModal(title, sub, check) {
+    return new Promise(function (resolve) {
+      const old = document.getElementById('gc-tu-modal');
+      if (old) old.remove();
+      const o = document.createElement('div');
+      o.id = 'gc-tu-modal';
+      o.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;';
+      o.innerHTML = '<form dir="rtl" style="background:white;border-radius:20px;padding:22px;max-width:320px;width:100%;box-sizing:border-box;font-family:Heebo,sans-serif;text-align:center;">' +
+        '<p style="font-weight:900;font-size:1.05rem;margin:0 0 4px;color:#166534;"></p>' +
+        '<p style="margin:0 0 12px;color:#4b5563;font-size:.85rem;"></p>' +
+        '<input id="gc-tu-pw" type="password" autocomplete="off" aria-label="סיסמת מורה" style="width:100%;box-sizing:border-box;border:2px solid #d1d5db;border-radius:12px;padding:8px 10px;font-size:1rem;text-align:center;">' +
+        '<p id="gc-tu-err" role="alert" style="display:none;color:#dc2626;font-size:.8rem;margin:6px 0 0;"></p>' +
+        '<div style="display:flex;gap:8px;margin-top:14px;">' +
+        '<button type="submit" id="gc-tu-ok" style="flex:1;background:#16a34a;color:white;font-weight:900;border:0;border-radius:999px;padding:9px;cursor:pointer;">אישור</button>' +
+        '<button type="button" id="gc-tu-cancel" style="flex:1;background:#f3f4f6;font-weight:700;border:0;border-radius:999px;padding:9px;cursor:pointer;">ביטול</button>' +
+        '</div></form>';
+      const ps = o.querySelectorAll('form > p');
+      ps[0].textContent = title;
+      ps[1].textContent = sub;
+      document.body.appendChild(o);
+      const input = o.querySelector('#gc-tu-pw');
+      const btn = o.querySelector('#gc-tu-ok');
+      const err = o.querySelector('#gc-tu-err');
+      input.focus();
+      o.querySelector('#gc-tu-cancel').onclick = function () { o.remove(); resolve(false); };
+      o.querySelector('form').onsubmit = function (e) {
+        e.preventDefault();
+        btn.disabled = true; btn.textContent = '...';
+        check(input.value).then(function (resp) {
+          btn.disabled = false; btn.textContent = 'אישור';
+          if (resp && resp.ok) { o.remove(); resolve(true); return; }
+          err.textContent = GC_SYNC.teacherLoginErrorText(resp);
+          err.style.display = 'block'; input.value = ''; input.focus();
+        });
+      };
+    });
+  }
+  // הכניסה פגה באמצע עבודה → סיסמה שוב, בלי לאבד את הדף. בקשה אחת בכל רגע.
+  let reauthPromise = null;
+  GC_SYNC.askTeacherLogin = function () {
+    if (!reauthPromise) {
+      const remember = !!readSession('local') || !!(legacyPassword() || {}).remember;
+      reauthPromise = passwordModal('🔑 הכניסה למצב מורה פגה', 'הקלידו שוב את הסיסמה האישית שלכם',
+        (pw) => GC_SYNC.teacherLogin(pw, remember))
+        .then(function (ok) { reauthPromise = null; return ok; });
+    }
+    return reauthPromise;
+  };
+  function withReauth(run) {
+    return run().then(function (resp) {
+      if (resp && AUTH_ERRORS.indexOf(resp.error) !== -1 && document.body) {
+        return GC_SYNC.askTeacherLogin().then((ok) => (ok ? run() : resp));
+      }
+      return resp;
+    });
+  }
+  // GET של מדריך/ה עם teacher_token (בלי session: בקשה בלי token - עובד רק בתקופת המעבר).
+  function teacherGet(type, params) {
+    const c = cfg();
+    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, rows: [], skipped: true });
+    const run = function () {
+      let url = c.url + '?token=' + encodeURIComponent(c.token) + '&type=' + type;
+      const tk = GC_SYNC.teacherToken();
+      if (tk) url += '&teacher_token=' + encodeURIComponent(tk);
+      Object.keys(params || {}).forEach((k) => { url += '&' + k + '=' + encodeURIComponent(params[k]); });
+      return fetch(url).then((r) => r.json());
+    };
+    return withReauth(run).catch((err) => ({ ok: false, error: String(err), rows: [] }));
+  }
+
+  // tokenOverride: token מכניסה חד-פעמית (פתיחה ממחשב של תלמיד/ה) - בלי חלון כניסה מחדש.
+  function postUnlock(type, payload, tokenOverride) {
     const c = cfg();
     if (!c.enabled || !c.url) return Promise.resolve({ ok: false, error: 'sync disabled' });
     return GC_SYNC.getFeatures().then(function (features) {
       if (features.indexOf(type) === -1) return { ok: false, error: 'server_outdated' };
-      return fetch(c.url, { method: 'POST', body: JSON.stringify(Object.assign({ token: c.token, type: type }, payload)) })
-        .then((r) => r.json());
+      const run = function () {
+        const body = Object.assign({ token: c.token, type: type }, payload);
+        const tk = tokenOverride !== undefined ? tokenOverride : GC_SYNC.teacherToken();
+        if (tk) body.teacher_token = tk;
+        return fetch(c.url, { method: 'POST', body: JSON.stringify(body) }).then((r) => r.json());
+      };
+      return tokenOverride !== undefined ? run() : withReauth(run);
     }).catch((err) => ({ ok: false, error: String(err) }));
   }
   // school = שם בית הספר כפי שנשמר ב-school_id בגיליון (GC_ROSTER schoolName)
@@ -384,90 +535,63 @@
   };
 
   // ── פתיחת שיעור מהמחשב של התלמיד/ה בסיסמת מורה ─────────────────────────────
-  // מתקבלות: סיסמת המורה הכללית (זהה ל-TEACHER_PASSWORD ב-index.html / teacher-class.html),
-  // סיסמת רכז/ת, או סיסמה אישית של מדריך/ה (data/roster.js) שמדריך/ה את בית הספר של התלמיד/ה.
+  // הסיסמה נבדקת בשרת (serverLogin, בלי לשמור session על מחשב התלמיד/ה): סיסמה אישית של
+  // מדריך/ה של בית הספר, רכז/ת, או הסיסמה הכללית (role=general - עד שהיא מבוטלת בשלב ד במעבר).
   // הצלחה = gc_unlocked_through עד n מקומית + student_unlock בגיליון (נשמר גם אחרי התנתקות).
+  // TEACHER_UNLOCK_PASSWORD: רק כשאין שרת לבדוק מולו (סנכרון כבוי) - נמחק בשלב ד.
   const TEACHER_UNLOCK_PASSWORD = 'moradaat2026';
-  function loadRoster() {
-    return (window.GC_ID && typeof GC_ID.loadRoster === 'function') ? GC_ID.loadRoster() : Promise.resolve();
-  }
   GC_SYNC.teacherUnlock = function (n, password) {
-    return loadRoster().then(function () {
-      const pw = String(password || '').trim();
-      const id = window.GC_ID && GC_ID.getIdentity();
-      let ok = pw === TEACHER_UNLOCK_PASSWORD;
-      if (!ok && pw && window.GC_ROSTER) {
-        const t = GC_ROSTER.findTeacher(pw);
-        ok = !!t && (t.role === 'coordinator' || !id || !id.school ||
-          t.classes.some(function (c) { return c.schoolName === id.school; }));
-      }
-      if (!ok) return false;
+    const pw = String(password || '').trim();
+    const id = window.GC_ID && GC_ID.getIdentity();
+    const c = cfg();
+    if (!pw) return Promise.resolve({ ok: false, error: 'bad_password' });
+    const check = (!c.enabled || !c.url)
+      ? Promise.resolve(pw === TEACHER_UNLOCK_PASSWORD ? { ok: true, token: '' } : { ok: false, error: 'bad_password' })
+      : serverLogin(pw, false);
+    return check.then(function (resp) {
+      if (!resp || !resp.ok) return resp || { ok: false };
+      const t = resp.teacher;
+      // מדריך/ה של בית ספר אחר - השרת היה דוחה את student_unlock ממילא
+      if (t && t.role === 'teacher' && id && id.school &&
+          !(t.classes || []).some(function (x) { return x.school === id.school; })) return { ok: false, error: 'bad_password' };
       const cur = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
       if (n > cur) localStorage.setItem('gc_unlocked_through', n);
-      if (!id) return true;
-      const sync = GC_SYNC.setStudentUnlock(id.school || '', id.className || '', id.code || '', n).catch(function () {});
+      if (!id || !resp.token) return { ok: true };
+      const sync = postUnlock('student_unlock', { school_id: id.school || '', class_id: id.className || '',
+        code: id.code || '', unlocked_through: n }, resp.token).catch(function () {});
       const timeout = new Promise(function (resolve) { setTimeout(resolve, 4000); });
-      return Promise.race([sync, timeout]).then(function () { return true; });
+      return Promise.race([sync, timeout]).then(function () { return { ok: true }; });
     });
   };
-  // חלון סיסמה (שדה מוסתר - הסיסמה לא נחשפת על מסך התלמיד/ה). onOk נקרא אחרי פתיחה מוצלחת.
+  // onOk נקרא אחרי פתיחה מוצלחת.
   GC_SYNC.askTeacherUnlock = function (n, onOk) {
     if (document.getElementById('gc-tu-modal')) return;
-    const o = document.createElement('div');
-    o.id = 'gc-tu-modal';
-    o.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;';
-    o.innerHTML = '<form dir="rtl" style="background:white;border-radius:20px;padding:22px;max-width:320px;width:100%;box-sizing:border-box;font-family:Heebo,sans-serif;text-align:center;">' +
-      '<p style="font-weight:900;font-size:1.05rem;margin:0 0 4px;color:#166534;">🔑 פתיחת שיעור ' + n + '</p>' +
-      '<p style="margin:0 0 12px;color:#4b5563;font-size:.85rem;">המורה מקליד/ה סיסמה</p>' +
-      '<input id="gc-tu-pw" type="password" autocomplete="off" aria-label="סיסמת מורה" style="width:100%;box-sizing:border-box;border:2px solid #d1d5db;border-radius:12px;padding:8px 10px;font-size:1rem;text-align:center;">' +
-      '<p id="gc-tu-err" style="display:none;color:#dc2626;font-size:.8rem;margin:6px 0 0;">סיסמה שגויה</p>' +
-      '<div style="display:flex;gap:8px;margin-top:14px;">' +
-      '<button type="submit" id="gc-tu-ok" style="flex:1;background:#16a34a;color:white;font-weight:900;border:0;border-radius:999px;padding:9px;cursor:pointer;">פתיחה</button>' +
-      '<button type="button" id="gc-tu-cancel" style="flex:1;background:#f3f4f6;font-weight:700;border:0;border-radius:999px;padding:9px;cursor:pointer;">ביטול</button>' +
-      '</div></form>';
-    document.body.appendChild(o);
-    const input = o.querySelector('#gc-tu-pw');
-    const btn = o.querySelector('#gc-tu-ok');
-    input.focus();
-    o.querySelector('#gc-tu-cancel').onclick = function () { o.remove(); };
-    o.querySelector('form').onsubmit = function (e) {
-      e.preventDefault();
-      btn.disabled = true; btn.textContent = '...';
-      GC_SYNC.teacherUnlock(n, input.value).then(function (ok) {
-        btn.disabled = false; btn.textContent = 'פתיחה';
-        if (!ok) { o.querySelector('#gc-tu-err').style.display = 'block'; input.value = ''; input.focus(); return; }
-        o.remove();
-        if (onOk) onOk();
-      });
-    };
+    passwordModal('🔑 פתיחת שיעור ' + n, 'המורה מקליד/ה סיסמה', (pw) => GC_SYNC.teacherUnlock(n, pw))
+      .then(function (ok) { if (ok && onOk) onOk(); });
   };
 
+  // מחיקה מהגלריה - רכז/ת בלבד (השרת דורש teacher_token עם role=coordinator)
   GC_SYNC.deleteGalleryItem = function (id) {
-    const c = cfg();
-    if (!c.enabled || !c.url) return Promise.resolve({ ok: false, skipped: true });
-    return fetch(c.url, { method: 'POST', body: JSON.stringify({ token: c.token, type: 'gallery_delete', id: id }) })
-      .then((r) => r.json())
-      .catch((err) => ({ ok: false, error: String(err) }));
+    return postUnlock('gallery_delete', { id: id });
   };
 
   // האם מדריך/ה כבר נכנס/ה (teacher-dashboard.html, "זכור במחשב הזה" או הטאב הנוכחי) -
   // דפי מורה אחרים (index.html מצב מורה, teacher-class.html) מדלגים אז על בקשת הסיסמה.
+  // כניסה ישנה (סיסמה שמורה) נחשבת עד שהמרתה ל-session מסתיימת (migrateLegacyTeacher).
   GC_SYNC.teacherLoggedIn = function () {
-    let pw = '';
-    try { pw = localStorage.getItem('gc_teacher_dash_pw') || sessionStorage.getItem('gc_teacher_dash_pw') || ''; } catch (e) {}
-    return !!(pw && window.GC_ROSTER && GC_ROSTER.findTeacher(pw));
+    return !!(GC_SYNC.teacherSession() || legacyPassword());
   };
 
-  // פאנל מדריך/ה צף: נטען בכל דף שיש בו את הקובץ הזה, רק אם מדריך/ה כבר נכנס/ה
-  // (gc_teacher_dash_pw). כך אפשר לפעול גם ממחשב של תלמיד/ה בלי להקליד סיסמה שוב.
+  // פאנל מדריך/ה צף: נטען בכל דף שיש בו את הקובץ הזה, רק אם מדריך/ה כבר נכנס/ה.
+  // כך אפשר לפעול גם ממחשב של תלמיד/ה בלי להקליד סיסמה שוב.
   (function autoloadTeacherPanel() {
-    if (window.GC_TPANEL || !ROOT) return;
-    let saved = null;
-    try { saved = localStorage.getItem('gc_teacher_dash_pw') || sessionStorage.getItem('gc_teacher_dash_pw'); } catch (e) {}
-    if (!saved) return;
-    const s = document.createElement('script');
-    s.src = ROOT + 'assets/teacher-panel.js';
-    document.head.appendChild(s);
+    if (window.GC_TPANEL || !ROOT || !GC_SYNC.teacherLoggedIn()) return;
+    GC_SYNC.migrateLegacyTeacher().then(function (session) {
+      if (!session || window.GC_TPANEL) return;
+      const s = document.createElement('script');
+      s.src = ROOT + 'assets/teacher-panel.js';
+      document.head.appendChild(s);
+    });
   })();
 
   // ── נעילת כניסה ישירה ל-URL של לומדה (lessons/ + elementary/lessons/) ─────────

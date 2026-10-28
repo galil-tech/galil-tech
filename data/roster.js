@@ -1,13 +1,13 @@
-// data/roster.js — רשימת בתי הספר/הכיתות/המדריכים הפעילים בפועל בשטח.
-// זהו המקור היחיד לרשימה הזו — אל תשכפלו אותה בקבצים אחרים. כדי להוסיף בית ספר/כיתה/מדריך
-// חדשים (או להחליף סיסמה), עורכים רק את הקובץ הזה.
+// data/roster.js — רשימת בתי הספר/הכיתות הפעילים בפועל בשטח.
+// זהו המקור היחיד לרשימה הזו — אל תשכפלו אותה בקבצים אחרים. כדי להוסיף בית ספר/כיתה, עורכים
+// רק את הקובץ הזה.
 //
-// מבנה: schools[] (בית ספר + כיתות) נפרד מ-teachers[] (מדריך/ה + רשימת כיתות מכמה בתי ספר) -
-// כי מדריך/ה אחד/ת מלמד/ת לפעמים בכמה בתי ספר.
+// מדריכים, סיסמאות ושיוך כיתות למדריך/ה - **לא כאן** (הקובץ ציבורי). הם בגיליון teacher_auth
+// בצד השרת (data/apps-script/Code.gs, docs/teacher-auth-migration.md). הכניסה מחזירה את רשימת
+// הכיתות של המדריך/ה, ו-classesFor() כאן רק מעשיר אותה בשדות תצוגה (מסלול, שם כיתה).
 // חשוב: school.name הוא מה שנשמר בגיליון כ-school_id (ראה identity.js) - לא לשנות שם של בית
 // ספר שכבר יש בו תלמידים, אחרת הם יתנתקו מהשורות הקיימות שלהם.
 window.GC_ROSTER = (function () {
-  const COORDINATOR_PASSWORD = 'galil2026';
 
   const schools = [
     { id: 'manor-eilon', name: 'חט"ב מנור איילון', track: 'middle',
@@ -32,17 +32,6 @@ window.GC_ROSTER = (function () {
       classes: [{ id: 'ה1', name: 'ה1' }, { id: 'ה2', name: 'ה2' }, { id: 'ה3', name: 'ה3' }] },
   ];
 
-  // classes: [{schoolId, classId}] - classId חסר = כל הכיתות של בית הספר.
-  const teachers = [
-    { id: 'osher', name: 'אושר', password: 'osher2026',
-      classes: [{ schoolId: 'manor-eilon' }] },
-    { id: 'maayan', name: 'מעין', password: 'maayan2026',
-      classes: [{ schoolId: 'shlomi-middle' }, { schoolId: 'shlomi-maimon' }, { schoolId: 'shlomi-benzvi' }, { schoolId: 'gvanim' }] },
-    { id: 'shimon', name: 'שמעון', password: 'shimon2026',
-      classes: [{ schoolId: 'netaim' }, { schoolId: 'regba' }, { schoolId: 'ofek' }] },
-    { id: 'dvora', name: 'דבורה', password: 'dvora2026',
-      classes: [{ schoolId: 'maayanot' }, { schoolId: 'meona' }] },
-  ];
 
   function schoolById(id) {
     return schools.find(function (s) { return s.id === id; }) || null;
@@ -61,38 +50,42 @@ window.GC_ROSTER = (function () {
     return { schoolId: s.id, schoolName: s.name, track: s.track, classId: c.id, className: c.name };
   }
 
-  // מאתר מדריך/ה או רכז/ת מגמה לפי סיסמה. מחזיר null אם הסיסמה לא תואמת אף אחד.
-  // תוצאה: { role, label, classes:[{schoolId,schoolName,track,classId,className}] } -
-  // כל הכיתות של אותו/ה מדריך/ה, מכל בתי הספר.
-  function findTeacher(password) {
-    if (!password) return null;
-    const t = teachers.find(function (x) { return x.password === password; });
-    if (t) {
-      const classes = [];
-      t.classes.forEach(function (ref) {
-        const s = schoolById(ref.schoolId);
-        if (!s) return;
-        s.classes.forEach(function (c) {
-          if (!ref.classId || ref.classId === c.id) classes.push(classEntry(s, c));
-        });
-      });
-      const schoolNames = classes.map(function (c) { return c.schoolName; })
-        .filter(function (n, i, arr) { return arr.indexOf(n) === i; });
-      return { role: 'teacher', label: t.name + ' · ' + schoolNames.join(' · '), classes: classes };
-    }
-    if (password === COORDINATOR_PASSWORD) {
-      const classes = [];
+  // הופך את פרטי המדריך/ה שהשרת החזיר בכניסה ({name, role, classes}) לרשימת כיתות לתצוגה.
+  // classes = "*" (רכז/ת) → כל הכיתות; {school, class:"*"} → כל כיתות בית הספר.
+  // כיתה שלא מופיעה כאן ברשימה עדיין מוצגת (לפי המזהה) - השרת הוא שקובע מה מותר.
+  // תוצאה: { role, label, classes:[{schoolId,schoolName,track,classId,className}] }
+  function classesFor(teacher) {
+    if (!teacher) return null;
+    const classes = [];
+    if (teacher.classes === '*') {
       schools.forEach(function (s) {
         s.classes.forEach(function (c) { classes.push(classEntry(s, c)); });
       });
-      return { role: 'coordinator', label: 'רכז/ת מגמה', classes: classes };
+    } else {
+      (teacher.classes || []).forEach(function (ref) {
+        const s = schoolByName(ref.school);
+        if (!s) {
+          if (ref.class && ref.class !== '*') classes.push({ schoolId: ref.school, schoolName: ref.school, track: '', classId: ref.class, className: ref.class });
+          return;
+        }
+        s.classes.forEach(function (c) {
+          if (ref.class === '*' || ref.class === c.id) classes.push(classEntry(s, c));
+        });
+        if (ref.class !== '*' && !s.classes.some(function (c) { return c.id === ref.class; })) {
+          classes.push({ schoolId: s.id, schoolName: s.name, track: s.track, classId: ref.class, className: ref.class });
+        }
+      });
     }
-    return null;
+    const schoolNames = classes.map(function (c) { return c.schoolName; })
+      .filter(function (n, i, arr) { return arr.indexOf(n) === i; });
+    const label = teacher.role === 'coordinator' ? (teacher.name || 'רכז/ת מגמה')
+      : teacher.name + (schoolNames.length ? ' · ' + schoolNames.join(' · ') : '');
+    return { role: teacher.role, label: label, classes: classes };
   }
 
   return {
-    schools: schools, teachers: teachers,
+    schools: schools,
     schoolById: schoolById, schoolByName: schoolByName, schoolName: schoolName,
-    findTeacher: findTeacher,
+    classesFor: classesFor,
   };
 })();

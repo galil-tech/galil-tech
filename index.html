@@ -420,9 +420,9 @@
 <script>
 // ── MODE ──
 let teacherMode=false;
-// כפתור "מורים": הכניסה היא בסיסמת המדריך/ה האישית (data/roster.js) בלוח הבקרה
+// כפתור "מורים": הכניסה היא בסיסמת המדריך/ה האישית (נבדקת בשרת) בלוח הבקרה
 // (teacher-dashboard.html). מי שעוד לא נכנס/ה מועבר/ת לשם; אחרי כניסה - מצב מורה כאן נפתח
-// בלי סיסמה נוספת (GC_SYNC.teacherLoggedIn). לא אבטחה אמיתית, רק חסם-כניסה מזדמן לתלמידים.
+// בלי סיסמה נוספת (GC_SYNC.teacherLoggedIn). הנתונים עצמם מוגנים בשרת (teacher_token).
 function switchToTeacher(){
   if(!(window.GC_SYNC && GC_SYNC.teacherLoggedIn())){
     location.href='teacher-dashboard.html';

@@ -1,19 +1,17 @@
 // assets/teacher-panel.js — מצב מדריך/ה: כניסה בסיסמה פעם אחת + פאנל צף "ניהול כיתה".
-// הכניסה (teacher-dashboard.html) שומרת את הסיסמה ב-gc_teacher_dash_pw:
-//   "זכור במחשב הזה" → localStorage (נשאר גם אחרי סגירת הדפדפן) | אחרת → sessionStorage (הטאב הנוכחי).
-// sheets-sync.js טוען את הקובץ הזה אוטומטית בכל דף כשיש סיסמה שמורה - כך המדריך/ה יכול/ה לשנות
+// הכניסה (teacher-dashboard.html) נבדקת בשרת (GC_SYNC.teacherLogin) ושומרת token זמני ב-gc_teacher_session:
+//   "זכור במחשב הזה" → localStorage, 14 יום | אחרת → sessionStorage (הטאב הנוכחי), 12 שעות.
+// sheets-sync.js טוען את הקובץ הזה אוטומטית בכל דף כשיש כניסה שמורה - כך המדריך/ה יכול/ה לשנות
 // שם, זוג או לפתוח שיעור גם ממחשב של תלמיד/ה, בלי להקליד סיסמה שוב.
-// הרשאות: רק כיתות שהמדריך/ה משויך/ת אליהן ב-data/roster.js (GC_ROSTER.findTeacher). כל פעולה
-// נכתבת לגיליון דרך GC_SYNC (לא רק localStorage), כי המחשבים בכיתה מתחלפים.
+// הרשאות: השרת קובע את הכיתות של המדריך/ה (גיליון teacher_auth) ובודק כל פעולה; כאן רק
+// מציגים אותן (GC_ROSTER.classesFor). כל פעולה נכתבת לגיליון, כי המחשבים בכיתה מתחלפים.
 (function () {
   if (window.GC_TPANEL) return;
   const P = (window.GC_TPANEL = {});
-  const KEY = 'gc_teacher_dash_pw';
   const ROOT = ((document.currentScript && document.currentScript.src) || '').replace(/assets\/teacher-panel\.js.*$/, '');
   let meta = {}; // "school|class" → display_name (גיליון class_meta)
 
   function esc(s) { return String(s == null ? '' : s).replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c])); }
-  function store(kind) { try { return kind === 'local' ? localStorage : sessionStorage; } catch (e) { return null; } }
   function syncOn() { return !!(window.GC_SYNC && window.SHEETS_CONFIG && window.SHEETS_CONFIG.enabled); }
 
   P.ensureRoster = function () {
@@ -27,30 +25,30 @@
   };
 
   // ── כניסה / יציאה ─────────────────────────────────────────────────────────
-  P.savedPassword = function () {
-    const l = store('local'), s = store('session');
-    return (l && l.getItem(KEY)) || (s && s.getItem(KEY)) || '';
-  };
-  P.isRemembered = function () { const l = store('local'); return !!(l && l.getItem(KEY)); };
+  function rawSession() { return window.GC_SYNC && GC_SYNC.teacherSession ? GC_SYNC.teacherSession() : null; }
+  P.isRemembered = function () { const s = rawSession(); return !!(s && s.remember); };
+  // { role, label, classes:[{schoolId,schoolName,track,classId,className}] } או null
   P.session = function () {
-    const pw = P.savedPassword();
-    return pw && window.GC_ROSTER ? GC_ROSTER.findTeacher(pw) : null;
+    const s = rawSession();
+    return s && window.GC_ROSTER && GC_ROSTER.classesFor ? GC_ROSTER.classesFor(s.teacher) : null;
+  };
+  // Promise<{ok, error, session}> - כולל המרה שקטה של כניסה ישנה (סיסמה שמורה) ל-session
+  P.restore = function () {
+    return P.ensureRoster().then(() => GC_SYNC.migrateLegacyTeacher()).then(() => {
+      const s = P.session();
+      if (s) mount();
+      return s;
+    });
   };
   P.login = function (pw, remember) {
-    const res = window.GC_ROSTER && GC_ROSTER.findTeacher(pw);
-    if (!res) return null;
-    const l = store('local'), s = store('session');
-    if (l) l.removeItem(KEY);
-    if (s) s.removeItem(KEY);
-    const target = remember ? l : s;
-    if (target) target.setItem(KEY, pw);
-    mount();
-    return res;
+    return P.ensureRoster().then(() => GC_SYNC.teacherLogin(pw, remember)).then((resp) => {
+      if (!resp || !resp.ok) return resp || { ok: false };
+      mount();
+      return Object.assign({}, resp, { session: P.session() });
+    });
   };
   P.logout = function () {
-    const l = store('local'), s = store('session');
-    if (l) l.removeItem(KEY);
-    if (s) s.removeItem(KEY);
+    GC_SYNC.teacherLogout();
     const root = document.getElementById('gc-tp-root');
     if (root) root.remove();
     document.dispatchEvent(new CustomEvent('gc-teacher-logout'));
@@ -77,6 +75,8 @@
   function errText(resp) {
     if (resp && resp.error === 'server_outdated') return 'צריך קודם לעדכן את ה-Apps Script (Deploy → New version) - הפעולה לא בוצעה.';
     if (resp && resp.error === 'student not found') return 'התלמיד/ה לא נמצא/ה בגיליון (אולי עוד לא סונכרן/ה מהמחשב שלו/ה).';
+    if (resp && resp.error === 'forbidden') return 'הכיתה הזו לא משויכת אליך - הפעולה לא בוצעה.';
+    if (resp && /^auth_/.test(resp.error || '')) return 'הכניסה למצב מורה פגה - היכנסו שוב ונסו שנית.';
     return 'הפעולה נכשלה - נסו שוב. (' + ((resp && resp.error) || 'שגיאת רשת') + ')';
   }
   function guard() {
@@ -288,7 +288,7 @@
       state.rows = (resp.rows || []).map((r) => {
         const own = Number(r.unlocked_through) || 1;
         return state.classN > own ? Object.assign({}, r, { unlocked_through: state.classN }) : r;
-      }).sort((a, b) => String(a.group_name || '~').localeCompare(String(b.group_name || '~'), 'he') ||
+      }).sort((a, b) => (a.group_name ? 0 : 1) - (b.group_name ? 0 : 1) || String(a.group_name || '').localeCompare(String(b.group_name || ''), 'he') ||
         String(a.student_name || '').localeCompare(String(b.student_name || ''), 'he'));
       render();
     });

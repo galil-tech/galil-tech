@@ -12,21 +12,20 @@
 <body class="bg-gray-100">
   <!--
     ממשק מנהל/ת מגמה (שלב 9ו, MASTER-WORKFLOW.md) — תפקיד יחיד, רואה הכל (כל בתי הספר/כיתות/מסלולים).
-    הגנה: סיסמה קבועה בקוד הצד-לקוח בלבד (הוחלט במפורש ע"י המשתמש) — לא אבטחה אמיתית,
-    רק חסם-כניסה לכניסה מזדמנת. הריפו ציבורי, אז כל מי שקורא את הקוד רואה את הסיסמה -
-    זה תפקיד יחיד (המשתמש עצמו), לא הגנה על מידע רגיש מפני צד עוין.
-    שנו כאן אם רוצים סיסמה אחרת:
+    הגנה: כניסה בשרת (GC_SYNC.teacherLogin) עם סיסמה של שורה role=coordinator בגיליון teacher_auth.
+    השרת מחזיר את ה-dump (admin_students) ומוחק מהגלריה רק עם token של רכז/ת. אין סיסמה בקוד.
   -->
-  <script>const ADMIN_PASSWORD = 'galil2026admin';</script>
 
   <div id="gate" class="min-h-screen flex items-center justify-center px-6">
     <div class="bg-white rounded-3xl shadow-2xl p-10 max-w-sm w-full text-center">
       <div class="text-5xl mb-3">🔐</div>
       <h1 class="text-xl font-black mb-2">ממשק מנהל/ת מגמה</h1>
       <p class="text-sm text-gray-500 mb-6">גישה לראש/ת המגמה בלבד</p>
-      <input id="pw" type="password" placeholder="סיסמה" class="w-full border-2 rounded-xl p-3 mb-3 text-center" onkeydown="if(event.key==='Enter')tryLogin()">
-      <button onclick="tryLogin()" class="w-full bg-green-700 hover:bg-green-800 text-white rounded-xl p-3 font-bold">כניסה</button>
-      <p id="gate-err" class="hidden text-red-600 text-sm mt-3">סיסמה שגויה</p>
+      <form onsubmit="event.preventDefault();tryLogin()">
+        <input id="pw" type="password" placeholder="סיסמה" aria-label="סיסמה" class="w-full border-2 rounded-xl p-3 mb-3 text-center">
+        <button id="login-btn" type="submit" class="w-full bg-green-700 hover:bg-green-800 text-white rounded-xl p-3 font-bold">כניסה</button>
+      </form>
+      <p id="gate-err" role="alert" class="hidden text-red-600 text-sm mt-3"></p>
     </div>
   </div>
 
@@ -99,21 +98,23 @@
   </div>
 
   <script>
-    function tryLogin(){
-      const v=document.getElementById('pw').value;
-      if(v===ADMIN_PASSWORD){
-        sessionStorage.setItem('gc_admin_ok','1');
-        document.getElementById('gate').classList.add('hidden');
-        document.getElementById('dash').classList.remove('hidden');
-        loadAll();
-      } else {
-        document.getElementById('gate-err').classList.remove('hidden');
-      }
-    }
-    if(sessionStorage.getItem('gc_admin_ok')==='1'){
+    function showDash(){
       document.getElementById('gate').classList.add('hidden');
       document.getElementById('dash').classList.remove('hidden');
+      loadAll();
     }
+    // כניסה בשרת; רק role=coordinator. נשמר כמו כניסת מדריך/ה (gc_teacher_session, הטאב הנוכחי).
+    async function tryLogin(){
+      const err=document.getElementById('gate-err'), btn=document.getElementById('login-btn');
+      err.classList.add('hidden'); btn.disabled=true; btn.textContent='בודק...';
+      let resp=await GC_SYNC.teacherLogin(document.getElementById('pw').value, false);
+      btn.disabled=false; btn.textContent='כניסה';
+      if(resp && resp.ok && resp.teacher.role==='coordinator'){ showDash(); return; }
+      if(resp && resp.ok){ GC_SYNC.teacherLogout(); resp={ok:false,error:'not_coordinator'}; }
+      err.textContent = resp && resp.error==='not_coordinator' ? 'הסיסמה הזו לא של רכז/ת המגמה' : GC_SYNC.teacherLoginErrorText(resp);
+      err.classList.remove('hidden');
+    }
+    (function(){ const s=GC_SYNC.teacherSession(); if(s && s.teacher && s.teacher.role==='coordinator') showDash(); })();
 
     function esc(s){ return String(s==null?'':s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
     function syncEnabled(){
