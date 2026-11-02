@@ -574,15 +574,15 @@ function renderStudentLessons(){
     </div>`;
   }).join('');
   // שיעור 5.5 (Side Quest) - כרטיס אחרי שיעור 5, רק כשהמדריך/ה פתח/ה (gc_side_55 מ-pullMine)
-  // או שהכיתה כבר פתוחה עד שיעור 6. חטיבה בלבד בינתיים (אין גרסת יסודי).
-  if(studentTrack()!=='elementary' && (localStorage.getItem('gc_side_55')==='1' || unlockedThrough()>=6) && grid.children[4]){
+  // או שהכיתה כבר פתוחה עד שיעור 6. לכל מסלול לומדה משלו (lessons/ או elementary/lessons/).
+  if((localStorage.getItem('gc_side_55')==='1' || unlockedThrough()>=6) && grid.children[4]){
+    const el=studentTrack()==='elementary';
     const e=(function(){ try{ return (JSON.parse(localStorage.getItem('passport1')||'{}')||{}).electrons55||{}; }catch(err){ return {}; } })();
-    const W={c1:1,io:1,ad:1,pwm:1,wire:1,pins:1,err:2,pwmc:1,teaser:1};
-    let got=0; for(const k in W) if(e[k]) got+=W[k];
+    let got=0; for(const k in e) got+=Number(e[k])||0; got=Math.min(10,got);
     grid.children[4].insertAdjacentHTML('afterend', `<div class="card bg-indigo-50 rounded-2xl p-5 shadow border-t-4 border-indigo-400 relative flex flex-col">
       <div class="absolute top-2 left-2 bg-yellow-300 text-yellow-900 text-xs font-black px-2 py-0.5 rounded-full">⚡ Side Quest</div>
-      <a href="lessons/lesson-05-5.html" class="block flex-1">
-        <p class="text-2xl mb-1">⚡</p><p class="font-black">שיעור 5.5</p><p class="text-xs text-gray-500">מעגל · בקר · PWM · 3 חוטים</p>
+      <a href="${el?'elementary/lessons/lesson-05-5.html':'lessons/lesson-05-5.html'}" class="block flex-1">
+        <p class="text-2xl mb-1">⚡</p><p class="font-black">שיעור 5.5</p><p class="text-xs text-gray-500">${el?'מעגל · הקופסה החכמה · חזק או חלש':'מעגל · בקר · PWM · 3 חוטים'}</p>
         <span class="text-xs text-indigo-700 font-bold">${got?'⚡ '+got+'/10 אלקטרונים':'פתוח - התחילו!'}</span>
       </a>
     </div>`);

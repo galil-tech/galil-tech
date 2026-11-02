@@ -650,7 +650,7 @@
     }
   })();
 
-  // ── נעילת לומדה 5.5 (שיעור ביניים, Side Quest) ───────────────────────────
+  // ── נעילת לומדה 5.5 (שיעור ביניים, Side Quest) – lessons/ וגם elementary/lessons/ ──
   // פתוחה אם המדריך/ה פתח/ה אותה לכיתה (gc_side_55), אם הכיתה כבר פתוחה עד שיעור 6 ומעלה,
   // או במצב מורה. אחרת - אותו מסך נעילה כמו בשאר הלומדות.
   (function sideLessonGate() {
@@ -671,7 +671,7 @@
         '<p style="font-size:2.5rem;margin:0 0 8px;">⚡🔒</p>' +
         '<p style="font-weight:900;font-size:1.15rem;margin:0 0 6px;color:#3730a3;">שיעור 5.5 עוד לא נפתח.</p>' +
         '<p style="margin:0 0 18px;color:#4b5563;">המורה פותח אותו לכיתה.</p>' +
-        '<a href="../index.html#lessons-section" style="display:inline-block;background:#4f46e5;color:white;font-weight:900;padding:10px 20px;border-radius:999px;text-decoration:none;">לדף הבית ←</a>' +
+        '<a href="' + (/\/elementary\//.test(location.pathname) ? '../../' : '../') + 'index.html#lessons-section" style="display:inline-block;background:#4f46e5;color:white;font-weight:900;padding:10px 20px;border-radius:999px;text-decoration:none;">לדף הבית ←</a>' +
         '</div></div>';
       hide.remove();
     };

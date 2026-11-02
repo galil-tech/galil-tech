@@ -145,11 +145,11 @@
     </div>
 
     <details class="mt-4 bg-blue-50 rounded-2xl p-4 text-sm text-gray-700">
-      <summary class="font-bold text-blue-900 cursor-pointer">💧 כמה חשמל? וולט ואמפר</summary>
+      <summary class="font-bold text-blue-900 cursor-pointer">💧 כמה חשמל? וולט, אמפר ווואט</summary>
       <ul class="mt-2 space-y-1">
         <li>• <b>וולט (V) = לחץ.</b> הפינים של הבקר שלנו עובדים ב-3.3 וולט.</li>
         <li>• <b>אמפר (A) = כמה זורם.</b> יותר מדי זרם = חום ונזק. זה מה שקורה בקצר.</li>
-        <li class="text-indigo-800">🔬 <b>חטיבה:</b> וואט (W) = V × A – כמה "כוח עבודה" בכל שנייה. נורית קטנה צריכה מעט, משאבה צריכה הרבה. ויותר התנגדות = פחות זרם באותו מתח (צינור צר).</li>
+        <li>• <b>וואט (W) = V × A:</b> כמה "כוח עבודה" בכל שנייה. נורית קטנה צריכה מעט, משאבה צריכה הרבה. ויותר התנגדות = פחות זרם באותו מתח (צינור צר).</li>
       </ul>
     </details>
   </div>
@@ -199,7 +199,7 @@
       <div class="bg-orange-50 rounded-2xl p-3"><div class="text-3xl">✋</div><p class="font-black text-orange-800">פלט</p><p class="text-xs text-gray-500">מה הבקר עושה</p></div>
     </div>
     <p class="text-sm text-gray-600 bg-slate-50 rounded-xl p-3">💬 <b>איך הבקר יודע מה להחליט?</b> לפי הוראות שאנחנו כותבים לו. הוא לא מבין עברית – כותבים לו בשפת תכנות שנקראת <b>MicroPython</b>, בתוכנה <b>Thonny</b>. איך כותבים החלטה? את זה נגלה בשיעור 7.</p>
-    <p class="text-xs text-indigo-800 mt-2">🔬 <b>חטיבה:</b> MicroPython היא שפה "גבוהה" – קרובה לאנגלית. בתוך הבקר היא מתורגמת לשפת מכונה: אפסים ואחדים.</p>
+    <p class="text-xs text-indigo-800 mt-2">🔬 MicroPython היא שפה "גבוהה" – קרובה לאנגלית. בתוך הבקר היא מתורגמת לשפת מכונה: אפסים ואחדים.</p>
   </div>
 
   <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
@@ -327,7 +327,7 @@
       <li>🚦 <b>שיעור 8 – הנורית הצבעונית</b>: <code dir="ltr">brightness=0.2</code> = כמה חזק היא מאירה. יש בתוכה שבב קטן שעושה את ההבהוב בשבילה.</li>
     </ul>
     <details class="mt-3 bg-indigo-50 rounded-2xl p-4 text-sm text-gray-700">
-      <summary class="font-bold text-indigo-900 cursor-pointer">🔬 חטיבה: איך זה נראה בקוד</summary>
+      <summary class="font-bold text-indigo-900 cursor-pointer">🐍 איך זה נראה בקוד</summary>
       <pre dir="ltr" class="bg-slate-800 text-green-400 rounded-xl p-3 mt-2 text-xs overflow-x-auto">from machine import Pin, PWM
 bz = PWM(Pin(5), freq=1000, duty_u16=32768)  # 50%</pre>
       <ul class="mt-2 space-y-1">

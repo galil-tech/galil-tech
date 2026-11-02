@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 5.5 – איך החשמל מגיע לחיישן? | מסלול יסודי | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת עם החטיבה (במכוון - כמו שיעורים 1-4 יסודי). אין elementary/assets. -->
+  <link rel="stylesheet" href="../../assets/core.css">
+  <script src="../../assets/core.js"></script>
+  <script src="../../data/roster.js"></script>
+  <script src="../../assets/identity.js"></script>
+  <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="../../data/sheets-config.js"></script>
+  <script src="../../assets/sheets-sync.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;}
+    .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#e0e7ff;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#facc15;}
+    .step-dot.current{background:#3730a3;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .e-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .reveal{display:none;animation:fadeUp .35s ease;}
+    .reveal.show{display:block;}
+    .qopt{cursor:pointer;border:2px solid #e0e7ff;border-radius:12px;padding:12px;text-align:center;font-size:.9rem;transition:all .2s;background:white;}
+    .qopt:hover{border-color:#818cf8;background:#eef2ff;}
+    .qopt.correct{background:#dcfce7!important;border-color:#16a34a!important;pointer-events:none;}
+    .qopt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .qopt.locked{pointer-events:none;}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+    .shake{animation:shake .3s;}
+    /* circuit */
+    .wire{stroke:#64748b;stroke-width:6;fill:none;stroke-linecap:round;}
+    .wire.flow{stroke:#facc15;stroke-dasharray:10 10;animation:flow .6s linear infinite;}
+    .wire.hot{stroke:#ef4444;stroke-dasharray:10 6;animation:flow .25s linear infinite;}
+    @keyframes flow{to{stroke-dashoffset:-20}}
+    /* sort game */
+    .chip{cursor:pointer;border:2px solid #c7d2fe;border-radius:14px;padding:10px 12px;background:white;font-weight:700;font-size:.9rem;transition:all .2s;user-select:none;}
+    .chip.sel{border-color:#4f46e5;background:#eef2ff;transform:scale(1.05);box-shadow:0 4px 12px rgba(79,70,229,.25);}
+    .chip.placed{cursor:default;opacity:.95;border-color:#16a34a;background:#f0fdf4;}
+    .bin{border:2.5px dashed #a5b4fc;border-radius:18px;min-height:130px;padding:10px;cursor:pointer;transition:all .2s;}
+    .bin.ready{border-color:#4f46e5;background:#eef2ff;}
+    /* pins */
+    .pin{cursor:pointer;border:2px solid #cbd5e1;border-radius:10px;padding:10px 8px;font-family:monospace;font-weight:800;text-align:center;background:white;transition:all .2s;user-select:none;}
+    .pin:hover{border-color:#6366f1;}
+    .pin.sel{border-color:#4f46e5;background:#eef2ff;transform:scale(1.06);}
+    .pin.ok{border-color:#16a34a;background:#dcfce7;pointer-events:none;}
+    input[type=range]{-webkit-appearance:none;height:8px;border-radius:4px;background:#e2e8f0;cursor:pointer;width:100%;}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:white;border:3px solid #3730a3;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2);}
+    .mission{border:2px solid #e2e8f0;border-radius:14px;padding:10px 12px;transition:all .3s;}
+    .mission.done{border-color:#16a34a;background:#f0fdf4;}
+    textarea:focus,select:focus{outline:2px solid #818cf8;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen">
+
+<!-- MASCOT -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" style="font-size:2.6rem">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center gap-3">
+    <a href="../../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../../index.html" class="hover:text-lime-300" aria-label="דף הבית">🏠</a>
+      <a href="../../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-gradient-to-r from-slate-800 to-indigo-900 text-white pt-10 pb-8 px-4">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="bg-blue-400 text-blue-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 2 – צמיחה</span>
+      <span class="bg-yellow-300 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full">⚡ Side Quest</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">בין שיעור 5 לשיעור 6</span>
+    </div>
+    <h1 class="text-3xl md:text-5xl font-black mb-2">⚡ איך החשמל מגיע לחיישן?</h1>
+    <p class="text-indigo-200 text-lg">מעגל חשמלי · הקופסה החכמה · חזק או חלש · 3 החוטים</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-indigo-200 mb-1">
+        <span id="plabel">שלב 1 מתוך 7</span>
+        <span id="ecounter">⚡ <b id="ec">0</b>/10 אלקטרונים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-yellow-300 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ═══════════ STEP 1 – CIRCUIT ═══════════ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-lime-50 border-2 border-lime-300 rounded-3xl p-5 mb-6">
+    <p class="font-black text-lime-900 mb-1">🔙 זוכרים משיעור 5?</p>
+    <p class="text-gray-700">שאלנו: <b>"אם הצמח לא מרגיש טוב – איך תדעו לפני שרואים בעיניים?"</b> התשובה: חיישן שמודד לבד, כל הזמן. אבל כדי שחיישן יעבוד הוא צריך חשמל. היום נבין איך החשמל מגיע אליו – כדי שבשיעור 6 נחבר אותו בבטחה.</p>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">🔁 המעגל החשמלי</h2>
+    <p class="text-gray-600 mb-4">חשמל זורם כמו מים בצינור. הוא צריך <b>דרך שלמה</b>: יוצא מהמקור, עובר ברכיב וחוזר. נסו בעצמכם:</p>
+
+    <div class="grid md:grid-cols-2 gap-6 items-center">
+      <svg viewBox="0 0 320 220" class="w-full max-w-sm mx-auto" role="img" aria-label="מעגל חשמלי: מקור, מתג ונורית">
+        <!-- source -->
+        <rect x="20" y="80" width="50" height="70" rx="8" fill="#1e293b"/>
+        <text x="45" y="112" fill="#facc15" font-size="13" text-anchor="middle" font-weight="900">3.3V</text>
+        <text x="45" y="132" fill="#94a3b8" font-size="10" text-anchor="middle">מקור</text>
+        <!-- top wire -->
+        <path id="w-top1" class="wire" d="M45 80 V30 H130"/>
+        <path id="w-top2" class="wire" d="M190 30 H275 V85"/>
+        <!-- switch -->
+        <circle cx="130" cy="30" r="5" fill="#334155"/><circle cx="190" cy="30" r="5" fill="#334155"/>
+        <line id="sw-arm" x1="130" y1="30" x2="185" y2="5" stroke="#334155" stroke-width="6" stroke-linecap="round" style="transition:all .3s"/>
+        <text x="160" y="55" fill="#64748b" font-size="11" text-anchor="middle">מתג</text>
+        <!-- LED -->
+        <circle id="led" cx="275" cy="110" r="22" fill="#e2e8f0" stroke="#94a3b8" stroke-width="3" style="transition:all .3s"/>
+        <text x="275" y="150" fill="#64748b" font-size="11" text-anchor="middle">נורית</text>
+        <!-- bottom wire -->
+        <path id="w-bot" class="wire" d="M275 132 V195 H45 V150"/>
+        <!-- short wire -->
+        <path id="w-short" class="wire" d="M45 150 Q160 120 275 85" style="display:none"/>
+        <text id="hot-label" x="160" y="118" fill="#dc2626" font-size="14" text-anchor="middle" font-weight="900" style="display:none">🔥 חם!</text>
+      </svg>
+      <div class="space-y-3">
+        <button onclick="toggleSwitch()" id="btn-sw" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-2xl hover:bg-indigo-500">🔘 סגרו את המתג</button>
+        <button onclick="toggleShort()" id="btn-short" class="w-full bg-white border-2 border-red-300 text-red-700 font-bold py-3 rounded-2xl hover:bg-red-50">⚠️ הוסיפו חוט "קיצור דרך"</button>
+        <div id="circ-msg" class="bg-slate-50 rounded-2xl p-4 text-sm text-gray-700 min-h-[64px]">המתג פתוח. הצינור קטוע – החשמל לא זורם.</div>
+      </div>
+    </div>
+
+    <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 mt-5 text-center">
+      <p class="text-xl font-black text-amber-900">המעגל חייב להיות סגור – אבל לא קצר!</p>
+    </div>
+
+    <details class="mt-4 bg-blue-50 rounded-2xl p-4 text-sm text-gray-700">
+      <summary class="font-bold text-blue-900 cursor-pointer">💪 חשמל חזק או חלש?</summary>
+      <ul class="mt-2 space-y-1">
+        <li>• <b>וולט</b> = כמה חזק החשמל דוחף – כמו ברז שפותחים חזק או חלש.</li>
+        <li>• 🔋 הלוח שלנו: <b>3.3 וולט</b> – חשמל חלש ובטוח, כמו סוללה.</li>
+        <li>• 🔌 השקע בקיר: <b>230 וולט</b> – חזק ומסוכן. לוח וחיישן לא מחברים לשקע!</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h3 class="text-xl font-black text-slate-800 mb-3">❓ סגור, פתוח או קצר?</h3>
+    <div class="space-y-4" id="q-c1">
+      <div>
+        <p class="font-bold text-gray-700 mb-2">1. חוט אחד נפל מהנורית. הנורית לא נדלקת.</p>
+        <div class="grid grid-cols-3 gap-2" id="q-c1-a">
+          <div class="qopt" onclick="pickC('a',this,'closed')">✅ סגור</div>
+          <div class="qopt" onclick="pickC('a',this,'open')">⭕ פתוח</div>
+          <div class="qopt" onclick="pickC('a',this,'short')">💥 קצר</div>
+        </div>
+      </div>
+      <div>
+        <p class="font-bold text-gray-700 mb-2">2. חוט מחבר ישר את 3V3 ל-GND. הלוח מתחמם.</p>
+        <div class="grid grid-cols-3 gap-2" id="q-c1-b">
+          <div class="qopt" onclick="pickC('b',this,'closed')">✅ סגור</div>
+          <div class="qopt" onclick="pickC('b',this,'open')">⭕ פתוח</div>
+          <div class="qopt" onclick="pickC('b',this,'short')">💥 קצר</div>
+        </div>
+      </div>
+      <div>
+        <p class="font-bold text-gray-700 mb-2">3. החשמל יוצא, עובר בנורית וחוזר. הנורית דולקת.</p>
+        <div class="grid grid-cols-3 gap-2" id="q-c1-c">
+          <div class="qopt" onclick="pickC('c',this,'closed')">✅ סגור</div>
+          <div class="qopt" onclick="pickC('c',this,'open')">⭕ פתוח</div>
+          <div class="qopt" onclick="pickC('c',this,'short')">💥 קצר</div>
+        </div>
+      </div>
+    </div>
+    <div id="fb-c1" class="hidden mt-4 rounded-xl p-4 text-sm"></div>
+  </div>
+
+  <div class="text-center"><button id="b1" onclick="goTo(2)" class="hidden bg-indigo-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-indigo-600">המשך ←</button></div>
+</div>
+
+<!-- ═══════════ STEP 2 – INPUT / DECISION / OUTPUT ═══════════ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">🧠 הקופסה החכמה</h2>
+    <p class="text-gray-600 mb-2">הלוח שלנו (קוראים לו ESP32) הוא <b>קופסה חכמה</b> עם חושים וידיים. היא עושה כל הזמן שלושה דברים:</p>
+    <div class="grid grid-cols-3 gap-3 text-center mb-4">
+      <div class="bg-sky-50 rounded-2xl p-3"><div class="text-3xl">👂</div><p class="font-black text-sky-800">מרגישה</p><p class="text-xs text-gray-500">החושים</p></div>
+      <div class="bg-violet-50 rounded-2xl p-3"><div class="text-3xl">🧠</div><p class="font-black text-violet-800">חושבת</p><p class="text-xs text-gray-500">המוח</p></div>
+      <div class="bg-orange-50 rounded-2xl p-3"><div class="text-3xl">✋</div><p class="font-black text-orange-800">עושה</p><p class="text-xs text-gray-500">הידיים</p></div>
+    </div>
+    <p class="text-sm text-gray-600 bg-slate-50 rounded-xl p-3">💬 <b>איך הקופסה יודעת מה לחשוב?</b> המורה מכניס/ה לה הוראות מראש – כמו מתכון. היא לא מבינה עברית, אז ההוראות כתובות בשפה מיוחדת למחשבים.</p>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h3 class="text-xl font-black text-slate-800 mb-1">🎮 מיינו לשלוש קופסאות</h3>
+    <p class="text-sm text-gray-500 mb-4">לחצו על כרטיס, ואז על הקופסה שאליה הוא שייך.</p>
+    <div class="flex flex-wrap gap-2 justify-center mb-5" id="chips">
+      <div class="chip" data-bin="in" onclick="selChip(this)">💧 חיישן לחות קרקע</div>
+      <div class="chip" data-bin="out" onclick="selChip(this)">🚦 נורית צבעונית</div>
+      <div class="chip" data-bin="dec" onclick="selChip(this)">📜 "אם האדמה יבשה – תזעיק"</div>
+      <div class="chip" data-bin="in" onclick="selChip(this)">👆 חוט מגע</div>
+      <div class="chip" data-bin="out" onclick="selChip(this)">🔊 זמזם</div>
+      <div class="chip" data-bin="out" onclick="selChip(this)">🚰 ברז שנפתח</div>
+    </div>
+    <div class="grid grid-cols-3 gap-3">
+      <div class="bin" id="bin-in" onclick="dropChip('in')"><p class="font-black text-sky-800 text-center mb-2">👂 מרגישה</p></div>
+      <div class="bin" id="bin-dec" onclick="dropChip('dec')"><p class="font-black text-violet-800 text-center mb-2">🧠 חושבת</p></div>
+      <div class="bin" id="bin-out" onclick="dropChip('out')"><p class="font-black text-orange-800 text-center mb-2">✋ עושה</p></div>
+    </div>
+    <div id="fb-io" class="hidden mt-4 rounded-xl p-4 text-sm"></div>
+  </div>
+
+  <div class="text-center"><button id="b2" onclick="goTo(3)" class="hidden bg-indigo-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-indigo-600">המשך ←</button></div>
+</div>
+
+<!-- ═══════════ STEP 3 – ANALOG / DIGITAL ═══════════ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">🎚️ כן/לא – או מספר?</h2>
+    <p class="text-gray-600 mb-4">יש חיישנים שעונים רק <b>כן או לא</b>, ויש חיישנים שעונים ב<b>מספר</b> מתוך טווח. נסו את שניהם:</p>
+    <div class="grid md:grid-cols-2 gap-5">
+      <div class="bg-sky-50 rounded-2xl p-5 text-center">
+        <p class="font-black text-sky-900 mb-1">👆 חוט מגע – כן או לא</p>
+        <p class="text-xs text-gray-500 mb-3">לחצו והחזיקו את הכפתור</p>
+        <button id="touch-btn" class="w-24 h-24 rounded-full bg-white border-4 border-sky-300 text-3xl mx-auto block select-none" aria-label="כפתור מגע">👆</button>
+        <p class="mt-3 font-mono text-2xl font-black" id="touch-val">לא (0)</p>
+      </div>
+      <div class="bg-violet-50 rounded-2xl p-5 text-center">
+        <p class="font-black text-violet-900 mb-1">📈 חיישן שעונה במספר</p>
+        <p class="text-xs text-gray-500 mb-3">הזיזו את הסליידר – כמו מחוג של מד דלק</p>
+        <div class="bg-white rounded-full h-5 overflow-hidden border mb-3"><div id="an-bar" class="h-5 bg-violet-500 transition-all" style="width:50%"></div></div>
+        <input type="range" min="0" max="65535" value="32768" id="an-range" oninput="anMove(this.value)" aria-label="ערך החיישן">
+        <p class="mt-3 font-mono text-2xl font-black" id="an-val">32768</p>
+        <p class="text-xs text-gray-400">מספר בין 0 ל-65535 (מספר גדול!)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h3 class="text-xl font-black text-slate-800 mb-3">❓ שתי שאלות</h3>
+    <p class="font-bold text-gray-700 mb-2">1. חיישן הלחות שנחבר בשיעור 6 מחזיר מספר בין 0 ל-65535. הוא דומה ל...</p>
+    <div class="grid grid-cols-2 gap-2 mb-2" id="q-ad1">
+      <div class="qopt" onclick="pickQ('ad1',this,false)">💡 מתג אור (דולק/כבוי)</div>
+      <div class="qopt" onclick="pickQ('ad1',this,true)">⛽ מד דלק (טווח של ערכים)</div>
+    </div>
+    <div id="fb-ad1" class="hidden mb-4 rounded-xl p-3 text-sm"></div>
+    <div class="reveal" id="ad2-wrap">
+      <p class="font-bold text-gray-700 mb-2">2. חוט המגע (שנפגוש בשיעור 7) מחזיר...</p>
+      <div class="grid grid-cols-2 gap-2" id="q-ad2">
+        <div class="qopt" onclick="pickQ('ad2',this,true)">כן / לא</div>
+        <div class="qopt" onclick="pickQ('ad2',this,false)">מספר בין 0 ל-65535</div>
+      </div>
+      <div id="fb-ad2" class="hidden mt-2 rounded-xl p-3 text-sm"></div>
+    </div>
+  </div>
+
+  <div class="text-center"><button id="b3" onclick="goTo(4)" class="hidden bg-indigo-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-indigo-600">המשך ←</button></div>
+</div>
+
+<!-- ═══════════ STEP 4 – PWM ═══════════ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">🔦 חזק או חלש?</h2>
+    <p class="text-gray-600 mb-2">הקופסה החכמה יודעת להדליק נורית רק בשתי דרכים: <b>דולק</b> או <b>כבוי</b>. אז איך היא עושה נורית <b>חלשה</b>?</p>
+    <div class="bg-slate-800 text-white rounded-2xl p-4 text-center mb-5">
+      <p class="text-lg font-black">היא מדליקה ומכבה מהר מאוד – יותר מהר ממה שהעין רואה.</p>
+      <p class="text-yellow-300 font-black text-xl mt-1">כמה מהזמן דולק = כמה חזק</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 items-center">
+      <div class="text-center">
+        <div class="relative w-36 h-36 mx-auto">
+          <div id="pwm-glow" class="absolute inset-0 rounded-full" style="background:radial-gradient(circle,#facc15 0%,rgba(250,204,21,0) 70%);opacity:.5"></div>
+          <div id="pwm-led" class="absolute rounded-full border-4 border-yellow-600" style="inset:34px;background:#fde047;opacity:.5"></div>
+        </div>
+        <p class="text-sm text-gray-500 mt-1">הנורית</p>
+        <div class="flex gap-2 justify-center mt-3">
+          <button id="sp-slow" onclick="setSpeed(false)" class="px-4 py-2 rounded-xl text-sm font-bold border-2 border-indigo-300 bg-white">🐢 לאט</button>
+          <button id="sp-fast" onclick="setSpeed(true)" class="px-4 py-2 rounded-xl text-sm font-bold border-2 border-indigo-600 bg-indigo-600 text-white">⚡ מהר</button>
+        </div>
+        <p id="sp-note" class="text-xs text-gray-500 mt-2">מהר: העין לא רואה את ההבהוב – רק עוצמה</p>
+      </div>
+      <div>
+        <svg viewBox="0 0 300 90" class="w-full bg-slate-900 rounded-2xl" role="img" aria-label="גרף דולק-כבוי">
+          <text x="292" y="18" fill="#94a3b8" font-size="9" text-anchor="end">דולק</text>
+          <text x="292" y="80" fill="#94a3b8" font-size="9" text-anchor="end">כבוי</text>
+          <path id="pwm-wave" d="" stroke="#facc15" stroke-width="3" fill="none"/>
+        </svg>
+        <div class="flex justify-between text-sm mt-3 mb-1"><span class="font-bold text-gray-700">דולק <span id="duty-val" class="text-indigo-700 text-lg">50</span>% מהזמן</span></div>
+        <input type="range" min="0" max="100" step="5" value="50" id="duty" oninput="setDuty(this.value)" aria-label="אחוז הזמן שהנורית דולקת">
+        <div class="flex justify-between text-xs text-gray-400 mt-1"><span>0% כבוי</span><span>100% דולק כל הזמן</span></div>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-3 mt-6">
+      <div class="mission" id="m-dim">🎯 <b>משימה 1:</b> נורית <b>חלשה</b> (במצב "מהר") – בין 10% ל-30%</div>
+      <div class="mission" id="m-bright">🎯 <b>משימה 2:</b> נורית <b>חזקה</b> (במצב "מהר") – בין 70% ל-100%</div>
+    </div>
+    <div id="fb-pwm" class="hidden mt-4 rounded-xl p-4 text-sm"></div>
+
+    <div class="reveal mt-5" id="pwm-q-wrap">
+      <p class="font-bold text-gray-700 mb-2">❓ ב-50%, מה באמת קורה לנורית?</p>
+      <div class="grid md:grid-cols-3 gap-2" id="q-p1">
+        <div class="qopt" onclick="pickQ('p1',this,false)">היא מקבלת חצי חשמל כל הזמן</div>
+        <div class="qopt" onclick="pickQ('p1',this,true)">דולקת חצי מהזמן – והעין רואה "חצי חזק"</div>
+        <div class="qopt" onclick="pickQ('p1',this,false)">היא נשרפת</div>
+      </div>
+      <div id="fb-p1" class="hidden mt-2 rounded-xl p-3 text-sm"></div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h3 class="text-lg font-black text-slate-800 mb-2">🔮 איפה נפגוש את זה?</h3>
+    <ul class="text-sm text-gray-600 space-y-1">
+      <li>🔊 <b>שיעור 7 – הזמזם:</b> הקופסה מדליקה ומכבה אותו מהר – וזה הצפצוף!</li>
+      <li>🚦 <b>הנורית הצבעונית:</b> אדום כשהאדמה יבשה, ירוק כשהכול בסדר.</li>
+    </ul>
+  </div>
+
+  <div class="text-center"><button id="b4" onclick="goTo(5)" class="hidden bg-indigo-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-indigo-600">המשך ←</button></div>
+</div>
+
+<!-- ═══════════ STEP 5 – WIRING + SAFETY ═══════════ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">🔌 3 החוטים של חיישן הלחות</h2>
+    <p class="text-gray-600 mb-4">לחיישן יש 3 רגליים. לכל אחת תפקיד:</p>
+    <div class="grid md:grid-cols-3 gap-3 mb-5">
+      <div class="bg-yellow-50 rounded-2xl p-3"><p class="font-black font-mono">⚡ VCC</p><p class="text-sm text-gray-600">החשמל נכנס</p></div>
+      <div class="bg-slate-100 rounded-2xl p-3"><p class="font-black font-mono">↩️ GND</p><p class="text-sm text-gray-600">החשמל חוזר – סוגר את המעגל</p></div>
+      <div class="bg-sky-50 rounded-2xl p-3"><p class="font-black font-mono">📢 AOUT</p><p class="text-sm text-gray-600">החיישן "מדבר" – מספר לקופסה מה הוא מרגיש</p></div>
+    </div>
+    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-sm text-blue-900 mb-5">
+      ⚡ <b>3V3 ולא 5V:</b> בלוח יש פין שכתוב עליו 5V. הוא חזק מדי בשביל החיישן שלנו – החיישן "יצעק" ללוח, והלוח יכול להישרף. לכן: <b>חיישן תמיד ל-3V3.</b>
+    </div>
+
+    <h3 class="text-xl font-black text-slate-800 mb-1">🎮 חברו (על המסך)</h3>
+    <p class="text-sm text-gray-500 mb-3">לחצו על רגל של החיישן, ואז על הפין בלוח שאליו היא מתחברת.</p>
+    <div class="grid grid-cols-2 gap-6">
+      <div>
+        <p class="font-bold text-center text-gray-700 mb-2">🌡️ חיישן</p>
+        <div class="space-y-2">
+          <div class="pin" data-s="VCC" onclick="selPin(this)">VCC</div>
+          <div class="pin" data-s="GND" onclick="selPin(this)">GND</div>
+          <div class="pin" data-s="AOUT" onclick="selPin(this)">AOUT</div>
+        </div>
+      </div>
+      <div>
+        <p class="font-bold text-center text-gray-700 mb-2">🔲 הלוח</p>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="pin" data-b="3V3" onclick="boardPin(this)">3V3</div>
+          <div class="pin" data-b="5V" onclick="boardPin(this)">5V</div>
+          <div class="pin" data-b="GND" onclick="boardPin(this)">GND</div>
+          <div class="pin" data-b="GPIO 6" onclick="boardPin(this)">GPIO 6</div>
+        </div>
+      </div>
+    </div>
+    <div id="wire-list" class="mt-4 space-y-1 text-sm font-mono"></div>
+    <div id="fb-wire" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h3 class="text-xl font-black text-red-800 mb-3">🛡️ 5 כללי בטיחות</h3>
+    <ol class="space-y-2 text-sm text-gray-700 list-decimal list-inside">
+      <li>חוט אף פעם לא מחבר ישר את 3V3 ל-GND.</li>
+      <li>החיישן תמיד ל-3V3. אף פעם לא ל-5V.</li>
+      <li>מחברים לפי מה שכתוב, לא לפי הצבע של החוט.</li>
+      <li>מחברים חוטים רק כשהכבל לא מחובר. חבר/ה בודק/ת – ורק אז מחברים.</li>
+      <li>משהו חם או מריח? מנתקים את הכבל וקוראים למורה.</li>
+    </ol>
+  </div>
+
+  <div class="text-center"><button id="b5" onclick="goTo(6)" class="hidden bg-indigo-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-indigo-600">המשך ←</button></div>
+</div>
+
+<!-- ═══════════ STEP 6 – GROWEE + PROJECT ═══════════ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">🇮🇱 זוכרים את Growee?</h2>
+    <p class="text-gray-600 mb-3">בשיעור 5 הכרנו את Growee – מכשיר ישראלי שבודק את המים של הצמחים לבד, כל הזמן. מה שעשיתם ביד – הוא עושה לבד. גם בתוכו יש קופסה חכמה!</p>
+    <p class="font-bold text-gray-700 mb-2">❓ מה המכשיר של Growee <b>מרגיש</b>?</p>
+    <div class="grid md:grid-cols-3 gap-2" id="q-g1">
+      <div class="qopt" onclick="pickQ('g1',this,true)">את המים של הצמחים</div>
+      <div class="qopt" onclick="pickQ('g1',this,false)">הודעה לטלפון</div>
+      <div class="qopt" onclick="pickQ('g1',this,false)">החלטה מה לתקן</div>
+    </div>
+    <div id="fb-g1" class="hidden mt-2 rounded-xl p-3 text-sm"></div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">🔧 בכיתה – עם הערכה האמיתית</h2>
+    <p class="text-sm text-gray-500 mb-4">הערכה <b>לא מחוברת לחשמל</b>. סמנו כל משימה אחרי שהמורה אישר/ה.</p>
+    <div class="space-y-3">
+      <label class="mission flex gap-3 items-start cursor-pointer" id="pm-pins">
+        <input type="checkbox" class="mt-1 w-5 h-5" onchange="projCheck('pins',this)">
+        <span><b>ציד פינים:</b> מצאנו על הלוח 3V3, GND ו-GPIO 6, ועל החיישן VCC, GND, AOUT, ושמנו ליד כל אחד את הכרטיס שלו. <span class="text-yellow-700 font-bold">⚡1</span></span>
+      </label>
+      <label class="mission flex gap-3 items-start cursor-pointer" id="pm-err">
+        <input type="checkbox" class="mt-1 w-5 h-5" onchange="projCheck('err',this)">
+        <span><b>מצאו את הטעות:</b> מצאנו את שלוש הטעויות בתמונות של המורה. <span class="text-yellow-700 font-bold">⚡2</span></span>
+      </label>
+      <label class="mission flex gap-3 items-start cursor-pointer" id="pm-pwmc">
+        <input type="checkbox" class="mt-1 w-5 h-5" onchange="projCheck('pwmc',this)">
+        <span><b>חזק או חלש:</b> עשינו את ניסוי הפנס. <span class="text-yellow-700 font-bold">⚡1</span></span>
+      </label>
+    </div>
+    <p id="proj-lock" class="text-xs text-gray-400 mt-3">🔒 השלב הבא ייפתח כשכל 3 המשימות מסומנות.</p>
+  </div>
+
+  <div class="text-center"><button id="b6" onclick="goTo(7)" class="hidden bg-indigo-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-indigo-600">לסיכום ←</button></div>
+</div>
+
+<!-- ═══════════ STEP 7 – DATA + SUMMARY ═══════════ -->
+<div class="step-panel" id="step-7">
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">📊 המיפוי של הקבוצה</h2>
+    <p class="text-sm text-gray-500 mb-4">רשמו לאן תחבר הקבוצה כל חוט בשיעור 6. נבדוק אז על הערכה.</p>
+    <div class="grid md:grid-cols-3 gap-3">
+      <label class="text-sm font-bold text-gray-700">VCC →
+        <select id="map-vcc" class="w-full mt-1 border-2 rounded-xl p-2"><option value="">בחרו</option><option>3V3</option><option>5V</option><option>GND</option><option>GPIO 6</option></select></label>
+      <label class="text-sm font-bold text-gray-700">GND →
+        <select id="map-gnd" class="w-full mt-1 border-2 rounded-xl p-2"><option value="">בחרו</option><option>3V3</option><option>5V</option><option>GND</option><option>GPIO 6</option></select></label>
+      <label class="text-sm font-bold text-gray-700">AOUT →
+        <select id="map-aout" class="w-full mt-1 border-2 rounded-xl p-2"><option value="">בחרו</option><option>3V3</option><option>5V</option><option>GND</option><option>GPIO 6</option></select></label>
+    </div>
+    <button onclick="saveMap()" class="mt-4 bg-indigo-600 text-white font-bold px-6 py-3 rounded-2xl hover:bg-indigo-500">💾 שמור לקיר הכיתה</button>
+    <div id="map-msg" class="hidden mt-3 text-sm"></div>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white rounded-3xl shadow-lg p-6">
+      <h3 class="text-lg font-black text-slate-800 mb-3">🧱 קיר הכיתה</h3>
+      <div id="wall" class="space-y-1 text-sm text-gray-600"></div>
+    </div>
+    <div class="bg-white rounded-3xl shadow-lg p-6">
+      <h3 class="text-lg font-black text-slate-800 mb-3">⚡ לוח האלקטרונים</h3>
+      <div id="board" class="space-y-1 text-sm text-gray-600"></div>
+      <p class="text-xs text-gray-400 mt-2">אלקטרונים הם טוקן מיוחד לשיעור הזה. הם לא נספרים בעלים 🌿.</p>
+    </div>
+  </div>
+
+  <div class="bg-gradient-to-br from-indigo-800 to-slate-900 text-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black mb-3">📝 מה למדנו היום</h2>
+    <ul class="space-y-1 text-indigo-100">
+      <li>🔁 המעגל חייב להיות <b>סגור – אבל לא קצר</b>.</li>
+      <li>🔋 הלוח שלנו = חשמל <b>חלש ובטוח</b>. השקע בקיר = חזק ומסוכן.</li>
+      <li>🧠 הקופסה החכמה <b>מרגישה, חושבת ועושה</b>.</li>
+      <li>🎚️ חיישן הלחות עונה <b>במספר</b>. חוט המגע עונה <b>כן או לא</b>.</li>
+      <li>🔦 נורית חלשה = הדלקה וכיבוי מהירים. <b>דולק רוב הזמן = חזק</b>.</li>
+      <li>🔌 VCC ל-3V3 · GND ל-GND · AOUT ל-GPIO 6. <b>אף פעם לא 5V לחיישן.</b></li>
+    </ul>
+  </div>
+
+  <div class="bg-amber-50 border-2 border-amber-300 rounded-3xl p-6 mb-6">
+    <h3 class="text-xl font-black text-amber-900 mb-2">⭐ איך זה רלוונטי לפרויקט שלי?</h3>
+    <p class="text-gray-700 mb-3">מה הפרויקט שלנו צריך <b>להרגיש</b>? ומה הוא צריך <b>לעשות</b>?</p>
+    <textarea data-answer-key="n55_northstar" id="ns" rows="3" class="w-full border-2 border-amber-200 rounded-2xl p-3" placeholder="הפרויקט שלנו מרגיש... ועושה..."></textarea>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h3 class="text-xl font-black text-slate-800 mb-2">🔮 שאלה לשיעור 6</h3>
+    <p class="text-gray-700 mb-3">החיישן ישלח ללוח מספר. <b>כשהאדמה יבשה – המספר יהיה גבוה או נמוך?</b> נחשו! התשובה בשיעור 6.</p>
+    <div class="grid grid-cols-2 gap-2" id="q-tz">
+      <div class="qopt" onclick="teaser(this,'high')">⬆️ גבוה</div>
+      <div class="qopt" onclick="teaser(this,'low')">⬇️ נמוך</div>
+    </div>
+    <div id="fb-tz" class="hidden mt-2 rounded-xl p-3 text-sm bg-indigo-50 border border-indigo-200"></div>
+  </div>
+
+  <div class="flex flex-wrap gap-3 justify-center">
+    <a href="../../index.html#lessons-section" class="bg-indigo-700 text-white px-8 py-4 rounded-2xl font-black">לדף השיעורים ←</a>
+  </div>
+</div>
+
+</div>
+
+<script>
+const TOTAL=7;
+let cur=1;
+const sName=GC.getStudentName();
+// אלקטרונים: passport1.electrons55 = {פריט: משקל}. נשמר בדרכון (מסונכרן לגיליון), לא נוגע ב-ls* ובעלים.
+// לכל פריט יש משקל קבוע – הסכום המקסימלי הוא 10, ופריט שנאסף לא נאסף שוב ולא יורד.
+const E_W={c1:1,io:1,ad:1,pwm:1,wire:1,pins:1,err:2,pwmc:1,teaser:1};
+function getE(){const e=GC.getPassport('electrons55');return (e&&typeof e==='object')?e:{};}
+function totalE(){const e=getE();let t=0;for(const k in E_W)if(e[k])t+=E_W[k];return t;}
+function showE(){document.getElementById('ec').textContent=totalE();}
+function earnE(id){
+  const e=Object.assign({},getE());
+  if(e[id])return;
+  e[id]=E_W[id];
+  GC.savePassport('electrons55',e);
+  showE();
+  for(let i=0;i<6;i++){
+    const b=document.createElement('div');b.className='e-burst';
+    b.style.cssText='left:'+(15+Math.random()*70)+'%;top:'+(15+Math.random()*70)+'%;--tx:'+(Math.random()-.5)*200+'px;--ty:'+(-50-Math.random()*130)+'px;';
+    b.textContent='⚡';document.body.appendChild(b);setTimeout(()=>b.remove(),950);
+  }
+  try{GC.playSound('leaf');}catch(err){}
+  const lb=JSON.parse(localStorage.getItem('ael55')||'{}');
+  lb[sName]=Math.max(lb[sName]||0,totalE());localStorage.setItem('ael55',JSON.stringify(lb));
+  if(cur===7)renderWall();
+}
+function fb(id,ok,msg){
+  const el=document.getElementById('fb-'+id);
+  el.classList.remove('hidden');
+  el.className='mt-3 rounded-xl p-4 text-sm '+(ok?'bg-green-50 border border-green-300':'bg-orange-50 border border-orange-300');
+  el.textContent=msg;
+}
+
+function goTo(n){
+  if(!document.getElementById('step-'+n))return;
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('step-'+cur).classList.add('active');
+  document.getElementById('pbar').style.width=((n-1)/(TOTAL-1)*100)+'%';
+  document.getElementById('plabel').textContent='שלב '+n+' מתוך '+TOTAL;
+  buildDots();window.scrollTo({top:0,behavior:'smooth'});
+  if(n===7)renderWall();
+}
+function buildDots(){
+  const c=document.getElementById('dots');c.innerHTML='';
+  for(let i=1;i<=TOTAL;i++){
+    const d=document.createElement('div');
+    d.className='step-dot'+(i<cur?' done':i===cur?' current':'');
+    d.title='שלב '+i;
+    if(i<cur)d.onclick=()=>goTo(i);c.appendChild(d);
+  }
+}
+
+// ── STEP 1: circuit ──
+let swClosed=false,shorted=false;
+function drawCircuit(){
+  const arm=document.getElementById('sw-arm');
+  arm.setAttribute('x2',swClosed?'190':'185');arm.setAttribute('y2',swClosed?'30':'5');
+  const main=['w-top1','w-top2','w-bot'].map(id=>document.getElementById(id));
+  const sh=document.getElementById('w-short'),led=document.getElementById('led'),hot=document.getElementById('hot-label');
+  sh.style.display=shorted?'':'none';hot.style.display=(shorted&&swClosed)?'':'none';
+  main.forEach(w=>w.setAttribute('class','wire'));sh.setAttribute('class','wire');
+  let msg;
+  if(!swClosed){msg='⭕ המתג פתוח. הצינור קטוע – החשמל לא זורם. מעגל <b>פתוח</b>.';led.setAttribute('fill','#e2e8f0');}
+  else if(shorted){
+    msg='💥 <b>קצר!</b> החשמל "בורח" בדרך הקצרה ולא עובר בנורית. הרבה זרם = חום ונזק. בלוח אמיתי זה יכול לשרוף רכיבים.';
+    led.setAttribute('fill','#e2e8f0');sh.setAttribute('class','wire hot');
+    document.getElementById('w-top1').setAttribute('class','wire hot');
+  }else{
+    msg='✅ מעגל <b>סגור</b>. החשמל יוצא, עובר בנורית וחוזר – הנורית דולקת!';
+    led.setAttribute('fill','#facc15');main.forEach(w=>w.setAttribute('class','wire flow'));
+  }
+  document.getElementById('circ-msg').innerHTML=msg;
+  document.getElementById('btn-sw').textContent=swClosed?'🔘 פתחו את המתג':'🔘 סגרו את המתג';
+  document.getElementById('btn-short').textContent=shorted?'✂️ הסירו את חוט הקיצור':'⚠️ הוסיפו חוט "קיצור דרך"';
+}
+function toggleSwitch(){swClosed=!swClosed;drawCircuit();}
+function toggleShort(){shorted=!shorted;drawCircuit();if(shorted&&swClosed)GC.mascotSay('קצר! זה בדיוק מה שאסור בלוח האמיתי 🔥','😱');}
+const cAns={a:'open',b:'short',c:'closed'};const cOk={};
+const cMsg={
+  a:{ok:'✅ נכון – חוט נפל = הצינור קטוע = מעגל פתוח.',bad:'💡 כשחוט נפל, הדרך לא שלמה. איך קוראים לזה?'},
+  b:{ok:'✅ נכון – זה קצר. בגלל זה כלל מספר 1: לעולם לא 3V3 ישר ל-GND.',bad:'💡 החשמל עוקף את כל הרכיבים ומתחמם. איך קוראים לזה?'},
+  c:{ok:'✅ נכון – דרך שלמה דרך הרכיב = מעגל סגור.',bad:'💡 החשמל יוצא, עובר בנורית וחוזר. זה המצב התקין.'},
+};
+function pickC(q,el,val){
+  if(cOk[q])return;
+  const grid=document.getElementById('q-c1-'+q);
+  grid.querySelectorAll('.qopt').forEach(o=>o.classList.remove('wrong'));
+  if(val===cAns[q]){
+    cOk[q]=true;el.classList.add('correct');grid.querySelectorAll('.qopt').forEach(o=>o.classList.add('locked'));
+    fb('c1',true,cMsg[q].ok);
+  }else{el.classList.add('wrong');fb('c1',false,cMsg[q].bad);}
+  if(cOk.a&&cOk.b&&cOk.c){
+    fb('c1',true,'🎉 שלוש מתוך שלוש! "סגור – אבל לא קצר." +⚡1');
+    earnE('c1');document.getElementById('b1').classList.remove('hidden');
+  }
+}
+
+// ── STEP 2: sort ──
+let selC=null,placed=0;
+function selChip(el){
+  if(el.classList.contains('placed'))return;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');selC=el;
+  document.querySelectorAll('.bin').forEach(b=>b.classList.add('ready'));
+}
+const binHint={in:'👂 מרגישה = משהו שמודד או מרגיש.',dec:'🧠 חושבת = ההוראה שהקופסה בודקת.',out:'✋ עושה = משהו שהקופסה מפעילה.'};
+function dropChip(bin){
+  if(!selC)return;
+  const right=selC.dataset.bin;
+  if(right===bin){
+    selC.classList.remove('sel');selC.classList.add('placed');
+    document.getElementById('bin-'+bin).appendChild(selC);placed++;
+    fb('io',true,'✅ נכון!');
+  }else{
+    const c=selC;c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),350);
+    fb('io',false,'💡 לא שם. רמז: '+binHint[right]);
+    c.classList.remove('sel');
+  }
+  selC=null;document.querySelectorAll('.bin').forEach(b=>b.classList.remove('ready'));
+  if(placed===6){
+    fb('io',true,'🎉 מושלם! חיישנים = מרגישה, ההוראה = חושבת, נורית/זמזם/ברז = עושה. +⚡1');
+    earnE('io');document.getElementById('b2').classList.remove('hidden');
+  }
+}
+
+// ── STEP 3: analog / digital ──
+(function(){
+  const b=document.getElementById('touch-btn'),v=document.getElementById('touch-val');
+  const on=e=>{e.preventDefault();v.textContent='כן (1)';b.classList.add('bg-sky-200');};
+  const off=()=>{v.textContent='לא (0)';b.classList.remove('bg-sky-200');};
+  b.addEventListener('mousedown',on);b.addEventListener('touchstart',on,{passive:false});
+  ['mouseup','mouseleave','touchend','touchcancel'].forEach(t=>b.addEventListener(t,off));
+  b.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')on(e);});
+  b.addEventListener('keyup',off);
+})();
+function anMove(x){
+  document.getElementById('an-val').textContent=x;
+  document.getElementById('an-bar').style.width=(x/65535*100)+'%';
+}
+const qDone={};
+const qMsg={
+  ad1:{ok:'✅ נכון! חיישן הלחות עונה במספר – כמו מחוג של מד דלק.',bad:'💡 מתג יודע רק דולק/כבוי. חיישן שנותן 0 עד 65535 דומה יותר למחוג.'},
+  ad2:{ok:'✅ נכון! במגע יש רק כן או לא: נוגעים או לא נוגעים.',bad:'💡 במגע יש רק שתי אפשרויות: נוגעים או לא.'},
+  p1:{ok:'✅ בדיוק! הנורית דולקת חצי מהזמן, כל כך מהר שהעין רואה "חצי חזק".',bad:'💡 הקופסה יודעת רק דולק או כבוי. נסו את מצב "לאט" ותראו מה באמת קורה.'},
+  g1:{ok:'✅ נכון! הוא מרגיש את המים, חושב אם צריך לתקן, ועושה – מתקן ושולח הודעה.',bad:'💡 מרגיש = מה שהמכשיר מודד. מה Growee מודד?'},
+};
+function pickQ(qid,el,correct){
+  if(qDone[qid])return;
+  const grid=document.getElementById('q-'+qid);
+  grid.querySelectorAll('.qopt').forEach(o=>o.classList.remove('wrong'));
+  if(correct){
+    qDone[qid]=true;el.classList.add('correct');grid.querySelectorAll('.qopt').forEach(o=>o.classList.add('locked'));
+    fb(qid,true,qMsg[qid].ok);
+  }else{el.classList.add('wrong');fb(qid,false,qMsg[qid].bad);return;}
+  if(qid==='ad1')document.getElementById('ad2-wrap').classList.add('show');
+  if(qid==='ad2'&&qDone.ad1){earnE('ad');document.getElementById('b3').classList.remove('hidden');}
+  if(qid==='p1')document.getElementById('b4').classList.remove('hidden');
+}
+
+// ── STEP 4: PWM ──
+let duty=50,fast=true,pwmT0=performance.now(),mDim=false,mBright=false;
+function drawWave(){
+  const p=[],per=70,hi=16,lo=76,w=duty/100*per;
+  let d='M0 '+lo;
+  for(let i=0;i<4;i++){
+    const x=i*per;
+    if(duty===0){d+=' H'+(x+per);continue;}
+    if(duty===100){d+=' V'+hi+' H'+(x+per);continue;}
+    d+=' V'+hi+' H'+(x+w)+' V'+lo+' H'+(x+per);
+  }
+  document.getElementById('pwm-wave').setAttribute('d',d);
+}
+function setDuty(v){duty=parseInt(v,10);document.getElementById('duty-val').textContent=duty;drawWave();checkMissions();}
+function setSpeed(f){
+  fast=f;
+  document.getElementById('sp-fast').className='px-4 py-2 rounded-xl text-sm font-bold border-2 '+(f?'border-indigo-600 bg-indigo-600 text-white':'border-indigo-300 bg-white');
+  document.getElementById('sp-slow').className='px-4 py-2 rounded-xl text-sm font-bold border-2 '+(!f?'border-indigo-600 bg-indigo-600 text-white':'border-indigo-300 bg-white');
+  document.getElementById('sp-note').textContent=f?'מהר: העין לא רואה את ההבהוב – רק עוצמה':'לאט: עכשיו רואים את האמת – הנורית רק דולקת או כבויה!';
+  checkMissions();
+}
+function pwmTick(){
+  const led=document.getElementById('pwm-led'),glow=document.getElementById('pwm-glow');
+  let o;
+  if(fast){o=duty/100;}
+  else{const ph=((performance.now()-pwmT0)%1500)/1500;o=ph<duty/100?1:0;}
+  led.style.opacity=(0.08+0.92*o).toFixed(2);glow.style.opacity=(o*0.9).toFixed(2);
+  requestAnimationFrame(pwmTick);
+}
+function checkMissions(){
+  if(!fast)return;
+  if(!mDim&&duty>=10&&duty<=30){mDim=true;document.getElementById('m-dim').classList.add('done');GC.mascotSay('נורית חלשה! דולקת רק חלק קטן מהזמן 🌙','💡');}
+  if(!mBright&&duty>=70){mBright=true;document.getElementById('m-bright').classList.add('done');GC.mascotSay('נורית חזקה! דולקת רוב הזמן ☀️','💡');}
+  if(mDim&&mBright&&!qDone.pwmDone){
+    qDone.pwmDone=true;
+    fb('pwm',true,'🎉 שתי המשימות הושלמו! אותה נורית, אותו פין – רק אחוז הזמן השתנה. +⚡1');
+    earnE('pwm');document.getElementById('pwm-q-wrap').classList.add('show');
+  }
+}
+
+// ── STEP 5: wiring ──
+const wireAns={VCC:'3V3',GND:'GND',AOUT:'GPIO 6'};
+const wireBad={
+  '5V':'🛑 5V חזק מדי לחיישן שלנו! החיישן יצעק ללוח – והלוח יכול להישרף.',
+};
+let selS=null;const wired={};
+function selPin(el){
+  if(el.classList.contains('ok'))return;
+  document.querySelectorAll('[data-s]').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');selS=el;
+}
+function boardPin(el){
+  if(!selS){fb('wire',false,'💡 קודם לחצו על רגל של החיישן (בצד ימין).');return;}
+  const s=selS.dataset.s,b=el.dataset.b;
+  if(wireAns[s]===b){
+    wired[s]=b;selS.classList.remove('sel');selS.classList.add('ok');
+    const row=document.createElement('div');row.className='bg-green-50 rounded-lg px-3 py-1';row.setAttribute('dir','ltr');
+    row.textContent='✅ '+s+' → '+b;document.getElementById('wire-list').appendChild(row);
+    fb('wire',true,s==='GND'?'✅ נכון! GND סוגר את המעגל.':s==='VCC'?'✅ נכון! חשמל מ-3V3 – לא 5V.':'✅ נכון! AOUT ל-GPIO 6 – הפין שמקשיב לחיישן.');
+  }else{
+    let m=wireBad[b];
+    if(!m){
+      if(b==='GND'&&s==='VCC')m='🛑 VCC ל-GND? אז לחיישן אין חשמל – הוא לא יעבוד.';
+      else if(b==='3V3'&&s==='GND')m='🛑 GND ל-3V3 = הפוך! חיבור הפוך יכול לחמם את החיישן.';
+      else if(b==='3V3')m='💡 3V3 זה החשמל. AOUT הוא החיישן שמדבר – הוא צריך פין שמקשיב.';
+      else if(b==='GND')m='💡 ב-GND החיישן לא יישמע. הוא צריך פין שמקשיב.';
+      else m='💡 GPIO 6 הוא הפין שמקשיב לחיישן. החשמל מגיע מפין אחר.';
+    }
+    el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),350);
+    fb('wire',false,m);
+  }
+  selS=null;
+  if(Object.keys(wired).length===3){
+    fb('wire',true,'🎉 החיווט מושלם: VCC → 3V3 · GND → GND · AOUT → GPIO 6. בדיוק ככה נחבר בשיעור 6. +⚡1');
+    earnE('wire');document.getElementById('b5').classList.remove('hidden');
+  }
+}
+
+// ── STEP 6: project ──
+function projCheck(id,box){
+  const card=document.getElementById('pm-'+id);
+  card.classList.toggle('done',box.checked);
+  if(box.checked)earnE(id);
+  const all=['pins','err','pwmc'].every(k=>document.querySelector('#pm-'+k+' input').checked);
+  document.getElementById('b6').classList.toggle('hidden',!all);
+  document.getElementById('proj-lock').classList.toggle('hidden',all);
+}
+
+// ── STEP 7: data, wall, teaser ──
+function saveMap(){
+  const v=document.getElementById('map-vcc').value,g=document.getElementById('map-gnd').value,a=document.getElementById('map-aout').value;
+  const msg=document.getElementById('map-msg');msg.classList.remove('hidden');
+  if(!v||!g||!a){msg.className='mt-3 text-sm text-orange-700';msg.textContent='💡 בחרו פין לכל אחד משלושת החוטים.';return;}
+  const rec={name:sName,vcc:v,gnd:g,aout:a,t:Date.now()};
+  let all=JSON.parse(localStorage.getItem('cls55')||'[]');
+  all=all.filter(r=>r.name!==sName);all.push(rec);localStorage.setItem('cls55',JSON.stringify(all));
+  GC.savePassport('map55',{vcc:v,gnd:g,aout:a});
+  const ok=v==='3V3'&&g==='GND'&&a==='GPIO 6';
+  msg.className='mt-3 text-sm '+(ok?'text-green-700':'text-orange-700');
+  msg.textContent=ok?'✅ נשמר! בדיוק נכון – מוכנים לשיעור 6.':'💾 נשמר. כדאי לחזור לשלב 5 ולבדוק – משהו כאן לא מתאים.';
+  renderWall();
+}
+function esc(s){return String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));}
+function renderWall(){
+  const data=JSON.parse(localStorage.getItem('cls55')||'[]');
+  document.getElementById('wall').innerHTML=data.length?data.map(r=>'<div class="bg-slate-50 rounded-lg px-3 py-1">'+esc(r.name)+': <span dir="ltr" class="font-mono">VCC→'+esc(r.vcc)+' · GND→'+esc(r.gnd)+' · AOUT→'+esc(r.aout)+'</span></div>').join(''):'<p class="text-gray-400">עוד אין רישומים במחשב הזה.</p>';
+  const lb=JSON.parse(localStorage.getItem('ael55')||'{}');
+  lb[sName]=Math.max(lb[sName]||0,totalE());localStorage.setItem('ael55',JSON.stringify(lb));
+  const rows=Object.entries(lb).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  document.getElementById('board').innerHTML=rows.map((r,i)=>'<div class="flex justify-between bg-slate-50 rounded-lg px-3 py-1"><span>'+(i+1)+'. '+esc(r[0])+'</span><span class="font-black text-yellow-700">⚡ '+r[1]+'</span></div>').join('');
+}
+function teaser(el,val){
+  document.querySelectorAll('#q-tz .qopt').forEach(o=>o.classList.remove('correct'));
+  el.classList.add('correct');
+  GC.savePassport('teaser55',val);
+  earnE('teaser');
+  const f=document.getElementById('fb-tz');f.classList.remove('hidden');
+  f.textContent='🔒 הניחוש שלכם נשמר: '+(val==='high'?'גבוה':'נמוך')+'. בשיעור 6 תמדדו באדמה יבשה ורטובה ותגלו. +⚡1';
+}
+
+// ── INIT ──
+function init(){
+  buildDots();showE();drawCircuit();drawWave();requestAnimationFrame(pwmTick);
+  // משימות פרויקט שכבר נאספו (מחשב אחר / רענון) – מסומנות מחדש
+  const e=getE();
+  ['pins','err','pwmc'].forEach(k=>{if(e[k]){const b=document.querySelector('#pm-'+k+' input');b.checked=true;document.getElementById('pm-'+k).classList.add('done');}});
+  projCheck('pins',document.querySelector('#pm-pins input'));
+  const m=GC.getPassport('map55');
+  if(m){document.getElementById('map-vcc').value=m.vcc||'';document.getElementById('map-gnd').value=m.gnd||'';document.getElementById('map-aout').value=m.aout||'';}
+  if(typeof GC.bindOpenAnswers==='function')GC.bindOpenAnswers();
+  // אחרי pullMine (מחשב אחר בכיתה) – מרעננים את מונה האלקטרונים
+  if(window.GC_SYNC&&GC_SYNC.hydrated)GC_SYNC.hydrated.then(showE,function(){});
+  function ready(){
+    GC.Tutorial.start('l055e_electrons',[
+      {target:'#ecounter',emoji:'⚡',wait:'next',text:'בשיעור הזה אוספים אלקטרונים ⚡ במקום עלים. יש 10 לאסוף!'},
+      {target:'#dots',emoji:'🔘',wait:'next',text:'אלה שלבי השיעור. אפשר לחזור אחורה, לא לדלג קדימה.'},
+    ]);
+  }
+  if(document.readyState==='complete')ready();else window.addEventListener('load',ready);
+}
+init();
+</script>
+</body>
+</html>

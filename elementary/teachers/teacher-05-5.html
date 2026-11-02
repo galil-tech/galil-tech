@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מערך שיעור 5.5 | מסלול יסודי | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>*{font-family:'Heebo',sans-serif;}</style>
+</head>
+<body class="bg-gray-50">
+
+<div id="content">
+
+<!-- TOP BAR -->
+<div class="bg-slate-800 text-white py-5 px-8 flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-lg gap-3">
+  <div>
+    <span class="text-xs text-slate-400">מערך שיעור · מסלול יסודי · גליל-טק · ⚡ Side Quest</span>
+    <h1 class="text-2xl font-black">שיעור 5.5 – יישור קו: איך החשמל מגיע לחיישן?</h1>
+  </div>
+  <div class="flex gap-3 flex-wrap">
+    <span class="bg-white/20 px-4 py-2 rounded-xl text-sm">⏱ 90 דקות (גמיש)</span>
+    <span class="bg-blue-500 px-4 py-2 rounded-xl text-sm font-bold">פאזה 2 – צמיחה</span>
+    <a href="../lessons/lesson-05-5.html" target="_blank" class="bg-white text-slate-900 px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-100">👁 פתח לומדה</a>
+    <a href="teacher-05.html" class="bg-slate-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-slate-500">← שיעור 5</a>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-6 py-10 space-y-10">
+
+  <!-- FLEX NOTE -->
+  <div class="bg-amber-50 border-2 border-amber-300 rounded-3xl p-6 text-sm text-gray-700">
+    <p class="font-black text-amber-900 text-lg mb-2">🧩 שיעור גמיש – לא חובה, לא קבוע</p>
+    <p>שיעור יישור קו בין שיעור 5 (מדידת המים) לשיעור 6 (חיבור החיישן הראשון). המדריך/ה מחליט/ה <b>אם</b> להעביר, <b>כמה</b> ו<b>איך</b> – לפי בית הספר, הכיתה והסגנון האישי. יש גרסאות של 90 / 2×45 / 40 דקות וטיפים לפי אופי המדריך/ה (ראו "🎛️ גמישות").</p>
+    <p class="mt-2">החלק שלא מוותרים עליו: <b>3 החוטים + כללי הבטיחות</b>. בשיעור 6 התלמידים מחווטים בעצמם – הם צריכים להגיע לזה מוכנים.</p>
+    <p class="mt-2">✋ <b>אין קוד בשיעור הזה.</b> הכול דרך הגוף, הערכה (בלי חשמל) והלומדה.</p>
+  </div>
+
+  <!-- GOALS -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-700 text-white p-6">
+      <h2 class="text-2xl font-black">🎯 מטרות השיעור</h2>
+      <p class="text-slate-300 text-sm">בסוף השיעור התלמיד...</p>
+    </div>
+    <div class="p-6 grid md:grid-cols-2 gap-6">
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">ידע ומושגים</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">✅ <span>מסביר שחשמל צריך <b>דרך סגורה</b> כדי לזרום – "סגור, אבל לא קצר" (דרך מעגל אנושי ומים בצינור)</span></li>
+          <li class="flex gap-2">✅ <span>יודע ש"וולט" = כמה חזק החשמל דוחף, ושהלוח שלנו עובד בחשמל חלש ובטוח (3.3 וולט)</span></li>
+          <li class="flex gap-2">✅ <span>יודע שהשקע בבית מסוכן, ושלוח וחיישן לא מחברים לשקע</span></li>
+          <li class="flex gap-2">✅ <span>מסביר את הבקר כ"קופסה חכמה": מרגישה (חיישן) → חושבת → עושה (נורית, זמזם)</span></li>
+          <li class="flex gap-2">✅ <span>מבחין בין חיישן שעונה "כן/לא" לחיישן שעונה במספר</span></li>
+          <li class="flex gap-2">✅ <span>מבין שהבקר עושה נורית "חלשה" או "חזקה" ע"י הדלקה וכיבוי מהירים מאוד</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">מיומנויות מעשיות</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">🔧 <span>מוצא על הלוח את 3V3, GND ו-GPIO 6, ועל החיישן את VCC, GND, AOUT (ערכה בלי חשמל)</span></li>
+          <li class="flex gap-2">🔧 <span>אומר לאן הולך כל אחד מ-3 החוטים: VCC → 3V3 · GND → GND · AOUT → GPIO 6</span></li>
+          <li class="flex gap-2">🔧 <span>מוצא טעות בתמונה של חיווט ואומר "מה היה קורה"</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">חשיבה</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">💭 <span>מסביר במילים שלו למה לא מחברים את החיישן לפין 5V</span></li>
+          <li class="flex gap-2">💭 <span>מקשר: מה הפרויקט שלנו צריך "להרגיש", ומה הוא צריך "לעשות"</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">גיימיפיקציה</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">⚡ <span>אוסף עד <b>10 אלקטרונים</b> – טוקן מיוחד לשיעור הזה. <b>לא עלים</b>, לא משפיע על הרמות</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREP -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-teal-700 text-white p-6">
+      <h2 class="text-2xl font-black">🧰 הכנה לפני השיעור</h2>
+    </div>
+    <div class="px-6 pt-6">
+      <div class="bg-red-50 border-2 border-red-300 rounded-2xl p-4 text-sm text-red-800">
+        ⛔ <b>בשיעור הזה התלמידים לא מחברים USB.</b> הערכות מחולקות לקבוצות רק כדי להכיר את הפינים. רק המורה מחבר/ת לוח לחשמל, להדגמה.
+      </div>
+    </div>
+    <div class="p-6 grid md:grid-cols-3 gap-6 text-sm">
+      <div>
+        <h3 class="font-bold text-gray-800 mb-3">⚡ ציוד</h3>
+        <ul class="space-y-2 text-gray-600">
+          <li class="flex gap-2">📋 <span><b>לכל קבוצה (3–4):</b> לוח ESP32 + חיישן לחות אדמה + 3 חוטים – <b>בלי כבל USB</b></span></li>
+          <li class="flex gap-2">📋 <span><b>לכל קבוצה:</b> 3 כרטיסים עם ציור: ⚡ "החשמל נכנס" (VCC) · ↩️ "החשמל חוזר" (GND) · 📢 "החיישן מדבר" (AOUT)</span></li>
+          <li class="flex gap-2">📋 <span>כדור קטן או כדור נייר (למעגל האנושי)</span></li>
+          <li class="flex gap-2">📋 <span>פנס טלפון (לפעילות "חזק או חלש")</span></li>
+          <li class="flex gap-2">📋 <span>3 תמונות של חיווט שגוי, להקרנה (ראו "מצאו את הטעות")</span></li>
+          <li class="flex gap-2">📋 <span>מחשב לכל זוג – <a href="../lessons/lesson-05-5.html" target="_blank" class="text-teal-700 underline">לומדה 5.5</a></span></li>
+          <li class="flex gap-2">🧰 <span><b>ערכה רזרבית אחת לכיתה</b></span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-800 mb-3">🐍 הדגמת מורה (אופציונלי)</h3>
+        <p class="text-xs text-gray-500 mb-1">הנורית שעל הלוח בשלוש עוצמות – המורה בלבד, ב-Thonny (F5), מול הכיתה:</p>
+        <pre dir="ltr" class="bg-slate-800 rounded-xl p-4 font-mono text-xs text-green-400 leading-relaxed overflow-x-auto"># teacher only
+import time
+from ws2812_driver import WS2812LED
+
+for b in (0.02, 0.1, 0.3):
+    led = WS2812LED(pin_num=48, brightness=b)
+    led.green()
+    time.sleep(1)
+led.off()</pre>
+        <ul class="text-xs text-gray-500 mt-2 space-y-1">
+          <li>• ⚠️ <b>דורש בדיקה:</b> הריצו פעם אחת על לוח לפני השיעור. אם הנורית לא נדלקת – נסו <code>pin_num=38</code>.</li>
+          <li>• לא בא לכם קוד? פעילות הפנס מספיקה לגמרי.</li>
+          <li>• התלמידים לא רואים את הקוד – רק את הנורית.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-800 mb-3">📐 3 החוטים (מחברים בשיעור 6)</h3>
+        <div class="bg-gray-50 rounded-xl p-4 text-xs space-y-2">
+          <p class="font-bold text-gray-700">חיישן לחות אדמה → הלוח:</p>
+          <p>VCC → 3V3 | GND → GND | AOUT → GPIO 6</p>
+          <p class="text-gray-400">מחברים לפי הכיתוב על החיישן והלוח, לא לפי צבע החוט.</p>
+        </div>
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 mt-3 text-xs text-blue-900">
+          ⚡ <b>3V3 ולא 5V:</b> בלוח יש פין שכתוב עליו 5V. החיישן שלנו <b>אף פעם</b> לא מתחבר אליו – זה חזק מדי ללוח.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCUSSION -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-blue-700 text-white p-6">
+      <h2 class="text-2xl font-black">💬 הדיון – 15 דקות</h2>
+      <p class="text-blue-200 text-sm">ממשיך את ה-Teaser של שיעור 5. קודם חוויה – אחר כך המילה</p>
+    </div>
+    <div class="p-6 space-y-4">
+
+      <div class="bg-lime-50 border border-lime-300 rounded-xl p-4">
+        <p class="font-bold text-lime-800 mb-2">← פתחו בחיבור לשיעור 5:</p>
+        <p class="text-gray-700 text-sm">"שאלתי אתכם: אם הצמח לא מרגיש טוב – איך תדעו לפני שרואים בעיניים? מדדנו את המים בעצמנו. אבל מי ימדוד בלילה? צריך חיישן שמודד לבד. ומה חיישן צריך כדי לעבוד?"</p>
+        <p class="text-xs text-gray-400 mt-1">התשובה שנחפש: "חשמל". זו הכניסה לשיעור.</p>
+      </div>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p class="font-bold text-blue-900 mb-2">❓ שלב 1 – החשמל צריך דרך סגורה (צינור מים)</p>
+        <div class="grid md:grid-cols-3 gap-3 text-sm">
+          <div class="bg-white rounded-lg p-3"><p class="font-bold text-green-700">✅ סגור</p><p class="text-gray-500">המים מסתובבים בצינור = הנורית דולקת</p></div>
+          <div class="bg-white rounded-lg p-3"><p class="font-bold text-gray-700">⭕ פתוח</p><p class="text-gray-500">הצינור קרוע באמצע = כלום לא זורם</p></div>
+          <div class="bg-white rounded-lg p-3"><p class="font-bold text-red-700">💥 קצר</p><p class="text-gray-500">המים "בורחים" בדרך קצרה = חם ומסוכן</p></div>
+        </div>
+      </div>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p class="font-bold text-blue-900 mb-2">❓ שלב 2 – חזק או חלש?</p>
+        <ul class="text-sm text-gray-600 space-y-1">
+          <li>• "הברז בבית דוחף מים חזק או חלש?" → <b>וולט</b> = כמה חזק החשמל דוחף.</li>
+          <li>• הלוח שלנו: <b>3.3 וולט</b> – חלש ובטוח. סוללה של שלט: כמעט אותו דבר.</li>
+          <li>• השקע בקיר: <b>230 וולט</b> – חזק ומסוכן. "שקע בבית = חזק ומסוכן. הלוח שלנו = חלש ובטוח. לא מערבבים."</li>
+          <li>• המטען של הטלפון הוא "המתרגם": לוקח את החשמל החזק מהשקע ונותן חשמל חלש לטלפון (ולמחשב שמזין את הלוח).</li>
+        </ul>
+      </div>
+
+      <div class="bg-white border-2 border-blue-300 rounded-xl p-4">
+        <p class="font-bold text-blue-900 mb-1">🌉 גשר לשאלה המרכזית:</p>
+        <p class="text-xl text-gray-800 font-bold">"בלוח יש פין שכתוב עליו 5V. למה החיישן שלנו לא מתחבר אליו?"</p>
+        <p class="text-sm text-gray-500 mt-1">תשובה: זה חזק מדי. החיישן ידווח ללוח "בצעקה" – והלוח יכול להישרף. לכן: <b>חיישן תמיד ל-3V3.</b></p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-700 text-white p-6">
+      <h2 class="text-2xl font-black">⏱ לוח זמנים – 90 דקות</h2>
+      <p class="text-slate-300 text-sm">הגרסה המלאה. גרסאות קצרות – בסעיף "🎛️ גמישות"</p>
+    </div>
+    <div class="divide-y divide-gray-100">
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-green-100 text-green-800 font-black text-lg rounded-xl py-2">0–15</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎤</span><h3 class="text-xl font-black">פתיחה: המעגל האנושי</h3><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">כל הכיתה</span></div>
+          <ul class="text-sm text-gray-600 space-y-1">
+            <li>• <b>(0–3)</b> המורה מחבר/ת לוח ל-USB. הנורית נדלקת. "מה היה צריך לקרות כדי שזה יידלק?"</li>
+            <li>• <b>(3–12)</b> <b>"מעגל אנושי":</b> כולם במעגל ומעבירים כדור (= החשמל). תלמיד/ה אחד/ת הוא/היא "הנורית" – כשהכדור עובר דרכו/ה, קופץ/ת.
+              <br>מוציאים תלמיד/ה מהמעגל → הכדור נעצר (<b>פתוח</b>).
+              <br>שניים מעבירים ישר זה לזה ומדלגים על "הנורית" → הכדור רץ מהר מדי, "הנורית" לא קופצת (<b>קצר</b>).</li>
+            <li>• <b>(12–15)</b> כותבים על הלוח: <b>"סגור – אבל לא קצר!"</b> (פעם ראשונה מתוך שתיים).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-blue-100 text-blue-800 font-black text-lg rounded-xl py-2">15–30</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">💬</span><h3 class="text-xl font-black">דיון: חזק או חלש?</h3><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">כל הכיתה</span></div>
+          <p class="text-sm text-gray-600">ראו בלוק הדיון: צינור מים (5') → וולט ושקע מסוכן (5') → "למה לא 5V?" (5').</p>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-purple-100 text-purple-800 font-black text-lg rounded-xl py-2">30–55</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">💻</span><h3 class="text-xl font-black">לומדה: הקופסה החכמה</h3><span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">זוגות</span></div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-purple-50 rounded-xl p-4 text-sm">
+              <p class="font-bold mb-2">📋 שלבי הלומדה:</p>
+              <ol class="space-y-1 text-gray-600 list-decimal list-inside text-xs">
+                <li>מעגל: סוגרים מתג, מוסיפים "קיצור דרך" + 3 שאלות (⚡1)</li>
+                <li>מרגישה / חושבת / עושה – מיון 6 כרטיסים (⚡1)</li>
+                <li>כן/לא או מספר? כפתור מול מחוג (⚡1)</li>
+                <li>🔦 חזק או חלש: נורית שנדלקת ונכבית לאט ומהר (⚡1)</li>
+                <li>3 החוטים: מחברים על המסך + כללי בטיחות (⚡1)</li>
+                <li>Growee + צ'קליסט של החלק המעשי</li>
+                <li>סיכום, ניחוש לשיעור 6, כוכב הצפון</li>
+              </ol>
+            </div>
+            <div class="bg-white border rounded-xl p-4 text-sm">
+              <p class="font-bold text-gray-700 mb-2">👨‍🏫 מה המורה עושה:</p>
+              <ul class="space-y-1 text-gray-500 text-xs">
+                <li>• שלב 2: "מה הקופסה <b>מרגישה</b>? מה היא <b>עושה</b>?"</li>
+                <li>• שלב 4: "מה קורה כשהנורית נדלקת ונכבית לאט? ומהר?"</li>
+                <li>• שלב 5: עברו בין הזוגות – מי בחר 5V? זה הרגע לעצור ולשאול "למה לא?"</li>
+                <li>• שלב 6 = הצ'קליסט של החלק המעשי. מסמנים רק אחרי אישור שלך</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-lime-100 text-lime-800 font-black text-lg rounded-xl py-2">55–85</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🔌</span><h3 class="text-xl font-black">מעשי: מכירים את הערכה</h3><span class="bg-lime-100 text-lime-700 px-3 py-1 rounded-full text-xs font-bold">קבוצות 3–4 · בלי USB</span></div>
+          <div class="bg-lime-50 border border-lime-200 rounded-xl p-4 mb-4 text-sm">
+            <p class="font-bold text-lime-800 mb-2">📋 4 תחנות:</p>
+            <div class="grid md:grid-cols-2 gap-2 text-xs">
+              <div class="bg-white rounded-lg p-2"><b>א. ציד פינים (12'):</b> מוצאים על הלוח 3V3, GND ו-GPIO 6, ועל החיישן VCC, GND, AOUT. מניחים כרטיס ליד כל אחד. <b>המורה מאשר/ת</b> (⚡1)</div>
+              <div class="bg-white rounded-lg p-2"><b>ב. מצאו את הטעות (8'):</b> 3 תמונות: ① VCC ל-5V ② AOUT ל-GND ③ VCC ו-GND הפוכים. כל קבוצה מצביעה "מה לא בסדר" (⚡2)</div>
+              <div class="bg-white rounded-lg p-2 border-2 border-blue-200"><b>ג. חזק או חלש (8'):</b> פעילות הפנס (ראו למטה) + הדגמת הנורית אם יש (⚡1)</div>
+              <div class="bg-white rounded-lg p-2"><b>ד. סידור (2'):</b> הכרטיסים נשארים בקופסת הערכה – לשיעור 6</div>
+            </div>
+          </div>
+          <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
+            <p class="font-bold text-red-800 mb-2">🛡️ 5 כללי בטיחות – פעם שנייה של "סגור, לא קצר":</p>
+            <ol class="space-y-1 text-xs text-gray-600 list-decimal list-inside">
+              <li>חוט אף פעם לא מחבר ישר את 3V3 ל-GND.</li>
+              <li>החיישן תמיד ל-3V3. אף פעם לא ל-5V.</li>
+              <li>מחברים לפי מה שכתוב, לא לפי הצבע של החוט.</li>
+              <li>מחברים ומנתקים חוטים רק כשהכבל לא מחובר. חבר/ה בודק/ת – ורק אז מחברים.</li>
+              <li>משהו חם או מריח? מנתקים את הכבל וקוראים למורה.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 text-center w-20"><div class="bg-yellow-100 text-yellow-800 font-black text-lg rounded-xl py-2">85–90</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🏁</span><h3 class="text-xl font-black">נתונים + Teaser</h3></div>
+          <div class="grid md:grid-cols-3 gap-3 text-sm">
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 נתונים (1 דק')</p><p class="text-xs text-gray-500">כל קבוצה רושמת בלומדה לאן הולך כל חוט (ייבדק בשיעור 6)</p></div>
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">⚡ אלקטרונים (1 דק')</p><p class="text-xs text-gray-500">כמה אלקטרונים אספה כל קבוצה מתוך 10?</p></div>
+            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-xs text-gray-700 font-medium">"החיישן ישלח ללוח מספר. <b>כשהאדמה יבשה – המספר יהיה גבוה או נמוך?"</b></p><p class="text-xs text-gray-400">אל תתנו תשובה. מגלים בשיעור 6.</p></div>
+          </div>
+          <div class="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm"><b>⭐ כוכב הצפון (1 דק'):</b> "איך זה רלוונטי לפרויקט שלי?" – מה הפרויקט שלנו צריך <b>להרגיש</b>? ומה הוא צריך <b>לעשות</b>?</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STRONG / WEAK (PWM) -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-indigo-700 text-white p-6">
+      <h2 class="text-2xl font-black">🔦 חזק או חלש? – איך הבקר שולט בעוצמה</h2>
+      <p class="text-indigo-200 text-sm">8 דק' בלומדה + 8 דק' בתחנה ג'. הבסיס לזמזם (שיעור 7) ולנורית הצבעונית (שיעורים 7–8)</p>
+    </div>
+    <div class="p-6 grid md:grid-cols-2 gap-6 text-sm text-gray-600">
+      <div class="bg-green-50 rounded-xl p-4">
+        <h3 class="font-bold text-green-800 mb-2">1️⃣ קודם חוויה – פעילות הפנס</h3>
+        <ul class="space-y-2">
+          <li>• תלמיד/ה מכסה ופותח/ת בכף היד פנס של טלפון.</li>
+          <li>• <b>לאט</b> → כולם רואים: דולק, כבוי, דולק, כבוי.</li>
+          <li>• <b>מהר מאוד</b> → נראה כמו אור חלש וקבוע.</li>
+          <li>• <b>פתוח רוב הזמן</b> → נראה בהיר. <b>סגור רוב הזמן</b> → נראה חלש.</li>
+        </ul>
+      </div>
+      <div class="bg-blue-50 rounded-xl p-4">
+        <h3 class="font-bold text-blue-800 mb-2">2️⃣ אחר כך המשפט</h3>
+        <ul class="space-y-2">
+          <li>• "הלוח יודע רק <b>דולק</b> או <b>כבוי</b>. כדי שנורית תהיה חלשה – הוא מדליק ומכבה מהר מאוד, יותר מהר ממה שהעין רואה."</li>
+          <li>• "<b>דולק רוב הזמן = חזק. דולק קצת מהזמן = חלש.</b>"</li>
+          <li>• על הלוח: ██░░░░ · ███░░░ · █████░ – "איזה פס = הנורית הכי חזקה?"</li>
+          <li>• "בשיעור 7 הזמזם יצפצף, והנורית הצבעונית תידלק באדום או בירוק – הלוח שולט בהם בדיוק ככה."</li>
+        </ul>
+      </div>
+      <div class="md:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600">
+        📝 למורה בלבד: השם המקצועי הוא PWM. אין צורך להגיד אותו לתלמידים – "הדלקה וכיבוי מהירים" מספיק.
+      </div>
+    </div>
+  </div>
+
+  <!-- FLEX -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-amber-600 text-white p-6">
+      <h2 class="text-2xl font-black">🎛️ גמישות – לפי בית הספר, הכיתה והמדריך/ה</h2>
+    </div>
+    <div class="p-6 space-y-6 text-sm text-gray-600">
+
+      <div>
+        <h3 class="font-bold text-gray-800 mb-3">⏱ גרסאות זמן</h3>
+        <div class="grid md:grid-cols-3 gap-3">
+          <div class="bg-gray-50 rounded-xl p-4"><p class="font-bold text-gray-800">90 דקות – מלא</p><p class="text-xs mt-1">כל לוח הזמנים למעלה.</p></div>
+          <div class="bg-gray-50 rounded-xl p-4"><p class="font-bold text-gray-800">2 × 45 דקות</p><p class="text-xs mt-1"><b>שיעור א':</b> מעגל אנושי + דיון + ציד פינים + מצאו את הטעות.<br><b>שיעור ב':</b> לומדה + פנס + סיכום. בתחילת שיעור ב' – 3 דק' "סגור, לא קצר".</p></div>
+          <div class="bg-gray-50 rounded-xl p-4"><p class="font-bold text-gray-800">40 דקות – מינימום</p><p class="text-xs mt-1">מעגל אנושי (10') + "למה לא 5V" (5') + ציד פינים ובטיחות (20') + Teaser (5'). את הפנס אפשר להעביר לפתיחת שיעור 7.</p></div>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="font-bold text-gray-800 mb-3">🧑‍🏫 לפי אופי המדריך/ה</h3>
+        <div class="grid md:grid-cols-2 gap-3">
+          <div class="bg-blue-50 rounded-xl p-4">
+            <p class="font-bold text-blue-900">🔧 מדריך/ה "טכני/ת"</p>
+            <ul class="text-xs mt-1 space-y-1">
+              <li>• החוזק שלך: הלוח האמיתי. תראה/י אותו מקרוב לכל קבוצה.</li>
+              <li>• הסיכון: מילים מקצועיות. כלל: קודם דוגמה מהחיים – אחר כך המילה.</li>
+              <li>• בלי אמפר, וואט ונוסחאות. וולט אחד מספיק.</li>
+            </ul>
+          </div>
+          <div class="bg-green-50 rounded-xl p-4">
+            <p class="font-bold text-green-900">📖 מדריך/ה "סיפורי/ת"</p>
+            <ul class="text-xs mt-1 space-y-1">
+              <li>• החוזק שלך: סיפור. "הכדור שיצא לטיול ולא מצא את הדרך הביתה" = מעגל פתוח.</li>
+              <li>• הסיכון: לא להגיע לציד הפינים. זה החלק הכי חשוב לשיעור 6.</li>
+            </ul>
+          </div>
+          <div class="bg-amber-50 rounded-xl p-4">
+            <p class="font-bold text-amber-900">😬 מדריך/ה שפחות בטוח/ה בחשמל</p>
+            <ul class="text-xs mt-1 space-y-1">
+              <li>• אין צורך בקוד בכלל. מעגל אנושי + פנס + לומדה = שיעור שלם.</li>
+              <li>• שאלה שאין לך תשובה עליה: "שאלה מצוינת – נבדוק יחד בשיעור 6." מותר!</li>
+              <li>• התשובה ל"אפשר 5V?" תמיד: "אצלנו אסור. זה יכול לשרוף את הלוח."</li>
+            </ul>
+          </div>
+          <div class="bg-purple-50 rounded-xl p-4">
+            <p class="font-bold text-purple-900">🎉 מדריך/ה אנרגטי/ת</p>
+            <ul class="text-xs mt-1 space-y-1">
+              <li>• "מצאו את הטעות" כתחרות בין קבוצות על אלקטרונים ⚡.</li>
+              <li>• "חזק או חלש" עם מחיאות כפיים: מי שמוחא רוב הזמן = חזק.</li>
+              <li>• הסיכון: ציד הפינים הופך למרוץ. המורה בודק/ת כל קבוצה.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="font-bold text-gray-800 mb-3">🏫 לפי הכיתה</h3>
+        <ul class="space-y-1">
+          <li>• <b>כיתה שזקוקה לתנועה:</b> מעגל אנושי ארוך יותר, ופנס לכל קבוצה.</li>
+          <li>• <b>כיתה סקרנית:</b> "מה עוד בבית עובד בחשמל חלש? ומה בחזק?" (שלט, שעון / מקרר, מזגן).</li>
+          <li>• <b>אין מספיק ערכות:</b> ציד פינים בסבב – 2 קבוצות על כל ערכה, בזמן שהשאר בלומדה.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PROBLEMS -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-red-700 text-white p-6">
+      <h2 class="text-2xl font-black">🚨 בעיות נפוצות ופתרונות</h2>
+    </div>
+    <div class="p-6">
+      <table class="w-full text-sm">
+        <thead><tr class="text-right text-gray-500 border-b"><th class="p-2">מה קורה</th><th class="p-2">מה עושים</th></tr></thead>
+        <tbody class="divide-y divide-gray-100 text-gray-600">
+          <tr><td class="p-2 font-bold">לא מוצאים את 3V3 / GND על הלוח</td><td class="p-2">הכיתוב קטן – להקרין תמונה גדולה של הלוח. יש כמה פיני GND – כולם אותו דבר.</td></tr>
+          <tr><td class="p-2 font-bold">"אז למה יש בכלל פין 5V?"</td><td class="p-2">"יש דברים שצריכים יותר כוח – אבל לא החיישן שלנו. אצלנו הוא אסור."</td></tr>
+          <tr><td class="p-2 font-bold">קבוצה רוצה "רק לבדוק" עם חשמל</td><td class="p-2">אין כבלי USB היום – זה מכוון. "בשיעור הבא, אחרי שהמורה יבדוק את החיווט."</td></tr>
+          <tr><td class="p-2 font-bold">במעגל האנושי כולם צועקים ורצים</td><td class="p-2">כדור אחד, מעבירים רק ביד, ו"הנורית" היא היחידה שזזה.</td></tr>
+          <tr><td class="p-2 font-bold">שאלות על ברק, חשמל סטטי, "מה זה אלקטרון"</td><td class="p-2">"שאלה מצוינת – היום רק החשמל הקטן של הלוח." לא נכנסים לאטומים.</td></tr>
+          <tr><td class="p-2 font-bold">פחד מחשמל ("זה יחשמל אותי?")</td><td class="p-2">"החשמל של הלוח חלש כמו של סוללה – אפשר לגעת בחוטים. רק השקע בקיר מסוכן."</td></tr>
+          <tr><td class="p-2 font-bold">הנורית לא נדלקת בהדגמה</td><td class="p-2">לנסות <code>pin_num=38</code>, או לוותר ולעשות רק את פעילות הפנס.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GROWEE -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-green-800 text-white p-6">
+      <h2 class="text-2xl font-black">🇮🇱 Growee – חזרה קצרה משיעור 5</h2>
+      <p class="text-green-200 text-sm">אין סטארטאפ חדש בשיעור הזה</p>
+    </div>
+    <div class="p-6 grid md:grid-cols-2 gap-6 text-sm text-gray-600">
+      <div>
+        <h3 class="font-bold text-gray-800 mb-2">החיבור לשיעור</h3>
+        <p>Growee עושה את מה שעשינו ביד בשיעור 5 – אבל לבד, כל הזמן. בתוך המכשיר שלהם יש בדיוק "קופסה חכמה": <b>מרגישה</b> (מודדת את המים) → <b>חושבת</b> → <b>עושה</b> (מתקנת ושולחת הודעה).</p>
+        <p class="text-xs text-gray-400 mt-2">רקע מלא: <a href="teacher-05.html" class="underline">מערך שיעור 5</a>. לא להוסיף מספרים או פרטים שלא מופיעים שם.</p>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-800 mb-2">שאלות לכיתה:</h3>
+        <ul class="space-y-1">
+          <li>"מה המכשיר של Growee מרגיש? מה הוא עושה?"</li>
+          <li>"הוא מחובר לשקע. מי 'מתרגם' לו את החשמל החזק לחלש?"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIFFERENTIATION -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-orange-600 text-white p-6">
+      <h2 class="text-2xl font-black">♿ התאמות ודיפרנציאציה</h2>
+    </div>
+    <div class="p-6 grid md:grid-cols-2 gap-6 text-sm">
+      <div>
+        <h3 class="font-bold text-red-700 mb-3">🐢 תלמידים שנתקעים</h3>
+        <ul class="space-y-2 text-gray-600">
+          <li>• כרטיסים עם ציור: ⚡ נכנס · ↩️ חוזר · 📢 מדבר</li>
+          <li>• בציד הפינים: לחפש פין אחד בכל פעם</li>
+          <li>• לחזור רק על משפט אחד: "סגור – אבל לא קצר"</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-blue-700 mb-3">🚀 תלמידים מתקדמים</h3>
+        <ul class="space-y-2 text-gray-600">
+          <li>• "מה בבית עובד בחשמל חלש, ומה בחזק?"</li>
+          <li>• "איזה דבר בפרויקט שלנו צריך להיות חזק או חלש, ולא רק דולק/כבוי?"</li>
+          <li>• להכין תמונה רביעית ל"מצאו את הטעות"</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-orange-700 mb-3">🌍 ריבוי שפות</h3>
+        <ul class="space-y-2 text-gray-600">
+          <li>• חשמל = كهرباء (כהרבאא)</li>
+          <li>• מעגל = دائرة (דאא'רה)</li>
+          <li>• VCC / GND / GPIO – אותם שמות בכל השפות, כמו שכתוב על הלוח</li>
+          <li>• המעגל האנושי והפנס עובדים בלי שפה</li>
+        </ul>
+      </div>
+      <div class="bg-pink-50 rounded-2xl p-4">
+        <h3 class="font-bold text-pink-700 mb-3 text-base">🎈 התאמות לכיתות ג'-ד'</h3>
+        <ul class="space-y-2 text-gray-700">
+          <li>• <b>בלי המילה "וולט":</b> "חשמל חזק" / "חשמל חלש" מספיק.</li>
+          <li>• <b>הלוח = "הקופסה החכמה"</b>, בלי השם ESP32.</li>
+          <li>• <b>החוטים לפי הציור:</b> ⚡ / ↩️ / 📢 – את השמות VCC/GND/AOUT המורה אומר/ת, לא חובה לזכור.</li>
+          <li>• <b>ציד פינים:</b> המורה מסמן/ת מראש את 3 הפינים במדבקות צבעוניות – הקבוצה רק מתאימה כרטיס למדבקה.</li>
+          <li>• <b>לומדה:</b> שלבים 1, 2, 4 ו-5 בלבד; המורה עובר/ת עם כל הכיתה על המסך המשותף.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAMIFICATION -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-lime-600 text-white p-6">
+      <h2 class="text-2xl font-black">⚡ גיימיפיקציה – אלקטרונים (Side Quest)</h2>
+    </div>
+    <div class="p-6">
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-sm">
+        <span class="font-bold text-amber-800">⚡ מכניקה בעלת שם: "אוספים אלקטרונים"</span> — טוקן מיוחד לשיעור הזה. <b>האלקטרונים לא נספרים כעלים ולא משפיעים על הרמות</b>, כדי שכיתה שלא עושה את 5.5 לא תפסיד.
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-center text-sm">
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-2xl font-black text-slate-700">5</div><div class="text-gray-400 text-xs">לומדה (⚡1 לשלב)</div></div>
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-2xl font-black text-slate-700">1</div><div class="text-gray-400 text-xs">ציד פינים</div></div>
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-2xl font-black text-slate-700">2+1</div><div class="text-gray-400 text-xs">מצאו את הטעות + פנס</div></div>
+        <div class="bg-gray-50 rounded-xl p-4"><div class="text-2xl font-black text-slate-700">1</div><div class="text-gray-400 text-xs">ניחוש לשיעור 6</div></div>
+      </div>
+      <div class="bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
+        <span class="text-2xl font-black text-lime-700">סה"כ מקסימום: 10 אלקטרונים ⚡</span>
+        <span class="text-gray-500 text-sm block mt-1">0 עלים 🌿</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HARDWARE NOTE -->
+  <div class="bg-slate-100 border border-slate-300 rounded-2xl p-4 text-xs text-slate-600">
+    🔧 <b>הערכה:</b> חיישן לחות אדמה → GPIO 6 (חשמל מ-3V3) · זמזם → GPIO 5 · חוט מגע → GPIO 4 · נורית צבעונית מובנית → GPIO 48. פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
+  </div>
+
+  <!-- NOTES -->
+  <div class="bg-white rounded-3xl shadow-lg p-6">
+    <h2 class="text-2xl font-black text-gray-900 mb-4">📝 הערות לשיעור</h2>
+    <textarea rows="5" placeholder="איזו גרסה העברתי (90 / 2×45 / 40), איך עבד המעגל האנושי, שאלות שעלו..." class="w-full border-2 border-gray-200 rounded-2xl p-4 text-lg resize-none focus:border-slate-400 focus:outline-none" onchange="saveNotes(this.value)" id="notes-area"></textarea>
+    <p class="text-xs text-gray-400 mt-1">נשמר אוטומטית</p>
+  </div>
+
+</div>
+</div>
+
+<script>
+function load(){
+  const n=localStorage.getItem('el_t5_5notes');
+  if(n)document.getElementById('notes-area').value=n;
+}
+function saveNotes(v){localStorage.setItem('el_t5_5notes',v);}
+load();
+</script>
+</body>
+</html>

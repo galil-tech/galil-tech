@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>מערך שיעור 5.5 | מדריך מורה</title>
+  <title>מערך שיעור 5.5 | מסלול חטיבה | מדריך מורה</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>*{font-family:'Heebo',sans-serif;}</style>
@@ -15,7 +15,7 @@
 <!-- TOP BAR -->
 <div class="bg-slate-800 text-white py-5 px-8 flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-lg gap-3">
   <div>
-    <span class="text-xs text-slate-400">מערך שיעור · גליל-טק · ⚡ Side Quest</span>
+    <span class="text-xs text-slate-400">מערך שיעור · מסלול חטיבה · גליל-טק · ⚡ Side Quest</span>
     <h1 class="text-2xl font-black">שיעור 5.5 – יישור קו: איך החשמל מגיע לחיישן?</h1>
   </div>
   <div class="flex gap-3 flex-wrap">
@@ -46,7 +46,7 @@
         <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">ידע ומושגים</h3>
         <ul class="space-y-2 text-sm text-gray-600">
           <li class="flex gap-2">✅ <span>מסביר מהו מעגל סגור, פתוח וקצר (באנלוגיית מים): "המעגל חייב להיות סגור – אבל לא קצר"</span></li>
-          <li class="flex gap-2">✅ <span>מבחין בין מתח (וולט = לחץ) לזרם (אמפר = כמה זורם). <b>חטיבה:</b> גם הספק (וואט = V × A, כמה "כוח עבודה" בכל שנייה)</span></li>
+          <li class="flex gap-2">✅ <span>מבחין בין מתח (וולט = לחץ) לזרם (אמפר = כמה זורם) ולהספק (וואט = V × A, כמה "כוח עבודה" בכל שנייה)</span></li>
           <li class="flex gap-2">✅ <span>יודע שהלוח מקבל 5V מה-USB ומוריד ל-3.3V, ושפיני GPIO והחיישנים שלנו = <b>3.3V בלבד</b></span></li>
           <li class="flex gap-2">✅ <span>מסביר בקר כ"קלט → החלטה → פלט", ומבחין בין קלט אנלוגי (מספר 0–65535) לדיגיטלי (כן/לא)</span></li>
           <li class="flex gap-2">✅ <span>מבין PWM כ"איך הבקר שולט בעוצמה": מדליק ומכבה מהר – כמה מהזמן דולק = כמה חזק</span></li>
@@ -102,7 +102,7 @@
         </ul>
       </div>
       <div>
-        <h3 class="font-bold text-gray-800 mb-3">🐍 קוד הדגמה – PWM (חטיבה)</h3>
+        <h3 class="font-bold text-gray-800 mb-3">🐍 קוד הדגמה – PWM</h3>
         <p class="text-xs text-gray-500 mb-1">זמזם: אותו צליל, עוצמה עולה</p>
         <pre dir="ltr" class="bg-slate-800 rounded-xl p-4 font-mono text-xs text-green-400 leading-relaxed overflow-x-auto">from machine import Pin, PWM
 import time
@@ -136,11 +136,11 @@ led.off()</pre>
         </div>
         <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 mt-3 text-xs text-blue-900">
           ⚡ <b>3.3V מול 5V:</b> הלוח מקבל 5V מה-USB ומוריד ל-3.3V. פיני GPIO והחיישנים = 3V3 בלבד.
-          <br>🛑 בלוח יש גם פין <b>5V</b> – רק לסרוו, רק בחטיבה, רק משיעור 7.
+          <br>🛑 בלוח יש גם פין <b>5V</b> – רק לסרוו, רק משיעור 7.
         </div>
         <div class="bg-gray-50 rounded-xl p-3 mt-3 text-xs text-gray-600">
           <p class="font-bold mb-1">פינים שיופיעו בהמשך (רק להראות):</p>
-          <p>זמזם → GPIO 5 · מגע → GPIO 4 · נורית מובנית → GPIO 48 · סרוו (חטיבה) → GPIO 15</p>
+          <p>זמזם → GPIO 5 · מגע → GPIO 4 · נורית מובנית → GPIO 48 · סרוו → GPIO 15</p>
         </div>
       </div>
     </div>
@@ -174,8 +174,8 @@ led.off()</pre>
         <ul class="text-sm text-gray-600 space-y-1">
           <li>• <b>וולט (V) = לחץ.</b> הפינים של הבקר שלנו עובדים ב-3.3V.</li>
           <li>• <b>אמפר (A) = כמה זורם.</b> יותר מדי = חום ונזק.</li>
-          <li>• <b>חטיבה – וואט (W) = V × A:</b> כמה "כוח עבודה" בכל שנייה. נורית קטנה מול משאבה.</li>
-          <li>• <b>חטיבה – אוהם אינטואיטיבי:</b> יותר התנגדות = פחות זרם באותו מתח (צינור צר).</li>
+          <li>• <b>וואט (W) = V × A:</b> כמה "כוח עבודה" בכל שנייה. נורית קטנה מול משאבה.</li>
+          <li>• <b>אוהם אינטואיטיבי:</b> יותר התנגדות = פחות זרם באותו מתח (צינור צר).</li>
         </ul>
       </div>
 
@@ -186,7 +186,6 @@ led.off()</pre>
           <li>• <b>AC (זרם חילופין):</b> משנה כיוון כל הזמן – 50 מחזורים בשנייה (50 הרץ). השקע בבית = 230V AC. מסוכן.</li>
           <li>• <b>המטען של הטלפון / ספק ה-USB</b> ממיר AC מהשקע ל-5V DC.</li>
         </ul>
-        <p class="text-sm mt-2"><b>יסודי:</b> "שקע בבית = חזק ומסוכן. הלוח שלנו = חלש ובטוח. לא מערבבים."</p>
       </div>
 
       <div class="bg-white border-2 border-blue-300 rounded-xl p-4">
@@ -212,7 +211,7 @@ led.off()</pre>
           <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎤</span><h3 class="text-xl font-black">פתיחה: למה זה נדלק?</h3><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">כל הכיתה</span></div>
           <ul class="text-sm text-gray-600 space-y-1">
             <li>• <b>(0–3)</b> המורה מחבר/ת לוח ל-USB מול הכיתה. נורית ההפעלה נדלקת. "מה היה צריך לקרות כדי שזה יידלק?"</li>
-            <li>• <b>(3–10)</b> <b>יסודי – "מעגל אנושי":</b> התלמידים עומדים במעגל ומעבירים כדור (= זרם). המורה מוציא/ה תלמיד אחד מהמעגל – הכדור נעצר (מעגל פתוח). שני תלמידים שמעבירים ישר זה לזה ומדלגים על כולם – קצר. <b>חטיבה:</b> אותה שאלה כדיון מהיר + שקף האנלוגיה.</li>
+            <li>• <b>(3–10)</b> דיון מהיר + שקף האנלוגיה: "מה צריך כדי שזרם יעבור?" → סגור / פתוח / קצר. כיתה שצריכה תנועה: "מעגל אנושי" (ראו "🎛️ גמישות").</li>
             <li>• <b>(10–15)</b> "המעגל חייב להיות סגור – אבל לא קצר." כותבים על הלוח. זו הפעם הראשונה מתוך שתיים.</li>
           </ul>
         </div>
@@ -222,7 +221,7 @@ led.off()</pre>
         <div class="flex-shrink-0 text-center w-20"><div class="bg-blue-100 text-blue-800 font-black text-lg rounded-xl py-2">15–30</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
         <div class="flex-1">
           <div class="flex items-center gap-3 mb-2"><span class="text-2xl">💬</span><h3 class="text-xl font-black">דיון: כמה חשמל, ואיזה?</h3><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">כל הכיתה</span></div>
-          <p class="text-sm text-gray-600">ראו פירוט בבלוק הדיון: וולט/אמפר (5') → AC/DC (5') → השאלה המרכזית "למה לא 5V?" (5'). ביסודי: רק וולט ואמפר, בלי וואט.</p>
+          <p class="text-sm text-gray-600">ראו פירוט בבלוק הדיון: וולט/אמפר (5') → AC/DC (5') → השאלה המרכזית "למה לא 5V?" (5').</p>
         </div>
       </div>
 
@@ -248,7 +247,7 @@ led.off()</pre>
                 <li>• שלב 6 בלומדה = הצ׳קליסט של החלק המעשי (55–85). התלמידים מסמנים רק אחרי אישור שלך</li>
                 <li>• שלב 3: שאלו "החיישן שלנו – מגע או מד דלק?"</li>
                 <li>• שלב 4: "איזה אחוז נותן נורית חלשה? חזקה? למה ב-50% היא לא 'חצי כבויה'?"</li>
-                <li>• <b>חטיבה, למתקדמים:</b> שפה גבוהה (MicroPython) מול שפת מכונה – משפט אחד</li>
+                <li>• <b>למתקדמים:</b> שפה גבוהה (MicroPython) מול שפת מכונה – משפט אחד</li>
               </ul>
             </div>
           </div>
@@ -268,7 +267,7 @@ led.off()</pre>
             <div class="grid md:grid-cols-2 gap-2 text-xs">
               <div class="bg-white rounded-lg p-2"><b>א. ציד פינים (10'):</b> מוצאים על הלוח 3V3, GND, 5V, GPIO 6 ומניחים ליד כל אחד את הכרטיס המתאים. על החיישן: VCC, GND, AOUT. <b>המורה מאשר/ת</b> (⚡1)</div>
               <div class="bg-white rounded-lg p-2"><b>ב. מצאו את הטעות (8'):</b> 3 תמונות מוקרנות: ① VCC ל-5V ② AOUT ל-GND ③ VCC ו-GND הפוכים. הקבוצה מזהה ומסבירה "מה היה קורה" (⚡2)</div>
-              <div class="bg-white rounded-lg p-2 border-2 border-blue-200"><b>ג. PWM בפועל (10'):</b> יסודי – פעילות הפנס + הדגמת הנורית. חטיבה – פנס + המורה מריץ/ה את קוד הזמזם והנורית במקרן. פירוט בסעיף PWM (⚡1)</div>
+              <div class="bg-white rounded-lg p-2 border-2 border-blue-200"><b>ג. PWM בפועל (10'):</b> פעילות הפנס + המורה מריץ/ה את קוד הזמזם והנורית במקרן. פירוט בסעיף PWM (⚡1)</div>
               <div class="bg-white rounded-lg p-2"><b>ד. סידור (2'):</b> הכרטיסים נשארים בקופסת הערכה – ישמשו בשיעור 6</div>
             </div>
           </div>
@@ -310,17 +309,16 @@ led.off()</pre>
     </div>
     <div class="p-6 grid md:grid-cols-2 gap-6 text-sm text-gray-600">
       <div class="bg-green-50 rounded-xl p-4">
-        <h3 class="font-bold text-green-800 mb-2">🌱 יסודי – מושג בלי קוד</h3>
+        <h3 class="font-bold text-green-800 mb-2">🔦 קודם בלי קוד – לראות את הרעיון</h3>
         <ul class="space-y-2">
           <li>• <b>פעילות הפנס:</b> תלמיד/ה מכסה ופותח/ת בכף היד פנס טלפון.
             <br>לאט → רואים הבהוב. מהר → נראה כמו אור חלש. פתוח רוב הזמן → נראה בהיר.</li>
           <li>• <b>על הלוח:</b> שלושה פסים – ██░░░░ · ███░░░ · █████░. "איזה פס = הנורית הכי חזקה?"</li>
-          <li>• <b>הדגמת מורה:</b> הנורית המובנית בשלוש עוצמות.</li>
-          <li>• <b>משפט סיום:</b> "בשיעור 7 הזמזם יצפצף, ובשיעור 8 הנורית תתחלף – הבקר שולט בהם בדיוק ככה."</li>
+          <li>• <b>משפט מעבר:</b> "עכשיו נראה את אותו רעיון במספרים – ובקוד."</li>
         </ul>
       </div>
       <div class="bg-blue-50 rounded-xl p-4">
-        <h3 class="font-bold text-blue-800 mb-2">🔬 חטיבה – מושג + מספר</h3>
+        <h3 class="font-bold text-blue-800 mb-2">🔢 אחר כך – מספר וקוד</h3>
         <ul class="space-y-2">
           <li>• <b>duty cycle</b> = אחוז הזמן שהפין דולק. 25% / 50% / 75%.</li>
           <li>• <b>שני כפתורים:</b> <code>freq</code> = כמה מהר מדליקים ומכבים (בזמזם = גובה הצליל) · <code>duty</code> = כמה מכל מחזור דולק (= עוצמה).</li>
@@ -331,7 +329,7 @@ led.off()</pre>
         </ul>
       </div>
       <div class="md:col-span-2 bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-800">
-        ⚠️ התלמידים <b>לא מחווטים</b> זמזם היום – זה שיעור 7. הזמזם מחווט מראש אצל המורה. בחטיבה, קבוצה מתקדמת יכולה להריץ את קוד הנורית בעצמה: הנורית מובנית בלוח ואין מה לחווט. רק אחרי אישור המורה ורק כשאין חוטים מחוברים ללוח.
+        ⚠️ התלמידים <b>לא מחווטים</b> זמזם היום – זה שיעור 7. הזמזם מחווט מראש אצל המורה. קבוצה מתקדמת יכולה להריץ את קוד הנורית בעצמה: הנורית מובנית בלוח ואין מה לחווט. רק אחרי אישור המורה ורק כשאין חוטים מחוברים ללוח.
       </div>
     </div>
   </div>
@@ -350,7 +348,7 @@ led.off()</pre>
           <div class="bg-gray-50 rounded-xl p-4"><p class="font-bold text-gray-800">2 × 45 דקות</p><p class="text-xs mt-1"><b>שיעור א':</b> פתיחה + דיון + תחנות א'–ב' (ציד פינים, מצאו את הטעות).<br><b>שיעור ב':</b> לומדה + PWM + סגירה. בתחילת שיעור ב' – 3 דק' חזרה על "סגור, לא קצר".</p></div>
           <div class="bg-gray-50 rounded-xl p-4"><p class="font-bold text-gray-800">40 דקות – מינימום</p><p class="text-xs mt-1">מעגל (10') + 3.3V מול 5V (10') + ציד פינים ובטיחות (15') + Teaser (5'). PWM עובר לפתיחת שיעור 7 (5 דק' פנס).</p></div>
         </div>
-        <p class="text-xs text-gray-400 mt-2">שנה מלאה: אפשר לפרוס על שני מפגשים ולהוסיף בחטיבה את חוק אוהם עם דוגמאות.</p>
+        <p class="text-xs text-gray-400 mt-2">שנה מלאה: אפשר לפרוס על שני מפגשים ולהוסיף את חוק אוהם עם דוגמאות.</p>
       </div>
 
       <div>
@@ -360,7 +358,7 @@ led.off()</pre>
             <p class="font-bold text-blue-900">🔧 מדריך/ה "טכני/ת" (רקע בהנדסה / אלקטרוניקה)</p>
             <ul class="text-xs mt-1 space-y-1">
               <li>• החוזק שלך: הדגמה חיה על הלוח. תעשה/י יותר ממנה.</li>
-              <li>• הסיכון: גלישה לנוסחאות ואלקטרונים. הגבול: אוהם רק בחטיבה, ורק במילים.</li>
+              <li>• הסיכון: גלישה לנוסחאות ואלקטרונים. הגבול: אוהם רק במילים, בלי נוסחה.</li>
               <li>• טיפ: לכל מושג – שאלה אחת לכיתה לפני ההסבר.</li>
             </ul>
           </div>
@@ -368,7 +366,7 @@ led.off()</pre>
             <p class="font-bold text-green-900">📖 מדריך/ה "סיפורי/ת" / פדגוגי/ת</p>
             <ul class="text-xs mt-1 space-y-1">
               <li>• החוזק שלך: אנלוגיות. בנה/י את כל השיעור על סיפור הצינור והמים.</li>
-              <li>• "מעגל אנושי" גם בחטיבה. בגרסה מתקדמת: תלמיד/ה = נגד, שמאט/ה את הכדור.</li>
+              <li>• "מעגל אנושי": התלמידים עומדים במעגל ומעבירים כדור (= זרם). מוציאים תלמיד/ה – הכדור נעצר (פתוח). שניים מעבירים ישר ומדלגים על כולם – קצר. בגרסה מתקדמת: תלמיד/ה = נגד, שמאט/ה את הכדור.</li>
               <li>• הסיכון: לדלג על ציד הפינים בגלל זמן. אל תדלג/י – זה החלק הקריטי.</li>
             </ul>
           </div>
@@ -395,8 +393,8 @@ led.off()</pre>
       <div>
         <h3 class="font-bold text-gray-800 mb-3">🏫 לפי הכיתה</h3>
         <ul class="space-y-1">
-          <li>• <b>כיתה איטית / יסודי צעיר:</b> בלי וואט ובלי AC/DC (רק משפט ה"שקע מסוכן"), להאריך את המעגל האנושי ואת ציד הפינים.</li>
-          <li>• <b>כיתה מתקדמת / חטיבה:</b> אוהם אינטואיטיבי, duty באחוזים, שאלת האתגר על הזמזם.</li>
+          <li>• <b>כיתה איטית:</b> בלי וואט ובלי אוהם, AC/DC במשפט אחד ("שקע בבית = חזק ומסוכן, הלוח = חלש ובטוח"), להאריך את המעגל האנושי ואת ציד הפינים.</li>
+          <li>• <b>כיתה מתקדמת:</b> אוהם אינטואיטיבי, duty באחוזים, שאלת האתגר על הזמזם.</li>
           <li>• <b>כיתה שכבר מכירה חשמל</b> (ממדעים): לקצר את הדיון ל-5 דקות ולהשקיע במעשי ובאנלוגי/דיגיטלי.</li>
           <li>• <b>אין מספיק ערכות:</b> ציד פינים בסבב – 2 קבוצות על כל ערכה, בזמן שהשאר בלומדה.</li>
         </ul>
@@ -420,7 +418,7 @@ led.off()</pre>
           <tr><td class="p-2 font-bold">הזמזם בהדגמה לא מצפצף</td><td class="p-2">רגל + ל-GPIO 5, השנייה ל-GND. הפוך = צפצוף חלש. ודאו שהדרייבר של הזמזם לא רץ ברקע (⏹ Stop/Restart ב-Thonny).</td></tr>
           <tr><td class="p-2 font-bold">הנורית המובנית לא נדלקת בהדגמה</td><td class="p-2">בלוח v1.1 היא ב-GPIO 38 – לנסות <code>pin_num=38</code>.</td></tr>
           <tr><td class="p-2 font-bold">"50% זה חצי כבוי?"</td><td class="p-2">"היא דולקת חצי מהזמן – אבל כל כך מהר שהעין רואה 'חצי חזק'. כמו הפנס כשמנפנפים מהר."</td></tr>
-          <tr><td class="p-2 font-bold">שאלות על ברק, שקע, "מה זה אלקטרון"</td><td class="p-2">ביסודי: "שאלה מצוינת – היום רק החשמל הקטן של הלוח." לא נכנסים לאטומים.</td></tr>
+          <tr><td class="p-2 font-bold">שאלות על ברק, שקע, "מה זה אלקטרון"</td><td class="p-2">"שאלה מצוינת – היום רק החשמל הקטן של הלוח." לא נכנסים לאטומים ולנוסחאות.</td></tr>
           <tr><td class="p-2 font-bold">תלמידים מתחילים לכתוב if/else</td><td class="p-2">מעולה – אבל "את זה נכתוב בשיעור 7." לשמור את הרגע.</td></tr>
         </tbody>
       </table>
@@ -456,19 +454,6 @@ led.off()</pre>
       <h2 class="text-2xl font-black">♿ התאמות ודיפרנציאציה</h2>
     </div>
     <div class="p-6 space-y-6 text-sm">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead><tr class="text-right text-gray-500 border-b"><th class="p-2">נושא</th><th class="p-2">🌱 יסודי</th><th class="p-2">🔬 חטיבה</th></tr></thead>
-          <tbody class="divide-y divide-gray-100 text-gray-600">
-            <tr><td class="p-2 font-bold">מעגל</td><td class="p-2">מעגל אנושי + מים</td><td class="p-2">אנלוגיית מים + אוהם אינטואיטיבי</td></tr>
-            <tr><td class="p-2 font-bold">מספרים</td><td class="p-2">וולט (לחץ), אמפר (כמה זורם)</td><td class="p-2">+ וואט = V × A</td></tr>
-            <tr><td class="p-2 font-bold">AC/DC</td><td class="p-2">"שקע מסוכן / לוח בטוח"</td><td class="p-2">50 הרץ, 230V, המטען ממיר, 3.3V מול 5V</td></tr>
-            <tr><td class="p-2 font-bold">בקר ושפה</td><td class="p-2">קופסה חכמה עם חושים וידיים</td><td class="p-2">GPIO, קלט/פלט, אנלוגי/דיגיטלי, MicroPython</td></tr>
-            <tr><td class="p-2 font-bold">PWM</td><td class="p-2">פנס + פסים + הדגמת נורית</td><td class="p-2">duty %, freq מול duty, קוד הזמזם במקרן</td></tr>
-            <tr><td class="p-2 font-bold">חומרה</td><td class="p-2">ציד פינים בערכה לא מחוברת</td><td class="p-2">ציד פינים + (אופציונלי) הרצת קוד הנורית</td></tr>
-          </tbody>
-        </table>
-      </div>
       <div class="grid md:grid-cols-3 gap-6">
         <div>
           <h3 class="font-bold text-red-700 mb-3">🐢 תלמידים שנתקעים</h3>
@@ -526,7 +511,7 @@ led.off()</pre>
 
   <!-- ══ HARDWARE NOTE ══ -->
   <div class="bg-slate-100 border border-slate-300 rounded-2xl p-4 text-xs text-slate-600">
-    🔧 <b>ESP32-S3 + MicroPython (Thonny):</b> חיישן לחות קרקע → GPIO 6 (3V3) · זמזם פסיבי → GPIO 5 (PWM) · נורית RGB מובנית → GPIO 48 · סרוו (חטיבה) → GPIO 15 (5V). פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
+    🔧 <b>ESP32-S3 + MicroPython (Thonny):</b> חיישן לחות קרקע → GPIO 6 (3V3) · זמזם פסיבי → GPIO 5 (PWM) · נורית RGB מובנית → GPIO 48 · סרוו → GPIO 15 (5V). פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
   </div>
 
   <!-- ══ NOTES ══ -->

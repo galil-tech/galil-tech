@@ -96,10 +96,7 @@
     <div class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 mb-4 flex flex-wrap items-center gap-3 no-print">
       <span class="font-black text-indigo-900">⚡ שיעור 5.5 – יישור קו אלקטרוניקה</span>
       <span class="text-xs text-indigo-700">Side Quest גמיש בין שיעור 5 ל-6 · אלקטרונים במקום עלים</span>
-      <span class="flex gap-2 mr-auto">
-        <a href="teachers/teacher-05-5.html" target="_blank" class="bg-white border border-indigo-300 text-indigo-800 px-3 py-1.5 rounded-xl text-sm font-bold hover:bg-indigo-100">📖 מערך</a>
-        <a href="lessons/lesson-05-5.html" target="_blank" class="bg-white border border-indigo-300 text-indigo-800 px-3 py-1.5 rounded-xl text-sm font-bold hover:bg-indigo-100">👁 לומדה</a>
-      </span>
+      <span id="side55-links" class="flex gap-2 mr-auto flex-wrap"></span>
       <span class="w-full text-xs text-gray-500">כדי לפתוח את הלומדה לתלמידים: נכנסים לכיתה ← «פתח 5.5 לכיתה».</span>
     </div>
     <div id="cards-msg" class="hidden text-sm text-center py-6"></div>
@@ -135,8 +132,8 @@
       <!-- שיעור 5.5 - דגל כיתתי נפרד (GC_SYNC.setClassSideUnlock), לא חלק מ"עד שיעור N" -->
       <div id="side55-box" class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 mb-4 flex flex-wrap items-center gap-3 no-print">
         <span class="font-black text-indigo-900">⚡ שיעור 5.5 (Side Quest)</span>
-        <a href="teachers/teacher-05-5.html" target="_blank" class="bg-white border border-indigo-300 text-indigo-800 px-3 py-2 rounded-xl text-sm font-bold hover:bg-indigo-100">📖 מערך</a>
-        <a href="lessons/lesson-05-5.html" target="_blank" class="bg-white border border-indigo-300 text-indigo-800 px-3 py-2 rounded-xl text-sm font-bold hover:bg-indigo-100">👁 לומדה</a>
+        <a id="side55-guide" href="teachers/teacher-05-5.html" target="_blank" class="bg-white border border-indigo-300 text-indigo-800 px-3 py-2 rounded-xl text-sm font-bold hover:bg-indigo-100">📖 מערך</a>
+        <a id="side55-lesson" href="lessons/lesson-05-5.html" target="_blank" class="bg-white border border-indigo-300 text-indigo-800 px-3 py-2 rounded-xl text-sm font-bold hover:bg-indigo-100">👁 לומדה</a>
         <button id="side55-btn" onclick="unlockSide55()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold">🔓 פתח 5.5 לכיתה</button>
         <span id="side55-status" class="text-xs text-gray-500"></span>
       </div>
@@ -227,6 +224,7 @@ function renderDriveLinks() {
   const tracks = Object.keys(DRIVE_FOLDERS).filter(t => teacherClasses.some(c => c.track === t));
   document.getElementById('drive-links').innerHTML = tracks.map(t =>
     `<a id="drive-${t}" href="${DRIVE_FOLDERS[t].url}" target="_blank" rel="noopener" class="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-xl text-sm font-bold">📂 מערכים בדרייב · ${DRIVE_FOLDERS[t].label}</a>`).join('');
+  renderSide55Links();
 }
 
 // ── TUTORIAL (רק אחרי כניסה מוצלחת, רק פעם אחת) ─────────────────────────────
@@ -363,6 +361,9 @@ function renderClassHeader() {
   if (!c) return;
   document.getElementById('class-title').textContent = 'כיתה ' + displayName(c);
   const drive = c.track && DRIVE_FOLDERS[c.track];
+  const s55 = side55For(c.track);
+  document.getElementById('side55-guide').href = s55.guide;
+  document.getElementById('side55-lesson').href = s55.lesson;
   document.getElementById('class-sub').innerHTML = esc(c.schoolName) +
     (drive ? ` · <a href="${drive.url}" target="_blank" rel="noopener" class="text-green-700 font-bold hover:underline no-print">📂 מערכים בדרייב (${drive.label})</a>` : '');
 }
@@ -530,6 +531,21 @@ async function unlockForClass() {
 }
 
 // ── שיעור 5.5 (Side Quest) - פתיחה לכיתה ─────────────────────────────────────
+// לכל מסלול מערך ולומדה משלו - המדריך/ה רואה רק את המסלולים של הכיתות שלו/ה.
+const SIDE55 = {
+  middle: { guide: 'teachers/teacher-05-5.html', lesson: 'lessons/lesson-05-5.html' },
+  elementary: { guide: 'elementary/teachers/teacher-05-5.html', lesson: 'elementary/lessons/lesson-05-5.html' },
+};
+function side55For(track) { return SIDE55[track] || SIDE55.middle; }
+function renderSide55Links() {
+  const tracks = Object.keys(SIDE55).filter(t => teacherClasses.some(c => (c.track || 'middle') === t));
+  const many = tracks.length > 1;
+  const btn = 'bg-white border border-indigo-300 text-indigo-800 px-3 py-1.5 rounded-xl text-sm font-bold hover:bg-indigo-100';
+  document.getElementById('side55-links').innerHTML = (tracks.length ? tracks : ['middle']).map(t => {
+    const tag = many ? ' · ' + DRIVE_FOLDERS[t].label : '';
+    return `<a href="${SIDE55[t].guide}" target="_blank" class="${btn}">📖 מערך${tag}</a><a href="${SIDE55[t].lesson}" target="_blank" class="${btn}">👁 לומדה${tag}</a>`;
+  }).join('');
+}
 // פתוח = דגל side_quests בגיליון class_unlocks. גם כיתה שפתוחה עד שיעור 6+ רואה את 5.5.
 function renderSide55(open) {
   const btn = document.getElementById('side55-btn');
