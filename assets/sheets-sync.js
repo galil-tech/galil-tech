@@ -133,6 +133,8 @@
     merged.resume = (rr && (!lr || (rr.ts || 0) > (lr.ts || 0))) ? rr : lr;
     if (!merged.resume) delete merged.resume;
     if (remote.done || local.done) merged.done = Object.assign({}, remote.done, local.done);
+    // אלקטרונים (שיעור 5.5): איחוד פריטים משני המכשירים - פריט שנאסף לא נעלם (כמו done)
+    if (remote.electrons55 || local.electrons55) merged.electrons55 = Object.assign({}, remote.electrons55, local.electrons55);
     // דגלי completed שכבר קיימים במחשב הזה (מלפני שהיה done) - נכנסים ל-done כדי שיגיעו לגיליון
     for (let i = 1; i <= 17; i++) {
       if (localStorage.getItem('lesson' + i + '_completed') === '1' && !(merged.done && merged.done[i])) {
