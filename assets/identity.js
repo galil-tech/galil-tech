@@ -120,6 +120,7 @@
     localStorage.removeItem('leaves_spent');
     localStorage.removeItem('studentName');
     localStorage.removeItem('gc_unlocked_through');
+    localStorage.removeItem('gc_side_55');
   };
 
   // "השיעור הגבוה ביותר שמותר לפתוח" = רק מה שהמדריך/ה פתח/ה: ברירת מחדל 1, או הערך

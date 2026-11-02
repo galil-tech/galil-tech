@@ -92,6 +92,16 @@
         <button onclick="loadOverview()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl text-sm font-bold">🔄 רענון</button>
       </div>
     </div>
+    <!-- שיעור 5.5 (Side Quest) - קישורים כלליים; הפתיחה לכיתה נמצאת בתוך מסך הכיתה -->
+    <div class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 mb-4 flex flex-wrap items-center gap-3 no-print">
+      <span class="font-black text-indigo-900">⚡ שיעור 5.5 – יישור קו אלקטרוניקה</span>
+      <span class="text-xs text-indigo-700">Side Quest גמיש בין שיעור 5 ל-6 · אלקטרונים במקום עלים</span>
+      <span class="flex gap-2 mr-auto">
+        <a href="teachers/teacher-05-5.html" target="_blank" class="bg-white border border-indigo-300 text-indigo-800 px-3 py-1.5 rounded-xl text-sm font-bold hover:bg-indigo-100">📖 מערך</a>
+        <a href="lessons/lesson-05-5.html" target="_blank" class="bg-white border border-indigo-300 text-indigo-800 px-3 py-1.5 rounded-xl text-sm font-bold hover:bg-indigo-100">👁 לומדה</a>
+      </span>
+      <span class="w-full text-xs text-gray-500">כדי לפתוח את הלומדה לתלמידים: נכנסים לכיתה ← «פתח 5.5 לכיתה».</span>
+    </div>
     <div id="cards-msg" class="hidden text-sm text-center py-6"></div>
     <div id="cards" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
   </section>
@@ -120,6 +130,15 @@
         <select id="class-unlock-n" aria-label="עד איזה שיעור לפתוח" class="border-2 border-gray-200 rounded-xl px-3 py-2 text-sm font-bold"></select>
         <button id="class-unlock-btn" onclick="unlockForClass()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl text-sm font-bold">פתח לכיתה</button>
         <span id="class-unlock-status" class="text-xs text-gray-500"></span>
+      </div>
+
+      <!-- שיעור 5.5 - דגל כיתתי נפרד (GC_SYNC.setClassSideUnlock), לא חלק מ"עד שיעור N" -->
+      <div id="side55-box" class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 mb-4 flex flex-wrap items-center gap-3 no-print">
+        <span class="font-black text-indigo-900">⚡ שיעור 5.5 (Side Quest)</span>
+        <a href="teachers/teacher-05-5.html" target="_blank" class="bg-white border border-indigo-300 text-indigo-800 px-3 py-2 rounded-xl text-sm font-bold hover:bg-indigo-100">📖 מערך</a>
+        <a href="lessons/lesson-05-5.html" target="_blank" class="bg-white border border-indigo-300 text-indigo-800 px-3 py-2 rounded-xl text-sm font-bold hover:bg-indigo-100">👁 לומדה</a>
+        <button id="side55-btn" onclick="unlockSide55()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold">🔓 פתח 5.5 לכיתה</button>
+        <span id="side55-status" class="text-xs text-gray-500"></span>
       </div>
 
       <div class="flex flex-wrap items-center justify-between gap-3 mb-3 text-xs text-gray-600">
@@ -331,6 +350,7 @@ function openClass(i) {
   document.getElementById('class-view').classList.remove('hidden');
   history.replaceState(null, '', 'teacher-dashboard.html?class=' + encodeURIComponent(classKey(c)));
   classRows = []; classN = 0;
+  document.getElementById("side55-status").textContent = ""; document.getElementById("side55-btn").classList.remove("hidden");
   renderClassHeader();
   document.getElementById('class-table-wrap').innerHTML = '';
   document.getElementById('answers-wrap').innerHTML = '';
@@ -370,6 +390,7 @@ async function loadClass(first) {
     return;
   }
   classN = resp.classUnlockedThrough || 0;
+  renderSide55((resp.classSideQuests || []).indexOf('55') !== -1);
   document.getElementById('class-unlock-status').textContent = classN ? 'כרגע פתוח לכל הכיתה עד שיעור ' + classN : '';
   if (first) {
     if (classN) document.getElementById('class-unlock-n').value = String(Math.min(17, classN + 1));
@@ -506,6 +527,33 @@ async function unlockForClass() {
   status.textContent = saved >= n
     ? `✅ פתוח לכל הכיתה עד שיעור ${saved}. התלמידים יקבלו אותו כשירעננו את הדף / ייכנסו.`
     : '⚠️ ' + unlockErrorText(resp);
+}
+
+// ── שיעור 5.5 (Side Quest) - פתיחה לכיתה ─────────────────────────────────────
+// פתוח = דגל side_quests בגיליון class_unlocks. גם כיתה שפתוחה עד שיעור 6+ רואה את 5.5.
+function renderSide55(open) {
+  const btn = document.getElementById('side55-btn');
+  const status = document.getElementById('side55-status');
+  const on = open || classN >= 6;
+  btn.classList.toggle('hidden', on);
+  status.textContent = open ? '✅ פתוח לכיתה' : (classN >= 6 ? '✅ פתוח (הכיתה כבר פתוחה עד שיעור ' + classN + ')' : 'סגור לתלמידים');
+}
+async function unlockSide55() {
+  const c = currentClass();
+  if (!c) return;
+  if (!syncEnabled()) { alert('הסנכרון לגיליון כבוי - אי אפשר לפתוח שיעור.'); return; }
+  if (!confirm('לפתוח את לומדה 5.5 (יישור קו אלקטרוניקה) לכל התלמידים בכיתה?\n\n' + c.schoolName + ' · כיתה ' + displayName(c))) return;
+  const btn = document.getElementById('side55-btn');
+  const status = document.getElementById('side55-status');
+  btn.disabled = true; status.textContent = 'פותח...';
+  const resp = await GC_SYNC.setClassSideUnlock(c.schoolName, c.classId, '55');
+  btn.disabled = false;
+  if (resp && resp.ok) {
+    renderSide55(true);
+    status.textContent = '✅ נפתח! התלמידים יקבלו אותו כשירעננו את הדף / ייכנסו.';
+    return;
+  }
+  status.textContent = '⚠️ ' + unlockErrorText(resp);
 }
 
 // ── תשובות פתוחות לפי שיעור ──────────────────────────────────────────────────

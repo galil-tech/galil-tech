@@ -109,6 +109,8 @@
       const localUnlocked = parseInt(localStorage.getItem('gc_unlocked_through') || '1');
       const remoteUnlocked = parseInt(row.unlocked_through || 1);
       if (remoteUnlocked > localUnlocked) localStorage.setItem('gc_unlocked_through', remoteUnlocked);
+      // שיעור 5.5 שהמדריך/ה פתח/ה לכיתה (class_side_unlock) - דגל מקומי, לא יורד
+      if (String(row.class_side_quests || '').split(',').indexOf('55') !== -1) localStorage.setItem('gc_side_55', '1');
       mergePassport(row.passport1);
       // שם שהמדריך/ה שינה/תה בגיליון (rename_student) גובר על השם המקומי
       if (row.student_name && String(row.student_name) !== String(id.name || '')) {
@@ -313,7 +315,8 @@
       if (!resp || !resp.ok) return resp;
       return Object.assign({}, resp, { rows: resp.rows || [],
         classUnlockedThrough: Number(resp.class_unlocked_through) || 0,
-        classDisplayName: resp.display_name || '' });
+        classDisplayName: resp.display_name || '',
+        classSideQuests: String(resp.class_side_quests || '').split(',').filter(Boolean) });
     });
   };
 
@@ -510,6 +513,10 @@
   GC_SYNC.setClassUnlock = function (school, classId, n) {
     return postUnlock('class_unlock', { school_id: school, class_id: classId, unlocked_through: n });
   };
+  // שיעור ביניים (side = "55" לשיעור 5.5) - דגל כיתתי נפרד, לא נכנס ל-unlocked_through
+  GC_SYNC.setClassSideUnlock = function (school, classId, side) {
+    return postUnlock('class_side_unlock', { school_id: school, class_id: classId, side: side });
+  };
   GC_SYNC.setStudentUnlock = function (school, classId, code, n) {
     return postUnlock('student_unlock', { school_id: school, class_id: classId, code: code, unlocked_through: n });
   };
@@ -641,5 +648,39 @@
     } else {
       decide();
     }
+  })();
+
+  // ── נעילת לומדה 5.5 (שיעור ביניים, Side Quest) ───────────────────────────
+  // פתוחה אם המדריך/ה פתח/ה אותה לכיתה (gc_side_55), אם הכיתה כבר פתוחה עד שיעור 6 ומעלה,
+  // או במצב מורה. אחרת - אותו מסך נעילה כמו בשאר הלומדות.
+  (function sideLessonGate() {
+    if (!/\/lessons\/lesson-05-5\.html$/.test(location.pathname)) return;
+    if (GC_SYNC.teacherLoggedIn()) return;
+    const allowed = function () {
+      const u = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
+      return localStorage.getItem('gc_side_55') === '1' || u >= 6;
+    };
+    if (allowed()) return;
+    const hide = document.createElement('style');
+    hide.textContent = 'body{visibility:hidden!important}';
+    document.head.appendChild(hide);
+    const lock = function () {
+      document.body.innerHTML =
+        '<div dir="rtl" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;font-family:Heebo,sans-serif;background:#eef2ff;">' +
+        '<div style="background:white;border-radius:20px;padding:28px 24px;max-width:360px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);">' +
+        '<p style="font-size:2.5rem;margin:0 0 8px;">⚡🔒</p>' +
+        '<p style="font-weight:900;font-size:1.15rem;margin:0 0 6px;color:#3730a3;">שיעור 5.5 עוד לא נפתח.</p>' +
+        '<p style="margin:0 0 18px;color:#4b5563;">המורה פותח אותו לכיתה.</p>' +
+        '<a href="../index.html#lessons-section" style="display:inline-block;background:#4f46e5;color:white;font-weight:900;padding:10px 20px;border-radius:999px;text-decoration:none;">לדף הבית ←</a>' +
+        '</div></div>';
+      hide.remove();
+    };
+    const decide = function () {
+      if (allowed()) { hide.remove(); return; }
+      if (document.body) lock(); else document.addEventListener('DOMContentLoaded', lock);
+    };
+    const c = cfg();
+    if (window.GC_ID && GC_ID.getIdentity() && c.enabled && c.url) GC_SYNC.hydrated.then(decide, decide);
+    else decide();
   })();
 })();

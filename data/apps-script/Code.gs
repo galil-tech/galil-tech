@@ -59,7 +59,8 @@ const TEACHERS_KEY_FIELDS = ['school_id', 'class_id', 'code'];
 // פתיחת שיעור לכיתה שלמה ע"י המדריך/ה (teacher-dashboard.html) - שורה אחת לכל school+class.
 // תלמיד/ה שמצטרף/ת לכיתה אחרי הפתיחה מקבל/ת את הערך הזה ב-pullMine (max עם הערך האישי).
 const CLASS_UNLOCKS_SHEET_NAME = 'class_unlocks';
-const CLASS_UNLOCKS_FIELDS = ['school_id', 'class_id', 'unlocked_through', 'last_updated'];
+// side_quests = שיעורי ביניים שנפתחו לכיתה, מופרדים בפסיק (כרגע רק "55" = שיעור 5.5). לא נסגר לעולם.
+const CLASS_UNLOCKS_FIELDS = ['school_id', 'class_id', 'unlocked_through', 'last_updated', 'side_quests'];
 const CLASS_UNLOCKS_KEY_FIELDS = ['school_id', 'class_id'];
 
 // שם תצוגה לכיתה שהמדריך/ה בחר/ה (ניהול כיתה). class_id עצמו לא משתנה לעולם - הוא חלק
@@ -71,7 +72,7 @@ const CLASS_META_KEY_FIELDS = ['school_id', 'class_id'];
 // הצד-לקוח בודק את הרשימה הזו (type=features) לפני ששולח פעולת מדריך/ה -
 // כדי שפריסה ישנה (שלא מכירה את הסוגים האלה) לא תיפול ל-upsert של תלמיד ותיצור שורת זבל.
 const FEATURES = ['class_unlock', 'student_unlock', 'rename_student', 'set_group_name', 'class_meta',
-  'teacher_auth', 'teacher_overview', 'last_seen', 'gallery_delete'];
+  'teacher_auth', 'teacher_overview', 'last_seen', 'gallery_delete', 'class_side_unlock'];
 
 // ── אימות מדריכים (חוק יסוד 4) ─────────────────────────────────────────────
 // שורה לכל סיסמה. אין שם משתמש - הכניסה בסיסמה בלבד (כמו קודם), לכן סיסמאות חייבות להיות
@@ -297,6 +298,13 @@ function _classUnlockValue(school, classId) {
   return row ? Number(row.unlocked_through) || 0 : 0;
 }
 
+// שיעורי הביניים שנפתחו לכיתה (side_quests בגיליון class_unlocks), כמחרוזת "55" / "" .
+function _classSideQuests(school, classId) {
+  const row = _rowsAsObjects(_classUnlocksSheet()).find((r) =>
+    String(r.school_id) === String(school) && String(r.class_id) === String(classId));
+  return row ? String(row.side_quests || '') : '';
+}
+
 // מעלה unlocked_through לכל שורות התלמידים שמתאימות ל-match(row) ל-max(הקיים, n).
 // לעולם לא מוריד. מחזיר כמה שורות עודכנו בפועל.
 function _raiseStudentsUnlock(match, n) {
@@ -387,7 +395,8 @@ function doGet(e) {
       .map((r) => (cls > (Number(r.unlocked_through) || 0) ? Object.assign({}, r, { unlocked_through: cls }) : r));
     const meta = _rowsAsObjects(_classMetaSheet()).find((r) =>
       String(r.school_id) === p.school && String(r.class_id) === p.class);
-    return _json({ ok: true, rows: rows, class_unlocked_through: cls, display_name: (meta && meta.display_name) || '' });
+    return _json({ ok: true, rows: rows, class_unlocked_through: cls, display_name: (meta && meta.display_name) || '',
+      class_side_quests: _classSideQuests(p.school, p.class) });
   }
 
   // מסך הכרטיסים בדשבורד: סיכום לכל כיתה בקריאה אחת. דורש כניסה (endpoint חדש - אין לקוח
@@ -476,7 +485,8 @@ function doGet(e) {
   rows = rows.map((r) => {
     const cls = _classUnlockValue(r.school_id, r.class_id);
     const own = Number(r.unlocked_through) || 0;
-    return cls > own ? Object.assign({}, r, { unlocked_through: cls }) : r;
+    const side = { class_side_quests: _classSideQuests(r.school_id, r.class_id) };
+    return Object.assign({}, r, side, cls > own ? { unlocked_through: cls } : {});
   });
   return _json({ ok: true, rows: rows });
 }
@@ -586,11 +596,32 @@ function doPost(e) {
       const rowValues = _upsert(_classUnlocksSheet(), CLASS_UNLOCKS_FIELDS, CLASS_UNLOCKS_KEY_FIELDS, body, (headers, existing) => headers.map((h, i) => {
         if (h === 'last_updated') return new Date().toISOString();
         if (h === 'unlocked_through') return Math.max(n, existing ? Number(existing[i]) || 0 : 0);
+        if (h === 'side_quests') return existing ? existing[i] : ''; // נשמר - רק class_side_unlock משנה אותו
         return body[h] !== undefined ? body[h] : '';
       }));
       const updated = _raiseStudentsUnlock((r) =>
         String(r.school_id) === String(body.school_id) && String(r.class_id) === String(body.class_id), n);
       return _json({ ok: true, unlocked_through: rowValues[CLASS_UNLOCKS_FIELDS.indexOf('unlocked_through')], students_updated: updated });
+    }
+
+    // פתיחת שיעור ביניים לכיתה (כרגע רק 5.5 = side "55"). מוסיף ל-side_quests ולא מוריד לעולם;
+    // לא נוגע ב-unlocked_through (שיעורי ביניים לא נכנסים לרצף 1–17).
+    if (body.type === 'class_side_unlock') {
+      const side = String(body.side || '');
+      if (!body.school_id || !body.class_id || ['55'].indexOf(side) === -1) return _json({ ok: false, error: 'school_id, class_id, side required' });
+      const denied = _guard(body, body.school_id, body.class_id);
+      if (denied) return _json(denied);
+      const rowValues = _upsert(_classUnlocksSheet(), CLASS_UNLOCKS_FIELDS, CLASS_UNLOCKS_KEY_FIELDS, body, (headers, existing) => headers.map((h, i) => {
+        if (h === 'last_updated') return new Date().toISOString();
+        if (h === 'unlocked_through') return existing ? existing[i] : '';
+        if (h === 'side_quests') {
+          const cur = existing ? String(existing[i] || '').split(',').filter(Boolean) : [];
+          if (cur.indexOf(side) === -1) cur.push(side);
+          return cur.join(',');
+        }
+        return body[h] !== undefined ? body[h] : '';
+      }));
+      return _json({ ok: true, side_quests: rowValues[CLASS_UNLOCKS_FIELDS.indexOf('side_quests')] });
     }
 
     // פתיחת שיעור לתלמיד/ה בודד/ת (לפי school+class+code) - אותו עיקרון, רק שורה אחת.

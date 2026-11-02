@@ -234,6 +234,14 @@
             <td class="p-4 text-center"><a href="presentations/lesson-05-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
             <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
           </tr>
+          <tr class="hover:bg-gray-50 bg-indigo-50">
+            <td class="p-4 font-black text-indigo-700">5.5 ⚡</td>
+            <td class="p-4 font-bold">יישור קו: מעגל · בקר · PWM · 3 חוטים <span class="text-xs text-indigo-600 font-normal">(Side Quest גמיש)</span></td>
+            <td class="p-4 text-center"><a href="teachers/teacher-05-5.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-05-5.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center text-gray-300 text-xs">—</td>
+            <td class="p-4 text-center"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs font-bold">⚡ פותחים מלוח הבקרה</span></td>
+          </tr>
           <tr class="hover:bg-gray-50">
             <td class="p-4 font-black">6</td>
             <td class="p-4">חיישנים · ESP32 · Phytech</td>
@@ -565,6 +573,20 @@ function renderStudentLessons(){
       </a>
     </div>`;
   }).join('');
+  // שיעור 5.5 (Side Quest) - כרטיס אחרי שיעור 5, רק כשהמדריך/ה פתח/ה (gc_side_55 מ-pullMine)
+  // או שהכיתה כבר פתוחה עד שיעור 6. חטיבה בלבד בינתיים (אין גרסת יסודי).
+  if(studentTrack()!=='elementary' && (localStorage.getItem('gc_side_55')==='1' || unlockedThrough()>=6) && grid.children[4]){
+    const e=(function(){ try{ return (JSON.parse(localStorage.getItem('passport1')||'{}')||{}).electrons55||{}; }catch(err){ return {}; } })();
+    const W={c1:1,io:1,ad:1,pwm:1,wire:1,pins:1,err:2,pwmc:1,teaser:1};
+    let got=0; for(const k in W) if(e[k]) got+=W[k];
+    grid.children[4].insertAdjacentHTML('afterend', `<div class="card bg-indigo-50 rounded-2xl p-5 shadow border-t-4 border-indigo-400 relative flex flex-col">
+      <div class="absolute top-2 left-2 bg-yellow-300 text-yellow-900 text-xs font-black px-2 py-0.5 rounded-full">⚡ Side Quest</div>
+      <a href="lessons/lesson-05-5.html" class="block flex-1">
+        <p class="text-2xl mb-1">⚡</p><p class="font-black">שיעור 5.5</p><p class="text-xs text-gray-500">מעגל · בקר · PWM · 3 חוטים</p>
+        <span class="text-xs text-indigo-700 font-bold">${got?'⚡ '+got+'/10 אלקטרונים':'פתוח - התחילו!'}</span>
+      </a>
+    </div>`);
+  }
   const note=document.getElementById('lessons-progress-note');
   if(note) note.textContent = doneCount>0 ? `הושלמו ${doneCount} מתוך 17 שיעורים` : 'לחצו על שיעור 1 כדי להתחיל';
   // CTA ב-hero: שיעור הכיתה ראשי; אם יש גם שיעור קודם שלא הושלם - כפתור שני «להשלים» (בחירה)
