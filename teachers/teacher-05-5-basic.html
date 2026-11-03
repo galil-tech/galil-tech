@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מערך שיעור 5.5 ביניים | מסלול חטיבה | מדריך מורה</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>*{font-family:'Heebo',sans-serif;}</style>
+</head>
+<body class="bg-gray-50">
+
+<div id="content">
+
+<!-- TOP BAR -->
+<div class="bg-slate-800 text-white py-5 px-8 flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-lg gap-3">
+  <div>
+    <span class="text-xs text-slate-400">מערך שיעור · מסלול חטיבה · גליל-טק · ⚡ Side Quest</span>
+    <h1 class="text-2xl font-black">שיעור 5.5 ביניים – החשמל הוא מים</h1>
+  </div>
+  <div class="flex gap-3 flex-wrap">
+    <span class="bg-white/20 px-4 py-2 rounded-xl text-sm">⏱ 90 דקות</span>
+    <span class="bg-blue-500 px-4 py-2 rounded-xl text-sm font-bold">פאזה 2 – צמיחה</span>
+    <a href="../lessons/lesson-05-5-basic.html" target="_blank" class="bg-white text-slate-900 px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-100">👁 פתח לומדה</a>
+    <a href="../presentations/lesson-05-5-basic-slides.html" target="_blank" class="bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-green-600">🖥 שקפים</a>
+    <a href="../index.html" class="bg-slate-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-slate-500">← דף בית</a>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-6 py-10 space-y-10">
+
+  <!-- IDEA -->
+  <div class="bg-sky-50 border-2 border-sky-300 rounded-3xl p-6 text-sm text-gray-700">
+    <p class="font-black text-sky-900 text-lg mb-2">💧 רעיון אחד לכל השיעור: החשמל הוא מים</p>
+    <p>כל מושג נכנס רק דרך האנלוגיה: לחץ = וולט, כמה זורם = אמפר, צינור צר = התנגדות, צינור עוקף = קצר. התלמידים יוצאים עם תמונה אחת ומשפט אחד: <b>"המעגל חייב להיות סגור – אבל לא קצר."</b></p>
+    <p class="mt-2">גרסה מצומצמת של 5.5. מי שרוצה להרחיב (PWM, AC/DC, אנלוגי/דיגיטלי) – <a href="teacher-05-5.html" class="text-sky-800 underline font-bold">5.5 המורחב</a>.</p>
+  </div>
+
+  <!-- GOALS -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-700 text-white p-6">
+      <h2 class="text-2xl font-black">🎯 מטרות השיעור</h2>
+      <p class="text-slate-300 text-sm">בסוף השיעור התלמיד...</p>
+    </div>
+    <div class="p-6 grid md:grid-cols-2 gap-6">
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">ידע ומושגים</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">✅ <span>מתרגם בין מים לחשמל: לחץ = וולט, כמה זורם = אמפר, צינור צר = התנגדות</span></li>
+          <li class="flex gap-2">✅ <span>מסביר מעגל סגור, פתוח וקצר בעזרת צינורות</span></li>
+          <li class="flex gap-2">✅ <span>מסביר למה החיישן מקבל 3.3V ולא 5V ("צינור דק שמתפוצץ")</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">מיומנויות מעשיות</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">🔧 <span>מאתר על הלוח 3V3 / GND / 5V / GPIO 6 ועל החיישן VCC / GND / AOUT (ערכה בלי USB)</span></li>
+          <li class="flex gap-2">🔧 <span>ממפה: VCC → 3V3 · GND → GND · AOUT → GPIO 6</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">חשיבה</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">💭 <span>מזהה חיווט שגוי ומסביר אותו במונחי מים ("צינור עוקף", "לחץ חזק מדי")</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">גיימיפיקציה</h3>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex gap-2">⚡ <span>עד <b>5 אלקטרונים</b> – טוקן של השיעור הזה. לא עלים, לא משפיע על רמות</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-sky-700 text-white p-6">
+      <h2 class="text-2xl font-black">🗺️ טבלת התרגום – ציר השיעור</h2>
+      <p class="text-sky-100 text-sm">בונים אותה יחד על הלוח בדיון (שקף 7). כל מושג נכנס רק דרך השורה שלו</p>
+    </div>
+    <div class="p-6 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="text-right text-gray-500 border-b"><th class="p-2">💧 מים</th><th class="p-2">⚡ חשמל</th><th class="p-2">🔲 על הלוח</th></tr></thead>
+        <tbody class="divide-y divide-gray-100 text-gray-700">
+          <tr><td class="p-2">מיכל / משאבה</td><td class="p-2">מקור חשמל</td><td class="p-2">USB → הלוח</td></tr>
+          <tr><td class="p-2">לחץ</td><td class="p-2 font-bold">וולט (V)</td><td class="p-2">3.3V</td></tr>
+          <tr><td class="p-2">כמה מים זורמים</td><td class="p-2 font-bold">אמפר (A)</td><td class="p-2">יותר מדי = חום</td></tr>
+          <tr><td class="p-2">צינור צר</td><td class="p-2 font-bold">התנגדות</td><td class="p-2">פחות זרם באותו לחץ</td></tr>
+          <tr><td class="p-2">ברז</td><td class="p-2">מתג</td><td class="p-2">–</td></tr>
+          <tr><td class="p-2">הצינור שמביא מים</td><td class="p-2">VCC</td><td class="p-2 font-mono">3V3</td></tr>
+          <tr><td class="p-2">הצינור שמחזיר</td><td class="p-2">GND</td><td class="p-2 font-mono">GND</td></tr>
+          <tr><td class="p-2">שעון מים</td><td class="p-2">AOUT (הדיווח)</td><td class="p-2 font-mono">GPIO 6</td></tr>
+          <tr><td class="p-2">צינור קרוע</td><td class="p-2">מעגל פתוח</td><td class="p-2">חוט שנפל</td></tr>
+          <tr class="bg-red-50"><td class="p-2">צינור שעוקף הכול</td><td class="p-2 font-bold">קצר</td><td class="p-2">3V3 ישר ל-GND</td></tr>
+          <tr class="bg-red-50"><td class="p-2">לחץ חזק מפוצץ צינור דק</td><td class="p-2 font-bold">5V לחיישן</td><td class="p-2">הפין נשרף</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PREP -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-teal-700 text-white p-6">
+      <h2 class="text-2xl font-black">🧰 הכנה וציוד</h2>
+    </div>
+    <div class="p-6 grid md:grid-cols-2 gap-6 text-sm">
+      <div>
+        <ul class="space-y-2 text-gray-600">
+          <li class="flex gap-2">📋 <span>מקרן + <a href="../presentations/lesson-05-5-basic-slides.html" target="_blank" class="text-teal-700 underline">שקפי 5.5 ביניים</a> (10 שקפים)</span></li>
+          <li class="flex gap-2">📋 <span><b>לכל קבוצה (3–4):</b> לוח ESP32-S3 + חיישן לחות + 3 חוטים – <b>בלי כבל USB</b></span></li>
+          <li class="flex gap-2">📋 <span>כרטיסים: 💧 "מביא" (VCC) · ↩️ "מחזיר" (GND) · 📟 "שעון" (AOUT) + דף A4 לציור</span></li>
+          <li class="flex gap-2">📋 <span>3 תמונות של חיווט שגוי להקרנה: ① VCC ל-5V ② AOUT ל-GND ③ VCC ו-GND הפוכים</span></li>
+          <li class="flex gap-2">📋 <span>מחשב לכל זוג – <a href="../lessons/lesson-05-5-basic.html" target="_blank" class="text-teal-700 underline">לומדה 5.5 ביניים</a></span></li>
+          <li class="flex gap-2">🧰 <span>ערכה רזרבית אחת לכיתה</span></li>
+        </ul>
+      </div>
+      <div class="bg-sky-50 border-2 border-dashed border-sky-300 rounded-2xl p-4">
+        <p class="font-black text-sky-900 mb-1">💡 המלצה (לא חובה): ניסוי מים</p>
+        <p class="text-gray-600 text-xs mb-2">בקבוק + צינור שקוף (~1 מטר) מעל כיור או דלי. הדגמת מורה בלבד, רחוק מהמחשבים.</p>
+        <ul class="text-xs text-gray-600 space-y-1">
+          <li>• מגביהים את הבקבוק → הסילון חזק יותר = <b>יותר לחץ (וולט)</b></li>
+          <li>• לוחצים על הצינור → פחות זורם = <b>התנגדות</b></li>
+          <li>• מקפלים את הצינור → הכול נעצר = <b>מעגל פתוח</b></li>
+        </ul>
+        <p class="text-xs text-gray-500 mt-2">אפשר במקומו הדגמה משלכם עם ה-ESP32, או רק שקף 3 (התמונות של הניסוי).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCUSSION -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-blue-700 text-white p-6">
+      <h2 class="text-2xl font-black">💬 הדיון – 15 דקות</h2>
+    </div>
+    <div class="p-6 space-y-4 text-sm">
+      <div class="bg-lime-50 border border-lime-300 rounded-xl p-4">
+        <p class="font-bold text-lime-800 mb-1">← חיבור לשיעור 5:</p>
+        <p class="text-gray-700">"שאלתי: אם הצמח לא מרגיש טוב – איך תדעו לפני שרואים בעיניים? צריך חיישן שמודד לבד. והוא צריך חשמל. אז מה זה חשמל?"</p>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p class="font-bold text-blue-900 mb-1">❓ בונים את הטבלה יחד</p>
+        <p class="text-gray-600">שואלים על כל שורה "מה זה במים?" לפני שאומרים את המילה החשמלית. רק 3 מילים חדשות: <b>וולט, אמפר, התנגדות</b>.</p>
+      </div>
+      <div class="bg-white border-2 border-blue-300 rounded-xl p-4">
+        <p class="font-bold text-blue-900 mb-1">🌉 שאלת הדיון:</p>
+        <p class="text-xl text-gray-800 font-bold">"הלוח מקבל 5V מה-USB. למה החיישן מקבל רק 3.3V?"</p>
+        <p class="text-gray-500 mt-1">תשובה: הפינים של הלוח הם "צינורות דקים" של 3.3V. לחץ של 5V מפוצץ אותם – הפין נשרף.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-700 text-white p-6"><h2 class="text-2xl font-black">⏱ לוח זמנים – 90 דקות</h2></div>
+    <div class="divide-y divide-gray-100 text-sm text-gray-600">
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 w-20 text-center"><div class="bg-green-100 text-green-800 font-black text-lg rounded-xl py-2">0–15</div></div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">🎤 פתיחה</h3>
+          <p>שקפים 1–3: "מי ימדוד בלילה?" → ניסוי המים (אם בחרתם) או התמונות בשקף 3. מסיימים בשאלה: "מה זה קשור לחיישן?"</p></div>
+      </div>
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 w-20 text-center"><div class="bg-blue-100 text-blue-800 font-black text-lg rounded-xl py-2">15–30</div></div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">💬 דיון</h3>
+          <p>שקפים 4–8: לחץ, זרימה, סגור/פתוח/קצר, טבלת התרגום, "למה לא 5V?"</p></div>
+      </div>
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 w-20 text-center"><div class="bg-purple-100 text-purple-800 font-black text-lg rounded-xl py-2">30–55</div></div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">💻 לומדה – זוגות</h3>
+          <ol class="list-decimal list-inside space-y-1">
+            <li>מים ↔ חשמל: 6 זוגות (⚡1)</li>
+            <li>מעגל צינורות: ברז + צינור עוקף + 3 שאלות (⚡1)</li>
+            <li>כמה לחץ? סליידר – ב-5V הצינור מתפוצץ, ב-3.3V ירוק (⚡1)</li>
+            <li>3 הצינורות של החיישן: חיווט על המסך + 5 כללי בטיחות (⚡1)</li>
+          </ol>
+          <p class="mt-2 text-xs text-gray-500">👨‍🏫 בשלב 3 – וודאו שכולם ניסו גם 5V. זה הרגע שהם "רואים" למה אסור.</p></div>
+      </div>
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 w-20 text-center"><div class="bg-lime-100 text-lime-800 font-black text-lg rounded-xl py-2">55–85</div></div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">🔌 מעשי – קבוצות, בלי USB</h3>
+          <ul class="space-y-1">
+            <li>• <b>(12') מפת המים של החיישן:</b> הקבוצה מציירת את החיישן כמערכת צינורות – מאיפה נכנס, מאיפה חוזר, איפה השעון.</li>
+            <li>• <b>(10') ציד פינים:</b> כרטיס ליד כל פין אמיתי בלוח ובחיישן. המורה מאשר/ת.</li>
+            <li>• <b>(8') מצאו את הטעות:</b> 3 תמונות. כל קבוצה מסבירה במונחי מים ("זה צינור עוקף!").</li>
+          </ul>
+          <p class="mt-2 text-xs text-gray-500">שלב 5 בלומדה = הצ'קליסט של החלק הזה.</p></div>
+      </div>
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 w-20 text-center"><div class="bg-yellow-100 text-yellow-800 font-black text-lg rounded-xl py-2">85–90</div></div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">🏁 נתונים + Teaser</h3>
+          <p><b>Teaser (שקף 10):</b> "שעון המים של החיישן ישלח לפין 6 מספר בין 0 ל-65535. כשהאדמה יבשה – גבוה או נמוך?" אל תתנו תשובה (⚡1 על ניחוש בלומדה).</p>
+          <p class="mt-2 bg-amber-50 border border-amber-200 rounded-xl p-2"><b>⭐ כוכב הצפון:</b> "איך זה רלוונטי לפרויקט שלי?" – באיזה "צינור" בפרויקט שלכם הכי חשוב שהלחץ יהיה נכון?</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEMS -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-red-700 text-white p-6"><h2 class="text-2xl font-black">🚨 בעיות נפוצות</h2></div>
+    <div class="p-6">
+      <table class="w-full text-sm">
+        <tbody class="divide-y divide-gray-100 text-gray-600">
+          <tr><td class="p-2 font-bold w-1/3">"אז החשמל זה באמת מים?"</td><td class="p-2">"לא – זה דמיון שעוזר לנו לחשוב. כמו מפה: היא לא העיר, אבל עוזרת להתמצא."</td></tr>
+          <tr><td class="p-2 font-bold">"אבל הלוח מקבל 5V – למה לא?"</td><td class="p-2">הלוח מוריד את ה-5V ל-3.3V בפנים. הפינים הם "צינורות דקים" של 3.3V.</td></tr>
+          <tr><td class="p-2 font-bold">מבלבלים בין וולט לאמפר</td><td class="p-2">"וולט = כמה חזק דוחפים. אמפר = כמה עובר. אפשר לדחוף חזק בצינור צר – ועובר מעט."</td></tr>
+          <tr><td class="p-2 font-bold">לא מוצאים 3V3 / GND על הלוח</td><td class="p-2">להקרין תמונה קרובה של הלוח. יש כמה פיני GND – כולם אותו דבר.</td></tr>
+          <tr><td class="p-2 font-bold">שאלות על אלקטרונים, ברקים, נוסחאות</td><td class="p-2">"שאלה מצוינת – אצלנו מספיק הצינור." לא נכנסים לנוסחאות.</td></tr>
+          <tr><td class="p-2 font-bold">אין זמן לשיעור מלא (45 דק')</td><td class="p-2">שקפים 1, 6–9 (10') + לומדה שלבים 2 ו-4 (15') + ציד פינים (15') + Teaser (5').</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GROWEE -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-green-800 text-white p-6"><h2 class="text-2xl font-black">🇮🇱 Growee – חזרה קצרה משיעור 5</h2></div>
+    <div class="p-6 text-sm text-gray-600">
+      <p>אין סטארטאפ חדש. Growee מנטרת ומאזנת pH ו-EC אוטומטית – גם בתוך המכשיר שלה חשמל זורם במעגל סגור. שאלה לכיתה (גם בלומדה): <b>"המכשיר מחובר לשקע 230V. מה יש בדרך לחיישן?"</b> → "מטען" שמוריד את הלחץ.</p>
+      <p class="text-xs text-gray-400 mt-2">רקע מלא: <a href="teacher-05.html" class="underline">מערך שיעור 5</a>. לא להוסיף פרטים שלא מופיעים שם.</p>
+    </div>
+  </div>
+
+  <!-- DIFFERENTIATION -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-orange-600 text-white p-6"><h2 class="text-2xl font-black">♿ התאמות</h2></div>
+    <div class="p-6 grid md:grid-cols-3 gap-6 text-sm text-gray-600">
+      <div><h3 class="font-bold text-red-700 mb-2">🐢 שנתקעים</h3>
+        <ul class="space-y-1"><li>• רק 3 שורות מהטבלה: לחץ, צינור עוקף, לחץ חזק מדי</li><li>• ציור הצינורות לפני החיווט</li></ul></div>
+      <div><h3 class="font-bold text-blue-700 mb-2">🚀 מתקדמים</h3>
+        <ul class="space-y-1"><li>• "אם הצינור צר יותר והלחץ זהה – מה קורה לזרימה?" (אוהם במילים)</li><li>• להכין תמונה רביעית ל"מצאו את הטעות"</li><li>• להמשיך ל-<a href="../lessons/lesson-05-5.html" class="underline">לומדה 5.5 המורחבת</a></li></ul></div>
+      <div><h3 class="font-bold text-orange-700 mb-2">🌍 ריבוי שפות</h3>
+        <ul class="space-y-1"><li>• מים = مياه (מיאה) · צינור = أنبوب (אנבוב)</li><li>• חשמל = كهرباء (כהרבאא)</li><li>• VCC / GND – אותם שמות בכל השפות</li></ul></div>
+    </div>
+  </div>
+
+  <!-- GAMIFICATION -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-lime-600 text-white p-6"><h2 class="text-2xl font-black">⚡ גיימיפיקציה – אלקטרונים</h2></div>
+    <div class="p-6">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center text-sm mb-4">
+        <div class="bg-gray-50 rounded-xl p-3"><div class="text-xl font-black">1</div><div class="text-xs text-gray-400">מים ↔ חשמל</div></div>
+        <div class="bg-gray-50 rounded-xl p-3"><div class="text-xl font-black">1</div><div class="text-xs text-gray-400">מעגל צינורות</div></div>
+        <div class="bg-gray-50 rounded-xl p-3"><div class="text-xl font-black">1</div><div class="text-xs text-gray-400">כמה לחץ</div></div>
+        <div class="bg-gray-50 rounded-xl p-3"><div class="text-xl font-black">1</div><div class="text-xs text-gray-400">3 הצינורות</div></div>
+        <div class="bg-gray-50 rounded-xl p-3"><div class="text-xl font-black">1</div><div class="text-xs text-gray-400">ניחוש לשיעור 6</div></div>
+      </div>
+      <div class="bg-lime-50 border border-lime-300 rounded-xl p-3 text-center">
+        <span class="text-xl font-black text-lime-700">מקסימום: 5 אלקטרונים ⚡ · 0 עלים 🌿</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="bg-white rounded-3xl shadow-lg p-6">
+    <h2 class="text-2xl font-black text-gray-900 mb-4">📝 הערות לשיעור</h2>
+    <textarea rows="5" placeholder="עשיתי ניסוי מים / הדגמה אחרת? מה עבד באנלוגיה?" class="w-full border-2 border-gray-200 rounded-2xl p-4 text-lg resize-none focus:border-slate-400 focus:outline-none" onchange="saveNotes(this.value)" id="notes-area"></textarea>
+    <p class="text-xs text-gray-400 mt-1">נשמר אוטומטית</p>
+  </div>
+
+</div>
+</div>
+
+<script>
+function load(){const n=localStorage.getItem('t5_5bnotes');if(n)document.getElementById('notes-area').value=n;}
+function saveNotes(v){localStorage.setItem('t5_5bnotes',v);}
+load();
+</script>
+</body>
+</html>

@@ -137,6 +137,7 @@
     if (remote.done || local.done) merged.done = Object.assign({}, remote.done, local.done);
     // אלקטרונים (שיעור 5.5): איחוד פריטים משני המכשירים - פריט שנאסף לא נעלם (כמו done)
     if (remote.electrons55 || local.electrons55) merged.electrons55 = Object.assign({}, remote.electrons55, local.electrons55);
+    if (remote.electrons55b || local.electrons55b) merged.electrons55b = Object.assign({}, remote.electrons55b, local.electrons55b);
     // דגלי completed שכבר קיימים במחשב הזה (מלפני שהיה done) - נכנסים ל-done כדי שיגיעו לגיליון
     for (let i = 1; i <= 17; i++) {
       if (localStorage.getItem('lesson' + i + '_completed') === '1' && !(merged.done && merged.done[i])) {
@@ -654,7 +655,7 @@
   // פתוחה אם המדריך/ה פתח/ה אותה לכיתה (gc_side_55), אם הכיתה כבר פתוחה עד שיעור 6 ומעלה,
   // או במצב מורה. אחרת - אותו מסך נעילה כמו בשאר הלומדות.
   (function sideLessonGate() {
-    if (!/\/lessons\/lesson-05-5\.html$/.test(location.pathname)) return;
+    if (!/\/lessons\/lesson-05-5(-basic)?\.html$/.test(location.pathname)) return;
     if (GC_SYNC.teacherLoggedIn()) return;
     const allowed = function () {
       const u = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;

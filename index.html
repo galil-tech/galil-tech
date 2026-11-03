@@ -235,8 +235,16 @@
             <td class="p-4 text-center"><span class="bg-lime-100 text-lime-700 px-2 py-1 rounded-full text-xs font-bold">📍 פעיל</span></td>
           </tr>
           <tr class="hover:bg-gray-50 bg-indigo-50">
+            <td class="p-4 font-black text-sky-700">5.5 💧</td>
+            <td class="p-4 font-bold">ביניים: החשמל הוא מים · מעגל · 3V3 · 3 חוטים <span class="text-xs text-sky-600 font-normal">(ברירת המחדל)</span></td>
+            <td class="p-4 text-center"><a href="teachers/teacher-05-5-basic.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="lessons/lesson-05-5-basic.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
+            <td class="p-4 text-center"><a href="presentations/lesson-05-5-basic-slides.html" target="_blank" class="bg-green-800 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-700">🖥 שקפים</a></td>
+            <td class="p-4 text-center"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs font-bold">⚡ פותחים מלוח הבקרה</span></td>
+          </tr>
+          <tr class="hover:bg-gray-50 bg-indigo-50">
             <td class="p-4 font-black text-indigo-700">5.5 ⚡</td>
-            <td class="p-4 font-bold">יישור קו: מעגל · בקר · PWM · 3 חוטים <span class="text-xs text-indigo-600 font-normal">(Side Quest גמיש)</span></td>
+            <td class="p-4 font-bold">מורחב: מעגל · בקר · PWM · 3 חוטים <span class="text-xs text-indigo-600 font-normal">(להרחבה)</span></td>
             <td class="p-4 text-center"><a href="teachers/teacher-05-5.html" class="bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600">פתח ↗</a></td>
             <td class="p-4 text-center"><a href="lessons/lesson-05-5.html" class="bg-lime-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-lime-400">פתח ↗</a></td>
             <td class="p-4 text-center text-gray-300 text-xs">—</td>
@@ -577,14 +585,17 @@ function renderStudentLessons(){
   // או שהכיתה כבר פתוחה עד שיעור 6. לכל מסלול לומדה משלו (lessons/ או elementary/lessons/).
   if((localStorage.getItem('gc_side_55')==='1' || unlockedThrough()>=6) && grid.children[4]){
     const el=studentTrack()==='elementary';
-    const e=(function(){ try{ return (JSON.parse(localStorage.getItem('passport1')||'{}')||{}).electrons55||{}; }catch(err){ return {}; } })();
-    let got=0; for(const k in e) got+=Number(e[k])||0; got=Math.min(10,got);
+    // חטיבה: ברירת המחדל = 5.5 ביניים (5 אלקטרונים); 5.5 המורחב = קישור משני. יסודי: לומדה אחת (10).
+    const pp=(function(){ try{ return JSON.parse(localStorage.getItem('passport1')||'{}')||{}; }catch(err){ return {}; } })();
+    const e=(el?pp.electrons55:pp.electrons55b)||{}, maxE=el?10:5;
+    let got=0; for(const k in e) got+=Number(e[k])||0; got=Math.min(maxE,got);
     grid.children[4].insertAdjacentHTML('afterend', `<div class="card bg-indigo-50 rounded-2xl p-5 shadow border-t-4 border-indigo-400 relative flex flex-col">
       <div class="absolute top-2 left-2 bg-yellow-300 text-yellow-900 text-xs font-black px-2 py-0.5 rounded-full">⚡ Side Quest</div>
-      <a href="${el?'elementary/lessons/lesson-05-5.html':'lessons/lesson-05-5.html'}" class="block flex-1">
-        <p class="text-2xl mb-1">⚡</p><p class="font-black">שיעור 5.5</p><p class="text-xs text-gray-500">${el?'מעגל · הקופסה החכמה · חזק או חלש':'מעגל · בקר · PWM · 3 חוטים'}</p>
-        <span class="text-xs text-indigo-700 font-bold">${got?'⚡ '+got+'/10 אלקטרונים':'פתוח - התחילו!'}</span>
+      <a href="${el?'elementary/lessons/lesson-05-5.html':'lessons/lesson-05-5-basic.html'}" class="block flex-1">
+        <p class="text-2xl mb-1">${el?'⚡':'💧⚡'}</p><p class="font-black">שיעור 5.5</p><p class="text-xs text-gray-500">${el?'מעגל · הקופסה החכמה · חזק או חלש':'החשמל הוא מים'}</p>
+        <span class="text-xs text-indigo-700 font-bold">${got?'⚡ '+got+'/'+maxE+' אלקטרונים':'פתוח - התחילו!'}</span>
       </a>
+      ${el?'':'<a href="lessons/lesson-05-5.html" class="text-xs text-indigo-500 underline mt-1">🚀 רוצים עוד? הגרסה המורחבת</a>'}
     </div>`);
   }
   const note=document.getElementById('lessons-progress-note');

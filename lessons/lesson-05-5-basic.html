@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 5.5 – החשמל הוא מים | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת -->
+  <link rel="stylesheet" href="../assets/core.css">
+  <script src="../assets/core.js"></script>
+  <script src="../assets/identity.js"></script>
+  <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="../data/sheets-config.js"></script>
+  <script src="../assets/sheets-sync.js"></script>
+  <style>
+    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
+    .step-panel{display:none;animation:fadeUp .4s ease;}
+    .step-panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .step-dot{width:13px;height:13px;border-radius:50%;background:#dbeafe;transition:all .3s;cursor:pointer;}
+    .step-dot.done{background:#facc15;}
+    .step-dot.current{background:#1d4ed8;transform:scale(1.5);}
+    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+    .e-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
+    .qopt{cursor:pointer;border:2px solid #dbeafe;border-radius:12px;padding:12px;text-align:center;font-size:.9rem;transition:all .2s;background:white;}
+    .qopt:hover{border-color:#60a5fa;background:#eff6ff;}
+    .qopt.correct{background:#dcfce7!important;border-color:#16a34a!important;pointer-events:none;}
+    .qopt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
+    .qopt.locked{pointer-events:none;}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+    .shake{animation:shake .3s;}
+    /* match game */
+    .mcard{cursor:pointer;border:2px solid #cbd5e1;border-radius:14px;padding:12px 10px;background:white;font-weight:700;font-size:.9rem;text-align:center;transition:all .2s;user-select:none;}
+    .mcard.sel{border-color:#2563eb;background:#eff6ff;transform:scale(1.04);}
+    .mcard.ok{border-color:#16a34a;background:#dcfce7;pointer-events:none;}
+    /* pipe circuit */
+    .pipe{stroke:#94a3b8;stroke-width:12;fill:none;stroke-linecap:round;}
+    .pipe.flow{stroke:#3b82f6;stroke-dasharray:14 10;animation:flow .7s linear infinite;}
+    .pipe.hot{stroke:#ef4444;stroke-dasharray:14 8;animation:flow .25s linear infinite;}
+    @keyframes flow{to{stroke-dashoffset:-24}}
+    /* pins */
+    .pin{cursor:pointer;border:2px solid #cbd5e1;border-radius:10px;padding:10px 8px;font-family:monospace;font-weight:800;text-align:center;background:white;transition:all .2s;user-select:none;}
+    .pin:hover{border-color:#3b82f6;}
+    .pin.sel{border-color:#1d4ed8;background:#eff6ff;transform:scale(1.06);}
+    .pin.ok{border-color:#16a34a;background:#dcfce7;pointer-events:none;}
+    input[type=range]{-webkit-appearance:none;height:8px;border-radius:4px;background:#e2e8f0;cursor:pointer;width:100%;}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:white;border:3px solid #1d4ed8;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2);}
+    .mission{border:2px solid #e2e8f0;border-radius:14px;padding:10px 12px;transition:all .3s;}
+    .mission.done{border-color:#16a34a;background:#f0fdf4;}
+    textarea:focus{outline:2px solid #60a5fa;}
+  </style>
+</head>
+<body class="bg-gradient-to-br from-sky-50 to-blue-50 min-h-screen">
+
+<!-- MASCOT -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" style="font-size:2.6rem">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center gap-3">
+    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../index.html" class="hover:text-lime-300" aria-label="דף הבית">🏠</a>
+      <a href="lesson-05.html" class="hover:text-lime-300">← שיעור 5</a>
+      <a href="../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-gradient-to-r from-sky-800 to-blue-900 text-white pt-10 pb-8 px-4">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="bg-blue-300 text-blue-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 2 – צמיחה</span>
+      <span class="bg-yellow-300 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full">⚡ Side Quest</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">בין שיעור 5 לשיעור 6</span>
+    </div>
+    <h1 class="text-3xl md:text-5xl font-black mb-2">💧⚡ החשמל הוא מים</h1>
+    <p class="text-sky-200 text-lg">לחץ · זרימה · מעגל סגור · 3 הצינורות של החיישן</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-sky-200 mb-1">
+        <span id="plabel">שלב 1 מתוך 6</span>
+        <span id="ecounter">⚡ <b id="ec">0</b>/5 אלקטרונים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-yellow-300 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ═══════════ STEP 1 – WATER ↔ ELECTRICITY ═══════════ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-lime-50 border-2 border-lime-300 rounded-3xl p-5 mb-6">
+    <p class="font-black text-lime-900 mb-1">🔙 זוכרים משיעור 5?</p>
+    <p class="text-gray-700">מדדנו את המים ביד. אבל מי ימדוד בלילה? צריך חיישן שמודד לבד – והוא צריך חשמל. היום נבין חשמל בעזרת משהו שכולנו מכירים: <b>מים בצינור</b>.</p>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">💧 = ⚡ ?</h2>
+    <p class="text-gray-600 mb-4">כל דבר במים יש לו "תאום" בחשמל. לחצו על כרטיס מים, ואז על התאום שלו.</p>
+    <div class="grid grid-cols-2 gap-6">
+      <div>
+        <p class="font-black text-center text-sky-700 mb-2">💧 מים</p>
+        <div class="space-y-2" id="m-water">
+          <div class="mcard" data-k="v" onclick="selW(this)">לחץ המים</div>
+          <div class="mcard" data-k="a" onclick="selW(this)">כמה מים זורמים</div>
+          <div class="mcard" data-k="r" onclick="selW(this)">צינור צר</div>
+          <div class="mcard" data-k="s" onclick="selW(this)">ברז</div>
+          <div class="mcard" data-k="g" onclick="selW(this)">צינור שמחזיר את המים</div>
+          <div class="mcard" data-k="o" onclick="selW(this)">צינור קרוע</div>
+        </div>
+      </div>
+      <div>
+        <p class="font-black text-center text-amber-700 mb-2">⚡ חשמל</p>
+        <div class="space-y-2" id="m-elec">
+          <div class="mcard" data-k="o" onclick="pickE(this)">מעגל פתוח</div>
+          <div class="mcard" data-k="v" onclick="pickE(this)">וולט (V)</div>
+          <div class="mcard" data-k="g" onclick="pickE(this)">GND</div>
+          <div class="mcard" data-k="a" onclick="pickE(this)">אמפר (A)</div>
+          <div class="mcard" data-k="s" onclick="pickE(this)">מתג</div>
+          <div class="mcard" data-k="r" onclick="pickE(this)">התנגדות</div>
+        </div>
+      </div>
+    </div>
+    <div id="fb-m" class="hidden mt-4 rounded-xl p-4 text-sm"></div>
+  </div>
+
+  <div class="text-center"><button id="b1" onclick="goTo(2)" class="hidden bg-blue-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-blue-600">המשך ←</button></div>
+</div>
+
+<!-- ═══════════ STEP 2 – PIPE CIRCUIT ═══════════ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">🔁 הצינור צריך להיות סגור</h2>
+    <p class="text-gray-600 mb-4">המים (החשמל) יוצאים מהמשאבה, עוברים דרך הנורית וחוזרים. נסו:</p>
+    <div class="grid md:grid-cols-2 gap-6 items-center">
+      <svg viewBox="0 0 320 220" class="w-full max-w-sm mx-auto" role="img" aria-label="מעגל מים: משאבה, ברז ונורית">
+        <rect x="18" y="78" width="54" height="74" rx="10" fill="#1e3a8a"/>
+        <text x="45" y="110" fill="#93c5fd" font-size="12" text-anchor="middle" font-weight="900">משאבה</text>
+        <text x="45" y="130" fill="#facc15" font-size="12" text-anchor="middle" font-weight="900">3.3V</text>
+        <path id="p-top1" class="pipe" d="M45 78 V30 H130"/>
+        <path id="p-top2" class="pipe" d="M190 30 H275 V85"/>
+        <circle cx="130" cy="30" r="6" fill="#334155"/><circle cx="190" cy="30" r="6" fill="#334155"/>
+        <line id="valve" x1="130" y1="30" x2="185" y2="5" stroke="#334155" stroke-width="8" stroke-linecap="round" style="transition:all .3s"/>
+        <text x="160" y="58" fill="#64748b" font-size="11" text-anchor="middle">ברז / מתג</text>
+        <circle id="led" cx="275" cy="110" r="22" fill="#e2e8f0" stroke="#94a3b8" stroke-width="3" style="transition:all .3s"/>
+        <text x="275" y="150" fill="#64748b" font-size="11" text-anchor="middle">נורית</text>
+        <path id="p-bot" class="pipe" d="M275 132 V195 H45 V152"/>
+        <text x="160" y="212" fill="#64748b" font-size="11" text-anchor="middle">הצינור שחוזר (GND)</text>
+        <path id="p-short" class="pipe" d="M45 152 Q160 120 275 85" style="display:none"/>
+        <text id="hot-label" x="160" y="118" fill="#dc2626" font-size="14" text-anchor="middle" font-weight="900" style="display:none">🔥 חם!</text>
+      </svg>
+      <div class="space-y-3">
+        <button onclick="toggleValve()" id="btn-v" class="w-full bg-blue-600 text-white font-bold py-3 rounded-2xl hover:bg-blue-500">🚰 פתחו את הברז</button>
+        <button onclick="toggleShort()" id="btn-short" class="w-full bg-white border-2 border-red-300 text-red-700 font-bold py-3 rounded-2xl hover:bg-red-50">⚠️ הוסיפו צינור עוקף</button>
+        <div id="circ-msg" class="bg-slate-50 rounded-2xl p-4 text-sm text-gray-700 min-h-[64px]"></div>
+      </div>
+    </div>
+    <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 mt-5 text-center">
+      <p class="text-xl font-black text-amber-900">המעגל חייב להיות סגור – אבל לא קצר!</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h3 class="text-xl font-black text-slate-800 mb-3">❓ סגור, פתוח או קצר?</h3>
+    <div class="space-y-4">
+      <div>
+        <p class="font-bold text-gray-700 mb-2">1. חוט נפל מהנורית – כמו צינור קרוע.</p>
+        <div class="grid grid-cols-3 gap-2" id="q-c-a">
+          <div class="qopt" onclick="pickC('a',this,'closed')">✅ סגור</div>
+          <div class="qopt" onclick="pickC('a',this,'open')">⭕ פתוח</div>
+          <div class="qopt" onclick="pickC('a',this,'short')">💥 קצר</div>
+        </div>
+      </div>
+      <div>
+        <p class="font-bold text-gray-700 mb-2">2. חוט מחבר ישר את 3V3 ל-GND – המים עוקפים הכול.</p>
+        <div class="grid grid-cols-3 gap-2" id="q-c-b">
+          <div class="qopt" onclick="pickC('b',this,'closed')">✅ סגור</div>
+          <div class="qopt" onclick="pickC('b',this,'open')">⭕ פתוח</div>
+          <div class="qopt" onclick="pickC('b',this,'short')">💥 קצר</div>
+        </div>
+      </div>
+      <div>
+        <p class="font-bold text-gray-700 mb-2">3. החשמל יוצא, עובר בנורית וחוזר. הנורית דולקת.</p>
+        <div class="grid grid-cols-3 gap-2" id="q-c-c">
+          <div class="qopt" onclick="pickC('c',this,'closed')">✅ סגור</div>
+          <div class="qopt" onclick="pickC('c',this,'open')">⭕ פתוח</div>
+          <div class="qopt" onclick="pickC('c',this,'short')">💥 קצר</div>
+        </div>
+      </div>
+    </div>
+    <div id="fb-c" class="hidden mt-4 rounded-xl p-4 text-sm"></div>
+  </div>
+
+  <div class="text-center"><button id="b2" onclick="goTo(3)" class="hidden bg-blue-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-blue-600">המשך ←</button></div>
+</div>
+
+<!-- ═══════════ STEP 3 – HOW MUCH PRESSURE ═══════════ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">💪 כמה לחץ?</h2>
+    <p class="text-gray-600 mb-4">הלוח מקבל 5 וולט מה-USB, אבל הפינים שלו עובדים ב-<b>3.3 וולט</b> – כמו צינורות דקים. מה קורה כשמגבירים את הלחץ?</p>
+    <div class="grid md:grid-cols-2 gap-6 items-center">
+      <div class="text-center">
+        <div id="pr-box" class="mx-auto w-40 h-40 rounded-3xl flex flex-col items-center justify-center text-5xl transition-all bg-slate-100 border-4 border-slate-300">
+          <span id="pr-icon">😴</span>
+        </div>
+        <p id="pr-msg" class="mt-3 font-bold text-gray-700 min-h-[48px]"></p>
+      </div>
+      <div>
+        <div class="flex justify-between text-sm mb-1"><span class="font-bold text-gray-700">לחץ: <span id="pr-val" class="text-blue-700 text-lg" dir="ltr">0.0V</span></span></div>
+        <input type="range" min="0" max="50" value="0" id="pr" oninput="setPr(this.value)" aria-label="כמה וולט">
+        <div class="flex justify-between text-xs text-gray-400 mt-1"><span>0V</span><span>5V</span></div>
+        <div class="space-y-2 mt-4">
+          <div class="mission" id="m-high">🎯 <b>משימה 1:</b> נסו 5 וולט. מה קרה לצינור?</div>
+          <div class="mission" id="m-ok">🎯 <b>משימה 2:</b> מצאו את הלחץ הנכון לפין של הלוח</div>
+        </div>
+      </div>
+    </div>
+    <div id="fb-pr" class="hidden mt-4 rounded-xl p-4 text-sm"></div>
+  </div>
+
+  <div class="text-center"><button id="b3" onclick="goTo(4)" class="hidden bg-blue-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-blue-600">המשך ←</button></div>
+</div>
+
+<!-- ═══════════ STEP 4 – 3 PIPES OF THE SENSOR ═══════════ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">🔌 3 הצינורות של החיישן</h2>
+    <div class="grid md:grid-cols-3 gap-3 mb-5">
+      <div class="bg-sky-50 rounded-2xl p-3"><p class="font-black font-mono">VCC</p><p class="text-sm text-gray-600">💧 הצינור שמביא מים (חשמל) פנימה</p></div>
+      <div class="bg-slate-100 rounded-2xl p-3"><p class="font-black font-mono">GND</p><p class="text-sm text-gray-600">↩️ הצינור שמחזיר – סוגר את המעגל</p></div>
+      <div class="bg-amber-50 rounded-2xl p-3"><p class="font-black font-mono">AOUT</p><p class="text-sm text-gray-600">📟 "שעון המים" – מדווח ללוח מה החיישן מרגיש</p></div>
+    </div>
+    <h3 class="text-xl font-black text-slate-800 mb-1">🎮 חברו (על המסך)</h3>
+    <p class="text-sm text-gray-500 mb-3">לחצו על רגל של החיישן, ואז על הפין בלוח שאליו היא מתחברת.</p>
+    <div class="grid grid-cols-2 gap-6">
+      <div>
+        <p class="font-bold text-center text-gray-700 mb-2">🌡️ חיישן</p>
+        <div class="space-y-2">
+          <div class="pin" data-s="VCC" onclick="selPin(this)">VCC</div>
+          <div class="pin" data-s="GND" onclick="selPin(this)">GND</div>
+          <div class="pin" data-s="AOUT" onclick="selPin(this)">AOUT</div>
+        </div>
+      </div>
+      <div>
+        <p class="font-bold text-center text-gray-700 mb-2">🔲 לוח ESP32</p>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="pin" data-b="3V3" onclick="boardPin(this)">3V3</div>
+          <div class="pin" data-b="5V" onclick="boardPin(this)">5V</div>
+          <div class="pin" data-b="GND" onclick="boardPin(this)">GND</div>
+          <div class="pin" data-b="GPIO 6" onclick="boardPin(this)">GPIO 6</div>
+        </div>
+      </div>
+    </div>
+    <div id="wire-list" class="mt-4 space-y-1 text-sm font-mono"></div>
+    <div id="fb-wire" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h3 class="text-xl font-black text-red-800 mb-3">🛡️ 5 כללי בטיחות</h3>
+    <ol class="space-y-2 text-sm text-gray-700 list-decimal list-inside">
+      <li>לעולם לא לחבר 3V3 או 5V ישר ל-GND (צינור עוקף = קצר).</li>
+      <li>חיישן תמיד מ-3V3. אף פעם לא 5V לפין.</li>
+      <li>מחברים לפי הכיתוב על הרכיב – לא לפי צבע החוט.</li>
+      <li>מחברים ומנתקים רק כשה-USB מנותק. חבר/ה בודק/ת – ורק אז USB.</li>
+      <li>מתחמם או מריח שרוף? מנתקים USB מיד וקוראים למורה.</li>
+    </ol>
+  </div>
+
+  <div class="text-center"><button id="b4" onclick="goTo(5)" class="hidden bg-blue-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-blue-600">המשך ←</button></div>
+</div>
+
+<!-- ═══════════ STEP 5 – IN CLASS ═══════════ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">🇮🇱 זוכרים את Growee?</h2>
+    <p class="text-gray-600 mb-3">בשיעור 5 הכרנו את Growee – מכשיר ישראלי שמנטר ומאזן pH ו-EC אוטומטית, 24/7. גם בתוכו חשמל זורם במעגל סגור: יוצא מהמקור, עובר בחיישן וחוזר.</p>
+    <p class="font-bold text-gray-700 mb-2">❓ המכשיר מחובר לשקע בקיר (230V). מה לדעתכם יש בדרך לחיישן שלו?</p>
+    <div class="grid md:grid-cols-3 gap-2" id="q-g1">
+      <div class="qopt" onclick="pickQ('g1',this,false)">כלום – 230V ישר לחיישן</div>
+      <div class="qopt" onclick="pickQ('g1',this,true)">"מטען" שמוריד את הלחץ לחשמל חלש</div>
+      <div class="qopt" onclick="pickQ('g1',this,false)">סוללה ענקית</div>
+    </div>
+    <div id="fb-g1" class="hidden mt-2 rounded-xl p-3 text-sm"></div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black text-slate-800 mb-1">🔧 בכיתה – עם הערכה האמיתית</h2>
+    <p class="text-sm text-gray-500 mb-4">הערכה <b>לא מחוברת ל-USB</b>. סמנו כל משימה אחרי שהמורה אישר/ה.</p>
+    <div class="space-y-3">
+      <label class="mission flex gap-3 items-start cursor-pointer" id="pm-map">
+        <input type="checkbox" class="mt-1 w-5 h-5" onchange="projCheck(true)">
+        <span><b>מפת המים של החיישן:</b> ציירנו את החיישן כמערכת צינורות – מאיפה המים נכנסים, מאיפה חוזרים, איפה השעון.</span>
+      </label>
+      <label class="mission flex gap-3 items-start cursor-pointer" id="pm-pins">
+        <input type="checkbox" class="mt-1 w-5 h-5" onchange="projCheck(true)">
+        <span><b>ציד פינים:</b> מצאנו על הלוח 3V3, GND, 5V ו-GPIO 6, והנחנו כרטיס ליד כל אחד.</span>
+      </label>
+      <label class="mission flex gap-3 items-start cursor-pointer" id="pm-err">
+        <input type="checkbox" class="mt-1 w-5 h-5" onchange="projCheck(true)">
+        <span><b>מצאו את הטעות:</b> זיהינו את 3 טעויות החיווט שהמורה הקרין/ה.</span>
+      </label>
+    </div>
+    <p id="proj-lock" class="text-xs text-gray-400 mt-3">🔒 השלב הבא ייפתח כשכל 3 המשימות מסומנות.</p>
+  </div>
+
+  <div class="text-center"><button id="b5" onclick="goTo(6)" class="hidden bg-blue-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-blue-600">לסיכום ←</button></div>
+</div>
+
+<!-- ═══════════ STEP 6 – SUMMARY ═══════════ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-gradient-to-br from-blue-800 to-slate-900 text-white rounded-3xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-black mb-3">📝 מה למדנו היום</h2>
+    <div class="grid grid-cols-2 gap-2 text-sm">
+      <div class="bg-white/10 rounded-xl p-2">💧 לחץ</div><div class="bg-white/10 rounded-xl p-2">⚡ וולט – הפינים שלנו: 3.3V</div>
+      <div class="bg-white/10 rounded-xl p-2">💧 כמה זורם</div><div class="bg-white/10 rounded-xl p-2">⚡ אמפר – יותר מדי = חום</div>
+      <div class="bg-white/10 rounded-xl p-2">💧 צינור צר</div><div class="bg-white/10 rounded-xl p-2">⚡ התנגדות</div>
+      <div class="bg-white/10 rounded-xl p-2">💧 צינור עוקף</div><div class="bg-white/10 rounded-xl p-2">⚡ קצר – אסור!</div>
+    </div>
+    <p class="mt-4 font-black text-yellow-300">סגור – אבל לא קצר. <span dir="ltr">VCC → 3V3 · GND → GND · AOUT → GPIO 6</span></p>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+    <h3 class="text-xl font-black text-slate-800 mb-2">🔮 שאלה לשיעור 6</h3>
+    <p class="text-gray-700 mb-3">"שעון המים" של החיישן ישלח לפין 6 מספר בין 0 ל-65535. <b>כשהאדמה יבשה – המספר יהיה גבוה או נמוך?</b> נחשו. התשובה בשיעור 6.</p>
+    <div class="grid grid-cols-2 gap-2" id="q-tz">
+      <div class="qopt" onclick="teaser(this,'high')">⬆️ גבוה</div>
+      <div class="qopt" onclick="teaser(this,'low')">⬇️ נמוך</div>
+    </div>
+    <div id="fb-tz" class="hidden mt-2 rounded-xl p-3 text-sm bg-blue-50 border border-blue-200"></div>
+    <div id="tz-wall" class="mt-3 text-sm text-gray-500"></div>
+  </div>
+
+  <div class="bg-amber-50 border-2 border-amber-300 rounded-3xl p-6 mb-6">
+    <h3 class="text-xl font-black text-amber-900 mb-2">⭐ איך זה רלוונטי לפרויקט שלי?</h3>
+    <p class="text-gray-700 mb-3">באיזה "צינור" בפרויקט שלכם הכי חשוב שהלחץ יהיה נכון? מה יקרה אם יהיה בו קצר?</p>
+    <textarea data-answer-key="n55b_northstar" rows="3" class="w-full border-2 border-amber-200 rounded-2xl p-3" placeholder="בפרויקט שלנו..."></textarea>
+  </div>
+
+  <div class="flex flex-wrap gap-3 justify-center">
+    <a href="lesson-06.html" class="bg-blue-700 text-white px-8 py-4 rounded-2xl font-black">לשיעור 6 ←</a>
+    <a href="../index.html#lessons-section" class="border-2 border-slate-700 text-slate-700 px-8 py-4 rounded-2xl font-bold">שיעורים</a>
+  </div>
+</div>
+
+</div>
+
+<script>
+const TOTAL=6;
+let cur=1;
+const sName=GC.getStudentName();
+// אלקטרונים של 5.5 ביניים: passport1.electrons55b = {פריט: משקל}. לא עלים, לא יורד. מקסימום 5.
+const E_W={match:1,pipe:1,press:1,wire:1,teaser:1};
+function getE(){const e=GC.getPassport('electrons55b');return (e&&typeof e==='object')?e:{};}
+function totalE(){const e=getE();let t=0;for(const k in E_W)if(e[k])t+=E_W[k];return t;}
+function showE(){document.getElementById('ec').textContent=totalE();}
+function earnE(id){
+  const e=Object.assign({},getE());
+  if(e[id])return;
+  e[id]=E_W[id];
+  GC.savePassport('electrons55b',e);
+  showE();
+  for(let i=0;i<6;i++){
+    const b=document.createElement('div');b.className='e-burst';
+    b.style.cssText='left:'+(15+Math.random()*70)+'%;top:'+(15+Math.random()*70)+'%;--tx:'+(Math.random()-.5)*200+'px;--ty:'+(-50-Math.random()*130)+'px;';
+    b.textContent='⚡';document.body.appendChild(b);setTimeout(()=>b.remove(),950);
+  }
+  try{GC.playSound('leaf');}catch(err){}
+}
+function fb(id,ok,msg){
+  const el=document.getElementById('fb-'+id);
+  el.className='mt-3 rounded-xl p-4 text-sm '+(ok?'bg-green-50 border border-green-300':'bg-orange-50 border border-orange-300');
+  el.textContent=msg;
+}
+function goTo(n){
+  if(!document.getElementById('step-'+n))return;
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('step-'+cur).classList.add('active');
+  document.getElementById('pbar').style.width=((n-1)/(TOTAL-1)*100)+'%';
+  document.getElementById('plabel').textContent='שלב '+n+' מתוך '+TOTAL;
+  buildDots();window.scrollTo({top:0,behavior:'smooth'});
+  if(n===6)renderTz();
+}
+function buildDots(){
+  const c=document.getElementById('dots');c.innerHTML='';
+  for(let i=1;i<=TOTAL;i++){
+    const d=document.createElement('div');
+    d.className='step-dot'+(i<cur?' done':i===cur?' current':'');
+    d.title='שלב '+i;
+    if(i<cur)d.onclick=()=>goTo(i);c.appendChild(d);
+  }
+}
+
+// ── STEP 1: match ──
+let selWEl=null,matched=0;
+const mHint={v:'לחץ = כמה חזק דוחפים.',a:'כמה זורם = כמות.',r:'צינור צר מקשה על הזרימה.',s:'ברז פותח וסוגר.',g:'הצינור שמחזיר סוגר את המעגל.',o:'צינור קרוע = אין דרך שלמה.'};
+function selW(el){
+  if(el.classList.contains('ok'))return;
+  document.querySelectorAll('#m-water .mcard').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');selWEl=el;
+}
+function pickE(el){
+  if(!selWEl){fb('m',false,'💡 קודם לחצו על כרטיס מים (בצד ימין).');return;}
+  if(el.dataset.k===selWEl.dataset.k){
+    el.classList.add('ok');selWEl.classList.remove('sel');selWEl.classList.add('ok');matched++;
+    fb('m',true,'✅ '+selWEl.textContent+' = '+el.textContent);
+  }else{
+    el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),350);
+    fb('m',false,'💡 לא התאום. רמז: '+mHint[selWEl.dataset.k]);
+  }
+  selWEl=null;document.querySelectorAll('#m-water .mcard').forEach(c=>c.classList.remove('sel'));
+  if(matched===6){fb('m',true,'🎉 כל 6 התאומים! מעכשיו כשאומרים "וולט" – תחשבו "לחץ". +⚡1');earnE('match');document.getElementById('b1').classList.remove('hidden');}
+}
+
+// ── STEP 2: pipe circuit ──
+let open=false,shorted=false;
+function drawPipes(){
+  const v=document.getElementById('valve');
+  v.setAttribute('x2',open?'190':'185');v.setAttribute('y2',open?'30':'5');
+  const main=['p-top1','p-top2','p-bot'].map(id=>document.getElementById(id));
+  const sh=document.getElementById('p-short'),led=document.getElementById('led'),hot=document.getElementById('hot-label');
+  sh.style.display=shorted?'':'none';hot.style.display=(shorted&&open)?'':'none';
+  main.forEach(p=>p.setAttribute('class','pipe'));sh.setAttribute('class','pipe');
+  let msg;
+  if(!open){msg='⭕ הברז סגור – הצינור "קטוע". שום דבר לא זורם. מעגל <b>פתוח</b>.';led.setAttribute('fill','#e2e8f0');}
+  else if(shorted){
+    msg='💥 <b>קצר!</b> המים בורחים בצינור העוקף ולא עוברים בנורית. הרבה זרימה בבת אחת = חום ונזק.';
+    led.setAttribute('fill','#e2e8f0');sh.setAttribute('class','pipe hot');document.getElementById('p-top1').setAttribute('class','pipe hot');
+  }else{
+    msg='✅ מעגל <b>סגור</b>: המים יוצאים, עוברים בנורית וחוזרים – הנורית דולקת!';
+    led.setAttribute('fill','#facc15');main.forEach(p=>p.setAttribute('class','pipe flow'));
+  }
+  document.getElementById('circ-msg').innerHTML=msg;
+  document.getElementById('btn-v').textContent=open?'🚰 סגרו את הברז':'🚰 פתחו את הברז';
+  document.getElementById('btn-short').textContent=shorted?'✂️ הסירו את הצינור העוקף':'⚠️ הוסיפו צינור עוקף';
+}
+function toggleValve(){open=!open;drawPipes();}
+function toggleShort(){shorted=!shorted;drawPipes();if(shorted&&open)GC.mascotSay('קצר! בדיוק מה שאסור בלוח האמיתי 🔥','😱');}
+const cAns={a:'open',b:'short',c:'closed'};const cOk={};
+const cMsg={
+  a:{ok:'✅ נכון – צינור קרוע = מעגל פתוח.',bad:'💡 כשחוט נפל, אין דרך שלמה. איך קוראים לזה?'},
+  b:{ok:'✅ נכון – קצר. לכן: לעולם לא 3V3 ישר ל-GND.',bad:'💡 המים עוקפים את הכול ומתחממים. איך קוראים לזה?'},
+  c:{ok:'✅ נכון – דרך שלמה דרך הרכיב = מעגל סגור.',bad:'💡 יוצא, עובר בנורית וחוזר – זה המצב התקין.'},
+};
+function pickC(q,el,val){
+  if(cOk[q])return;
+  const grid=document.getElementById('q-c-'+q);
+  grid.querySelectorAll('.qopt').forEach(o=>o.classList.remove('wrong'));
+  if(val===cAns[q]){cOk[q]=true;el.classList.add('correct');grid.querySelectorAll('.qopt').forEach(o=>o.classList.add('locked'));fb('c',true,cMsg[q].ok);}
+  else{el.classList.add('wrong');fb('c',false,cMsg[q].bad);}
+  if(cOk.a&&cOk.b&&cOk.c){fb('c',true,'🎉 שלוש מתוך שלוש! "סגור – אבל לא קצר." +⚡1');earnE('pipe');document.getElementById('b2').classList.remove('hidden');}
+}
+
+// ── STEP 3: pressure ──
+let sawHigh=false,prDone=false;
+function setPr(x){
+  const v=x/10,box=document.getElementById('pr-box'),icon=document.getElementById('pr-icon'),msg=document.getElementById('pr-msg');
+  document.getElementById('pr-val').textContent=v.toFixed(1)+'V';
+  let cls,ic,m;
+  if(v<3){cls='bg-slate-100 border-slate-300';ic='😴';m='לחץ חלש מדי – החיישן לא "מתעורר".';}
+  else if(v<=3.4){cls='bg-green-100 border-green-500';ic='😊';m='3.3V – בדיוק מה שהפינים של הלוח צריכים!';}
+  else if(v<4.5){cls='bg-amber-100 border-amber-500';ic='😬';m='הלחץ עולה... הצינורות הדקים של הפינים כבר לא בנוח.';}
+  else{cls='bg-red-100 border-red-500 shake';ic='💥';m='5V – הצינור הדק מתפוצץ! הדיווח של החיישן חזק מדי, והפין של הלוח עלול להישרף.';}
+  box.className='mx-auto w-40 h-40 rounded-3xl flex flex-col items-center justify-center text-5xl transition-all border-4 '+cls;
+  icon.textContent=ic;msg.textContent=m;
+  if(v>=4.5&&!sawHigh){sawHigh=true;document.getElementById('m-high').classList.add('done');}
+  if(sawHigh&&v>=3.2&&v<=3.4&&!prDone){
+    prDone=true;document.getElementById('m-ok').classList.add('done');
+    fb('pr',true,'🎉 בדיוק! לכן החיישן תמיד מקבל חשמל מ-3V3 – אף פעם לא מ-5V. +⚡1');
+    earnE('press');document.getElementById('b3').classList.remove('hidden');
+  }else if(!sawHigh&&v>=3.2&&v<=3.4){
+    fb('pr',false,'👍 נכון, אבל קודם נסו גם 5V – כדי לראות למה אסור.');
+  }
+}
+
+// ── STEP 4: wiring ──
+const wireAns={VCC:'3V3',GND:'GND',AOUT:'GPIO 6'};
+let selS=null;const wired={};
+function selPin(el){
+  if(el.classList.contains('ok'))return;
+  document.querySelectorAll('[data-s]').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');selS=el;
+}
+function boardPin(el){
+  if(!selS){fb('wire',false,'💡 קודם לחצו על רגל של החיישן (בצד ימין).');return;}
+  const s=selS.dataset.s,b=el.dataset.b;
+  if(wireAns[s]===b){
+    wired[s]=b;selS.classList.remove('sel');selS.classList.add('ok');
+    const row=document.createElement('div');row.className='bg-green-50 rounded-lg px-3 py-1';row.setAttribute('dir','ltr');
+    row.textContent='✅ '+s+' → '+b;document.getElementById('wire-list').appendChild(row);
+    fb('wire',true,s==='GND'?'✅ נכון! הצינור שחוזר סוגר את המעגל.':s==='VCC'?'✅ נכון! לחץ של 3.3V – לא 5V.':'✅ נכון! שעון המים מדווח לפין 6.');
+  }else{
+    let m;
+    if(b==='5V')m='🛑 5V = לחץ חזק מדי! זוכרים את הצינור שהתפוצץ?';
+    else if(b==='GND'&&s==='VCC')m='🛑 VCC ל-GND? אז שני הצינורות "חוזרים" – אין מאיפה להביא חשמל.';
+    else if(b==='3V3'&&s==='GND')m='🛑 הפוך! הצינור שחוזר לא מתחבר למשאבה.';
+    else if(b==='3V3')m='💡 3V3 מביא חשמל. AOUT הוא "שעון המים" – הוא צריך פין שקורא.';
+    else if(b==='GND')m='💡 AOUT לא הולך ל-GND – אז הדיווח "ייבלע".';
+    else m='💡 GPIO 6 קורא את הדיווח. החשמל עצמו מגיע מפין אחר.';
+    el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),350);
+    fb('wire',false,m);
+  }
+  selS=null;
+  if(Object.keys(wired).length===3){
+    fb('wire',true,'🎉 החיווט מושלם: VCC → 3V3 · GND → GND · AOUT → GPIO 6. בדיוק ככה נחבר בשיעור 6. +⚡1');
+    earnE('wire');document.getElementById('b4').classList.remove('hidden');
+  }
+}
+
+// ── STEP 5 ──
+const qDone={};
+function pickQ(qid,el,correct){
+  if(qDone[qid])return;
+  const grid=document.getElementById('q-'+qid);
+  grid.querySelectorAll('.qopt').forEach(o=>o.classList.remove('wrong'));
+  if(correct){qDone[qid]=true;el.classList.add('correct');grid.querySelectorAll('.qopt').forEach(o=>o.classList.add('locked'));
+    fb(qid,true,'✅ נכון! בדיוק כמו המטען של הטלפון: לוקח את הלחץ החזק מהשקע ומוריד אותו לחשמל חלש.');}
+  else{el.classList.add('wrong');fb(qid,false,'💡 230V זה לחץ ענק. מה צריך לקרות לפני שהוא מגיע לחיישן קטן?');}
+}
+function projCheck(save){
+  ['map','pins','err'].forEach(k=>document.getElementById('pm-'+k).classList.toggle('done',document.querySelector('#pm-'+k+' input').checked));
+  const all=['map','pins','err'].every(k=>document.querySelector('#pm-'+k+' input').checked);
+  document.getElementById('b5').classList.toggle('hidden',!all);
+  document.getElementById('proj-lock').classList.toggle('hidden',all);
+  if(save)GC.savePassport('proj55b',{map:+document.querySelector('#pm-map input').checked,pins:+document.querySelector('#pm-pins input').checked,err:+document.querySelector('#pm-err input').checked});
+}
+
+// ── STEP 6 ──
+function teaser(el,val){
+  document.querySelectorAll('#q-tz .qopt').forEach(o=>o.classList.remove('correct'));
+  el.classList.add('correct');
+  GC.savePassport('teaser55b',val);
+  const w=JSON.parse(localStorage.getItem('cls55b')||'{}');w[sName]=val;localStorage.setItem('cls55b',JSON.stringify(w));
+  earnE('teaser');
+  const f=document.getElementById('fb-tz');f.classList.remove('hidden');
+  f.textContent='🔒 הניחוש שלכם נשמר: '+(val==='high'?'גבוה':'נמוך')+'. בשיעור 6 תמדדו ותגלו. +⚡1';
+  renderTz();
+}
+function renderTz(){
+  const w=JSON.parse(localStorage.getItem('cls55b')||'{}');const vals=Object.values(w);
+  if(!vals.length){document.getElementById('tz-wall').textContent='';return;}
+  const hi=vals.filter(v=>v==='high').length;
+  document.getElementById('tz-wall').textContent='🧱 במחשב הזה: '+hi+' ניחשו "גבוה", '+(vals.length-hi)+' ניחשו "נמוך".';
+}
+
+// ── INIT ──
+function init(){
+  buildDots();showE();drawPipes();setPr(0);
+  const p=GC.getPassport('proj55b');
+  if(p){['map','pins','err'].forEach(k=>{if(p[k])document.querySelector('#pm-'+k+' input').checked=true;});}
+  projCheck(false);
+  if(typeof GC.bindOpenAnswers==='function')GC.bindOpenAnswers();
+  if(window.GC_SYNC&&GC_SYNC.hydrated)GC_SYNC.hydrated.then(showE,function(){});
+  function ready(){
+    GC.Tutorial.start('l055b_electrons',[
+      {target:'#ecounter',emoji:'⚡',wait:'next',text:'בשיעור הזה אוספים אלקטרונים ⚡ במקום עלים. יש 5 לאסוף!'},
+      {target:'#dots',emoji:'🔘',wait:'next',text:'אלה שלבי השיעור. אפשר לחזור אחורה, לא לדלג קדימה.'},
+    ]);
+  }
+  if(document.readyState==='complete')ready();else window.addEventListener('load',ready);
+}
+init();
+</script>
+</body>
+</html>
