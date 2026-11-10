@@ -76,6 +76,7 @@
     if (resp && resp.error === 'server_outdated') return 'צריך קודם לעדכן את ה-Apps Script (Deploy → New version) - הפעולה לא בוצעה.';
     if (resp && resp.error === 'student not found') return 'התלמיד/ה לא נמצא/ה בגיליון (אולי עוד לא סונכרן/ה מהמחשב שלו/ה).';
     if (resp && resp.error === 'forbidden') return 'הכיתה הזו לא משויכת אליך - הפעולה לא בוצעה.';
+    if (resp && resp.error === 'class_closed') return 'השיעור הזה סגור לכל הכיתה (משיעור ' + resp.closed_from + '). קודם לפתוח אותו לכיתה.';
     if (resp && /^auth_/.test(resp.error || '')) return 'הכניסה למצב מורה פגה - היכנסו שוב ונסו שנית.';
     return 'הפעולה נכשלה - נסו שוב. (' + ((resp && resp.error) || 'שגיאת רשת') + ')';
   }
@@ -157,6 +158,13 @@
     if (!confirm('כל התלמידים ב' + P.classLabel(c) + ' יוכלו להיכנס לשיעור ' + n + ' גם אם לא סיימו את הקודם.')) return Promise.resolve(false);
     return GC_SYNC.setClassUnlock(c.schoolName, c.classId, n).then(done);
   };
+  // סגירה לכיתה: שיעור n ומעלה נעולים (נפתח בטעות). עלים והתקדמות לא נמחקים.
+  P.lockClass = function (c, n) {
+    if (!guard()) return Promise.resolve(false);
+    if (n < 2) { alert('שיעור 1 תמיד פתוח.'); return Promise.resolve(false); }
+    if (!confirm('לסגור ב' + P.classLabel(c) + ' את שיעור ' + n + (n < 17 ? ' ואת כל מה שאחריו' : '') + '?\nהכיתה תישאר פתוחה עד שיעור ' + (n - 1) + '. עלים והתקדמות לא נמחקים.')) return Promise.resolve(false);
+    return GC_SYNC.setClassLock(c.schoolName, c.classId, n).then(done);
+  };
 
   // ── הפאנל הצף ────────────────────────────────────────────────────────────
   const CSS = `
@@ -182,7 +190,7 @@
 #gc-tp-drawer .gc-tp-msg{font-size:.8rem;color:#6b7280;margin:8px 0}
 @media print{#gc-tp-fab,#gc-tp-drawer{display:none!important}}`;
 
-  let state = { idx: 0, rows: [], classN: 0 };
+  let state = { idx: 0, rows: [], classN: 0, closed: 0 };
 
   function classes() { const s = P.session(); return s ? s.classes : []; }
   function current() { return classes()[state.idx]; }
@@ -245,8 +253,9 @@
       '<button type="button" class="gc-tp-btn" id="gc-tp-refresh" title="רענון">🔄</button></div>' +
       '<div class="gc-tp-box"><b style="color:#14532d;font-size:.85rem">🔓 פתיחה לכיתה</b>' +
       '<select id="gc-tp-n" aria-label="עד איזה שיעור">' + opts + '</select>' +
-      '<button type="button" class="gc-tp-main" id="gc-tp-unlock-class">פתח</button>' +
-      '<span class="gc-tp-sub">' + (state.classN ? 'כרגע פתוח עד ' + state.classN : '') + '</span></div>' +
+      '<button type="button" class="gc-tp-main" id="gc-tp-unlock-class">🔓 פתח עד</button>' +
+      '<button type="button" class="gc-tp-btn" id="gc-tp-lock-class" style="color:#b91c1c" title="נפתח בטעות? סגירה מהשיעור הזה והלאה">🔒 סגור מ-</button>' +
+      '<span class="gc-tp-sub" style="width:100%">' + (state.classN ? 'כרגע פתוח עד ' + state.classN : '') + (state.closed ? ' · 🔒 סגור משיעור ' + state.closed : '') + '</span></div>' +
       (state.rows.length ? '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">' +
         '<b style="font-size:.85rem">👥 תלמידים (' + state.rows.length + ')</b>' +
         '<button type="button" class="gc-tp-btn" id="gc-tp-merge">🔗 איחוד המסומנים לזוג</button></div>' : '') +
@@ -261,6 +270,8 @@
     body.querySelector('#gc-tp-rename-class').onclick = () => P.renameClass(current()).then((ok) => ok && render());
     body.querySelector('#gc-tp-unlock-class').onclick = () =>
       P.unlockClass(current(), Number(body.querySelector('#gc-tp-n').value)).then((ok) => ok && refresh());
+    body.querySelector('#gc-tp-lock-class').onclick = () =>
+      P.lockClass(current(), Number(body.querySelector('#gc-tp-n').value)).then((ok) => ok && refresh());
     body.querySelector('#gc-tp-logout').onclick = () => { if (confirm('לצאת ממצב מורה במחשב הזה?')) P.logout(); };
     const merge = body.querySelector('#gc-tp-merge');
     if (merge) merge.onclick = () => {
@@ -281,9 +292,13 @@
     if (!c || !syncOn()) { state.rows = []; render(); return; }
     render('טוען...');
     GC_SYNC.pullClass(c.schoolName, c.classId).then((resp) => {
-      if (current() !== c) return; // הוחלפה כיתה בזמן הטעינה
+      // הוחלפה כיתה בזמן הטעינה. משווים לפי מפתח: classesFor בונה אובייקטים חדשים בכל קריאה,
+      // אז השוואת אובייקטים (!==) הייתה תמיד אמת והפאנל נתקע על "טוען...".
+      const now = current();
+      if (!now || now.schoolName !== c.schoolName || now.classId !== c.classId) return;
       if (!resp || !resp.ok) { state.rows = []; render('⚠️ לא הצלחנו לטעון מהגיליון - נסו 🔄.'); return; }
       state.classN = resp.classUnlockedThrough || 0;
+      state.closed = resp.classClosedFrom || 0;
       if (resp.classDisplayName) meta[c.schoolName + '|' + c.classId] = resp.classDisplayName;
       state.rows = (resp.rows || []).map((r) => {
         const own = Number(r.unlocked_through) || 1;

@@ -27,6 +27,38 @@
     });
   };
 
+  // שם התצוגה של הכיתה שהמדריך/ה בחר/ה (גיליון class_meta) - כדי שגם התלמידים יראו אותו, לא
+  // רק לוח הבקרה. class_id עצמו (מה שנשמר בזהות ובגיליון) לא משתנה. מטמון מקומי, מתרענן כל 10 דק'.
+  const KEY_CLASS_META = 'gc_class_meta';
+  function classMeta() {
+    try { return JSON.parse(localStorage.getItem(KEY_CLASS_META) || '{}') || {}; } catch (e) { return {}; }
+  }
+  GC_ID.classDisplay = function (school, classId) {
+    const m = classMeta().names || {};
+    const d = m[school + '|' + classId];
+    if (d) return d;
+    const s = window.GC_ROSTER && GC_ROSTER.schoolByName ? GC_ROSTER.schoolByName(school) : null;
+    const c = s && s.classes.find(function (x) { return x.id === classId; });
+    return (c && c.name) || classId || '';
+  };
+  GC_ID.refreshClassMeta = function (force) {
+    const cached = classMeta();
+    if (!force && cached.ts && Date.now() - cached.ts < 10 * 60 * 1000) return Promise.resolve(false);
+    if (!window.GC_SYNC || !GC_SYNC.pullClassMeta) return Promise.resolve(false);
+    return GC_SYNC.pullClassMeta().then(function (resp) {
+      if (!resp || !resp.ok) return false;
+      const names = {};
+      (resp.rows || []).forEach(function (r) { if (r.display_name) names[r.school_id + '|' + r.class_id] = String(r.display_name); });
+      const changed = JSON.stringify(names) !== JSON.stringify(cached.names || {});
+      try { localStorage.setItem(KEY_CLASS_META, JSON.stringify({ ts: Date.now(), names: names })); } catch (e) {}
+      if (changed) {
+        renderBadge();
+        try { window.dispatchEvent(new Event('gc:classmeta')); } catch (e) {}
+      }
+      return changed;
+    }).catch(function () { return false; });
+  };
+
   // מיקום אחרון בלומדה: passport1.resume = {lesson, step, steps, ts} (core.js כותב, מסונכרן לגיליון)
   GC_ID.getResume = function () {
     try { return JSON.parse(localStorage.getItem('passport1') || '{}').resume || null; } catch (e) { return null; }
@@ -72,7 +104,7 @@
   // אחרת ישר לשיעור היחיד הרלוונטי. לעולם לא מעבר ל-gc_unlocked_through.
   GC_ID.goToResume = function () {
     return GC_ID.loadRoster().then(function () {
-      const unlocked = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
+      const unlocked = GC_ID.computeUnlockedThrough();
       const id = GC_ID.getIdentity();
       const s = id && window.GC_ROSTER && GC_ROSTER.schoolByName ? GC_ROSTER.schoolByName(id.school) : null;
       const elementary = !!(s && s.track === 'elementary');
@@ -121,17 +153,21 @@
     localStorage.removeItem('studentName');
     localStorage.removeItem('gc_unlocked_through');
     localStorage.removeItem('gc_side_55');
+    localStorage.removeItem('gc_closed_from');
   };
 
   // "השיעור הגבוה ביותר שמותר לפתוח" = רק מה שהמדריך/ה פתח/ה: ברירת מחדל 1, או הערך
   // מהגיליון (pullMine - פתיחה כיתתית/אישית מלוח המורה). סיום שיעור (lesson{N}_completed)
-  // לא מקדם את הנעילה.
+  // לא מקדם את הנעילה. אם המדריך/ה סגר/ה לכיתה (gc_closed_from) - לא מעבר לשיעור שלפני הסגירה.
   GC_ID.computeUnlockedThrough = function () {
-    return parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
+    const u = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
+    const cf = parseInt(localStorage.getItem('gc_closed_from') || '0', 10) || 0;
+    return cf ? Math.max(1, Math.min(u, cf - 1)) : u;
   };
   // שומר מקומית; מחזיר את הערך. נקרא מ-index.html אחרי pullMine ומ-logout.
+  // הערך הגולמי (בלי התקרה) - gc_unlocked_through לעולם לא יורד.
   GC_ID.syncUnlockedThrough = function () {
-    const n = GC_ID.computeUnlockedThrough();
+    const n = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
     localStorage.setItem('gc_unlocked_through', n);
     return n;
   };
@@ -182,7 +218,7 @@
     b.id = 'gc-id-badge';
     // right (לא left) - כדי לא להתנגש עם #mascot-wrap שקבוע bottom-left בכל דפי הלומדה
     b.style.cssText = 'position:fixed;bottom:10px;right:10px;z-index:9998;background:white;border:2px solid #d1fae5;border-radius:16px;padding:6px 12px;font-family:Heebo,sans-serif;font-size:.72rem;color:#166534;box-shadow:0 2px 10px rgba(0,0,0,.12);direction:rtl;cursor:pointer;max-width:230px;line-height:1.5;';
-    b.innerHTML = '🏫 ' + esc(id.school || '—') + ' · ' + esc(id.className || '—') + '<br><b>' + esc(id.name || 'תלמיד/ה') + '</b> (' + esc(id.code || '----') + ') · <span style="text-decoration:underline">החלף/י</span>';
+    b.innerHTML = '🏫 ' + esc(id.school || '—') + ' · ' + esc(GC_ID.classDisplay(id.school, id.className) || '—') + '<br><b>' + esc(id.name || 'תלמיד/ה') + '</b> (' + esc(id.code || '----') + ') · <span style="text-decoration:underline">החלף/י</span>';
     b.onclick = function () {
       if (confirm('לסיים ולפנות את המחשב לתלמיד/ה הבא/ה?\nההתקדמות שלכם שמורה בענן תחת הקוד ' + esc(id.code || '----') + ', ותחזור אוטומטית כשתיכנסו איתו שוב (גם ממחשב אחר).')) {
         GC_ID.logout();
@@ -212,7 +248,7 @@
     if (!s) return '<option value="">— קודם בחרו בית ספר —</option>';
     const list = s.classes.length === 1 ? '' : '<option value="">— בחרו כיתה —</option>';
     return list + s.classes.map(function (c) {
-      return '<option value="' + esc(c.id) + '"' + (c.id === selected ? ' selected' : '') + '>' + esc(c.name) + '</option>';
+      return '<option value="' + esc(c.id) + '"' + (c.id === selected ? ' selected' : '') + '>' + esc((classMeta().names || {})[schoolName + '|' + c.id] || c.name) + '</option>';
     }).join('');
   }
 
@@ -450,4 +486,13 @@
   };
 
   window.addEventListener('DOMContentLoaded', renderBadge);
+  // שם תצוגה לכיתה (class_meta) - sheets-sync.js נטען אחרי הקובץ הזה, לכן אחרי DOMContentLoaded
+  window.addEventListener('DOMContentLoaded', function () {
+    GC_ID.refreshClassMeta(); // מוגבל לפעם ב-10 דקות
+  });
+  // מודל הכניסה פתוח כשהשמות מתעדכנים - מרעננים את רשימת הכיתות בלי לאבד את הבחירה
+  window.addEventListener('gc:classmeta', function () {
+    const sel = document.getElementById('gc-id-class'), sc = document.getElementById('gc-id-school');
+    if (sel && sc && sel.tagName === 'SELECT' && window.GC_ROSTER) { const v = sel.value; sel.innerHTML = classOptionsHtml(sc.value, v); }
+  });
 })();

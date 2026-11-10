@@ -121,12 +121,13 @@
         </div>
       </div>
 
-      <!-- פתיחת שיעור לכיתה (נשמר בגיליון - GC_SYNC.setClassUnlock) -->
+      <!-- פתיחה / סגירה של שיעור לכיתה (נשמר בגיליון - GC_SYNC.setClassUnlock / setClassLock) -->
       <div id="class-unlock-box" class="bg-lime-50 border-2 border-lime-200 rounded-2xl p-4 mb-4 flex flex-wrap items-center gap-3 no-print">
-        <span class="font-black text-green-900">🔓 פתיחת שיעור לכיתה</span>
-        <select id="class-unlock-n" aria-label="עד איזה שיעור לפתוח" class="border-2 border-gray-200 rounded-xl px-3 py-2 text-sm font-bold"></select>
-        <button id="class-unlock-btn" onclick="unlockForClass()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl text-sm font-bold">פתח לכיתה</button>
-        <span id="class-unlock-status" class="text-xs text-gray-500"></span>
+        <span class="font-black text-green-900">🔓 שיעורים לכיתה</span>
+        <select id="class-unlock-n" aria-label="בחירת שיעור" class="border-2 border-gray-200 rounded-xl px-3 py-2 text-sm font-bold"></select>
+        <button id="class-unlock-btn" onclick="unlockForClass()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl text-sm font-bold">🔓 פתח עד השיעור הזה</button>
+        <button id="class-lock-btn" onclick="lockForClass()" class="bg-white border-2 border-red-200 hover:bg-red-50 text-red-700 px-4 py-2 rounded-xl text-sm font-bold" title="נפתח בטעות שיעור מתקדם? סוגרים אותו (ואת כל מה שאחריו)">🔒 סגור מהשיעור הזה</button>
+        <span id="class-unlock-status" class="text-xs text-gray-500 w-full sm:w-auto"></span>
       </div>
 
       <!-- שיעור 5.5 - דגל כיתתי נפרד (GC_SYNC.setClassSideUnlock), לא חלק מ"עד שיעור N" -->
@@ -143,8 +144,12 @@
           <span><span class="st-dot st-yellow"></span> פעיל/ה היום, עוד בלי עלים בו</span>
           <span><span class="st-dot st-gray"></span> לא פעיל/ה היום</span>
         </div>
-        <button onclick="mergeSelected()" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-xs font-bold no-print">🔗 איחוד המסומנים לזוג</button>
+        <div class="flex gap-2 flex-wrap no-print">
+          <button onclick="addStudent()" class="bg-green-100 hover:bg-green-200 text-green-900 px-3 py-1 rounded-lg text-xs font-bold">➕ הוספת תלמיד/ה</button>
+          <button onclick="mergeSelected()" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-xs font-bold">🔗 איחוד המסומנים לזוג</button>
+        </div>
       </div>
+      <div id="roster-msg" class="hidden bg-green-50 border-2 border-green-200 rounded-2xl p-3 mb-3 text-sm text-green-900 flex flex-wrap items-center gap-2" role="status"></div>
       <div id="class-summary" class="text-sm text-gray-600 mb-3"></div>
       <div id="class-table-wrap"></div>
     </div>
@@ -337,7 +342,12 @@ function showCards() {
 let currentIdx = -1;
 let classRows = [];
 let classN = 0;
+let classClosed = 0; // שיעור ראשון שהמדריך/ה סגר/ה לכיתה (0 = אין סגירה)
 function currentClass() { return teacherClasses[currentIdx]; }
+function classUnlockText() {
+  return (classN ? 'כרגע פתוח לכל הכיתה עד שיעור ' + classN : 'עוד לא נפתח שיעור לכל הכיתה') +
+    (classClosed ? ' · 🔒 סגור משיעור ' + classClosed : '');
+}
 
 function openClass(i) {
   currentIdx = i;
@@ -346,7 +356,8 @@ function openClass(i) {
   document.getElementById('cards-view').classList.add('hidden');
   document.getElementById('class-view').classList.remove('hidden');
   history.replaceState(null, '', 'teacher-dashboard.html?class=' + encodeURIComponent(classKey(c)));
-  classRows = []; classN = 0;
+  classRows = []; classN = 0; classClosed = 0;
+  document.getElementById('roster-msg').classList.add('hidden');
   document.getElementById("side55-status").textContent = ""; document.getElementById("side55-btn").classList.remove("hidden");
   renderClassHeader();
   document.getElementById('class-table-wrap').innerHTML = '';
@@ -388,8 +399,9 @@ async function loadClass(first) {
     return;
   }
   classN = resp.classUnlockedThrough || 0;
+  classClosed = resp.classClosedFrom || 0;
   renderSide55((resp.classSideQuests || []).indexOf('55') !== -1);
-  document.getElementById('class-unlock-status').textContent = classN ? 'כרגע פתוח לכל הכיתה עד שיעור ' + classN : '';
+  document.getElementById('class-unlock-status').textContent = classUnlockText();
   if (first) {
     if (classN) document.getElementById('class-unlock-n').value = String(Math.min(17, classN + 1));
     document.getElementById('answers-lesson').value = String(Math.max(1, Math.min(17, classN || 1)));
@@ -449,6 +461,7 @@ function renderClassTable() {
       <th class="py-2 pl-3">זוג / קבוצה</th>
       <th class="py-2 pl-3">פתוח עד</th>
       <th class="py-2 pl-3">עלים מצטברים</th>
+      <th class="py-2 pl-1 no-print"><span class="sr-only">הסרה</span></th>
     </tr></thead>
     <tbody>${classRows.map((r, i) => `
       <tr class="border-b last:border-0">
@@ -462,6 +475,7 @@ function renderClassTable() {
         <td class="py-2 pl-3 whitespace-nowrap"><span class="font-black ltr-num">${esc(r.unlocked_through || 1)}</span>
           <button data-act="unlock" data-i="${i}" class="mr-2 text-xs bg-lime-100 hover:bg-lime-200 text-green-800 px-2 py-1 rounded-lg font-bold no-print" title="פתח שיעור לתלמיד/ה הזה/ו">🔓 פתח</button></td>
         <td class="py-2 pl-3 font-black text-green-700 ltr-num">${sumLeaves(r)}</td>
+        <td class="py-2 pl-1 no-print"><button data-act="remove" data-i="${i}" class="${btn} text-red-600" title="הסרה מהכיתה" aria-label="הסרת ${esc(r.student_name)} מהכיתה">🗑</button></td>
       </tr>`).join('')}
     </tbody></table></div>
     <div class="sm:hidden space-y-2">${classRows.map((r, i) => `
@@ -477,6 +491,7 @@ function renderClassTable() {
           <button data-act="rename" data-i="${i}" class="${btn} py-1">✏️ שם</button>
           <button data-act="group" data-i="${i}" class="${btn} py-1">👥 זוג</button>
           <button data-act="unlock" data-i="${i}" class="text-xs bg-lime-100 text-green-800 px-2 py-1 rounded font-bold">🔓 פתח</button>
+          <button data-act="remove" data-i="${i}" class="${btn} py-1 text-red-600 mr-auto">🗑 הסרה</button>
         </div>
       </div>`).join('')}</div>`;
 }
@@ -484,9 +499,48 @@ document.getElementById('class-table-wrap').addEventListener('click', e => {
   const b = e.target.closest('[data-act]');
   if (!b) return;
   const r = classRows[Number(b.dataset.i)];
+  if (b.dataset.act === 'remove') { removeStudent(r); return; }
   const fn = { rename: GC_TPANEL.renameStudent, group: GC_TPANEL.editGroup, unlock: GC_TPANEL.unlockStudent }[b.dataset.act];
   fn(currentClass(), r); // הצלחה → gc-teacher-changed → loadClass()
 });
+
+// ── הוספה / הסרה של תלמידים ─────────────────────────────────────────────────
+// הוספה: השרת יוצר שורה עם קוד פנוי; התלמיד/ה נכנס/ת עם «יש לי כבר קוד».
+// הסרה: השורה נשארת בגיליון (removed=1) ורק מוסתרת - אפשר לבטל מיד.
+function rosterMsg(html) {
+  const m = document.getElementById('roster-msg');
+  m.innerHTML = html;
+  m.classList.toggle('hidden', !html);
+}
+async function addStudent() {
+  const c = currentClass();
+  if (!c || !syncEnabled()) { alert('הסנכרון לגיליון כבוי - אי אפשר להוסיף תלמיד/ה.'); return; }
+  const v = prompt('שם התלמיד/ה החדש/ה (' + c.schoolName + ' · כיתה ' + displayName(c) + '):');
+  if (v === null || !v.trim()) return;
+  const name = v.trim();
+  if (classRows.some(r => String(r.student_name || '').trim() === name) &&
+    !confirm('כבר יש בכיתה תלמיד/ה בשם "' + name + '". להוסיף בכל זאת?')) return;
+  rosterMsg('מוסיף/ה...');
+  const resp = await GC_SYNC.addStudent(c.schoolName, c.classId, name);
+  if (!resp || !resp.ok) { rosterMsg(''); alert(unlockErrorText(resp).replace('הפתיחה נכשלה', 'ההוספה נכשלה')); return; }
+  rosterMsg(`✅ <b>${esc(name)}</b> נוסף/ה. הקוד: <b class="ltr-num text-lg">${esc(resp.code)}</b> - בכניסה הראשונה בוחרים בית ספר וכיתה, ואז «🔑 יש לי כבר קוד».`);
+  loadClass();
+  loadOverview(true);
+}
+async function removeStudent(r, restore) {
+  const c = currentClass();
+  if (!c || !syncEnabled()) return;
+  if (!restore && !confirm(`להסיר את ${r.student_name || 'התלמיד/ה'} (קוד ${r.code}) מהכיתה?\n\nההתקדמות והעלים נשמרים בגיליון, ואפשר לבטל.`)) return;
+  const resp = await GC_SYNC.removeStudent(c.schoolName, c.classId, String(r.code), restore);
+  if (!resp || !resp.ok) { alert(unlockErrorText(resp).replace('הפתיחה נכשלה', 'הפעולה נכשלה')); return; }
+  if (restore) rosterMsg(`↩️ ${esc(r.student_name)} חזר/ה לכיתה.`);
+  else {
+    rosterMsg(`🗑 ${esc(r.student_name)} (קוד <span class="ltr-num">${esc(r.code)}</span>) הוסר/ה מהכיתה. <button type="button" id="undo-remove" class="underline font-bold">↩️ ביטול</button>`);
+    document.getElementById('undo-remove').onclick = () => removeStudent(r, true);
+  }
+  loadClass();
+  loadOverview(true);
+}
 function mergeSelected() {
   const wrap = document.getElementById('class-table-wrap');
   // אותו/ה תלמיד/ה מופיע/ה פעמיים (טבלה + כרטיס במובייל) - לוקחים רק מהתצוגה הגלויה
@@ -507,7 +561,14 @@ async function unlockForClass() {
   if (!c) return;
   if (!syncEnabled()) { alert('הסנכרון לגיליון כבוי - אי אפשר לפתוח שיעור.'); return; }
   const n = Number(document.getElementById('class-unlock-n').value);
-  if (!confirm(`כל התלמידים בכיתה הזו יוכלו להיכנס לשיעור ${n} גם אם לא סיימו את הקודם.\n\n${c.schoolName} · כיתה ${displayName(c)}`)) return;
+  // פתיחה לא מורידה: שיעור שכבר פתוח לכיתה - אין מה לפתוח (לסגירה יש כפתור נפרד)
+  if (n <= classN) {
+    alert(`שיעור ${n} כבר פתוח לכל הכיתה (פתוח עד שיעור ${classN}).\n\nנפתח בטעות שיעור מתקדם? בחרו את השיעור הראשון שצריך להיסגר ולחצו «🔒 סגור מהשיעור הזה».`);
+    return;
+  }
+  if (!confirm(`כל התלמידים בכיתה הזו יוכלו להיכנס עד שיעור ${n} (כולל), גם אם לא סיימו את הקודם.` +
+    (classClosed && n >= classClosed && n < 17 ? `\nשיעור ${n + 1} ומעלה יישארו סגורים.` : '') +
+    `\n\n${c.schoolName} · כיתה ${displayName(c)}`)) return;
   const btn = document.getElementById('class-unlock-btn');
   const status = document.getElementById('class-unlock-status');
   btn.disabled = true; status.textContent = 'פותח...';
@@ -515,7 +576,8 @@ async function unlockForClass() {
   btn.disabled = false;
   if (resp && resp.ok) {
     loadClass().then(() => {
-      status.textContent = `✅ נפתח לכיתה עד שיעור ${resp.unlocked_through} (עודכנו ${resp.students_updated} תלמידים; החדשים יקבלו בכניסה)`;
+      status.textContent = `✅ נפתח לכיתה עד שיעור ${classN}. התלמידים יקבלו אותו כשירעננו את הדף / ייכנסו.` +
+        (classClosed ? ` · 🔒 עדיין סגור משיעור ${classClosed}` : '');
     });
     loadOverview(true);
     return;
@@ -525,6 +587,31 @@ async function unlockForClass() {
   status.textContent = saved >= n
     ? `✅ פתוח לכל הכיתה עד שיעור ${saved}. התלמידים יקבלו אותו כשירעננו את הדף / ייכנסו.`
     : '⚠️ ' + unlockErrorText(resp);
+}
+
+// סגירה: שיעור n ומעלה נעולים לכל הכיתה (נפתח בטעות שיעור מתקדם). לא מוחק עלים ולא התקדמות -
+// השרת שומר תקרה (closed_from); «פתח עד» שיעור m ≥ n מזיז אותה ל-m+1 (עד 17 = מבטל).
+async function lockForClass() {
+  const c = currentClass();
+  if (!c) return;
+  if (!syncEnabled()) { alert('הסנכרון לגיליון כבוי - אי אפשר לסגור שיעור.'); return; }
+  const n = Number(document.getElementById('class-unlock-n').value);
+  if (n < 2) { alert('שיעור 1 תמיד פתוח. בחרו את השיעור הראשון שצריך להיסגר (2 ומעלה).'); return; }
+  if (!confirm(`לסגור לכל הכיתה את שיעור ${n}` + (n < 17 ? ` ואת כל השיעורים שאחריו` : '') + `?\n\n` +
+    `הכיתה תישאר פתוחה עד שיעור ${n - 1}. עלים והתקדמות לא נמחקים - שיעור שתלמיד/ה כבר סיים/ה נשאר פתוח לחזרה.\n\n${c.schoolName} · כיתה ${displayName(c)}`)) return;
+  const btn = document.getElementById('class-lock-btn');
+  const status = document.getElementById('class-unlock-status');
+  btn.disabled = true; status.textContent = 'סוגר...';
+  const resp = await GC_SYNC.setClassLock(c.schoolName, c.classId, n);
+  btn.disabled = false;
+  if (resp && resp.ok) {
+    loadClass().then(() => {
+      status.textContent = `🔒 נסגר לכיתה משיעור ${n}. התלמידים יראו את השינוי כשירעננו את הדף / ייכנסו.`;
+    });
+    loadOverview(true);
+    return;
+  }
+  status.textContent = '⚠️ ' + unlockErrorText(resp).replace('הפתיחה נכשלה', 'הסגירה נכשלה');
 }
 
 // ── שיעור 5.5 (Side Quest) - פתיחה לכיתה ─────────────────────────────────────

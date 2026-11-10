@@ -109,6 +109,12 @@
       const localUnlocked = parseInt(localStorage.getItem('gc_unlocked_through') || '1');
       const remoteUnlocked = parseInt(row.unlocked_through || 1);
       if (remoteUnlocked > localUnlocked) localStorage.setItem('gc_unlocked_through', remoteUnlocked);
+      // שיעור שהמדריך/ה סגר/ה לכיתה (class_lock) - תקרה מקומית. gc_unlocked_through לא יורד,
+      // רק מוגבל בקריאה (GC_SYNC.unlockedThrough). השרת שולח 0 כשאין סגירה.
+      if (row.class_closed_from !== undefined) {
+        const cf = parseInt(row.class_closed_from || 0, 10) || 0;
+        if (cf) localStorage.setItem('gc_closed_from', cf); else localStorage.removeItem('gc_closed_from');
+      }
       // שיעור 5.5 שהמדריך/ה פתח/ה לכיתה (class_side_unlock) - דגל מקומי, לא יורד
       if (String(row.class_side_quests || '').split(',').indexOf('55') !== -1) localStorage.setItem('gc_side_55', '1');
       mergePassport(row.passport1);
@@ -317,6 +323,7 @@
       return Object.assign({}, resp, { rows: resp.rows || [],
         classUnlockedThrough: Number(resp.class_unlocked_through) || 0,
         classDisplayName: resp.display_name || '',
+        classClosedFrom: Number(resp.class_closed_from) || 0,
         classSideQuests: String(resp.class_side_quests || '').split(',').filter(Boolean) });
     });
   };
@@ -405,6 +412,8 @@
     if (e === 'too_many_attempts') return 'יותר מדי ניסיונות שגויים. נסו שוב בעוד 10 דקות.';
     if (e === 'server_outdated') return 'צריך קודם לעדכן את ה-Apps Script (Deploy → New version).';
     if (e === 'sync disabled') return 'הסנכרון לגיליון כבוי במחשב הזה - אי אפשר להיכנס.';
+    if (e === 'class_closed') return 'השיעור הזה סגור לכל הכיתה. כדי לפתוח אותו - סמנו «לכל הכיתה».';
+    if (e === 'forbidden') return 'הכיתה הזו לא משויכת אליך.';
     return 'אין חיבור לשרת - נסו שוב.';
   };
   // המרה שקטה של כניסה ישנה (סיסמה שמורה) ל-session. סיסמה שכבר לא תקפה נמחקת.
@@ -425,7 +434,9 @@
 
   // חלון סיסמה (שדה מוסתר - הסיסמה לא נחשפת על המסך). check(pw) → Promise<{ok, error}>.
   // מחזיר Promise<boolean>: true אחרי בדיקה מוצלחת, false בביטול.
-  function passwordModal(title, sub, check) {
+  // opts.checkbox = תווית לתיבת סימון (מסומנת כברירת מחדל); check(pw, checked)
+  function passwordModal(title, sub, check, opts) {
+    opts = opts || {};
     return new Promise(function (resolve) {
       const old = document.getElementById('gc-tu-modal');
       if (old) old.remove();
@@ -436,6 +447,8 @@
         '<p style="font-weight:900;font-size:1.05rem;margin:0 0 4px;color:#166534;"></p>' +
         '<p style="margin:0 0 12px;color:#4b5563;font-size:.85rem;"></p>' +
         '<input id="gc-tu-pw" type="password" autocomplete="off" aria-label="סיסמת מורה" style="width:100%;box-sizing:border-box;border:2px solid #d1d5db;border-radius:12px;padding:8px 10px;font-size:1rem;text-align:center;">' +
+        (opts.checkbox ? '<label style="display:flex;gap:6px;align-items:center;justify-content:center;margin:10px 0 0;font-size:.85rem;font-weight:700;color:#374151;cursor:pointer;">' +
+          '<input id="gc-tu-chk" type="checkbox" checked style="width:16px;height:16px;"><span></span></label>' : '') +
         '<p id="gc-tu-err" role="alert" style="display:none;color:#dc2626;font-size:.8rem;margin:6px 0 0;"></p>' +
         '<div style="display:flex;gap:8px;margin-top:14px;">' +
         '<button type="submit" id="gc-tu-ok" style="flex:1;background:#16a34a;color:white;font-weight:900;border:0;border-radius:999px;padding:9px;cursor:pointer;">אישור</button>' +
@@ -444,6 +457,7 @@
       const ps = o.querySelectorAll('form > p');
       ps[0].textContent = title;
       ps[1].textContent = sub;
+      if (opts.checkbox) o.querySelector('label span').textContent = opts.checkbox;
       document.body.appendChild(o);
       const input = o.querySelector('#gc-tu-pw');
       const btn = o.querySelector('#gc-tu-ok');
@@ -453,7 +467,8 @@
       o.querySelector('form').onsubmit = function (e) {
         e.preventDefault();
         btn.disabled = true; btn.textContent = '...';
-        check(input.value).then(function (resp) {
+        const chk = o.querySelector('#gc-tu-chk');
+        check(input.value, !!(chk && chk.checked)).then(function (resp) {
           btn.disabled = false; btn.textContent = 'אישור';
           if (resp && resp.ok) { o.remove(); resolve(true); return; }
           err.textContent = GC_SYNC.teacherLoginErrorText(resp);
@@ -521,6 +536,23 @@
   GC_SYNC.setStudentUnlock = function (school, classId, code, n) {
     return postUnlock('student_unlock', { school_id: school, class_id: classId, code: code, unlocked_through: n });
   };
+  // סגירה לכיתה: שיעור n ומעלה נעולים (שיעור שנפתח בטעות). פתיחה לכיתה עד n ומעלה מבטלת.
+  GC_SYNC.setClassLock = function (school, classId, n) {
+    return postUnlock('class_lock', { school_id: school, class_id: classId, closed_from: n });
+  };
+  // הוספת תלמיד/ה - השרת מחזיר {ok, code}; הסרה (restore=true מבטל) - השורה נשארת בגיליון
+  GC_SYNC.addStudent = function (school, classId, name) {
+    return postUnlock('add_student', { school_id: school, class_id: classId, student_name: name });
+  };
+  GC_SYNC.removeStudent = function (school, classId, code, restore) {
+    return postUnlock('remove_student', { school_id: school, class_id: classId, code: code, restore: !!restore });
+  };
+  // השיעור הגבוה ביותר שפתוח בפועל במחשב הזה: gc_unlocked_through, עד התקרה אם הכיתה נסגרה
+  GC_SYNC.unlockedThrough = function () {
+    const u = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
+    const cf = parseInt(localStorage.getItem('gc_closed_from') || '0', 10) || 0;
+    return cf ? Math.max(1, Math.min(u, cf - 1)) : u;
+  };
 
   // ── ניהול כיתה ע"י מדריך/ה (assets/teacher-panel.js + teacher-dashboard.html) ──
   // הכול נכתב לגיליון (המחשבים בכיתה מתחלפים) - לא רק ל-localStorage. עובר דרך postUnlock,
@@ -550,7 +582,9 @@
   // הצלחה = gc_unlocked_through עד n מקומית + student_unlock בגיליון (נשמר גם אחרי התנתקות).
   // TEACHER_UNLOCK_PASSWORD: רק כשאין שרת לבדוק מולו (סנכרון כבוי) - נמחק בשלב ד.
   const TEACHER_UNLOCK_PASSWORD = 'moradaat2026';
-  GC_SYNC.teacherUnlock = function (n, password) {
+  // forClass = פתיחה לכל הכיתה של התלמיד/ה שמחובר/ת (class_unlock) - רק בסיסמה אישית של
+  // מדריך/ה או רכז/ת. הסיסמה הכללית פותחת רק לתלמיד/ה הזה/ו.
+  GC_SYNC.teacherUnlock = function (n, password, forClass) {
     const pw = String(password || '').trim();
     const id = window.GC_ID && GC_ID.getIdentity();
     const c = cfg();
@@ -564,8 +598,23 @@
       // מדריך/ה של בית ספר אחר - השרת היה דוחה את student_unlock ממילא
       if (t && t.role === 'teacher' && id && id.school &&
           !(t.classes || []).some(function (x) { return x.school === id.school; })) return { ok: false, error: 'bad_password' };
-      const cur = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
-      if (n > cur) localStorage.setItem('gc_unlocked_through', n);
+      const raise = function () {
+        const cur = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
+        if (n > cur) localStorage.setItem('gc_unlocked_through', n);
+      };
+      if (forClass && id && id.school && id.className && resp.token && t && t.role !== 'general') {
+        return postUnlock('class_unlock', { school_id: id.school, class_id: id.className, unlocked_through: n }, resp.token)
+          .then(function (r) {
+            if (!r || !r.ok) return r || { ok: false };
+            raise();
+            if (!r.closed_from) localStorage.removeItem('gc_closed_from');
+            else localStorage.setItem('gc_closed_from', r.closed_from);
+            return { ok: true, forClass: true };
+          });
+      }
+      const cf = parseInt(localStorage.getItem('gc_closed_from') || '0', 10) || 0;
+      if (cf && n >= cf) return { ok: false, error: 'class_closed' };
+      raise();
       if (!id || !resp.token) return { ok: true };
       const sync = postUnlock('student_unlock', { school_id: id.school || '', class_id: id.className || '',
         code: id.code || '', unlocked_through: n }, resp.token).catch(function () {});
@@ -576,7 +625,10 @@
   // onOk נקרא אחרי פתיחה מוצלחת.
   GC_SYNC.askTeacherUnlock = function (n, onOk) {
     if (document.getElementById('gc-tu-modal')) return;
-    passwordModal('🔑 פתיחת שיעור ' + n, 'המורה מקליד/ה סיסמה', (pw) => GC_SYNC.teacherUnlock(n, pw))
+    const id = window.GC_ID && GC_ID.getIdentity();
+    const canClass = !!(id && id.school && id.className && cfg().enabled);
+    passwordModal('🔑 פתיחת שיעור ' + n, 'המורה מקליד/ה סיסמה', (pw, all) => GC_SYNC.teacherUnlock(n, pw, canClass && all),
+      canClass ? { checkbox: 'לכל הכיתה (' + (GC_ID.classDisplay ? GC_ID.classDisplay(id.school, id.className) : id.className) + ')' } : null)
       .then(function (ok) { if (ok && onOk) onOk(); });
   };
 
@@ -614,14 +666,11 @@
     if (n <= 1) return;
     if (sessionStorage.getItem('teacher') === '1' && sessionStorage.getItem('gc_teacher_pw_ok') === '1') return;
     const allowed = function () {
-      const u = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
-      return n <= u || localStorage.getItem('lesson' + n + '_completed') === '1';
+      return n <= GC_SYNC.unlockedThrough() || localStorage.getItem('lesson' + n + '_completed') === '1';
     };
-    if (allowed()) return;
-    window.GC_LESSON_LOCKED = true; // core.js לא יסמן completed בזמן ההמתנה
-    const hide = document.createElement('style');
-    hide.textContent = 'body{visibility:hidden!important}';
-    document.head.appendChild(hide);
+    const c = cfg();
+    const syncing = !!(window.GC_ID && GC_ID.getIdentity() && c.enabled && c.url);
+    let hide = null;
     const home = (/\/elementary(-bilingual)?\//.test(location.pathname) ? '../../' : '../') + 'index.html#lessons-section';
     const lock = function () {
       document.body.innerHTML =
@@ -633,18 +682,31 @@
         '<a href="' + home + '" style="display:inline-block;background:#16a34a;color:white;font-weight:900;padding:10px 20px;border-radius:999px;text-decoration:none;">לדף הבית ←</a>' +
         '<p style="margin:16px 0 0;"><button type="button" id="gc-tu-open" style="background:none;border:0;color:#6b7280;font-size:.85rem;text-decoration:underline;cursor:pointer;font-family:inherit;">🔑 מורה? פתיחה בסיסמה</button></p>' +
         '</div></div>';
-      hide.remove();
+      if (hide) hide.remove();
       document.getElementById('gc-tu-open').onclick = function () {
         GC_SYNC.askTeacherUnlock(n, function () { location.reload(); });
       };
     };
-    const decide = function () {
-      if (allowed()) { window.GC_LESSON_LOCKED = false; hide.remove(); return; }
+    const lockNow = function () {
+      window.GC_LESSON_LOCKED = true;
       if (document.body) lock(); else document.addEventListener('DOMContentLoaded', lock);
     };
+    if (allowed()) {
+      // פתוח לפי מה ששמור במחשב - אבל המדריך/ה אולי סגר/ה את השיעור לכיתה (class_lock) ומחשב
+      // הזה עוד לא יודע. בודקים שוב אחרי pullMine.
+      if (syncing) GC_SYNC.hydrated.then(function () { if (!allowed()) lockNow(); }, function () {});
+      return;
+    }
+    window.GC_LESSON_LOCKED = true; // core.js לא יסמן completed בזמן ההמתנה
+    hide = document.createElement('style');
+    hide.textContent = 'body{visibility:hidden!important}';
+    document.head.appendChild(hide);
+    const decide = function () {
+      if (allowed()) { window.GC_LESSON_LOCKED = false; hide.remove(); return; }
+      lockNow();
+    };
     // pullMine רץ כבר למעלה (הידרציה) - כאן מחכים לתוצאה שלו כדי לכלול פתיחה של המורה
-    const c = cfg();
-    if (window.GC_ID && GC_ID.getIdentity() && c.enabled && c.url) {
+    if (syncing) {
       GC_SYNC.hydrated.then(decide, decide);
     } else {
       decide();
@@ -658,8 +720,7 @@
     if (!/\/lessons\/lesson-05-5(-basic)?\.html$/.test(location.pathname)) return;
     if (GC_SYNC.teacherLoggedIn()) return;
     const allowed = function () {
-      const u = parseInt(localStorage.getItem('gc_unlocked_through') || '1', 10) || 1;
-      return localStorage.getItem('gc_side_55') === '1' || u >= 6;
+      return localStorage.getItem('gc_side_55') === '1' || GC_SYNC.unlockedThrough() >= 6;
     };
     if (allowed()) return;
     const hide = document.createElement('style');
