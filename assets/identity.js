@@ -14,7 +14,7 @@
   const ROOT = ((document.currentScript && document.currentScript.src) || '').replace(/assets\/identity\.js.*$/, '');
 
   // שיעורי היסודי שכבר נבנו (elementary/lessons/). מקור יחיד - index.html קורא מכאן.
-  GC_ID.ELEMENTARY_READY = [1, 2, 3, 4];
+  GC_ID.ELEMENTARY_READY = [1, 2, 3, 4, 5, 6, 7, 8];
 
   // roster.js לא נטען בכל הלומדות - נטען לפי דרישה
   GC_ID.loadRoster = function () {

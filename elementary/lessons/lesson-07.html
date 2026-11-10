@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 7 – הקופסה החכמה מחליטה | מסלול יסודי | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת עם החטיבה (במכוון - כמו שיעורים 1-6 יסודי). אין elementary/assets. -->
+  <link rel="stylesheet" href="../../assets/core.css">
+  <script src="../../assets/core.js"></script>
+  <script src="../../assets/points.config.js"></script>
+  <script src="../../data/roster.js"></script>
+  <script src="../../assets/identity.js"></script>
+  <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="../../data/sheets-config.js"></script>
+  <script src="../../assets/sheets-sync.js"></script>
+  <style>
+    /* ── סגנונות ייחודיים לשיעור 7 יסודי ── */
+    .mission-card { transition:all .3s; }
+    .mission-card.done-card { background:#f0fdf4; border-color:#16a34a; }
+    .pin { cursor:pointer; border:2px solid #cbd5e1; border-radius:10px; padding:10px 8px; font-weight:800; text-align:center; background:white; transition:all .2s; user-select:none; }
+    .pin:hover { border-color:#16a34a; }
+    .pin.sel { border-color:#166534; background:#f0fdf4; transform:scale(1.05); }
+    .pin.ok  { border-color:#16a34a; background:#dcfce7; pointer-events:none; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+    .shake { animation:shake .3s; }
+    .sim-btn { border:2px solid #e5e7eb; border-radius:14px; background:white; font-weight:800; padding:10px 14px; transition:all .15s; }
+    .sim-btn:active { transform:scale(.96); }
+    .sim-btn.on { border-color:#166534; background:#dcfce7; }
+    .led { width:64px; height:64px; border-radius:50%; margin:0 auto; background:#334155; transition:all .25s; }
+    .led.red    { background:#ef4444; box-shadow:0 0 28px 8px rgba(239,68,68,.65); }
+    .led.green  { background:#22c55e; box-shadow:0 0 28px 8px rgba(34,197,94,.6); }
+    @keyframes ring { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-18deg)} 75%{transform:rotate(18deg)} }
+    .ringing { animation:ring .25s linear 4; display:inline-block; }
+    .block-slot { min-height:58px; }
+    .pick-btn { border:2px solid #e5e7eb; cursor:pointer; transition:all .2s; border-radius:12px; background:white; }
+    .pick-btn.ok { background:#dcfce7; border-color:#16a34a; font-weight:900; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 to-lime-50 min-h-screen">
+
+<!-- MASCOT (GC.Tutorial תלוי בו) -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../../index.html" class="hover:text-lime-300" aria-label="דף הבית">🏠</a>
+      <a href="../../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+      <a href="../../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-gradient-to-l from-amber-700 to-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-sky-300 text-sky-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 2 – צמיחה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 7 מתוך 17</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">מסלול יסודי</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">🚨 הקופסה החכמה מחליטה!</h1>
+    <p class="text-amber-100">אם · אז · אחרת · זמזם · חוט מגע · נורית</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-amber-100 mb-1">
+        <span id="plabel">שלב 1 מתוך 7</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: אם / אז / אחרת ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🚦</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">אם... אז... אחרת...</h2>
+        <p class="text-gray-500 text-sm">כללים שאנחנו מכירים מהחיים</p>
+      </div>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5">
+      <p class="text-slate-400 text-sm mb-1">🔁 בשיעור 6 שאלנו:</p>
+      <p class="font-bold">האדמה התייבשה. איך נגרום לבקר <b class="text-lime-300">לדעת</b> להדליק נורית אדומה ולצפצף בעצמו? היום הוא לא רק מרגיש. הוא גם <b class="text-lime-300">חושב</b> וגם <b class="text-lime-300">עושה</b>.</p>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-5">
+      <p class="font-bold text-lg mb-3">❓ השלימו: <b>אם</b> הרמזור אדום, <b>אז</b>...</p>
+      <div class="grid gap-3" id="g1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'g1')">🏃 רצים מהר</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'g1')" data-correct="true">✋ עוצרים</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'g1')">🎵 שרים שיר</div>
+      </div>
+      <div id="fb-g1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="else-wrap" class="reveal">
+      <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 mb-5">
+        <p class="text-gray-800 mb-2">☔ <b>אם</b> יורד גשם, <b>אז</b> לוקחים מטריה. <b>אחרת</b>, לוקחים כובע.</p>
+        <p class="text-gray-800">🆕 המילה <b>«אחרת»</b> אומרת מה עושים כשהתנאי <u>לא</u> קורה.</p>
+      </div>
+      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+        <p class="font-bold text-lg mb-3">❓ הכלל של הבקר: <b>אם</b> האדמה יבשה, <b>אז</b> נורית אדומה. <b>אחרת</b>...</p>
+        <div class="grid gap-3" id="g2">
+          <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'g2')" data-correct="true">🟢 נורית ירוקה</div>
+          <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'g2')">🔴 גם נורית אדומה</div>
+          <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'g2')">💥 הבקר נשבר</div>
+        </div>
+        <div id="fb-g2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">ה«ידיים» של הבקר ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: חיבורים ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🔌</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">ה«ידיים» של הבקר</h2>
+        <p class="text-gray-500 text-sm">מה מחברים היום, ולאן</p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-3 mb-5 text-sm">
+      <div class="bg-amber-50 rounded-2xl p-3 text-center">
+        <img src="../../assets/img/esp32/buzzer.jpg" alt="זמזם קטן עם שתי רגליים" loading="lazy" class="w-full h-28 object-cover rounded-xl mb-2">
+        <b>🔔 זמזם</b><p class="text-gray-600">מצפצף. יש לו 2 רגליים, ועל אחת מדבקה עם <b>+</b></p>
+      </div>
+      <div class="bg-sky-50 rounded-2xl p-3 text-center">
+        <img src="../../assets/img/esp32/touch.jpg" alt="חוט שקצהו מודבק לנייר כסף" loading="lazy" class="w-full h-28 object-cover rounded-xl mb-2">
+        <b>👆 חוט מגע</b><p class="text-gray-600">«כפתור» מנייר כסף. נוגעים בו, והבקר מרגיש</p>
+      </div>
+      <div class="bg-green-50 rounded-2xl p-3 text-center">
+        <img src="../../assets/img/esp32/rgb-led.jpg" alt="נורית צבעונית קטנה על הלוח" loading="lazy" class="w-full h-28 object-cover rounded-xl mb-2">
+        <b>🌈 נורית צבעונית</b><p class="text-gray-600">כבר בנויה בתוך הלוח. לא צריך לחבר!</p>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-slate-50 to-amber-50 border-2 border-slate-200 rounded-2xl p-5 mb-5">
+      <h3 class="text-xl font-black text-center text-slate-800 mb-1">🎮 חברו (על המסך)</h3>
+      <p class="text-sm text-gray-500 text-center mb-4">לחצו על חלק מימין, ואז על הפין בלוח שאליו הוא מתחבר.</p>
+      <div class="grid grid-cols-2 gap-6">
+        <div>
+          <p class="font-bold text-center text-gray-700 mb-2">🧩 החלקים</p>
+          <div class="space-y-2">
+            <div class="pin" data-s="BZ+" onclick="selPart(this)">🔔 זמזם, רגל +</div>
+            <div class="pin" data-s="BZ-" onclick="selPart(this)">🔔 זמזם, רגל שנייה</div>
+            <div class="pin" data-s="TOUCH" onclick="selPart(this)">👆 חוט מגע</div>
+          </div>
+        </div>
+        <div>
+          <p class="font-bold text-center text-gray-700 mb-2">🔲 הלוח</p>
+          <div class="grid grid-cols-2 gap-2" dir="ltr">
+            <div class="pin font-mono" data-b="3V3" onclick="boardPin(this)">3V3</div>
+            <div class="pin font-mono" data-b="5V" onclick="boardPin(this)">5V</div>
+            <div class="pin font-mono" data-b="GND" onclick="boardPin(this)">GND</div>
+            <div class="pin font-mono" data-b="GPIO 4" onclick="boardPin(this)">GPIO 4</div>
+            <div class="pin font-mono" data-b="GPIO 5" onclick="boardPin(this)">GPIO 5</div>
+            <div class="pin font-mono" data-b="GPIO 6" onclick="boardPin(this)">GPIO 6</div>
+          </div>
+        </div>
+      </div>
+      <div id="wire-list" class="mt-4 space-y-1 text-sm font-mono"></div>
+      <div id="fb-wire" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="w1-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ ולנורית הצבעונית, לאן מחברים חוט?</p>
+      <div class="grid gap-3" id="w1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'w1')">⚡ ל-5V</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'w1')" data-correct="true">🌈 לשום מקום, היא כבר בנויה בתוך הלוח</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'w1')">🔔 לזמזם</div>
+      </div>
+      <div id="fb-w1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3); maybeStartTutorial()">מסדרים את הכלל ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: סידור 4 בלוקים ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🧩</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">סדרו את הבלוקים</h2>
+        <p class="text-gray-500 text-sm">הבקר עושה אותם אחד אחרי השני, שוב ושוב</p>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-violet-50 to-amber-50 border-2 border-violet-200 rounded-2xl p-5 mb-5">
+      <p class="text-sm text-gray-500 text-center mb-4">גררו כל בלוק למקום הנכון. רמז: קודם בודקים, ורק אז מחליטים.</p>
+      <div class="flex flex-wrap gap-3 justify-center mb-5" id="blk-bank">
+        <div class="drag-item px-4 py-3 font-bold text-sm" draggable="true" data-val="read">👂 בודקים כמה מים יש באדמה</div>
+        <div class="drag-item px-4 py-3 font-bold text-sm" draggable="true" data-val="if">🔴 אם האדמה יבשה: נורית אדומה + צפצוף</div>
+        <div class="drag-item px-4 py-3 font-bold text-sm" draggable="true" data-val="else">🟢 אחרת: נורית ירוקה</div>
+        <div class="drag-item px-4 py-3 font-bold text-sm" draggable="true" data-val="loop">🔁 מחכים שנייה, וחוזרים להתחלה</div>
+      </div>
+      <div class="max-w-lg mx-auto space-y-2" id="blk-zones">
+        <div class="flex items-center gap-3"><span class="font-black text-violet-800 w-8 text-center">1</span>
+          <div class="drop-zone block-slot flex-1 p-2 bg-white" data-correct="read" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropBlk(event,this)"><span class="text-gray-300 text-xl font-black">?</span></div></div>
+        <div class="flex items-center gap-3"><span class="font-black text-violet-800 w-8 text-center">2</span>
+          <div class="drop-zone block-slot flex-1 p-2 bg-white" data-correct="if" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropBlk(event,this)"><span class="text-gray-300 text-xl font-black">?</span></div></div>
+        <div class="flex items-center gap-3"><span class="font-black text-violet-800 w-8 text-center">3</span>
+          <div class="drop-zone block-slot flex-1 p-2 bg-white" data-correct="else" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropBlk(event,this)"><span class="text-gray-300 text-xl font-black">?</span></div></div>
+        <div class="flex items-center gap-3"><span class="font-black text-violet-800 w-8 text-center">4</span>
+          <div class="drop-zone block-slot flex-1 p-2 bg-white" data-correct="loop" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropBlk(event,this)"><span class="text-gray-300 text-xl font-black">?</span></div></div>
+      </div>
+      <p id="blk-done" class="hidden mt-4 text-center font-black text-violet-800">🎉 הכלל מסודר! זה בדיוק מה שהמורה שמר/ה על הבקר שלכם. +5 🌿</p>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)">מנסים בסימולטור ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: סימולטור - כיול בנגיעה + הפעלה ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🎛️</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">סימולטור: בדיוק כמו בערכה</h2>
+        <p class="text-gray-500 text-sm">קודם מלמדים את הבקר מה זה יבש ומה זה רטוב. אחר כך הוא מחליט לבד.</p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-5 mb-5">
+      <div class="bg-slate-800 rounded-2xl p-5 text-center text-white">
+        <p class="text-slate-400 text-sm mb-3">🔲 הלוח</p>
+        <div class="led" id="sim-led"></div>
+        <p class="text-4xl mt-4"><span id="sim-bell">🔕</span></p>
+        <button id="touch-pad" class="mt-4 bg-gradient-to-br from-slate-200 to-slate-400 text-slate-900 font-black rounded-2xl px-6 py-4 shadow-inner" onclick="simTouch()">👆 נגיעה בחוט המגע</button>
+      </div>
+      <div>
+        <p class="font-bold text-gray-700 mb-2">💧 איפה החיישן?</p>
+        <div class="grid grid-cols-2 gap-2 mb-4" id="where">
+          <button class="sim-btn" data-w="air" onclick="simWhere('air',this)">🌬️ באוויר</button>
+          <button class="sim-btn" data-w="water" onclick="simWhere('water',this)">🥛 בכוס מים</button>
+          <button class="sim-btn" data-w="dry" onclick="simWhere('dry',this)">🏜️ אדמה יבשה</button>
+          <button class="sim-btn" data-w="wet" onclick="simWhere('wet',this)">🪴 אדמה רטובה</button>
+        </div>
+        <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4">
+          <p class="text-xs text-amber-700 font-bold mb-1">📋 הוראה עכשיו:</p>
+          <p id="sim-step" class="font-bold text-gray-800">נורית אדומה = שימו את החיישן <b>באוויר</b>, ואז געו בחוט.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-5 text-xs">
+      <div id="sm-1" class="mission-card border-2 border-gray-100 rounded-xl p-2 text-center font-bold">1. כיול: אוויר</div>
+      <div id="sm-2" class="mission-card border-2 border-gray-100 rounded-xl p-2 text-center font-bold">2. כיול: מים</div>
+      <div id="sm-3" class="mission-card border-2 border-gray-100 rounded-xl p-2 text-center font-bold">3. אדמה יבשה</div>
+      <div id="sm-4" class="mission-card border-2 border-gray-100 rounded-xl p-2 text-center font-bold">4. אדמה רטובה</div>
+    </div>
+
+    <div id="c1-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ למה בהתחלה נגענו בחוט פעמיים (באוויר ובמים)?</p>
+      <div class="grid gap-3" id="c1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'c1')" data-correct="true">🎯 כדי שהבקר יידע איך נראה «יבש» ואיך נראה «רטוב»</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'c1')">🔋 כדי לטעון את הסוללה</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'c1')">🎵 כדי לשמוע מוזיקה</div>
+      </div>
+      <div id="fb-c1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)">כוורת חכמה ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: Beewise ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🐝</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">כוורת שמחליטה לבד</h2>
+        <p class="text-gray-500 text-sm">אותו רעיון, בשביל דבורים</p>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-amber-500 to-yellow-500 text-amber-950 rounded-2xl p-6 mb-5">
+      <p class="text-sm mb-1">🇮🇱 רעיון ישראלי</p>
+      <p class="text-2xl font-black mb-2">Beewise (בִּיווַיְז)</p>
+      <p class="leading-relaxed mb-3">חברה ישראלית מבאר שבע, שהתחילה ב-2018. הם בנו <b>כוורת רובוטית</b> שעובדת לבד, יום ולילה. בדיוק כמו המערכת שלנו:</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div class="bg-white/40 rounded-xl p-3"><span class="text-2xl block">👂</span>חיישנים בודקים את הדבורים</div>
+        <div class="bg-white/40 rounded-xl p-3"><span class="text-2xl block">🧠</span>«המוח» מחליט</div>
+        <div class="bg-white/40 rounded-xl p-3"><span class="text-2xl block">🤖</span>זרוע רובוטית עושה</div>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ מה דומה בין הכוורת של Beewise למה שבנינו היום?</p>
+      <div class="grid gap-3" id="bw1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'bw1')">🍯 שתיהן עושות דבש</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'bw1')" data-correct="true">🧠 בשתיהן מרגישים, מחליטים ועושים, בלי שאדם לוחץ על כפתור</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'bw1')">🐝 בשתיהן יש דבורים</div>
+      </div>
+      <div id="fb-bw1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">בונים באמת ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: פרויקט ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🔌</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">הנורית מגלה מה האדמה צריכה</h2>
+        <p class="text-gray-500 text-sm">עם הערכה האמיתית, בקבוצה</p>
+      </div>
+    </div>
+
+    <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-5 text-sm text-gray-700">
+      <p class="font-black text-red-800 mb-1">🛡️ לפני שמתחילים</p>
+      <p>מחברים חוטים רק כשהכבל <b>לא</b> מחובר. המורה בודק/ת, ורק אז מחברים. בשנייה שמחברים את הכבל <b>לא נוגעים בחוט המגע</b> (הבקר לומד אז איך נראה חוט בלי נגיעה). משהו חם או מריח? מנתקים וקוראים למורה.</p>
+    </div>
+
+    <p class="font-black text-gray-800 mb-2">📋 משימות הקבוצה (לחצו כשסיימתם):</p>
+    <div class="space-y-2 mb-5" id="task-list">
+      <div class="mission-card border-2 border-gray-100 rounded-xl p-3 flex gap-3 items-center cursor-pointer" onclick="checkTask(this,0)"><span class="mission-icon text-2xl">🔔</span><span class="font-bold">א. חיברנו את הזמזם: רגל + ל-<span dir="ltr">GPIO 5</span>, השנייה ל-GND</span></div>
+      <div class="mission-card border-2 border-gray-100 rounded-xl p-3 flex gap-3 items-center cursor-pointer" onclick="checkTask(this,1)"><span class="mission-icon text-2xl">👆</span><span class="font-bold">ב. חיברנו את חוט המגע ל-<span dir="ltr">GPIO 4</span>, וחיישן הלחות עדיין ב-<span dir="ltr">GPIO 6</span></span></div>
+      <div class="mission-card border-2 border-gray-100 rounded-xl p-3 flex gap-3 items-center cursor-pointer" onclick="checkTask(this,2)"><span class="mission-icon text-2xl">🎯</span><span class="font-bold">ג. המורה בדק/ה, חיברנו כבל, וכיילנו: אוויר ונגיעה, מים ונגיעה</span></div>
+      <div class="mission-card border-2 border-gray-100 rounded-xl p-3 flex gap-3 items-center cursor-pointer" onclick="checkTask(this,3)"><span class="mission-icon text-2xl">🚦</span><span class="font-bold">ד. בדקנו: החיישן באדמה יבשה, ואחר כך באדמה רטובה</span></div>
+      <div class="mission-card border-2 border-gray-100 rounded-xl p-3 flex gap-3 items-center cursor-pointer" onclick="checkTask(this,4)"><span class="mission-icon text-2xl">📸</span><span class="font-bold">ה. צילמנו את שני המצבים לקיר הכיתה</span></div>
+    </div>
+
+    <div id="rec-wrap" class="reveal bg-lime-50 border-2 border-lime-200 rounded-2xl p-5">
+      <h3 class="font-black text-lime-900 mb-3">📋 מה הנורית עשתה?</h3>
+      <p class="font-bold text-gray-700 mb-2 text-sm">🏜️ באדמה יבשה:</p>
+      <div class="grid grid-cols-3 gap-2 mb-4" id="rec-dry">
+        <button class="pick-btn p-2 font-bold" data-val="red" onclick="pickRec('dry',this)">🔴 + 🔔</button>
+        <button class="pick-btn p-2 font-bold" data-val="green" onclick="pickRec('dry',this)">🟢</button>
+        <button class="pick-btn p-2 font-bold" data-val="none" onclick="pickRec('dry',this)">⚫ כלום</button>
+      </div>
+      <p class="font-bold text-gray-700 mb-2 text-sm">🪴 באדמה רטובה:</p>
+      <div class="grid grid-cols-3 gap-2 mb-4" id="rec-wet">
+        <button class="pick-btn p-2 font-bold" data-val="red" onclick="pickRec('wet',this)">🔴 + 🔔</button>
+        <button class="pick-btn p-2 font-bold" data-val="green" onclick="pickRec('wet',this)">🟢</button>
+        <button class="pick-btn p-2 font-bold" data-val="none" onclick="pickRec('wet',this)">⚫ כלום</button>
+      </div>
+      <button onclick="saveRec()" class="w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-2xl font-black shadow">💾 שמירה</button>
+      <p id="rec-msg" class="hidden mt-3 text-center font-bold"></p>
+      <div id="badge-code" class="hidden mt-3 bg-amber-100 border-2 border-amber-300 rounded-2xl p-4 text-center">
+        <p class="text-3xl">🎮🏅</p>
+        <p class="font-black text-amber-900">באדג' «הקוד עובד!»</p>
+        <p class="text-sm text-amber-800">סידרתם את הכלל, כיילתם, והנורית החליטה לבד.</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn6" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(7)">סיכום ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 7: דרכון + כוכב הצפון + Teaser ══ -->
+<div class="step-panel" id="step-7">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🏁</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">דרכון + כוכב הצפון</h2>
+        <p class="text-gray-500 text-sm">הקופסה החכמה מרגישה, חושבת ועושה</p>
+      </div>
+    </div>
+
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-1">📔 דרכון: עמוד 7</h3>
+      <label for="p-rule" class="block font-bold text-gray-700 mb-2">כתבו במילים שלכם את הכלל שהבקר שלנו עושה:</label>
+      <textarea id="p-rule" data-answer-key="l07e_passport" rows="2" maxlength="200" placeholder="אם האדמה... אז... אחרת..." class="w-full border-2 border-green-200 rounded-xl p-3 outline-none resize-none focus:border-green-500"></textarea>
+      <p class="text-xs text-gray-500 mt-1">אפשר לכתוב משפט קצר. אפשר גם בערבית. 🙂</p>
+      <button onclick="savePassport7()" class="mt-3 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-2xl font-black shadow">📔 שמירה בדרכון</button>
+      <p id="passport-saved" class="hidden mt-3 text-center font-bold text-lime-800">✨ נשמר בדרכון!</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">⭐</span>
+        <h3 class="font-black text-amber-900 text-xl">כוכב הצפון: איך זה רלוונטי לפרויקט שלי?</h3>
+      </div>
+      <p class="text-sm text-gray-600 mb-2">איזה כלל תרצו שהמערכת שלכם בתערוכה תעשה?</p>
+      <div class="grid md:grid-cols-2 gap-3">
+        <label class="text-sm font-bold text-gray-700">אם...
+          <input data-answer-key="l07e_ns_if" type="text" maxlength="80" placeholder="למשל: חם מדי" class="w-full mt-1 border-2 border-amber-200 rounded-xl p-3 outline-none focus:border-amber-400"></label>
+        <label class="text-sm font-bold text-gray-700">אז הקופסה החכמה...
+          <input data-answer-key="l07e_ns_then" type="text" maxlength="80" placeholder="למשל: מדליקה מאוורר" class="w-full mt-1 border-2 border-amber-200 rounded-xl p-3 outline-none focus:border-amber-400"></label>
+      </div>
+    </div>
+
+    <div class="bg-green-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3">📚 מה למדנו היום:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li>🚦 כלל: <b>אם</b> קורה משהו, <b>אז</b> עושים משהו. <b>אחרת</b>, עושים משהו אחר.</li>
+        <li>🔔 הזמזם: רגל + ל-<span dir="ltr">GPIO 5</span>. 👆 חוט המגע: <span dir="ltr">GPIO 4</span>. 🌈 הנורית כבר בלוח.</li>
+        <li>🎯 כיול: מלמדים את הבקר מה זה «יבש» (אוויר) ומה זה «רטוב» (מים).</li>
+        <li>🐝 Beewise: כוורת שמרגישה, מחליטה ועושה לבד.</li>
+      </ul>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 שאלה לשיעור 8:</p>
+      <p class="font-black text-lg">"הבקר מצפצף שהאדמה יבשה. אבל אם אף אחד לא בכיתה, <u>מי ישקה אותה</u>?"</p>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים בשיעור 7:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך 50 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4">
+    <a href="../../index.html#lessons-section" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">🏠 לדף השיעורים</a>
+  </div>
+</div>
+
+</div><!-- /max-w -->
+
+<script>
+// מקור אמת: elementary/teachers/teacher-07.html
+// עלים (בסיס 50): 5 שאלות × 5 + חיבור 5 + בלוקים 5 + סימולטור 5 + רישום 5 + דרכון 5.
+// הסימולטור מחקה את main.py של המורה: אדום = שימו באוויר + נגיעה, ירוק = במים + נגיעה,
+// ואז: אחוז לחות < 30 = אדום + צפצוף, אחרת ירוק. אין נגד - הנורית מובנית בלוח.
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function beep(times) {
+  if (!GC.soundOn) return;
+  const ctx = GC._getAudioCtx && GC._getAudioCtx();
+  if (!ctx) return;
+  for (let i = 0; i < (times || 1); i++) {
+    const t = ctx.currentTime + i * 0.18;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'square'; o.frequency.setValueAtTime(1000, t);
+    g.gain.setValueAtTime(0.08, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+    o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 0.1);
+  }
+}
+function fb(id, ok, msg) {
+  const el = document.getElementById('fb-' + id);
+  el.classList.remove('hidden');
+  el.className = 'mt-3 rounded-xl p-4 text-sm ' + (ok ? 'bg-green-50 text-green-800' : 'bg-orange-50 text-orange-800');
+  el.textContent = msg;
+}
+
+// ── STEP 2: חיבור על המסך ──
+const wireAns = { 'BZ+': 'GPIO 5', 'BZ-': 'GND', 'TOUCH': 'GPIO 4' };
+const partName = { 'BZ+': 'זמזם +', 'BZ-': 'זמזם', 'TOUCH': 'מגע' };
+let selS = null, wiredN = 0;
+function selPart(el) {
+  if (el.classList.contains('ok')) return;
+  document.querySelectorAll('[data-s]').forEach(p => p.classList.remove('sel'));
+  el.classList.add('sel'); selS = el;
+}
+function boardPin(el) {
+  if (!selS) { fb('wire', false, '💡 קודם לחצו על חלק מצד ימין.'); return; }
+  const s = selS.dataset.s, b = el.dataset.b;
+  if (wireAns[s] === b) {
+    selS.classList.remove('sel'); selS.classList.add('ok'); wiredN++;
+    const row = document.createElement('div');
+    row.className = 'bg-green-50 rounded-lg px-3 py-1';
+    row.textContent = '✅ ' + partName[s] + ' : ' + b;
+    document.getElementById('wire-list').appendChild(row);
+    fb('wire', true, s === 'BZ+' ? '✅ נכון! רגל + ל-GPIO 5, הפין שיודע לצפצף.' : s === 'BZ-' ? '✅ נכון! הרגל השנייה ל-GND, סוגרת את המעגל.' : '✅ נכון! חוט המגע ל-GPIO 4.');
+  } else {
+    let m;
+    if (b === '5V') m = '🛑 5V חזק מדי! אף פעם לא מחברים 5V לפין של הבקר.';
+    else if (b === '3V3') m = '🛑 3V3 זה חשמל. החלק הזה צריך פין שהבקר שולט בו או מקשיב לו.';
+    else if (b === 'GPIO 6') m = '💡 GPIO 6 כבר תפוס: שם מחובר חיישן הלחות.';
+    else if (s === 'BZ-') m = '💡 הרגל השנייה של הזמזם סוגרת את המעגל. איפה החשמל חוזר?';
+    else m = '💡 לא שם. הסתכלו שוב בטבלה של המורה.';
+    el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 350);
+    fb('wire', false, m);
+  }
+  selS = null;
+  if (wiredN === 3) {
+    fb('wire', true, '🎉 כל החיבורים נכונים! +5 🌿');
+    GC.addLeaves(5, 'S');
+    GC.reveal('w1-wrap');
+    wiredN = 4; // לא לתת שוב
+  }
+}
+
+// ── STEP 3: בלוקים ──
+function makeDrop(total, onDone, hint) {
+  let ok = 0;
+  return function (e, zone) {
+    GC.handleDrop(e, zone, zone.dataset.correct, (src, z) => {
+      z.innerHTML = src.innerHTML;
+      z.classList.add('flex', 'items-center', 'justify-center', 'text-center', 'text-sm', 'font-bold');
+      if (++ok === total) onDone();
+    }, () => mascotSay(hint, '🤔'));
+  };
+}
+const dropBlk = makeDrop(4, () => {
+  GC.addLeaves(5, 'S');
+  blocksDone = true;
+  document.getElementById('blk-done').classList.remove('hidden');
+  GC.showBtn('btn3');
+  mascotSay('בודקים, מחליטים, וחוזר חלילה 🔁', '🧩');
+}, 'קודם בודקים, אחר כך «אם», אחר כך «אחרת», ובסוף חוזרים.');
+let blocksDone = false;
+
+// ── STEP 4: סימולטור ──
+let where = null, phase = 'calDry', runSeen = new Set(), simLeaves = false;
+const STEP_TXT = {
+  calDry: 'נורית אדומה = שימו את החיישן <b>באוויר</b>, ואז געו בחוט.',
+  calWet: 'נורית ירוקה = טבלו את החיישן <b>בכוס מים</b>, ואז געו שוב.',
+  run: '🎉 הבקר מכויל! עכשיו שימו את החיישן <b>באדמה יבשה</b>, ואז <b>באדמה רטובה</b>.'
+};
+function setLed(c) {
+  const l = document.getElementById('sim-led');
+  l.className = 'led' + (c ? ' ' + c : '');
+}
+function ring(on) {
+  const b = document.getElementById('sim-bell');
+  b.classList.remove('ringing');
+  b.textContent = on ? '🔔' : '🔕';
+  if (on) { void b.offsetWidth; b.classList.add('ringing'); beep(3); }
+}
+function simWhere(w, el) {
+  where = w;
+  document.querySelectorAll('#where .sim-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  if (phase === 'run') runDecide();
+}
+function simTouch() {
+  if (phase === 'run') { mascotSay('הכיול כבר נגמר. עכשיו רק מזיזים את החיישן 🙂', '👆'); return; }
+  beep(1);
+  if (phase === 'calDry') {
+    if (where !== 'air') { mascotSay('רגע! בנורית אדומה החיישן צריך להיות באוויר 🌬️', '🤔'); return; }
+    phase = 'calWet'; setLed('green');
+    document.getElementById('sm-1').classList.add('done-card');
+  } else if (phase === 'calWet') {
+    if (where !== 'water') { mascotSay('בנורית ירוקה טובלים את החיישן במים 🥛', '🤔'); return; }
+    phase = 'run'; setLed(null);
+    document.getElementById('sm-2').classList.add('done-card');
+    mascotSay('הבקר למד מה זה יבש ומה זה רטוב! 🎯', '🧠');
+  }
+  document.getElementById('sim-step').innerHTML = STEP_TXT[phase];
+}
+function runDecide() {
+  if (where === 'dry' || where === 'air') { setLed('red'); ring(true); }
+  else { setLed('green'); ring(false); }
+  if (where === 'dry') { runSeen.add('dry'); document.getElementById('sm-3').classList.add('done-card'); }
+  if (where === 'wet') { runSeen.add('wet'); document.getElementById('sm-4').classList.add('done-card'); }
+  if (runSeen.size === 2 && !simLeaves) {
+    simLeaves = true;
+    GC.addLeaves(5, 'S');
+    GC.reveal('c1-wrap');
+    mascotSay('אדום ביבש, ירוק ברטוב. הבקר החליט לבד! 🚦', '🌱');
+  }
+}
+
+// ── STEP 6: משימות + רישום ──
+const tasksDone = [];
+function checkTask(el, idx) {
+  if (tasksDone.includes(idx)) return;
+  tasksDone.push(idx);
+  el.classList.add('done-card');
+  el.querySelector('.mission-icon').textContent = '✅';
+  if (tasksDone.includes(3)) GC.reveal('rec-wrap');
+}
+const rec = { dry: '', wet: '' };
+function pickRec(k, el) {
+  document.querySelectorAll('#rec-' + k + ' .pick-btn').forEach(b => b.classList.remove('ok'));
+  el.classList.add('ok'); rec[k] = el.dataset.val;
+}
+let recSaved = false;
+function saveRec() {
+  if (!rec.dry || !rec.wet) { mascotSay('בחרו מה קרה ביבש וגם ברטוב 🚦', '🤔'); return; }
+  GC.savePassport('led7', { dry: rec.dry, wet: rec.wet, ts: Date.now() });
+  const ok = rec.dry === 'red' && rec.wet === 'green';
+  const msg = document.getElementById('rec-msg');
+  msg.classList.remove('hidden');
+  msg.className = 'mt-3 text-center font-bold ' + (ok ? 'text-green-700' : 'text-orange-700');
+  msg.textContent = ok ? '✅ נשמר! בדיוק כמו בסימולטור.'
+    : '💾 נשמר. משהו לא כמו בסימולטור? נתקו וחברו את הכבל, וכיילו שוב: קודם אוויר, אחר כך מים. ואפשר לקרוא למורה.';
+  if (ok && blocksDone && tasksDone.length >= 4) document.getElementById('badge-code').classList.remove('hidden');
+  if (recSaved) return;
+  recSaved = true;
+  GC.addLeaves(5, 'S');
+  GC.showBtn('btn6');
+}
+
+// ── STEP 7: דרכון ──
+let passportSaved = false;
+function savePassport7() {
+  const v = document.getElementById('p-rule').value.trim();
+  if (!v) { mascotSay('כתבו משפט אחד קטן 🙂', '📔'); return; }
+  GC.saveOpenAnswer('l07e_passport', v);
+  document.getElementById('passport-saved').classList.remove('hidden');
+  if (passportSaved) return;
+  passportSaved = true;
+  GC.addLeaves(5, 'S');
+  mascotSay('נשמר בדרכון! 📔', '🌱');
+}
+
+// ── INIT ──
+function init() {
+  GC.initLesson({
+    lessonId: 7,
+    steps: 7,
+    mascotMessages: {
+      1: 'שלום! גרגיר כאן 🌱 היום הקופסה מחליטה!',
+      2: 'זמזם, חוט מגע ונורית 🔔',
+      3: 'מסדרים את הכלל 🧩',
+      4: 'קודם מכיילים, אחר כך בודקים 🎯',
+      5: 'כוורת שחושבת? 🐝',
+      6: 'עכשיו בערכה האמיתית! 🔌',
+      7: 'כמעט סיימנו ⭐'
+    }
+  });
+
+  GC.registerCascades({
+    'g1':  () => { GC.reveal('else-wrap'); },
+    'g2':  () => { GC.showBtn('btn1'); mascotSay('אחרת = מה עושים כשהתנאי לא קורה 🟢', '🌱'); },
+    'w1':  () => { GC.showBtn('btn2'); },
+    'c1':  () => { GC.showBtn('btn4'); },
+    'bw1': () => { GC.showBtn('btn5'); },
+  });
+
+  const bank = document.getElementById('blk-bank');
+  shuffle(Array.from(bank.children)).forEach(el => bank.appendChild(el));
+  GC.initTouch('.drag-item', '.drop-zone', dropBlk);
+
+  setLed('red'); // כמו הבקר האמיתי: מתחיל באדום = כיול אוויר
+  GC.bindOpenAnswers();
+}
+
+// ── TUTORIAL (פעם אחת, id l07e) - סידור 4 בלוקים + סימולטור כיול (פיצ'ר חדש) ──
+function maybeStartTutorial() {
+  if (localStorage.getItem('gc_tutorial_l07e')) return;
+  if (document.getElementById('gc-id-modal')) return;
+  setTimeout(() => {
+    GC.Tutorial.start('l07e', [
+      { target: '#blk-bank', emoji: '🧩', wait: 'next',
+        text: 'אלה 4 בלוקים של הכלל. גוררים כל אחד למספר שלו.' },
+      { target: '#blk-zones', emoji: '🔁', wait: 'next',
+        text: 'הבקר עושה אותם מ-1 עד 4, ואז חוזר ל-1. שוב ושוב, כל הזמן!' },
+    ]);
+  }, 450); // אחרי גלילת goTo
+}
+
+init();
+</script>
+</body>
+</html>

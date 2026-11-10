@@ -21,6 +21,7 @@
   <div class="flex gap-3 flex-wrap">
     <span class="bg-white/20 px-4 py-2 rounded-xl text-sm">⏱ 90 דקות</span>
     <span class="bg-blue-500 px-4 py-2 rounded-xl text-sm font-bold">פאזה 2 – צמיחה</span>
+    <a href="../lessons/lesson-06.html" target="_blank" class="bg-white text-slate-900 px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-100">👁 פתח לומדה</a>
     <a href="teacher-05.html" class="bg-slate-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-slate-500">← שיעור 5</a>
   </div>
 </div>
@@ -62,7 +63,7 @@
       <div>
         <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">גיימיפיקציה</h3>
         <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">🌿 <span>* טבלת הנקודות למטה היא שלד מתוכנן – יוטמע בלומדה כשתיבנה</span></li>
+          <li class="flex gap-2">🌿 <span>בלומדה: עד 50 עלים (שאלות, 3 משחקים, סימולטור, מדידה, דרכון). הטבלה למטה – כל השיעור.</span></li>
         </ul>
       </div>
     </div>
@@ -157,6 +158,11 @@ while True:
             <p class="font-bold text-amber-900 mb-1">🔁 תזכורת משיעור 5:</p>
             <p class="text-sm text-gray-700">"זוכרים ששאלנו: אם הצמח לא מרגיש טוב – איך נדע לפני שרואים בעיניים? מדדתם ביד את המים, אבל מה יקרה בשעה 2 בלילה, כשאף אחד לא בכיתה? היום נכיר את מי שיודע: חיישן."</p>
           </div>
+          <div class="bg-sky-50 border border-sky-200 rounded-xl p-4 mb-3">
+            <p class="font-bold text-sky-900 mb-1">⚡ אם הכיתה עשתה את שיעור 5.5:</p>
+            <p class="text-sm text-gray-700">"בשיעור 5.5 חיברתם את 3 החוטים <b>על המסך</b> ורשמתם את המיפוי של הקבוצה. היום – על הערכה האמיתית. ובסוף 5.5 ניחשתם: כשהאדמה יבשה, המספר יהיה גבוה או נמוך? היום בודקים!" (התשובה: <b>גבוה = יבש</b>. הלומדה בשלב 4 מזכירה לכל זוג מה ניחש.)</p>
+            <p class="text-xs text-gray-500 mt-1">לא עשו את 5.5? לא נורא – שלב הפרויקט בלומדה מסביר את 3 החוטים, וחמשת כללי הבטיחות מופיעים גם כאן למטה.</p>
+          </div>
           <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-3">
             <p class="font-bold text-purple-900 mb-1">🪜 מדרגת כניסה למושג "חיישן" ו"בקר":</p>
             <p class="text-sm text-gray-700">"לגוף שלכם יש חושים – עיניים רואות, אוזניים שומעות, עור מרגיש חום. חיישן הוא בדיוק אותו רעיון, רק מלאכותי – מכשיר קטן שמרגיש דבר אחד (חום, אור, לחות). וה'מוח' הקטן שמקבל את כל המידע מהחיישנים ומחליט מה לעשות – נקרא <b>בקר</b>. שלנו נקרא ESP32."</p>
@@ -186,8 +192,8 @@ while True:
                   <ul class="text-gray-500 space-y-1">
                     <li>מים באדמה → חיישן לחות אדמה (נחבר היום!)</li>
                     <li>מזון במים → מד EC (משיעור 5)</li>
-                    <li>חום ולחות אוויר → חיישן סביבה BME280 (הוא מודד גם לחץ אוויר – בינתיים לא צריך את זה)</li>
-                    <li>אור → חיישן BH1750 (בקרוב – מחכים להוראות מצוות החומרה)</li>
+                    <li>חום ולחות האוויר → חיישן חום (בקרוב בערכה)</li>
+                    <li>אור → חיישן אור (בקרוב בערכה)</li>
                   </ul>
                 </div>
                 <div class="bg-white rounded-lg p-3">
@@ -205,15 +211,15 @@ while True:
         <div class="flex-1">
           <div class="flex items-center gap-3 mb-2"><span class="text-2xl">📖</span><h3 class="text-xl font-black">לומדה – עבודה בזוגות</h3><span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">זוגות</span></div>
           <div class="bg-slate-50 rounded-xl p-4 text-sm text-gray-600">
-            <p class="mb-2">📌 <b>מפרט ללומדה (`elementary/lessons/lesson-06.html`, תיבנה בהמשך):</b></p>
+            <p class="mb-2">📌 <b>הלומדה – 7 שלבים</b> (<a href="../lessons/lesson-06.html" target="_blank" class="underline text-purple-700">elementary/lessons/lesson-06.html</a>):</p>
             <ol class="space-y-1 list-decimal list-inside mr-4">
-              <li>מה זה חיישן – קריאה קצרה + שאלה</li>
-              <li>הבקר (ESP32) – קריאה + תמונות + שאלה</li>
-              <li><b>🎮 סימולטור "אם...אז..." (סימולטור ויזואלי, בסגנון arduino-simulator.html הכללי אך מפושט):</b> רק 2 בלוקים לגרירה – "אם האדמה יבשה" → "צפצף", בלי כתיבת קוד ובלי שורות טקסט</li>
-              <li>🎮 סימולטור חיישן לחות אדמה עם גרף פשוט (יבש ↔ רטוב)</li>
-              <li>🎮 תרחיש אחד + Phytech</li>
-              <li>פרויקט (חיבור ומדידה)</li>
-              <li>נתונים + קיר</li>
+              <li>חושים וחיישנים: גרירת 3 חושים של הגוף לחיישן המתאים + שאלה</li>
+              <li>הקופסה החכמה (ESP32): מרגישה, חושבת, עושה + "איזה חיישן לכל צורך?"</li>
+              <li><b>🎮 "אם...אז..." – 2 בלוקים בלבד:</b> גוררים "אם האדמה יבשה" ו"צפצף" למקום, עם מסיחים. בלי קוד ובלי שורות טקסט</li>
+              <li>🎮 סימולטור חיישן הלחות: משקים / השמש מייבשת, המספר והגרף זזים (גבוה = יבש) – ותשובה לניחוש מ-5.5</li>
+              <li>🎮 תרחיש אחד (עלים נבולים, המספר גבוה) + Phytech</li>
+              <li>פרויקט: משימות החיבור + דף רישום (אוויר / אדמה יבשה / אדמה רטובה) שנשמר בדרכון</li>
+              <li>דרכון + כוכב הצפון + Teaser</li>
             </ol>
             <p class="mt-2 text-xs text-gray-400">בלי הסבר טכני על "הזחה"/תחביר קוד – הכל ויזואלי-בלוקים.</p>
           </div>
@@ -357,7 +363,7 @@ while True:
         <ul class="space-y-2 text-gray-700">
           <li>• <b>בקר/חיישן:</b> הישארו רק על "חושים מלאכותיים" – ותרו על השם "ESP32" עצמו, קראו לו "הקופסה החכמה".</li>
           <li>• <b>הבלוק "אם...אז...":</b> הדגמה קבוצתית של המורה בלבד על המסך המשותף – הזוגות רק בוחרים "מה יקרה?" מתוך 2 אפשרויות, לא בונים בלוק בעצמם.</li>
-          <li>• <b>החיבור הפיזי:</b> המורה מחבר, התלמידים "עוזרים להחזיק", מזהים איזה חוט הולך לאן לפי צבע, ותוקעים את החיישן באדמה.</li>
+          <li>• <b>החיבור הפיזי:</b> המורה מחבר, התלמידים "עוזרים להחזיק", מזהים איזה חוט הולך לאן לפי הכיתוב (VCC / GND / AOUT – אפשר להדביק ליד כל פין מדבקה עם ציור), ותוקעים את החיישן באדמה.</li>
           <li>• <b>500 מיליארד ליטר:</b> ותרו על המספר המדויק – מספיק "כל כך הרבה מים שאי אפשר לספור".</li>
         </ul>
       </div>

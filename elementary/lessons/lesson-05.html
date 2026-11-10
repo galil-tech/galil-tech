@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שיעור 5 – למים יש מצב רוח? | מסלול יסודי | גדלים למחר</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <!-- תשתית משותפת עם החטיבה (במכוון - כמו שיעורים 1-4 יסודי). אין elementary/assets. -->
+  <link rel="stylesheet" href="../../assets/core.css">
+  <script src="../../assets/core.js"></script>
+  <script src="../../assets/points.config.js"></script>
+  <script src="../../data/roster.js"></script>
+  <script src="../../assets/identity.js"></script>
+  <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
+  <script src="../../data/sheets-config.js"></script>
+  <script src="../../assets/sheets-sync.js"></script>
+  <style>
+    /* ── סגנונות ייחודיים לשיעור 5 יסודי ── */
+    .pick-btn { border:2px solid #e5e7eb; cursor:pointer; transition:all .2s; border-radius:12px; background:white; }
+    .pick-btn:hover:not([disabled]) { border-color:#84cc16; background:#f0fdf4; }
+    .pick-btn.ok  { background:#dcfce7; border-color:#16a34a; font-weight:900; }
+    .ph-track { height:18px; border-radius:9px; background:linear-gradient(to left,#7c3aed,#3b82f6,#22c55e,#facc15,#ef4444); }
+    input[type=range].ph { -webkit-appearance:none; appearance:none; width:100%; height:18px; background:transparent; cursor:pointer; }
+    input[type=range].ph::-webkit-slider-thumb { -webkit-appearance:none; width:34px; height:34px; border-radius:50%; background:white; border:4px solid #166534; box-shadow:0 2px 8px rgba(0,0,0,.25); }
+    input[type=range].ph::-moz-range-thumb { width:28px; height:28px; border-radius:50%; background:white; border:4px solid #166534; }
+    .cup { width:70px; height:86px; border:3px solid #94a3b8; border-top:none; border-radius:0 0 16px 16px; margin:0 auto; position:relative; overflow:hidden; background:white; }
+    .cup span { position:absolute; bottom:0; left:0; right:0; }
+    .mission-card { transition:all .3s; }
+    .mission-card.done-card { background:#f0fdf4; border-color:#16a34a; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-sky-50 to-lime-50 min-h-screen">
+
+<!-- MASCOT (GC.Tutorial תלוי בו) -->
+<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
+  <div id="mascot" class="mascot">🌱</div>
+  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="../../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
+    <div class="flex gap-4 text-sm">
+      <a href="../../index.html" class="hover:text-lime-300" aria-label="דף הבית">🏠</a>
+      <a href="../../index.html#lessons-section" class="hover:text-lime-300">🌱 שיעורים</a>
+      <a href="../../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-gradient-to-l from-sky-800 to-green-800 text-white pt-10 pb-8 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-wrap gap-2 mb-2">
+      <span class="bg-sky-300 text-sky-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 2 – צמיחה</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 5 מתוך 17</span>
+      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">מסלול יסודי</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black mb-2">💧 למים יש מצב רוח?</h1>
+    <p class="text-sky-100">גידול בלי אדמה · דגים וצמחים · מד החמיצות · מד האוכל במים</p>
+    <div class="mt-5">
+      <div class="flex justify-between text-sm text-sky-100 mb-1">
+        <span id="plabel">שלב 1 מתוך 6</span>
+        <span>🌿 <b id="lc">0</b> עלים</span>
+      </div>
+      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
+        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+<!-- ══ STEP 1: הידרופוניקה ══ -->
+<div class="step-panel active" id="step-1">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🥬</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">צמח בלי אדמה?</h2>
+        <p class="text-gray-500 text-sm">קוראים · צופים כשהמורה אומר · עונים</p>
+      </div>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5">
+      <p class="text-slate-400 text-sm mb-1">🔁 בשיעור הקודם שאלנו:</p>
+      <p class="font-bold">מה אם המערכת הייתה מודדת בעצמה, כל הזמן? כדי שמכונה תמדוד, קודם צריך לדעת <b class="text-lime-300">מה</b> מודדים. היום נמדוד בעצמנו!</p>
+    </div>
+
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 mb-5">
+      <p class="font-black text-lg text-amber-900 mb-3">🪴 מה האדמה נותנת לצמח?</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div class="bg-white rounded-xl p-3"><span class="text-3xl block">💧</span>מים</div>
+        <div class="bg-white rounded-xl p-3"><span class="text-3xl block">🍲</span>«אוכל» (דשן)</div>
+        <div class="bg-white rounded-xl p-3"><span class="text-3xl block">🪨</span>מקום להחזיק את השורשים</div>
+      </div>
+      <p class="text-gray-800 mt-4">ומה אם ניתן את כל זה <b>בלי אדמה</b>? השורשים יושבים במים, ובמים מערבבים את ה«אוכל» של הצמח.</p>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 mb-5">
+      <p class="font-black text-lg text-lime-900 mb-1">🏷️ יש לזה שם!</p>
+      <p class="text-gray-800">גידול צמחים במים, בלי אדמה, נקרא <b class="text-lime-800 text-xl">הידרופוניקה</b>. «הידרו» זה מים.</p>
+      <p class="text-gray-800 mt-2">🌱 אם יש לכם מערכת בכיתה, השתיל שלכם כבר גדל ככה!</p>
+    </div>
+
+    <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-5 mb-5 text-center">
+      <p class="font-black text-lg text-slate-800 mb-1">📽️ המורה מקרין לכולם.</p>
+      <p class="text-sm text-gray-600 mb-3">אל תפעילו לבד אלא אם המורה אמר.</p>
+      <button id="hp-open" class="bg-white border-2 border-slate-300 hover:border-green-500 text-slate-700 px-5 py-2 rounded-xl text-sm font-bold" onclick="openVideo('hp-video','hp-open')">המורה אמר לפתוח ▶</button>
+      <div id="hp-video" class="hidden rounded-2xl overflow-hidden mt-4" style="position:relative;padding-top:56.25%;">
+        <iframe data-src="https://www.youtube-nocookie.com/embed/O_pQJbODPKg?rel=0&modestbranding=1" title="הידרופוניקה" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
+      <p class="font-bold text-lg mb-3">❓ בהידרופוניקה, מאיפה הצמח מקבל «אוכל»?</p>
+      <div class="grid gap-3" id="hp1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'hp1')">🪨 מהאדמה</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'hp1')" data-correct="true">💧 מהמים, שמערבבים בהם אוכל לצמחים</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'hp1')">☀️ רק מהשמש</div>
+      </div>
+      <div id="fb-hp1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="hp2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ בשדה רגיל, הרבה מהמים נבלעים באדמה. בהידרופוניקה המים מסתובבים וחוזרים. מה יוצא מזה?</p>
+      <div class="grid gap-3" id="hp2">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'hp2')" data-correct="true">💧 צריך הרבה פחות מים</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'hp2')">🌊 צריך הרבה יותר מים</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'hp2')">🤷 אין שום הבדל</div>
+      </div>
+      <div id="fb-hp2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">דגים וצמחים ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: אקוופוניקה ══ -->
+<div class="step-panel" id="step-2">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🐟</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">דגים שמאכילים צמחים</h2>
+        <p class="text-gray-500 text-sm">מעגל שבו כולם מרוויחים</p>
+      </div>
+    </div>
+
+    <div class="bg-teal-50 border-2 border-teal-200 rounded-2xl p-5 mb-5">
+      <p class="text-gray-800 mb-2">🐠 מי שיש לו אקווריום יודע: הדגים <b>מלכלכים את המים</b>, וצריך לנקות.</p>
+      <p class="text-gray-800 mb-2">🤔 ומה אם הלכלוך הזה הוא בדיוק ה«אוכל» שהצמח צריך?</p>
+      <p class="text-gray-800">לגידול של דגים וצמחים ביחד, באותם מים, קוראים <b class="text-teal-800 text-xl">אקוופוניקה</b>.</p>
+    </div>
+
+    <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-5 mb-5 text-center">
+      <p class="font-black text-lg text-slate-800 mb-1">🎬 סרטון קצר: איך זה עובד?</p>
+      <p class="text-sm text-gray-600 mb-3">אל תפעילו לבד אלא אם המורה אמר.</p>
+      <button id="aq-open" class="bg-white border-2 border-slate-300 hover:border-green-500 text-slate-700 px-5 py-2 rounded-xl text-sm font-bold" onclick="openLocalVideo()">המורה אמר לפתוח ▶</button>
+      <div id="aq-video" class="hidden rounded-2xl overflow-hidden mt-4 bg-black">
+        <video controls preload="none" playsinline class="w-full rounded-2xl" style="max-height:360px">
+          <source data-src="../../lessons/aqua-web.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-teal-50 to-sky-50 border-2 border-teal-200 rounded-2xl p-5 mb-5">
+      <h3 class="text-xl font-black text-center text-teal-900 mb-1">🎮 סדרו את המעגל</h3>
+      <p class="text-sm text-gray-500 text-center mb-4">גררו כל כרטיס למקום שלו: מה קורה קודם, ומה אחר כך?</p>
+      <div class="flex flex-wrap gap-3 justify-center mb-5" id="aq-bank">
+        <div class="drag-item px-4 py-3 font-bold text-sm" draggable="true" data-val="fish">🐟 הדגים אוכלים ומלכלכים את המים</div>
+        <div class="drag-item px-4 py-3 font-bold text-sm" draggable="true" data-val="plant">🌿 הצמחים «אוכלים» את הלכלוך ומנקים את המים</div>
+        <div class="drag-item px-4 py-3 font-bold text-sm" draggable="true" data-val="back">💧 המים הנקיים חוזרים לדגים</div>
+      </div>
+      <div class="grid md:grid-cols-3 gap-3" id="aq-zones">
+        <div class="text-center"><p class="font-black text-teal-800 mb-1">1️⃣ קודם</p>
+          <div class="drop-zone h-24 p-2 bg-white" data-correct="fish" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropAq(event,this)"><span class="text-gray-300 text-2xl font-black">?</span></div></div>
+        <div class="text-center"><p class="font-black text-teal-800 mb-1">2️⃣ אחר כך</p>
+          <div class="drop-zone h-24 p-2 bg-white" data-correct="plant" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropAq(event,this)"><span class="text-gray-300 text-2xl font-black">?</span></div></div>
+        <div class="text-center"><p class="font-black text-teal-800 mb-1">3️⃣ ובסוף</p>
+          <div class="drop-zone h-24 p-2 bg-white" data-correct="back" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropAq(event,this)"><span class="text-gray-300 text-2xl font-black">?</span></div></div>
+      </div>
+      <p id="aq-done" class="hidden mt-4 text-center font-black text-teal-800">🔄 וחוזר חלילה! הדגים מלכלכים שוב, והצמחים מנקים שוב. +5 🌿</p>
+    </div>
+
+    <div id="aq1-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ מה הדגים נותנים לצמחים?</p>
+      <div class="grid gap-3" id="aq1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'aq1')">☀️ אור</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'aq1')" data-correct="true">🍲 «אוכל», מהלכלוך שלהם</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'aq1')">🪨 אדמה</div>
+      </div>
+      <div id="fb-aq1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3); maybeStartTutorial()">מד החמיצות ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 3: pH ══ -->
+<div class="step-panel" id="step-3">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🍋</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">חמוץ, באמצע או סבוני?</h2>
+        <p class="text-gray-500 text-sm">למים יש «מצב רוח» שאי אפשר לראות בעין</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 text-center mb-5 text-sm">
+      <div class="bg-red-50 rounded-xl p-3"><span class="text-3xl block">🍋</span><b>חמוץ</b><br>כמו לימון</div>
+      <div class="bg-green-50 rounded-xl p-3"><span class="text-3xl block">💧</span><b>באמצע</b><br>לא חמוץ ולא סבוני</div>
+      <div class="bg-violet-50 rounded-xl p-3"><span class="text-3xl block">🧼</span><b>סבוני</b><br>חלקלק כמו סבון</div>
+    </div>
+
+    <div class="bg-gradient-to-br from-violet-50 to-red-50 border-2 border-violet-200 rounded-2xl p-5 mb-5">
+      <h3 class="text-xl font-black text-center text-violet-900 mb-1">🎮 איפה כל אחד על הסקלה?</h3>
+      <p class="text-sm text-gray-500 text-center mb-4">גררו כל דבר למקום שלו</p>
+      <div class="flex flex-wrap gap-3 justify-center mb-5" id="ph-bank">
+        <div class="drag-item px-5 py-3 font-bold text-lg" draggable="true" data-val="sour">🍋 לימון</div>
+        <div class="drag-item px-5 py-3 font-bold text-lg" draggable="true" data-val="mid">💧 מי ברז</div>
+        <div class="drag-item px-5 py-3 font-bold text-lg" draggable="true" data-val="soap">🧼 מי סבון</div>
+      </div>
+      <div class="ph-track mb-2"></div>
+      <div class="grid grid-cols-3 gap-3" id="ph-zones">
+        <div class="text-center"><p class="font-black text-red-700 text-sm mb-1">חמוץ</p>
+          <div class="drop-zone h-16 p-1 bg-white" data-correct="sour" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPh(event,this)"><span class="text-gray-300 text-2xl font-black">?</span></div></div>
+        <div class="text-center"><p class="font-black text-green-700 text-sm mb-1">באמצע</p>
+          <div class="drop-zone h-16 p-1 bg-white" data-correct="mid" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPh(event,this)"><span class="text-gray-300 text-2xl font-black">?</span></div></div>
+        <div class="text-center"><p class="font-black text-violet-700 text-sm mb-1">סבוני</p>
+          <div class="drop-zone h-16 p-1 bg-white" data-correct="soap" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropPh(event,this)"><span class="text-gray-300 text-2xl font-black">?</span></div></div>
+      </div>
+      <p id="ph-done" class="hidden mt-4 text-center font-black text-violet-800">✅ מעולה! +5 🌿</p>
+    </div>
+
+    <div id="ph-name" class="reveal bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 mb-5">
+      <p class="font-black text-lg text-lime-900 mb-1">🏷️ יש לזה שם!</p>
+      <p class="text-gray-800">את הסקלה הזו מודדים במספרים. מספר קטן = חמוץ, מספר גדול = סבוני. המספר הזה נקרא <b class="text-lime-800 text-xl">pH</b>, והמכשיר שמודד אותו נקרא <b>מד חמיצות</b> (מד pH).</p>
+    </div>
+
+    <div id="slider-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5 mb-5">
+      <h3 class="text-xl font-black text-center text-green-900 mb-1">🌱 איפה הצמח הכי מרוצה?</h3>
+      <p class="text-sm text-gray-500 text-center mb-4">הזיזו את העיגול ותראו איך השתיל מרגיש</p>
+      <div class="text-center mb-3">
+        <span id="ph-face" class="text-6xl block mb-1">🙂</span>
+        <span class="text-sm text-gray-500">pH:</span> <b id="ph-val" class="text-3xl font-black" dir="ltr">7</b>
+        <p id="ph-msg" class="font-bold text-gray-700 mt-1">מי ברז רגילים</p>
+      </div>
+      <div class="ph-track" style="height:8px;margin-bottom:-13px;"></div>
+      <input id="ph-slider" class="ph" type="range" min="1" max="13" step="0.5" value="7" oninput="phMove(this.value)" aria-label="סקלת pH">
+      <div class="flex justify-between text-xs text-gray-400 mt-1" dir="ltr"><span>1 🍋</span><span>7 💧</span><span>13 🧼</span></div>
+    </div>
+
+    <div id="ph1-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
+      <p class="font-bold text-lg mb-3">❓ הצמח הכי מרוצה כשהמים...</p>
+      <div class="grid gap-3" id="ph1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'ph1')">🍋 חמוצים מאוד, כמו לימון</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'ph1')" data-correct="true">🌱 קצת חמוצים, בערך 6</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'ph1')">🧼 סבוניים מאוד</div>
+      </div>
+      <div id="fb-ph1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)">מד האוכל במים ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: EC + Growee ══ -->
+<div class="step-panel" id="step-4">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🍵</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">כמה «אוכל» יש במים?</h2>
+        <p class="text-gray-500 text-sm">קצת כמו סוכר בתה</p>
+      </div>
+    </div>
+
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 mb-5">
+      <p class="font-black text-amber-900 mb-3">🍵 שלוש כוסות תה:</p>
+      <div class="grid grid-cols-3 gap-3 text-center text-sm">
+        <div><div class="cup"><span style="height:60%;background:#fef3c7"></span></div><p class="mt-2"><b>בלי סוכר</b><br>😐 תפל</p></div>
+        <div><div class="cup"><span style="height:60%;background:#fcd34d"></span></div><p class="mt-2"><b>כפית אחת</b><br>😋 בדיוק</p></div>
+        <div><div class="cup"><span style="height:60%;background:#b45309"></span></div><p class="mt-2"><b>10 כפיות</b><br>🤢 יותר מדי</p></div>
+      </div>
+      <p class="text-gray-800 mt-4">גם לצמח: מעט מדי «אוכל» במים, הוא רעב. יותר מדי, זה מזיק לו. צריך <b>בדיוק</b>.</p>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 mb-5">
+      <p class="font-black text-lg text-lime-900 mb-1">🏷️ יש לזה שם!</p>
+      <p class="text-gray-800">המכשיר שבודק כמה «אוכל» מומס במים נקרא <b class="text-lime-800 text-xl">מד EC</b>. מספר קטן = מעט אוכל. מספר גדול = הרבה.</p>
+    </div>
+
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-5">
+      <p class="font-bold text-lg mb-1">❓ מד ה-EC מראה שהמים <u>חלשים מדי</u>, יש בהם מעט אוכל. מה עושים?</p>
+      <p class="text-sm text-gray-500 mb-3">רמז: בכיתה שלנו יש כלל.</p>
+      <div class="grid gap-3" id="ec1">
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'ec1')">🧪 מוסיפים בעצמנו הרבה דשן</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'ec1')" data-correct="true">🙋 קוראים למורה, שיוסיף קצת דשן</div>
+        <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'ec1')">🚰 שופכים את כל המים</div>
+      </div>
+      <div id="fb-ec1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+    </div>
+
+    <div id="growee-wrap" class="reveal">
+      <div class="bg-gradient-to-br from-green-700 to-sky-700 text-white rounded-2xl p-6 mb-5">
+        <p class="text-sm text-green-100 mb-1">🇮🇱 רעיון ישראלי</p>
+        <p class="text-2xl font-black mb-2">Growee (גרואי)</p>
+        <p class="leading-relaxed mb-3">היום אנחנו מודדים ביד, פעם בשבוע. מהנדסים ישראלים בנו מכשיר שבודק את <b>החמיצות</b> ואת <b>האוכל במים</b> לבד, כל הזמן, גם בלילה. כשמשהו לא בסדר, הוא שולח הודעה לטלפון, ויש לו גם חלקים שמתקנים לבד.</p>
+        <div class="grid grid-cols-3 gap-3 text-center text-sm">
+          <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">🔎</span>בודק</div>
+          <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">📱</span>מודיע</div>
+          <div class="bg-white/20 rounded-xl p-3"><span class="text-2xl block">🔧</span>מתקן</div>
+        </div>
+      </div>
+      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
+        <p class="font-bold text-lg mb-3">❓ מה Growee עושה שאנחנו לא יכולים לעשות ביד?</p>
+        <div class="grid gap-3" id="gr1">
+          <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,true,'gr1')" data-correct="true">🌙 בודק את המים כל הזמן, גם כשאף אחד לא בכיתה</div>
+          <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'gr1')">🐟 מאכיל את הדגים</div>
+          <div class="quiz-opt p-3 font-bold" onclick="ansQ(this,false,'gr1')">🥬 קוטף את החסה</div>
+        </div>
+        <div id="fb-gr1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)">מודדים בעצמנו ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 5: פרויקט - מדידות אמיתיות ══ -->
+<div class="step-panel" id="step-5">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">⚗️</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">מודדים בעצמנו</h2>
+        <p class="text-gray-500 text-sm">עם המדים האמיתיים, בקבוצה</p>
+      </div>
+    </div>
+
+    <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-5 text-sm text-red-900">
+      🛑 <b>כלל הכיתה:</b> אנחנו <b>מודדים ומדווחים</b>. רק המורה מוסיף/ה חומרים למים.
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-3 mb-5 text-sm">
+      <div class="bg-violet-50 rounded-2xl p-4">
+        <p class="font-black text-violet-900 mb-1">🍋 מד החמיצות (pH)</p>
+        <p class="text-gray-700">שוטפים במים נקיים, טובלים, מחכים חצי דקה, קוראים את המספר.</p>
+        <p class="mt-2 bg-white rounded-lg p-2 font-bold text-green-800">🟢 אזור ירוק: בערך <span dir="ltr" class="inline-block">5.5 – 6.5</span></p>
+      </div>
+      <div class="bg-amber-50 rounded-2xl p-4">
+        <p class="font-black text-amber-900 mb-1">🍵 מד האוכל במים (EC)</p>
+        <p class="text-gray-700">בדיוק אותו דבר: שוטפים, טובלים, מחכים, קוראים.</p>
+        <p class="mt-2 bg-white rounded-lg p-2 font-bold text-green-800">🟢 אזור ירוק: בערך <span dir="ltr" class="inline-block">1.2 – 2.0</span></p>
+      </div>
+    </div>
+
+    <p class="font-black text-gray-800 mb-2">📋 משימות הקבוצה (לחצו כשסיימתם):</p>
+    <p class="text-xs text-gray-500 mb-3">אין מערכת בכיתה? מודדים את המים שבכוס של השתיל, ומדלגים על המשאבה.</p>
+    <div class="space-y-2 mb-5" id="task-list">
+      <div class="mission-card border-2 border-gray-100 rounded-xl p-3 flex gap-3 items-center cursor-pointer" onclick="checkTask(this,0)"><span class="mission-icon text-2xl">🔌</span><span class="font-bold">א. המשאבה עובדת? (מים זורמים)</span></div>
+      <div class="mission-card border-2 border-gray-100 rounded-xl p-3 flex gap-3 items-center cursor-pointer" onclick="checkTask(this,1)"><span class="mission-icon text-2xl">📏</span><span class="font-bold">ב. מדדנו את גובה השתיל</span></div>
+      <div class="mission-card border-2 border-gray-100 rounded-xl p-3 flex gap-3 items-center cursor-pointer" onclick="checkTask(this,2)"><span class="mission-icon text-2xl">🍋</span><span class="font-bold">ג. מדדנו pH (עם המורה או עם חבר/ה מתקדם/ת)</span></div>
+      <div class="mission-card border-2 border-gray-100 rounded-xl p-3 flex gap-3 items-center cursor-pointer" onclick="checkTask(this,3)"><span class="mission-icon text-2xl">🍵</span><span class="font-bold">ד. מדדנו EC (עם המורה או עם חבר/ה מתקדם/ת)</span></div>
+      <div class="mission-card border-2 border-gray-100 rounded-xl p-3 flex gap-3 items-center cursor-pointer" onclick="checkTask(this,4)"><span class="mission-icon text-2xl">📸</span><span class="font-bold">ה. הסתכלנו על העלים וצילמנו לקיר</span></div>
+    </div>
+
+    <div id="measure-wrap" class="reveal bg-lime-50 border-2 border-lime-200 rounded-2xl p-5">
+      <h3 class="font-black text-lime-900 mb-3">📋 דף המדידה שלי</h3>
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div>
+          <label for="m-height" class="block font-bold text-gray-700 mb-1 text-sm">📏 גובה (ס״מ)</label>
+          <input id="m-height" data-answer-key="l05e_height" type="number" inputmode="decimal" min="0" max="100" placeholder="למשל: 8" class="w-full border-2 border-lime-200 rounded-xl p-3 text-xl font-black text-center outline-none focus:border-lime-500">
+        </div>
+        <div>
+          <label for="m-leaves" class="block font-bold text-gray-700 mb-1 text-sm">🍃 כמה עלים?</label>
+          <input id="m-leaves" data-answer-key="l05e_leaves" type="number" inputmode="numeric" min="0" max="100" placeholder="למשל: 5" class="w-full border-2 border-lime-200 rounded-xl p-3 text-xl font-black text-center outline-none focus:border-lime-500">
+        </div>
+        <div>
+          <label for="m-ph" class="block font-bold text-gray-700 mb-1 text-sm">🍋 pH</label>
+          <input id="m-ph" data-answer-key="l05e_ph" type="number" inputmode="decimal" step="0.1" min="0" max="14" placeholder="למשל: 6.2" oninput="zone('ph')" class="w-full border-2 border-lime-200 rounded-xl p-3 text-xl font-black text-center outline-none focus:border-lime-500">
+          <p id="z-ph" class="text-xs font-bold mt-1 text-center"></p>
+        </div>
+        <div>
+          <label for="m-ec" class="block font-bold text-gray-700 mb-1 text-sm">🍵 EC</label>
+          <input id="m-ec" data-answer-key="l05e_ec" type="number" inputmode="decimal" step="0.1" min="0" max="10" placeholder="למשל: 1.5" oninput="zone('ec')" class="w-full border-2 border-lime-200 rounded-xl p-3 text-xl font-black text-center outline-none focus:border-lime-500">
+          <p id="z-ec" class="text-xs font-bold mt-1 text-center"></p>
+        </div>
+      </div>
+      <label for="m-obs" class="block text-sm font-bold text-gray-700 mb-1">👀 איך העלים נראים? (ירוקים, צהובים, כתמים...)</label>
+      <input id="m-obs" data-answer-key="l05e_observe" type="text" maxlength="100" placeholder="העלים..." class="w-full border-2 border-lime-200 rounded-xl p-3 outline-none focus:border-lime-500 mb-3">
+      <p class="text-xs text-gray-500 mb-3">מספר מחוץ לאזור הירוק? זה לא כישלון, זה מידע! רושמים ומספרים למורה.</p>
+      <button onclick="saveMeasure()" class="w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-2xl font-black shadow">💾 שמירת המדידה</button>
+      <p id="measure-saved" class="hidden mt-3 text-center font-bold text-lime-800">✅ נשמר בדרכון, ליד המדידה משיעור 4!</p>
+      <div id="badge-hands" class="hidden mt-3 bg-amber-100 border-2 border-amber-300 rounded-2xl p-4 text-center">
+        <p class="text-3xl">💧🏅</p>
+        <p class="font-black text-amber-900">באדג' «ידיים על המדים»!</p>
+        <p class="text-sm text-amber-800">מדדתם pH ו-EC בעצמכם.</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">סיכום ←</button>
+  </div>
+</div>
+
+<!-- ══ STEP 6: דרכון + כוכב הצפון + Teaser ══ -->
+<div class="step-panel" id="step-6">
+  <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-5">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-4xl">🏁</span>
+      <div>
+        <h2 class="text-3xl font-black text-green-900">דרכון + כוכב הצפון</h2>
+        <p class="text-gray-500 text-sm">שיעור ראשון בשלב הצמיחה</p>
+      </div>
+    </div>
+
+    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-1">📔 דרכון: עמוד 5</h3>
+      <label for="p-water" class="block font-bold text-gray-700 mb-2">מה המים של השתיל שלי צריכים, כדי שיהיה לו טוב?</label>
+      <textarea id="p-water" data-answer-key="l05e_passport" rows="2" maxlength="200" placeholder="המים צריכים להיות..." class="w-full border-2 border-green-200 rounded-xl p-3 outline-none resize-none focus:border-green-500"></textarea>
+      <p class="text-xs text-gray-500 mt-1">אפשר לכתוב משפט קצר. אפשר גם בערבית. 🙂</p>
+      <button onclick="savePassport5()" class="mt-3 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-2xl font-black shadow">📔 שמירה בדרכון</button>
+      <p id="passport-saved" class="hidden mt-3 text-center font-bold text-lime-800">✨ נשמר בדרכון!</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">⭐</span>
+        <h3 class="font-black text-amber-900 text-xl">כוכב הצפון: איך זה רלוונטי לפרויקט שלי?</h3>
+      </div>
+      <p class="text-sm text-gray-600 mb-2">בסוף השנה יש תערוכה. אולי הפרויקט שלכם ישמור על המים של הצמח?</p>
+      <p class="text-gray-800 font-bold text-lg mb-3">מה הצמח בפרויקט שלכם הכי צריך מהמים?</p>
+      <textarea data-answer-key="l05e_northstar" rows="2" placeholder="הצמח שלנו צריך..." class="w-full border-2 border-amber-200 rounded-xl p-3 outline-none resize-none focus:border-amber-400"></textarea>
+    </div>
+
+    <div class="bg-green-50 rounded-2xl p-5 mb-5">
+      <h3 class="font-black text-green-900 mb-3">📚 מה למדנו היום:</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        <li>💧 הידרופוניקה: גידול במים, בלי אדמה, עם הרבה פחות מים.</li>
+        <li>🐟 אקוופוניקה: הדגים «מאכילים» את הצמחים, והצמחים מנקים את המים לדגים.</li>
+        <li>🍋 pH: כמה המים חמוצים. הצמח אוהב «קצת חמוץ», בערך 6.</li>
+        <li>🍵 EC: כמה «אוכל» יש במים. לא מעט מדי, לא יותר מדי.</li>
+        <li>🇮🇱 Growee בודק את כל זה לבד, כל הזמן.</li>
+      </ul>
+    </div>
+
+    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
+      <p class="text-slate-400 text-sm mb-1">🔮 שאלה לפעם הבאה:</p>
+      <p class="font-black text-lg">"אם הצמח לא מרגיש טוב, איך תדעו <u>לפני</u> שרואים בעיניים?"</p>
+    </div>
+
+    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
+      <p class="text-gray-500 text-sm mb-1">🌿 עלים בשיעור 5:</p>
+      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
+      <p class="text-gray-400 text-sm mt-1">מתוך 50 עלים</p>
+    </div>
+  </div>
+  <div class="flex justify-center mt-4">
+    <a href="../../index.html#lessons-section" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">🏠 לדף השיעורים</a>
+  </div>
+</div>
+
+</div><!-- /max-w -->
+
+<script>
+// מקור אמת: elementary/teachers/teacher-05.html
+// עלים (בסיס 50): 6 שאלות × 5 + מעגל הדגים 5 + סקלת pH 5 + מדידה 5 + דרכון 5.
+// טווחים (למורה ולתלמיד כ«אזור ירוק»): pH 5.5–6.5, EC 1.2–2.0. תיקון חומרים = המורה בלבד.
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ── סרטונים: נטענים רק אחרי «המורה אמר לפתוח» ──
+function openVideo(boxId, btnId) {
+  const box = document.getElementById(boxId);
+  const f = box.querySelector('iframe');
+  if (f && !f.src) f.src = f.dataset.src;
+  box.classList.remove('hidden');
+  document.getElementById(btnId).classList.add('hidden');
+}
+function openLocalVideo() {
+  const box = document.getElementById('aq-video');
+  const v = box.querySelector('video'), s = v.querySelector('source');
+  if (!s.src) { s.src = s.dataset.src; v.load(); }
+  box.classList.remove('hidden');
+  document.getElementById('aq-open').classList.add('hidden');
+}
+
+// ── גרירה: אותו handler לשני המשחקים, כל אחד עם מונה משלו ──
+function makeDrop(total, onDone, hint) {
+  let ok = 0;
+  return function (e, zone) {
+    GC.handleDrop(e, zone, zone.dataset.correct, (src, z) => {
+      z.innerHTML = src.innerHTML;
+      z.classList.add('flex', 'items-center', 'justify-center', 'text-center', 'text-sm', 'font-bold');
+      if (++ok === total) onDone();
+    }, () => mascotSay(hint, '🤔'));
+  };
+}
+const dropAq = makeDrop(3, () => {
+  GC.addLeaves(5, 'S');
+  document.getElementById('aq-done').classList.remove('hidden');
+  GC.reveal('aq1-wrap');
+  mascotSay('כולם מרוויחים! 🐟🌿', '🔄');
+}, 'מה קורה קודם? הדגים מלכלכים, ורק אז יש לצמח מה «לאכול».');
+const dropPh = makeDrop(3, () => {
+  GC.addLeaves(5, 'S');
+  document.getElementById('ph-done').classList.remove('hidden');
+  GC.reveal('ph-name');
+  GC.reveal('slider-wrap');
+  mascotSay('עכשיו נמצא איפה השתיל הכי מרוצה 🌱', '🍋');
+}, 'לימון חמוץ, סבון חלקלק, ומים רגילים באמצע 🙂');
+function dropAny(e, zone) {
+  return zone.closest('#aq-zones') ? dropAq(e, zone) : dropPh(e, zone);
+}
+
+// ── STEP 3: סליידר pH ──
+let phFound = false;
+function phMove(v) {
+  const x = parseFloat(v);
+  document.getElementById('ph-val').textContent = x;
+  let face, msg;
+  if (x <= 3)        { face = '😖'; msg = 'חמוץ כמו לימון! השורשים נפגעים.'; }
+  else if (x < 5.5)  { face = '😟'; msg = 'חמוץ מדי בשביל השתיל.'; }
+  else if (x <= 6.5) { face = '😊'; msg = '🟢 אזור ירוק! כאן השתיל הכי מרוצה.'; }
+  else if (x <= 7.5) { face = '🙂'; msg = 'מי ברז רגילים. כמעט, אבל לא הכי טוב.'; }
+  else if (x < 11)   { face = '😟'; msg = 'סבוני מדי. השתיל לא מצליח «לאכול».'; }
+  else               { face = '😖'; msg = 'סבוני מאוד! ממש לא בשביל צמחים.'; }
+  document.getElementById('ph-face').textContent = face;
+  document.getElementById('ph-msg').textContent = msg;
+  if (!phFound && x >= 5.5 && x <= 6.5) {
+    phFound = true;
+    GC.reveal('ph1-wrap');
+    mascotSay('מצאתם את האזור הירוק! 😊', '🌱');
+  }
+}
+
+// ── STEP 5: משימות + מדידה ──
+const tasksDone = [];
+function checkTask(el, idx) {
+  if (tasksDone.includes(idx)) return;
+  tasksDone.push(idx);
+  el.classList.add('done-card');
+  el.querySelector('.mission-icon').textContent = '✅';
+  if (tasksDone.length >= 3) GC.reveal('measure-wrap');
+}
+
+const RANGE = { ph: [5.5, 6.5], ec: [1.2, 2.0] };
+function zone(k) {
+  const raw = document.getElementById('m-' + k).value.trim();
+  const out = document.getElementById('z-' + k);
+  if (raw === '') { out.textContent = ''; return null; }
+  const v = parseFloat(raw), [lo, hi] = RANGE[k];
+  const inside = v >= lo && v <= hi;
+  out.textContent = inside ? '🟢 באזור הירוק' : '🟠 מחוץ לאזור, מספרים למורה';
+  out.className = 'text-xs font-bold mt-1 text-center ' + (inside ? 'text-green-700' : 'text-orange-700');
+  return inside;
+}
+
+let measureSaved = false;
+function saveMeasure() {
+  const h = document.getElementById('m-height').value.trim();
+  const n = document.getElementById('m-leaves').value.trim();
+  const ph = document.getElementById('m-ph').value.trim();
+  const ec = document.getElementById('m-ec').value.trim();
+  if (h === '' || (ph === '' && ec === '')) { mascotSay('חסר גובה, או לפחות מספר אחד מהמדים 📏', '🤔'); return; }
+  const obs = document.getElementById('m-obs').value.trim();
+  GC.saveOpenAnswer('l05e_height', h);
+  if (n !== '') GC.saveOpenAnswer('l05e_leaves', n);
+  if (ph !== '') GC.saveOpenAnswer('l05e_ph', ph);
+  if (ec !== '') GC.saveOpenAnswer('l05e_ec', ec);
+  if (obs) GC.saveOpenAnswer('l05e_observe', obs);
+  document.getElementById('measure-saved').classList.remove('hidden');
+  if (ph !== '' && ec !== '') document.getElementById('badge-hands').classList.remove('hidden');
+  if (measureSaved) return; // תיקון אחרי שמירה = מעדכן את התשובות, לא מוסיף מדידה כפולה
+  measureSaved = true;
+  // אותו מבנה כמו שיעור 4 יסודי ושיעור 5 חטיבה - רצף מדידות לאורך השנה
+  GC.pushPassport('measurements', {
+    lesson: 5, height: parseFloat(h) || 0, leaves: parseInt(n) || 0,
+    ph: ph === '' ? null : parseFloat(ph), ec: ec === '' ? null : parseFloat(ec),
+    obs: obs, ts: Date.now()
+  });
+  GC.addLeaves(5, 'S');
+  GC.showBtn('btn5');
+  mascotSay('מדידה שנייה בדרכון! ⚗️', '🌱');
+}
+
+// ── STEP 6: דרכון ──
+let passportSaved = false;
+function savePassport5() {
+  const v = document.getElementById('p-water').value.trim();
+  if (!v) { mascotSay('כתבו משפט אחד קטן 🙂', '📔'); return; }
+  GC.saveOpenAnswer('l05e_passport', v);
+  document.getElementById('passport-saved').classList.remove('hidden');
+  if (passportSaved) return;
+  passportSaved = true;
+  GC.addLeaves(5, 'S');
+  mascotSay('נשמר בדרכון! 📔', '🌱');
+}
+
+// ── INIT ──
+function init() {
+  GC.initLesson({
+    lessonId: 5,
+    steps: 6,
+    mascotMessages: {
+      1: 'שלום! גרגיר כאן 🌱 צמח יכול לגדול בלי אדמה?',
+      2: 'דגים ששומרים על צמחים? 🐟',
+      3: 'למים יש מצב רוח 🍋',
+      4: 'כמה סוכר בתה? 🍵',
+      5: 'עכשיו מודדים באמת! ⚗️',
+      6: 'כמעט סיימנו ⭐'
+    }
+  });
+
+  GC.registerCascades({
+    'hp1': () => { GC.reveal('hp2-wrap'); },
+    'hp2': () => { GC.showBtn('btn1'); mascotSay('המים חוזרים במעגל, לא הולכים לאיבוד 💧', '🌱'); },
+    'aq1': () => { GC.showBtn('btn2'); },
+    'ph1': () => { GC.showBtn('btn3'); mascotSay('קצת חמוץ, בערך 6. זה האזור הירוק 🟢', '🌱'); },
+    'ec1': () => { GC.reveal('growee-wrap'); mascotSay('אנחנו מודדים, המורה מתקן 🙋', '🌱'); },
+    'gr1': () => { GC.showBtn('btn4'); },
+  });
+
+  ['aq-bank', 'ph-bank'].forEach(id => {
+    const bank = document.getElementById(id);
+    shuffle(Array.from(bank.children)).forEach(el => bank.appendChild(el));
+  });
+  GC.initTouch('.drag-item', '.drop-zone', dropAny);
+
+  GC.bindOpenAnswers();
+}
+
+// ── TUTORIAL (פעם אחת, id l05e) - סקלה + סליידר (פיצ'ר חדש) ──
+function maybeStartTutorial() {
+  if (localStorage.getItem('gc_tutorial_l05e')) return;
+  if (document.getElementById('gc-id-modal')) return;
+  setTimeout(() => {
+    GC.Tutorial.start('l05e', [
+      { target: '#ph-bank', emoji: '🍋', wait: 'next',
+        text: 'קודם גוררים לימון, מים וסבון למקום שלהם על הסקלה.' },
+      { target: null, emoji: '🌱', wait: 'next',
+        text: 'אחר כך יופיע עיגול להזזה. מזיזים אותו ומחפשים איפה השתיל מחייך.' },
+    ]);
+  }, 450); // אחרי גלילת goTo
+}
+
+init();
+</script>
+</body>
+</html>
