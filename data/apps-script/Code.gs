@@ -30,6 +30,7 @@ const FIELDS = [
   'track', 'school_id', 'class_id', 'group_name', 'student_name', 'code',
   'ls1', 'ls2', 'ls3', 'ls4', 'ls5', 'ls6', 'ls7', 'ls8', 'ls9', 'ls10',
   'ls11', 'ls12', 'ls13', 'ls14', 'ls15', 'ls16', 'ls17',
+  'ls55', // שיעור 5.5 (17.11.2026) - אותה לוגיקת max כמו שאר ls*
   'leaves_spent', 'passport1', 'achievements', 'unlocked_through', 'last_updated',
   'name_by_teacher',
   // מתי מכשיר התלמיד/ה עצמו/ה סנכרן לאחרונה. last_updated משתנה גם בפעולות מדריך/ה (פתיחה,

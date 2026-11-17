@@ -64,7 +64,7 @@
     // leaves_earned = סכום כל ה-ls{N} (מצטבר, קובע רמה, לעולם לא יורד)
     function getLeavesEarned(){
       let total=0;
-      for(let i=1;i<=17;i++){ total+=parseInt(localStorage.getItem('ls'+i)||'0'); }
+      for(let i=1;i<=17;i++){ total+=parseInt(localStorage.getItem('ls'+i)||'0'); } total+=parseInt(localStorage.getItem('ls55')||'0');
       return total;
     }
     // leaves_balance = leaves_earned - leaves_spent (יורד בקנייה בחנות, לא משפיע על הרמה)

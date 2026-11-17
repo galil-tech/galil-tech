@@ -3,590 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>שיעור 8 – סינרגיה בין מערכות חקלאיות | גדלים למחר</title>
+  <title>שיעור 8 – הרובוט סוגר מעגל ומדווח הביתה | גדלים למחר</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
-  <!-- תשתית משותפת -->
   <link rel="stylesheet" href="../assets/core.css">
   <script src="../assets/core.js"></script>
   <script src="../assets/points.config.js"></script>
-  <script src="../assets/questions.js"></script>
   <script src="../assets/identity.js"></script>
   <script>if(window.GC_ID){GC_ID.ensureStudentIdentity();}</script>
   <script src="../data/sheets-config.js"></script>
   <script src="../assets/sheets-sync.js"></script>
-  <style>
-    *{font-family:'Heebo',sans-serif;box-sizing:border-box;}
-    .step-panel{display:none;animation:fadeUp .4s ease;}
-    .step-panel.active{display:block;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-    .quiz-opt{cursor:pointer;border:2px solid #d1fae5;transition:all .2s;border-radius:12px;}
-    .quiz-opt:hover:not([data-done]){border-color:#84cc16;background:#f0fdf4;transform:scale(1.01);}
-    .quiz-opt.correct{background:#dcfce7!important;border-color:#16a34a!important;}
-    .quiz-opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;}
-    .step-dot{width:13px;height:13px;border-radius:50%;background:#d1fae5;transition:all .3s;cursor:pointer;}
-    .step-dot.done{background:#84cc16;}
-    .step-dot.current{background:#166534;transform:scale(1.5);}
-    @keyframes burst{to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
-    .leaf-burst{position:fixed;pointer-events:none;font-size:1.4rem;animation:burst .9s ease forwards;z-index:999;}
-    .reveal{display:none;}
-    .reveal.show{display:block;animation:fadeUp .35s ease;}
-    .mascot{font-size:2.8rem;transition:all .4s;}
-    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-    .mascot-bounce{animation:bounce .6s ease 3;}
-    /* Synergy cards */
-    .syn-card{border:2px solid #d1fae5;cursor:pointer;transition:all .3s;border-radius:14px;}
-    .syn-card:hover:not(.revealed){border-color:#10b981;background:#f0fdf4;transform:scale(1.02);}
-    .syn-card.revealed{cursor:default;}
-    /* Code blocks */
-    .code-blank{display:inline-block;border-bottom:2.5px solid #16a34a;min-width:80px;text-align:center;font-family:monospace;cursor:pointer;background:#f0fdf4;color:#166534;padding:2px 8px;border-radius:6px;}
-    .code-blank:hover{background:#dcfce7;}
-    .code-blank.filled{background:#dcfce7;border-bottom-color:#16a34a;font-weight:bold;}
-    /* Mission */
-    .mission-card{border:2px solid #d1fae5;cursor:pointer;transition:all .3s;border-radius:12px;}
-    .mission-card.done-card{border-color:#16a34a;background:#f0fdf4;opacity:.7;}
-  </style>
+  <script src="../assets/phase2-lesson.js"></script>
+  <style>*{font-family:'Heebo',sans-serif;}</style>
 </head>
-<body class="bg-gradient-to-br from-green-50 to-teal-50 min-h-screen">
-
-<!-- MASCOT -->
-<div id="mascot-wrap" class="fixed bottom-6 left-6 z-40 flex items-end gap-3 pointer-events-none" style="max-width:220px">
-  <div id="mascot" class="mascot">🌱</div>
-  <div id="mascot-bubble" class="hidden bg-white border-2 border-green-300 rounded-2xl px-4 py-3 text-sm font-bold text-green-900 shadow-xl" style="max-width:170px"></div>
-</div>
-
-<!-- NAV -->
-<nav class="bg-green-800 text-white sticky top-0 z-50 shadow-xl">
-  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-    <a href="../index.html" class="text-xl font-bold">🌱 גדלים למחר</a>
-    <div class="flex gap-4 text-sm">
-      <a href="../index.html" class="hover:text-lime-300">🏠</a>
-      <a href="lesson-07.html" class="hover:text-lime-300">← שיעור 7</a>
-      <a href="../wall.html" class="hover:text-lime-300">🛠 קיר</a>
-      <a href="../leaves.html" class="hover:text-lime-300">🏆 עלים</a>
-    </div>
-  </div>
-</nav>
-
-<!-- HEADER -->
-<div class="bg-green-800 text-white pt-10 pb-8 px-6">
-  <div class="max-w-4xl mx-auto">
-    <div class="flex flex-wrap gap-2 mb-2">
-      <span class="bg-lime-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">פאזה 2 – צמיחה</span>
-      <span class="bg-white/20 text-xs px-3 py-1 rounded-full">שיעור 8 מתוך 17</span>
-    </div>
-    <h1 class="text-4xl md:text-5xl font-black mb-2">🔁 סינרגיה בין מערכות</h1>
-    <p class="text-green-200">מפת סינרגיה · BioBee · סגירת מעגל בקרה</p>
-    <div class="mt-5">
-      <div class="flex justify-between text-sm text-green-300 mb-1">
-        <span id="plabel">שלב 1 מתוך 6</span>
-        <span>🌿 <b id="lc">0</b> עלים</span>
-      </div>
-      <div class="bg-white/20 rounded-full h-3 overflow-hidden">
-        <div id="pbar" class="h-3 bg-lime-400 rounded-full transition-all duration-500" style="width:0%"></div>
-      </div>
-      <div class="flex justify-center gap-3 mt-3" id="dots"></div>
-    </div>
-  </div>
-</div>
-
-<div class="max-w-4xl mx-auto px-4 py-8">
-
-<!-- ══ STEP 1: גשר + סינרגיה ══ -->
-<div class="step-panel active" id="step-1">
-  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
-    <!-- Catch-up ramp -->
-    <div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-4 mb-5 text-sm text-sky-900">
-      🪜 <b>רמפת השלמה (קבוצה שלא סיימה שיעור 7):</b> קיבלתם ESP32 עם קוד if/else מוכן מהמורה — תתחילו ישירות משלב 4 של השיעור הזה (סגירת המעגל). אל תבזבזו זמן על קוד ישן.
-      <button type="button" onclick="maxReached=Math.max(maxReached,4);goTo(4)" class="mt-2 block bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-xl font-bold text-sm">⏩ דלגו לשלב 4</button>
-    </div>
-
-    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-6">
-      <p class="font-bold text-amber-900 mb-1">🔁 Teaser מהשיעור הקודם:</p>
-      <p class="text-gray-700 text-sm">"הבקר מצפצף שהאדמה יבשה – אבל אם אף אחד לא בכיתה, מי ישקה? מה צריך לחבר כדי שהמעגל ייסגר לבד?" — התשובה: מערכת שבה כל חלק "מפרנס" את הבא – החיישן מזין את הבקר, הבקר פותח ברז, המים משנים את מה שהחיישן מודד. זו סינרגיה, וזה מעגל סגור.</p>
-    </div>
-
-    <div class="flex items-center gap-3 mb-5">
-      <span class="text-4xl">🔁</span>
-      <div>
-        <h2 class="text-3xl font-black text-green-900">סינרגיה – כשמערכות עוזרות אחת לשנייה</h2>
-        <p class="text-gray-400 text-sm">לא "2+2=4", אלא "2+2=5 ואפילו יותר"</p>
-      </div>
-    </div>
-
-    <div class="bg-teal-50 border-r-4 border-teal-500 rounded-2xl p-5 mb-5 text-gray-700">
-      <p class="mb-2"><b>סינרגיה</b> = מצב בו מערכת אחת משרתת מערכת אחרת, וביחד מייצרות יותר ממה שכל אחת מייצרת לבד.</p>
-      <p class="text-sm">דוגמה מהחי: גינת 3 האחיות (שיעור 2) — תירס תומך, שעועית מדשנת, דלעת מצלה. אפס פסולת, אפס דשן חיצוני. <b>מה שמערכת אחת "מבזבזת" — מערכת שנייה "אוכלת".</b></p>
-    </div>
-
-    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
-      <p class="font-bold text-lg mb-4">❓ מהי ההגדרה הטובה ביותר לסינרגיה חקלאית?</p>
-      <div class="grid gap-3" id="q-syn1">
-        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-syn1')">כשחקלאי מגדל שני סוגי גידולים שונים בשדות נפרדים</div>
-        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,true,'q-syn1')" data-correct="true">כשהפסולת של מערכת אחת הופכת לחומר גלם של מערכת אחרת — אפס בזבוז, יותר תפוקה</div>
-        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-syn1')">כשחקלאים שונים משתפים ציוד</div>
-        <div class="quiz-opt p-4 text-sm" onclick="ansQ(this,false,'q-syn1')">כשמגדלים גם פרות וגם עגבניות</div>
-      </div>
-      <div id="fb-q-syn1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
-    </div>
-
-    <div id="q-syn2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
-      <p class="font-bold text-lg mb-4">❓ מה ה"חיבור" שקושר את האקוופוניקה מבפנים?</p>
-      <div class="grid gap-3" id="q-syn2">
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-syn2')">החיידקים מסננים מים ישירות</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-syn2')" data-correct="true">פסולת הדגים → חיידקים הופכים לדשן → צמחים סופגים → מים נקיים חוזרים לדגים</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-syn2')">הצמחים מאכילים את הדגים</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-syn2')">הדגים שותים ישירות מאותם צינורות שמשקים את הצמחים</div>
-      </div>
-      <div id="fb-q-syn2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
-    </div>
-  </div>
-  <div class="flex justify-end">
-    <button id="btn1" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(2)">מפת סינרגיה ←</button>
-  </div>
-</div>
-
-<!-- ══ STEP 2: מפת סינרגיה ══ -->
-<div class="step-panel" id="step-2">
-  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
-    <div class="flex items-center gap-3 mb-5">
-      <span class="text-4xl">🗺️</span>
-      <div>
-        <h2 class="text-3xl font-black text-green-900">מפת סינרגיה – מי עוזר למי?</h2>
-        <p class="text-gray-400 text-sm">לחצו על כל מערכת כדי לראות את הקשר</p>
-      </div>
-    </div>
-
-    <p class="text-gray-600 mb-4 text-sm">לחצו על כל קלף — גלו מה כל מערכת נותנת ומה היא מקבלת:</p>
-
-    <div class="grid md:grid-cols-3 gap-4 mb-5" id="syn-map">
-      <div class="syn-card p-5 text-center" onclick="revealSyn(this,0)">
-        <div class="text-4xl mb-2">🐟</div>
-        <p class="font-black text-gray-800 mb-1">אקוופוניקה</p>
-        <p class="text-xs text-gray-400">לחצו לגלות</p>
-        <div class="hidden mt-3 text-sm text-left syn-detail bg-teal-50 rounded-xl p-3">
-          <p class="font-bold text-teal-800 mb-1">נותנת: 💩 פסולת חנקנית</p>
-          <p class="font-bold text-teal-800">מקבלת: 💧 מים נקיים מהצמחים</p>
-        </div>
-      </div>
-      <div class="syn-card p-5 text-center" onclick="revealSyn(this,1)">
-        <div class="text-4xl mb-2">☀️</div>
-        <p class="font-black text-gray-800 mb-1">חממה סולארית</p>
-        <p class="text-xs text-gray-400">לחצו לגלות</p>
-        <div class="hidden mt-3 text-sm text-left syn-detail bg-yellow-50 rounded-xl p-3">
-          <p class="font-bold text-yellow-800 mb-1">נותנת: ⚡ חשמל + חום</p>
-          <p class="font-bold text-yellow-800">מקבלת: 🏗️ משטח הגג לפאנלים</p>
-        </div>
-      </div>
-      <div class="syn-card p-5 text-center" onclick="revealSyn(this,2)">
-        <div class="text-4xl mb-2">🌿</div>
-        <p class="font-black text-gray-800 mb-1">מערכת הידרופוניקה</p>
-        <p class="text-xs text-gray-400">לחצו לגלות</p>
-        <div class="hidden mt-3 text-sm text-left syn-detail bg-green-50 rounded-xl p-3">
-          <p class="font-bold text-green-800 mb-1">נותנת: 💧 מים מטוהרים</p>
-          <p class="font-bold text-green-800">מקבלת: 🧪 דשן מהאקוופוניקה ⚡ חשמל מהסולאר</p>
-        </div>
-      </div>
-    </div>
-
-    <div id="syn-done" class="hidden bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 mb-4">
-      <p class="font-black text-lime-800 text-xl text-center mb-2">🗺️ מפת הסינרגיה הושלמה!</p>
-      <p class="text-gray-600 text-sm text-center">3 מערכות — כל אחת נותנת ומקבלת. אפס בזבוז, מקסימום תפוקה.</p>
-    </div>
-
-    <div id="q-syn3-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
-      <p class="font-bold text-lg mb-4">❓ מה ייחודי בסינרגיה לעומת שיתוף פעולה רגיל?</p>
-      <div class="grid gap-3" id="q-syn3">
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-syn3')">בסינרגיה משלמים לכל מערכת בנפרד</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-syn3')" data-correct="true">ה"בזבוז" של מערכת אחת הוא בדיוק מה שמערכת שנייה צריכה — אין הפסד כלל</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-syn3')">בסינרגיה כל מערכת עובדת לבדה ורק בסוף מחברים</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-syn3')">סינרגיה אפשרית רק בחוות ענק</div>
-      </div>
-      <div id="fb-q-syn3" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
-    </div>
-  </div>
-  <div class="flex justify-end">
-    <button id="btn2" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(3)">BioBee ←</button>
-  </div>
-</div>
-
-<!-- ══ STEP 3: BioBee ══ -->
-<div class="step-panel" id="step-3">
-  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
-    <div class="flex items-center gap-3 mb-5">
-      <span class="text-4xl">🐝</span>
-      <div>
-        <h2 class="text-3xl font-black text-green-900">BioBee – הדברה ביולוגית</h2>
-        <p class="text-gray-400 text-sm">ממית מזיקים בלי רעלים — זו גם סינרגיה!</p>
-      </div>
-    </div>
-
-    <div class="bg-gradient-to-br from-amber-700 to-yellow-600 text-white rounded-2xl p-6 mb-5">
-      <div class="flex items-center gap-3 mb-3">
-        <span class="text-3xl">🇮🇱</span>
-        <div>
-          <h3 class="font-black text-xl">BioBee</h3>
-          <p class="text-amber-200 text-sm">קיבוץ שדה אליהו, 1983 · הדברה ביולוגית</p>
-        </div>
-      </div>
-      <p class="text-sm text-amber-100 mb-4">במקום לרסס רעלים על מזיקים — BioBee מגדלים <b>חרקים טורפים</b> שאוכלים את המזיקים. חרק אחד "עושה את העבודה" בלי כימיקלים. 41 שנות פעילות, 50+ מדינות.</p>
-      <div class="grid grid-cols-3 gap-3 text-center text-sm">
-        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">1983</b>שנת הקמה</div>
-        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">50+</b>מדינות</div>
-        <div class="bg-white/20 rounded-xl p-3"><b class="text-xl block">0</b>רעלים כימיים</div>
-      </div>
-    </div>
-
-    <div class="bg-amber-50 border-r-4 border-amber-400 rounded-2xl p-5 mb-5 text-sm text-gray-700">
-      <p class="mb-2"><b>4 "מוצרים" ביולוגיים של BioBee:</b></p>
-      <ul class="space-y-1 mr-4">
-        <li>🐛 <b>חרקים טורפים</b> — אוכלים כנימות ואקריות מזיקות</li>
-        <li>🦟 <b>צרעות פרזיטיות</b> — מטילות ביצים בתוך מזיקים, לרוויה מהם</li>
-        <li>🐞 <b>אקריות טורפות</b> — מתמחות בסוג מזיק ספציפי</li>
-        <li>🐝 <b>דבורי בומבוס</b> — האבקה מבוקרת לחממות</li>
-      </ul>
-      <p class="mt-2 text-xs text-gray-500">🔗 זו גם סינרגיה: הפתרון לבעיה (מזיקים) הוא חלק מהטבע עצמו — לא כימיקל חיצוני</p>
-    </div>
-
-    <div class="bg-white border-2 border-gray-100 rounded-2xl p-5 mb-4">
-      <p class="font-bold text-lg mb-4">❓ מה הקשר בין BioBee לנושא הסינרגיה של השיעור?</p>
-      <div class="grid gap-3" id="q-bio1">
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-bio1')">אין קשר — BioBee הוא נושא נפרד לגמרי</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-bio1')" data-correct="true">BioBee משתמשת בחרק אחד כדי לפתור בעיה שנגרמת על ידי חרק אחר — הטבע פותר את עצמו</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-bio1')">BioBee בנתה בקר אלקטרוני לניטור חרקים</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-bio1')">BioBee היא חברת רסס כימי מיוחד</div>
-      </div>
-      <div id="fb-q-bio1" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
-    </div>
-
-    <div id="q-bio2-wrap" class="reveal bg-white border-2 border-gray-100 rounded-2xl p-5">
-      <p class="font-bold text-lg mb-4">❓ למה הדברה ביולוגית "ירוקה" יותר מריסוס?</p>
-      <div class="grid gap-3" id="q-bio2">
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-bio2')">כי היא יותר זולה</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-bio2')">כי היא עובדת מהר יותר</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,true,'q-bio2')" data-correct="true">כי הפתרון הוא חלק מהמערכת הטבעית — לא מזהם קרקע, מים ואוויר</div>
-        <div class="quiz-opt p-3 text-sm" onclick="ansQ(this,false,'q-bio2')">כי דבורים ירוקות בצבע</div>
-      </div>
-      <div id="fb-q-bio2" class="hidden mt-3 rounded-xl p-4 text-sm"></div>
-    </div>
-  </div>
-  <div class="flex justify-end">
-    <button id="btn3" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(4)">תרגיל קוד ←</button>
-  </div>
-</div>
-
-<!-- ══ STEP 4: תרגיל קוד ══ -->
-<div class="step-panel" id="step-4">
-  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
-    <div class="flex items-center gap-3 mb-5">
-      <span class="text-4xl">💻</span>
-      <div>
-        <h2 class="text-3xl font-black text-green-900">תרגיל קוד – חיישן לחות → ברז</h2>
-        <p class="text-gray-400 text-sm">המשך משיעור 7 — if/else לסגירת מעגל</p>
-      </div>
-    </div>
-
-    <figure class="my-4"><img src="../assets/img/esp32/system-loop.jpg" alt="המערכת המלאה: חיישן קרקע, בקר ESP32, נורית, זמזם ומסך במעגל בקרה" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">המעגל הסגור: חיישן → בקר → פעולה → והחיישן מודד שוב</figcaption></figure>
-
-    <div dir="ltr" class="bg-slate-800 rounded-2xl p-5 mb-5 font-mono text-sm text-green-400 leading-relaxed">
-      <p class="text-slate-400 mb-2"># מטרה: אם לחות &lt; 30%, פתח ברז + שלח הודעה (פייתון)</p>
-      <p>moisture = soil.read_percent()  <span class="text-slate-500"># GPIO 6 → %</span></p>
-      <p>if moisture <span id="blank1" class="code-blank" onclick="fillBlank('blank1')">___</span> 30:</p>
-      <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(90)  <span class="text-slate-500"># פתח ברז</span></p>
-      <p>&nbsp;&nbsp;&nbsp;&nbsp;buzzer.alarm_beep(count=3, freq=1000, beep_ms=100)</p>
-      <p>else:</p>
-      <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(<span id="blank2" class="code-blank" onclick="fillBlank('blank2')">___</span>)</p>
-    </div>
-
-    <div class="grid md:grid-cols-2 gap-5 mb-5">
-      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
-        <p class="font-bold mb-3">❓ מה צריך במקום <code>___</code> הראשון?</p>
-        <div class="grid grid-cols-4 gap-2" id="q-code1">
-          <div class="quiz-opt p-2 text-center text-lg font-mono" onclick="ansQ(this,false,'q-code1')">&gt;</div>
-          <div class="quiz-opt p-2 text-center text-lg font-mono" onclick="ansQ(this,true,'q-code1')" data-correct="true">&lt;</div>
-          <div class="quiz-opt p-2 text-center text-lg font-mono" onclick="ansQ(this,false,'q-code1')">=</div>
-          <div class="quiz-opt p-2 text-center text-lg font-mono" onclick="ansQ(this,false,'q-code1')">!=</div>
-        </div>
-        <div id="fb-q-code1" class="hidden mt-2 rounded-xl p-3 text-sm"></div>
-      </div>
-      <div class="bg-white border-2 border-gray-100 rounded-2xl p-5">
-        <p class="font-bold mb-3">❓ מה צריך במקום <code>___</code> השני (לסגור ברז)?</p>
-        <div class="grid grid-cols-4 gap-2" id="q-code2">
-          <div class="quiz-opt p-2 text-center text-lg font-mono" onclick="ansQ(this,false,'q-code2')">90</div>
-          <div class="quiz-opt p-2 text-center text-lg font-mono" onclick="ansQ(this,true,'q-code2')" data-correct="true">0</div>
-          <div class="quiz-opt p-2 text-center text-lg font-mono" onclick="ansQ(this,false,'q-code2')">180</div>
-          <div class="quiz-opt p-2 text-center text-lg font-mono" onclick="ansQ(this,false,'q-code2')">-1</div>
-        </div>
-        <div id="fb-q-code2" class="hidden mt-2 rounded-xl p-3 text-sm"></div>
-      </div>
-    </div>
-
-    <div id="code-done" class="reveal bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
-      <p class="font-black text-lime-800 text-xl mb-2">✅ הקוד שלם! זה בדיוק מה שנבנה בפרויקט היום</p>
-      <div dir="ltr" class="bg-slate-800 rounded-xl p-4 font-mono text-sm text-green-400 mt-3 text-right">
-        <p>if moisture <b class="text-lime-400">&lt;</b> 30:</p>
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(90) &nbsp;# פתוח</p>
-        <p>else:</p>
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;valve(<b class="text-lime-400">0</b>) &nbsp;# סגור</p>
-      </div>
-    </div>
-  </div>
-  <div class="flex justify-end">
-    <button id="btn4" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(5)">פרויקט ←</button>
-  </div>
-</div>
-
-<!-- ══ STEP 5: פרויקט – סגירת מעגל ══ -->
-<div class="step-panel" id="step-5">
-  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
-    <div class="flex items-center gap-3 mb-5">
-      <span class="text-4xl">🔌</span>
-      <div>
-        <h2 class="text-3xl font-black text-green-900">פרויקט – סגירת מעגל בקרה</h2>
-        <p class="text-gray-400 text-sm">חיישן → בקר → ברז/הודעה — הלב הטכני של השיעור</p>
-      </div>
-    </div>
-
-    <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-5 text-sm text-red-800">
-      ⚠️ <b>הוכחה נדרשת:</b> שנו ערך חיישן וצפו שהברז/הודעה מגיבים אוטומטית — זו ה"הוכחה" לסגירת המעגל.
-    </div>
-
-    <div class="bg-lime-50 border-2 border-lime-200 rounded-2xl p-5 mb-5">
-      <h3 class="font-black text-lime-900 mb-3">📋 משימות הקבוצה</h3>
-      <div class="space-y-2" id="loop-missions">
-        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,0)">
-          <span class="loop-icon text-2xl">⬜</span> א. USB מנותק → חיברנו חיישן לחות קרקע (VCC → 3V3, לא 5V! · GND → GND · AOUT → GPIO 6) → בדיקת חבר
-        </div>
-        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,1)">
-          <span class="loop-icon text-2xl">⬜</span> ב. הרכבנו זרוע על ציר ה-Servo (כדי שהתנועה תיראה) וחיברנו אותו (GPIO 15, אדום ל-5V) – או "ברז אנושי" אם אין – + זמזם (GPIO 5) + חוט מגע (GPIO 4, על נייר כסף רחוק מהלוח)
-        </div>
-        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,2)">
-          <span class="loop-icon text-2xl">⬜</span> ג. חיברנו USB (הקוד שמור על הבקר) וכיילנו במגע (אוויר → מים)
-        </div>
-        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,3)">
-          <span class="loop-icon text-2xl">⬜</span> ד. <b>הוכחנו מעגל סגור:</b> שינינו ערך חיישן → הברז/הודעה הגיבו אוטומטית
-        </div>
-        <div class="mission-card p-3 flex items-center gap-3 text-sm" onclick="checkLoop(this,4)">
-          <span class="loop-icon text-2xl">⬜</span> ה. צילמנו את המעגל השלם לקיר
-        </div>
-      </div>
-      <div id="loop-done" class="hidden mt-3 bg-lime-100 rounded-xl p-4 text-center">
-        <p class="font-black text-lime-800 text-xl">🔁 מעגל סגור! +35 עלים 🌿 + באדג' "סוגר מעגל" 🔁</p>
-      </div>
-    </div>
-
-    <!-- Open idea field -->
-    <div class="bg-teal-50 border-2 border-teal-200 rounded-2xl p-5 mb-5">
-      <h3 class="font-black text-teal-900 mb-2">💡 רעיון סינרגיה משלכם</h3>
-      <p class="text-sm text-gray-600 mb-3">אחרי שראיתם את המעגל עובד — איזו מערכת נוספת הייתם מחברים אליו?</p>
-      <textarea id="syn-idea" rows="2" maxlength="200" placeholder="הייתי מוסיף... כי זה היה יוצר סינרגיה עם..." class="w-full border-2 border-teal-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-teal-500"></textarea>
-    </div>
-
-    <!-- Passport entry -->
-    <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
-      <h3 class="font-black text-green-900 mb-2">📔 דרכון – שיעור 8</h3>
-      <textarea id="p8-obs" rows="2" maxlength="150" placeholder="ערך הסף שהפעיל את הברז: ... | זמן התגובה: ..." class="w-full border-2 border-green-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-green-500"></textarea>
-      <button onclick="saveEntry8()" class="mt-3 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-xl font-black shadow transition-colors">📔 שמור רשומה</button>
-      <div id="p8-saved" class="hidden mt-2 text-center text-sm font-bold text-lime-700">✅ נשמר! +10 עלים 🌿</div>
-    </div>
-  </div>
-  <div class="flex justify-end">
-    <button id="btn5" class="hidden bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600" onclick="goTo(6)">סיכום ←</button>
-  </div>
-</div>
-
-<!-- ══ STEP 6: סיכום + כוכב הצפון ══ -->
-<div class="step-panel" id="step-6">
-  <div class="bg-white rounded-3xl shadow-lg p-8 mb-5">
-    <div class="bg-green-50 rounded-2xl p-5 mb-5">
-      <h3 class="font-black text-green-900 mb-3">📚 מה למדנו היום:</h3>
-      <ul class="space-y-2 text-sm text-gray-700">
-        <li class="flex gap-2"><span class="text-green-600">🔁</span> סינרגיה = כשהפסולת של מערכת אחת הופכת לחומר גלם של אחרת</li>
-        <li class="flex gap-2"><span class="text-green-600">🗺️</span> מפת הסינרגיה: אקוופוניקה + חממה סולארית + הידרופוניקה = מערכת שמשרתת את עצמה</li>
-        <li class="flex gap-2"><span class="text-green-600">🐝</span> BioBee: הדברה ביולוגית — טבע פותר את הטבע, 0 כימיקלים</li>
-        <li class="flex gap-2"><span class="text-green-600">🔌</span> מעגל בקרה סגור: חיישן → if/else → ברז — פועל לבד ללא התערבות ידנית</li>
-      </ul>
-    </div>
-
-    <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 mb-5">
-      <div class="flex items-center gap-2 mb-3"><span class="text-2xl">⭐</span><h3 class="font-black text-amber-900 text-xl">שאלת כוכב הצפון</h3></div>
-      <p class="text-gray-800 font-bold text-lg mb-3">"מה הסינרגיה שתרצו לשלב באבטיפוס שלכם בתערוכה — איזו מערכת 'מפרנסת' מערכת אחרת בפרויקט שלכם?"</p>
-      <textarea id="north-star" rows="2" placeholder="בפרויקט שלנו... נשלב סינרגיה על ידי..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-amber-400"></textarea>
-    </div>
-
-    <div class="bg-slate-800 text-white rounded-2xl p-5 mb-5 text-center">
-      <p class="text-slate-400 text-sm mb-1">🔮 בשיעור הבא (שיעור 9):</p>
-      <p class="font-black text-xl">"בנינו מעגל בקרה בקרקע. אבל מה אם נרצה לראות את כל השדה מלמעלה — ולא רק נקודה אחת?"</p>
-    </div>
-
-    <div class="bg-lime-50 border-2 border-lime-300 rounded-2xl p-5 text-center">
-      <p class="text-gray-500 text-sm mb-1">🌿 עלים שנצברו בשיעור 8:</p>
-      <p class="text-5xl font-black text-lime-700" id="final-lv">0</p>
-      <p class="text-gray-400 text-sm mt-1">מתוך מקסימום ~85 עלים</p>
-    </div>
-  </div>
-  <div class="flex justify-center mt-4">
-    <a href="lesson-09.html" class="bg-green-700 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-lg hover:bg-green-600">לשיעור 9 ←</a>
-  </div>
-</div>
-
-</div>
-
+<body>
 <script>
-const STEPS = 6;
-let cur = 1, lv = parseInt(localStorage.getItem('ls8')||'0'), maxReached = 1;
-let synRevealed = 0, loopDone = [], loopLeaves = false, entry8Saved = false;
-let code1Ok = false, code2Ok = false;
+P2.render({
+  lesson: 8, label: '8', part: 4, track: 'middle', root: '../',
+  emoji: '🔁', title: 'הרובוט סוגר מעגל ומדווח הביתה', organ: 'יד (Servo) · מסך · קול רחוק (רשת)', sentence: 'מרגיש → חושב → עושה → מספר',
+  steps: [
+    { type: 'intro', title: '🔁📡 שני חלקים לשיעור האחרון',
+      intro: 'שאלנו: <b>מי ישקה כשאין אף אחד?</b> ו<b>איך החקלאי ידע כשהוא בבית?</b><br>🔁 <b>מעגל סגור</b> – המים משנים את מה שהחיישן מרגיש, והרובוט מגיב שוב.<br>📡 <b>מספר</b> – מקרוב על המסך, ומרחוק דרך רשת.',
+      html: '<div class="bg-emerald-50 rounded-2xl p-4 text-center font-bold">👃 מרגיש ← 🧠 חושב ← ✋ עושה ← 📡 מספר</div>' },
 
-function goTo(n) {
-  if (n<1||n>STEPS) return;
-  document.getElementById('step-'+cur).classList.remove('active');
-  cur = n; if(cur>maxReached) maxReached=cur;
-  document.getElementById('step-'+cur).classList.add('active');
-  renderDots(); updateHeader();
-  window.scrollTo({top:0,behavior:'smooth'});
-  updateMascot(cur);
-}
-function updateHeader(){
-  document.getElementById('plabel').textContent='שלב '+cur+' מתוך '+STEPS;
-  document.getElementById('pbar').style.width=Math.round((cur/STEPS)*100)+'%';
-}
-function renderDots(){
-  document.querySelectorAll('.step-dot').forEach((d,i)=>{
-    d.className='step-dot'+(i+1<cur?' done':'')+(i+1===cur?' current':'');
-  });
-}
-function addLv(n){
-  lv+=n; localStorage.setItem('ls8',lv);if(window.GC_SYNC)GC_SYNC.scheduleSync();
-  document.getElementById('lc').textContent=lv;
-  document.getElementById('final-lv').textContent=lv;
-  leafBurst(n);
-  GC._lid=8;GC._lv=lv;GC.playSound('leaf');GC._pulsePlantTwin();GC._checkAchievements();
-  // resync — GC._checkStreak() may have written a streak bonus straight to localStorage
-  const _synced=parseInt(localStorage.getItem('ls8')||'0');
-  if(_synced!==lv){lv=_synced;document.getElementById('lc').textContent=lv;document.getElementById('final-lv').textContent=lv;}
-}
-function leafBurst(n){
-  for(let i=0;i<Math.min(n,8);i++){
-    const el=document.createElement('div');
-    el.className='leaf-burst'; el.textContent='🌿';
-    el.style.left=(20+Math.random()*60)+'vw';
-    el.style.top=(15+Math.random()*50)+'vh';
-    el.style.setProperty('--tx',(Math.random()*120-60)+'px');
-    el.style.setProperty('--ty',(-80-Math.random()*80)+'px');
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(),950);
-  }
-}
-function ansQ(el,correct,qid){
-  const c=document.getElementById(qid);
-  if(!c||c.dataset.done) return;
-  c.dataset.done='1';
-  c.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');
-  el.classList.add(correct?'correct':'wrong');
-  if(!correct){const r=c.querySelector('[data-correct="true"]');if(r)r.classList.add('correct');}
-  const fb=document.getElementById('fb-'+qid);
-  if(fb){fb.className='mt-3 rounded-xl p-4 text-sm '+(correct?'bg-green-50 text-green-800':'bg-red-50 text-red-800');fb.textContent=correct?'✅ מצוין! +5 עלים 🌿':'❌ לא בדיוק – תשובה נכונה מסומנת בירוק';fb.classList.remove('hidden');}
-  if(correct) addLv(5);
-  const cascades={
-    'q-syn1':()=>document.getElementById('q-syn2-wrap').classList.add('show'),
-    'q-syn2':()=>{document.getElementById('btn1').classList.remove('hidden');mascotSay('מעגל האקוופוניקה — אפס פסולת!','🔁');},
-    'q-syn3':()=>{document.getElementById('btn2').classList.remove('hidden');mascotSay('זה המהות: הפסולת של אחד = המזון של השני','🗺️');},
-    'q-bio1':()=>document.getElementById('q-bio2-wrap').classList.add('show'),
-    'q-bio2':()=>{document.getElementById('btn3').classList.remove('hidden');mascotSay('BioBee — הטבע פותר את עצמו','🐝');},
-    'q-code1':()=>{code1Ok=true;document.getElementById('blank1').textContent='<';document.getElementById('blank1').classList.add('filled');checkCodeDone();},
-    'q-code2':()=>{code2Ok=true;document.getElementById('blank2').textContent='0';document.getElementById('blank2').classList.add('filled');checkCodeDone();}
-  };
-  if(cascades[qid]) cascades[qid]();
-}
+    { type: 'order', title: '🔁 בנו את המעגל', leaves: 12,
+      intro: 'סדרו את שלבי המעגל – מהרגע שהאדמה התייבשה ועד שהרובוט נרגע.',
+      items: ['👃 החיישן מרגיש: יבש', '🧠 המוח מחליט: מתחת ל-SAF', '✋ ה-Servo פותח את הברז', '💧 המים זורמים לאדמה', '🌱 האדמה נרטבת', '👃 החיישן מרגיש: רטוב ← הברז נסגר'] },
 
-const _localAnsQ = ansQ;
-ansQ = function(el, correct, qid) {
-  const _before = lv;
-  if (correct) { GC._combo = (GC._combo||0) + 1; } else { GC._combo = 0; }
-  _localAnsQ(el, correct, qid);
-  const _awarded = lv - _before;
-  if (correct && _awarded > 0 && GC._combo >= 3) {
-    const mult = GC._comboMult();
-    const bonus = Math.round(_awarded * mult) - _awarded;
-    if (bonus > 0) { addLv(bonus); GC._showComboToast(GC._combo, mult); }
-  }
-};
+    { type: 'quiz', title: '🔧 איפה נשבר המעגל?', leaves: 12,
+      intro: 'בכל תרחיש הרובוט לא עושה את העבודה. איפה הבעיה?',
+      questions: [
+        { q: 'הנורית אדומה כל הזמן, ה-Servo פתוח – אבל האדמה לא נרטבת.', opts: ['החיישן לא מרגיש', 'אין מים במיכל', 'המוח לא מחליט'], a: 1, why: 'הרובוט עושה הכול נכון – אבל אין מה לזרום.' },
+        { q: 'משקים הרבה, אבל המספר של החיישן לא זז בכלל.', opts: ['חוט AOUT נפל', 'ה-SAF גבוה מדי', 'ה-Servo שבור'], a: 0, why: 'בלי AOUT – המוח לא שומע את החיישן.' },
+        { q: 'הרובוט צועק דווקא כשהאדמה רטובה, ושקט כשהיא יבשה.', opts: ['הזמזם הפוך', 'הכלל הפוך (> במקום <)', 'אין חשמל'], a: 1, why: 'באג בכלל – כמו בסבב הבאגי של מערכת ההשקיה האנושית.' },
+      ] },
 
-function checkCodeDone(){
-  if(code1Ok&&code2Ok){
-    document.getElementById('code-done').classList.add('show');
-    document.getElementById('btn4').classList.remove('hidden');
-    mascotSay('קוד מושלם! < 30% → פתח. else → סגור','💻');
-  }
-}
-function fillBlank(id){mascotSay('בחרו תשובה מהרשת!','💻');}
+    { type: 'order', title: '📡 מסלול ההודעה', leaves: 10,
+      intro: 'איך המספר מגיע מהעציץ לטלפון של החקלאי? סדרו את התחנות.',
+      items: ['👃 החיישן', '🤖 הרובוט (הבקר)', '📶 רשת WiFi', '🛜 הראוטר', '📱 הטלפון של החקלאי'] },
 
-// Synergy map
-function revealSyn(el,idx){
-  if(el.classList.contains('revealed')) return;
-  el.classList.add('revealed');
-  el.querySelector('.syn-detail').classList.remove('hidden');
-  el.querySelector('.text-gray-400').textContent='';
-  synRevealed++;
-  if(synRevealed===3){
-    document.getElementById('syn-done').classList.remove('hidden');
-    document.getElementById('q-syn3-wrap').classList.add('show');
-    addLv(5);
-    mascotSay('3 מערכות, 0 בזבוז — סינרגיה מושלמת!','🗺️');
-  }
-}
+    { type: 'quiz', title: '✉️ כתובת, בקשה ותשובה', leaves: 8,
+      questions: [
+        { q: 'מה התפקיד של כתובת IP?', opts: ['לקבוע כמה מהר ההודעה נוסעת', 'לדעת לאיזה מכשיר ההודעה צריכה להגיע', 'להצפין את ההודעה'], a: 1, why: 'כמו הכתובת על המעטפה במשחק הדואר.' },
+        { q: 'הדפדפן שואל את הרובוט "מה הלחות?" והרובוט עונה "42%". איך קוראים לזה?', opts: ['בקשה ותשובה', 'מעגל סגור', 'קצר'], a: 0 },
+      ] },
 
-// Loop missions
-let loopCount=0;
-function checkLoop(el,idx){
-  if(loopDone.includes(idx)) return;
-  loopDone.push(idx); el.classList.add('done-card'); el.querySelector('.loop-icon').textContent='✅';
-  loopCount++;
-  if(loopCount>=4&&!loopLeaves){
-    loopLeaves=true;
-    document.getElementById('loop-done').classList.remove('hidden');
-    addLv(35);
-    mascotSay('מעגל סגור! חיישן → בקר → פעולה, בלי שאף אחד נגע','🔌');
-    checkStep5Done();
-  }
-}
-function saveEntry8(){
-  if(entry8Saved) return;
-  const obs=document.getElementById('p8-obs').value.trim();
-  if(!obs){mascotSay('כתבו את ערך הסף!','📔');return;}
-  const p=JSON.parse(localStorage.getItem('passport1')||'{}');
-  p.lesson8={obs,idea:document.getElementById('syn-idea').value.trim(),date:new Date().toLocaleDateString('he-IL')};
-  localStorage.setItem('passport1',JSON.stringify(p));
-  entry8Saved=true;
-  document.getElementById('p8-saved').classList.remove('hidden');
-  addLv(10); mascotSay('תיעוד מעגל בקרה — שמור! 📔','🌱');
-  checkStep5Done();
-}
-function checkStep5Done(){if(loopLeaves&&entry8Saved) document.getElementById('btn5').classList.remove('hidden');}
+    { type: 'quiz', title: '🔐 מי יכול לקרוא?', leaves: 8,
+      questions: [
+        { q: 'למה לרשת של הרובוט יש סיסמה?', opts: ['כדי שרק מי שמורשה יוכל להתחבר ולקרוא', 'כדי שהרובוט יעבוד מהר יותר', 'אין סיבה'], a: 0 },
+        { q: 'הקוד של הפרויקט שלנו נמצא באינטרנט, וכל אחד יכול לקרוא אותו. איפה שמים את סיסמת ה-WiFi?', opts: ['בתוך הקוד – יותר נוח', 'בשום מקום ציבורי – רק על הלוח בכיתה', 'בשם הרובוט'], a: 1, why: 'סיסמה בקוד ציבורי = מעטפה פתוחה שכל העולם קורא.' },
+      ] },
 
-const mascotLines={1:'סינרגיה — כשהפסולת של אחד היא המזון של שני',2:'גלו מי עוזר למי!',3:'BioBee — חרקים נגד חרקים, 0 כימיקלים',4:'if / else — הקוד שסוגר את המעגל',5:'הרגע הגדול: מעגל בקרה סגור בפועל!',6:'שיעור 8 הסתיים! בשיעור 9 נסתכל מלמעלה ⭐'};
-function updateMascot(s){mascotSay(mascotLines[s]||'','🌱');}
-function mascotSay(msg,emoji){
-  const m=document.getElementById('mascot'),b=document.getElementById('mascot-bubble');
-  if(emoji) m.textContent=emoji;
-  b.textContent=msg; b.classList.remove('hidden'); m.classList.add('mascot-bounce');
-  clearTimeout(mascotSay._t);
-  mascotSay._t=setTimeout(()=>{b.classList.add('hidden');m.classList.remove('mascot-bounce');},5000);
-}
-function init(){
-  const d=document.getElementById('dots');
-  for(let i=1;i<=STEPS;i++){const dot=document.createElement('div');dot.className='step-dot'+(i===1?' current':'');dot.title='שלב '+i;dot.onclick=()=>{if(i<=maxReached)goTo(i);};d.appendChild(dot);}
-  document.getElementById('lc').textContent=lv;
-  document.getElementById('final-lv').textContent=lv;
-  updateHeader();
-  try{const p=JSON.parse(localStorage.getItem('passport1')||'{}');if(p.lesson8){document.getElementById('p8-obs').value=p.lesson8.obs||'';document.getElementById('syn-idea').value=p.lesson8.idea||'';}}catch(e){}
-  mascotSay(mascotLines[1],'🌱');
-}
-init();
-GC._initPlantTwin();
-GC._initSoundBtn();
-setTimeout(() => { if (typeof GC._initA11y === 'function') GC._initA11y(); }, 200);
+    { type: 'checklist', title: '🛠 החלק המעשי – סוגרים מעגל',
+      intro: 'רכיבים חדשים: <b>מסך</b> ו-<b>Servo</b> – שניהם מקבלים 5V, ורק הם.<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mt-3 text-sm"><b>🛫 כרטיס הטייס – השורה האחרונה:</b> 6. מסך: SDA ← 8, SCL ← 9, חשמל ← 5V · Servo: אות ← 15, חשמל ← 5V · מים על מגש, 30 ס"מ מהלוח, בכפית.</div>',
+      items: [
+        { text: '🔌 חיווט מסך + Servo', sub: 'המדריך/ה אישר/ה כל חוט 5V. כרטיס טייס מלא בקול.', leaves: 10 },
+        { text: '🔁 המעגל סגור!', sub: 'יבש ← אדום + צפצוף + הברז נפתח ← משקים ← צהוב ← ירוק ← הברז נסגר.', leaves: 15 },
+        { text: '📟 השם על המסך', sub: 'שינינו את ROBOT_NAME – והרובוט מציג את עצמו.', leaves: 7 },
+      ] },
+
+    { type: 'idcard', title: '🎓 תעודת הרובוט – סיום האקדמיה', leaves: 10,
+      intro: '<b>רגע של כנות:</b> הרובוט לא באמת "מרגיש" – הוא <b>מודד מספר</b>. המילה "מרגיש" עזרה לנו לחשוב, כמו מפה שעוזרת להתמצא – אבל היא לא העיר.',
+      fields: [
+        { key: 'reportTo', label: 'הרובוט שלנו מדווח ל…', placeholder: 'למשל: לחקלאי, לטלפון שלו' },
+        { key: 'message', label: 'ומה הוא מספר?', placeholder: 'למשל: TALI-BOT: 23% – צמא!' },
+        { key: 'spoons', label: 'כמה כפיות מים עד שהרובוט נרגע?', placeholder: '3' },
+      ],
+      guess: { q: 'אם הרובוט שולח מספר כל דקה – כמה מספרים יש אחרי חודש?', opts: ['בערך 4,000', 'בערך 43,000', 'בערך 400,000'] } },
+
+    { type: 'finish', title: '🎓 הרובוט סיים את האקדמיה!', emoji: '🎓',
+      html: '<b>מרגיש → חושב → עושה → מספר.</b> הרובוט שלכם סוגר מעגל ומדווח הביתה. בפאזה 3 נגלה מה עושים עם כל המספרים שהוא שולח.' },
+  ],
+});
 </script>
 </body>
 </html>

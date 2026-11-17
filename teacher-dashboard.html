@@ -424,7 +424,7 @@ setInterval(() => {
   loadClass();
 }, 60000);
 
-function sumLeaves(r) { let t = 0; for (let i = 1; i <= 17; i++) t += Number(r['ls' + i]) || 0; return t; }
+function sumLeaves(r) { let t = Number(r.ls55) || 0; for (let i = 1; i <= 17; i++) t += Number(r['ls' + i]) || 0; return t; }
 function isToday(v) {
   if (!v) return false;
   const d = new Date(v);

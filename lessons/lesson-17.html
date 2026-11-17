@@ -352,7 +352,7 @@ function saveEntry17(){
   document.getElementById('p17-saved').classList.remove('hidden');addLv(5);document.getElementById('btn5').classList.remove('hidden');
 }
 function showTotals(){
-  let total=0;for(let i=1;i<=17;i++){total+=parseInt(localStorage.getItem('ls'+i)||'0');}
+  let total=parseInt(localStorage.getItem('ls55')||'0');for(let i=1;i<=17;i++){total+=parseInt(localStorage.getItem('ls'+i)||'0');}
   const spent=parseInt(localStorage.getItem('leaves_spent')||'0');const earned=Math.max(total,0);
   document.getElementById('total-leaves-display').textContent=earned;
   const lvl=LEVELS.filter(l=>earned>=l[0]).pop();

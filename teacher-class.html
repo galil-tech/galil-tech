@@ -166,7 +166,7 @@ function renderNotes(){
 
 // ── PACE / PROGRESS ──
 function unlockedOf(row){ return parseInt(row.unlocked_through||1,10); }
-function sumLeaves(row){ let s=0; for(let i=1;i<=17;i++) s+=Number(row['ls'+i])||0; return s; }
+function sumLeaves(row){ let s=Number(row.ls55)||0; for(let i=1;i<=17;i++) s+=Number(row['ls'+i])||0; return s; }
 
 async function loadProgress(){
   const t=GC_ID.getTeacherClassIdentity();

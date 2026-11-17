@@ -35,6 +35,7 @@
       unlocked_through: localStorage.getItem('gc_unlocked_through') || '1',
     };
     for (let i = 1; i <= 17; i++) payload['ls' + i] = localStorage.getItem('ls' + i) || '0';
+    payload.ls55 = localStorage.getItem('ls55') || '0'; // שיעור 5.5
     if (!pulledOk) passportHeld = true;
     return payload;
   }
@@ -97,8 +98,8 @@
       }
       if (!resp.ok || !resp.rows || !resp.rows.length) return resp;
       const row = resp.rows[0];
-      for (let i = 1; i <= 17; i++) {
-        const key = 'ls' + i;
+      for (let i = 1; i <= 18; i++) {
+        const key = i === 18 ? 'ls55' : 'ls' + i; // 18 = שיעור 5.5
         const local = parseInt(localStorage.getItem(key) || '0');
         const remote = parseInt(row[key] || 0);
         if (remote > local) localStorage.setItem(key, remote);

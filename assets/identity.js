@@ -146,6 +146,7 @@
       localStorage.removeItem('lesson' + i + '_completed');
       localStorage.removeItem('gc_qseed_' + i);
     }
+    localStorage.removeItem('ls55');
     localStorage.removeItem('passport1');
     localStorage.removeItem('gc_achievements');
     localStorage.removeItem('gc_msk');

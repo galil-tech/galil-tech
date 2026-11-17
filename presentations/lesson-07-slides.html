@@ -3,84 +3,154 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>שיעור 7 – שקפים | גדלים למחר</title>
+<title>שיעור 7 – הרובוט מקבל מוח ופה | שקפים</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/slides-core.css">
+<style>.el{display:none}.trk-el .el{display:inline}.trk-el .mid{display:none}svg text{font-family:Heebo,sans-serif}</style>
+<script>if(/track=el/.test(location.search))document.documentElement.classList.add('trk-el');</script>
 </head>
 <body>
-
-<div id="deck-title">שיעור 7 – הצמח מפעיל מכונות!</div>
+<!-- מסלול: ברירת מחדל = חטיבה. ליסודי: ?track=el -->
+<div id="deck-title">שיעור 7 – הרובוט מקבל מוח ופה</div>
 <div id="backdrop">
 
-  <!-- שקף 1 - דיגיטלי מול אנלוגי (תבנית D) -->
-  <section class="slide active" data-name="שקף 1" data-steps="3">
-    <div class="topbar">
-      <span class="eyebrow">שיעור 7 · גדלים למחר</span>
-      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
+  <section class="slide active" data-name="פתיחה">
+    <div class="topbar"><span class="eyebrow">שיעור 7 · 🤖 אקדמיית הרובוטים 3/4</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-center">
+      <p style="font-size:clamp(3rem,8vw,7rem);">🤖🧠👄</p>
+      <p class="h1">הרובוט מקבל מוח ופה</p>
+      <p class="h2" style="margin-top:2%;color:#92400e;">מרגיש → "חושב → עושה"</p>
     </div>
-    <div class="stage-row" style="gap:3%;">
-      <div class="rv card card-green" data-step="1" style="flex:1;">
-        <p class="label label-green" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🔘 דיגיטלי</p>
-        <p class="h2" style="color:#374151;">מתג: 0 או 1</p>
-      </div>
-      <div class="vs-badge pulse-at" data-step="2">VS</div>
-      <div class="rv card card-gold" data-step="3" style="flex:1;">
-        <p class="label label-gold" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🎚️ אנלוגי</p>
-        <p class="h2" style="color:#374151;">ווליום: 0 עד 65535</p>
-      </div>
-    </div>
-    <div class="mascot">🌿</div>
+    <div class="mascot">🤖</div>
   </section>
 
-  <!-- שקף 2 - פינים על הלוח (תבנית E) -->
-  <section class="slide" data-name="שקף 2" data-steps="7">
-    <div class="topbar">
-      <span class="eyebrow">שיעור 7 · גדלים למחר</span>
-      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
-    </div>
+  <section class="slide" data-name="קופסת המסתורין" data-steps="3">
+    <div class="topbar"><span class="eyebrow">שיעור 7 · 📦 קופסת המסתורין</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
     <div class="stage-col">
-      <p class="h1" style="margin-bottom:4%;">הפינים על הלוח</p>
-      <div class="fw-grid" style="grid-template-columns:repeat(3,1fr);">
-        <div class="rv fw-cell card-green" data-step="1">
-          <p class="label label-green">GPIO 5</p>
-          <p class="body" style="margin-top:6px;">זמזם</p>
-        </div>
-        <div class="rv fw-cell" data-step="2" style="background:#f0fdf4; border:2px solid #bbf7d0;">
-          <p class="label" style="color:#166534;">GPIO 6</p>
-          <p class="body" style="margin-top:6px;">חיישן לחות קרקע</p>
-        </div>
-        <div class="rv fw-cell card-purple" data-step="3">
-          <p class="label label-purple">GPIO 48</p>
-          <p class="body" style="margin-top:6px;">נורית RGB (מובנית)</p>
-        </div>
-        <div class="rv fw-cell" data-step="4" style="background:#f3f4f6; border:2px solid #d1d5db;">
-          <p class="label" style="color:#374151;">GND</p>
-          <p class="body" style="margin-top:6px;">הארקה משותפת</p>
-        </div>
-        <div class="rv fw-cell card-amber" data-step="5">
-          <p class="label label-amber">3V3</p>
-          <p class="body" style="margin-top:6px;">מתח הזנה (3.3V)</p>
-        </div>
-        <div class="rv fw-cell" data-step="6" style="background:#fef2f2; border:2px solid #fecaca;">
-          <p class="label" style="color:#b91c1c;">5V</p>
-          <p class="body" style="margin-top:6px;">רק ל-Servo (חטיבה)</p>
-        </div>
+      <p class="h1" style="margin-bottom:3%;">📦 מה הרובוט הזה עושה?</p>
+      <div style="display:flex;gap:3%;">
+        <div class="rv card card-blue" data-step="1" style="flex:1;text-align:center;"><p class="h2">👃 מה הוא מרגיש?</p></div>
+        <div class="rv card card-purple" data-step="2" style="flex:1;text-align:center;"><p class="h2">🧠 מה הכלל שלו?</p></div>
+        <div class="rv card card-green" data-step="3" style="flex:1;text-align:center;"><p class="h2">👄 מה הוא עושה?</p></div>
       </div>
-      <p class="small rv" data-step="7" style="text-align:center; margin-top:16px;">🔌 מחברים ומנתקים חוטים רק כשה-USB מנותק</p>
+      <p class="body" style="margin-top:3%;text-align:center;">כתבו את ה"קוד" שלו במילים!</p>
     </div>
-    <div class="mascot">🌿</div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="מרגיש חושב עושה" data-steps="4">
+    <div class="topbar"><span class="eyebrow">שיעור 7 · סכמה</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <p class="h1">👃 → 🧠 → 👄</p>
+      <svg viewBox="0 0 680 230" style="direction:ltr;width:100%;max-height:50vh" dir="ltr">
+        <defs><marker id="a" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 z" fill="#334155"/></marker></defs>
+        <g class="rv" data-step="1"><rect x="10" y="70" width="160" height="90" rx="16" fill="#e0f2fe"/><text x="90" y="110" font-size="22" text-anchor="middle">👃 מרגיש</text><text x="90" y="140" font-size="16" text-anchor="middle">חיישן לחות</text></g>
+        <path class="draw-path" data-step="2" pathLength="400" d="M170 115 H245" stroke="#334155" stroke-width="6" marker-end="url(#a)"/>
+        <g class="rv" data-step="2"><rect x="250" y="55" width="180" height="120" rx="16" fill="#ede9fe"/><text x="340" y="95" font-size="22" text-anchor="middle">🧠 חושב</text><text x="340" y="130" font-size="16" text-anchor="middle">אם יבש…</text><text x="340" y="155" font-size="16" text-anchor="middle">אחרת…</text></g>
+        <path class="draw-path" data-step="3" pathLength="400" d="M430 95 H500" stroke="#334155" stroke-width="6" marker-end="url(#a)"/>
+        <path class="draw-path" data-step="4" pathLength="400" d="M430 140 H500" stroke="#334155" stroke-width="6" marker-end="url(#a)"/>
+        <g class="rv" data-step="3"><rect x="505" y="55" width="165" height="65" rx="14" fill="#fee2e2"/><text x="587" y="96" font-size="19" text-anchor="middle">🔴 + 🔊 צעקה</text></g>
+        <g class="rv" data-step="4"><rect x="505" y="125" width="165" height="65" rx="14" fill="#dcfce7"/><text x="587" y="166" font-size="19" text-anchor="middle">🟢 שקט</text></g>
+      </svg>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="השקיה אנושית" data-steps="4">
+    <div class="topbar"><span class="eyebrow">שיעור 7 · 🎲 מערכת ההשקיה האנושית</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:3%;">🎲 אתם הרובוט!</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2%;">
+        <div class="rv card card-blue" data-step="1"><p class="h2">👃 החיישן</p><p class="body">מרים כרטיס מספר</p></div>
+        <div class="rv card card-purple" data-step="2"><p class="h2">🧠 המוח</p><p class="body">קורא את הכלל ומחליט</p></div>
+        <div class="rv card card-amber" data-step="3"><p class="h2">🔴🟢 הפנים</p><p class="body">מרימים כוס אדומה או ירוקה</p></div>
+        <div class="rv card card-green" data-step="4"><p class="h2">🚰 הברז</p><p class="body">אם אדום – משקה את העציץ</p></div>
+      </div>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="הכלל" data-steps="2">
+    <div class="topbar"><span class="eyebrow">שיעור 7 · 🧠 הכלל</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <p class="h1"><span class="mid">if / else – המוח של הרובוט</span><span class="el">"אם יבש – צועקים!"</span></p>
+      <pre class="rv card mid" data-step="1" dir="ltr" style="text-align:left;background:#0f172a;color:#7dd3fc;font-size:clamp(.85rem,1.8vw,1.4rem);font-family:Consolas,monospace;">SAF = 30     # when the robot gets "stressed"
+TON = 1000   # the robot's voice
+
+if moisture &lt; SAF:
+    led.red()
+    buzzer.alarm_beep(count=3, freq=TON, beep_ms=100)
+else:
+    led.green()</pre>
+      <div class="el">
+        <div class="rv card card-amber" data-step="1"><p class="h2">🏜️ אם האדמה יבשה ← 🔴 אדום + 🔊 צעקה</p></div>
+        <div class="rv card card-green" data-step="2" style="margin-top:2%;"><p class="h2">🌱 אחרת ← 🟢 ירוק ושקט</p></div>
+      </div>
+      <p class="rv h2 mid" data-step="2" style="text-align:center;color:#92400e;">Modify: SAF ו-TON הם האישיות של הרובוט שלכם</p>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="חזק או חלש" data-steps="3">
+    <div class="topbar"><span class="eyebrow">שיעור 7 · 🔦 חזק או חלש</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <p class="h1">הרובוט יודע רק דולק / כבוי</p>
+      <div class="rv card" data-step="1" dir="ltr" style="text-align:center;font-size:clamp(1.6rem,4vw,3rem);letter-spacing:6px;">██░░░░░░░░ <span style="font-size:.6em">🌙</span></div>
+      <div class="rv card" data-step="2" dir="ltr" style="text-align:center;font-size:clamp(1.6rem,4vw,3rem);letter-spacing:6px;margin-top:2%;">█████░░░░░ <span style="font-size:.6em">💡</span></div>
+      <div class="rv card" data-step="3" dir="ltr" style="text-align:center;font-size:clamp(1.6rem,4vw,3rem);letter-spacing:6px;margin-top:2%;">█████████░ <span style="font-size:.6em">☀️</span></div>
+      <p class="body" style="text-align:center;margin-top:2%;">דולק רוב הזמן = חזק · דולק קצת = חלש<span class="mid"> · השם המקצועי: PWM</span></p>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="חיווט זמזם" data-steps="2">
+    <div class="topbar"><span class="eyebrow">שיעור 7 · סכמה</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <p class="h1">🔌 הפה של הרובוט: זמזם</p>
+      <svg viewBox="0 0 640 220" style="direction:ltr;width:100%;max-height:50vh" dir="ltr">
+        <circle cx="110" cy="110" r="70" fill="#1e293b"/><text x="110" y="118" font-size="26" text-anchor="middle" fill="#fff">🔊</text>
+        <text x="190" y="80" font-size="22" font-weight="700">+</text><text x="190" y="160" font-size="22" font-weight="700">−</text>
+        <rect x="430" y="30" width="190" height="160" rx="14" fill="#1e293b"/><text x="525" y="22" font-size="17" text-anchor="middle">הלוח</text>
+        <text x="450" y="85" font-size="19" fill="#fff" font-weight="700"><tspan class="mid">GPIO 5</tspan> 🟢</text><text x="450" y="160" font-size="19" fill="#fff" font-weight="700"><tspan class="mid">GND</tspan> ⚫</text>
+        <path class="draw-path" data-step="1" pathLength="400" d="M180 78 H430" stroke="#16a34a" stroke-width="7"/>
+        <path class="draw-path" data-step="2" pathLength="400" d="M180 155 H430" stroke="#111827" stroke-width="7"/>
+      </svg>
+      <p class="body" style="text-align:center;">הזמזם מצפצף חלש? הרגליים הפוכות.</p>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="Beewise" data-steps="3">
+    <div class="topbar"><span class="eyebrow">שיעור 7 · 🇮🇱 Beewise</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:3%;">🐝 כוורת עם מוח</p>
+      <div style="display:flex;gap:3%;">
+        <div class="rv card card-blue" data-step="1" style="flex:1;text-align:center;"><p class="h2">👃 מרגישה</p><p class="body">חיישנים ומצלמות</p></div>
+        <div class="rv card card-purple" data-step="2" style="flex:1;text-align:center;"><p class="h2">🧠 חושבת</p><p class="body">מחליטה מה הדבורים צריכות</p></div>
+        <div class="rv card card-green" data-step="3" style="flex:1;text-align:center;"><p class="h2">👄 עושה</p><p class="body">רובוט מטפל בכוורת</p></div>
+      </div>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="סגירה" data-steps="3">
+    <div class="topbar"><span class="eyebrow">שיעור 7 · סגירה</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <div class="rv card card-amber" data-step="1"><p class="h2">⚠️ היום הרובוט <b>רק מזעיק</b>. עוד אף אחד לא משקה לבד.</p></div>
+      <div class="rv card card-green" data-step="2" style="margin-top:2%;"><p class="h2">🪪 תעודה: הכלל שלי · הקול שלי · הצבעים שלי</p></div>
+      <div class="rv card card-purple" data-step="3" style="margin-top:2%;"><p class="h2">🔮 מי ישקה כשאין אף אחד? ואיך החקלאי ידע כשהוא בבית?</p></div>
+    </div>
+    <div class="mascot">🤖</div>
   </section>
 
 </div>
-
 <div id="controls">
   <button class="navbtn" onclick="slidesGo(-1)">→</button>
-  <span id="counter">1 / 2</span>
+  <span id="counter">1 / 9</span>
   <div id="dots"></div>
   <button class="navbtn" onclick="slidesGo(1)">←</button>
   <button class="navbtn" id="fsbtn" title="מסך מלא">⛶</button>
 </div>
-
 <script src="assets/slides-core.js"></script>
 </body>
 </html>

@@ -80,6 +80,7 @@ const levels = (window.GC && GC.LEVELS) || [
 function getLeavesEarned() {
   let total = 0;
   for (let i = 1; i <= 17; i++) total += parseInt(localStorage.getItem('ls' + i) || '0');
+  total += parseInt(localStorage.getItem('ls55') || '0');
   return total;
 }
 

@@ -47,7 +47,9 @@
 כל 17 הלומדות טוענות `assets/core.js` + `assets/core.css` + `assets/points.config.js` + `assets/questions.js`, וכותבות/קוראות נתונים דרך אובייקט `GC` (Galil Core) ולא ישירות מול `localStorage`:
 
 - `GC.addLeaves(n)` – מוסיף עלים לשיעור הנוכחי, כותב ל-`ls{N}`
-- `GC.getLeavesEarned()` – **מחושב** (סכום `ls1`...`ls17`), לא מפתח מאוחסן בפני עצמו
+- `GC.getLeavesEarned()` – **מחושב** (סכום `ls1`...`ls17` + `ls55`), לא מפתח מאוחסן בפני עצמו
+- `ls55` – עלי שיעור 5.5 (מ-17.11.2026, אקדמיית הרובוטים). אותה לוגיקת max כמו שאר `ls*`, גם בשרת. עמודה בגיליון נוספת אוטומטית אחרי Deploy של Code.gs.
+- `passport1.robot` – תעודת הרובוט (שם, nameEn, משימה, צמח + `l55`/`l6`/`l7`/`l8` לכל שיעור). `passport1.p2aw_<שיעור>` – פריטים שכבר זיכו בעלים (מונע זיכוי כפול).
 - `GC.getLeavesBalance()` – `getLeavesEarned() - leaves_spent`
 - `GC.savePassport(key, value)` / `GC.getPassport(key)` – קריאה/כתיבה לאובייקט `passport1` המשותף
 - `GC.pushPassport(...)` – ייעודי לנתוני מדידה (pH/EC) משיעורים 5–7
@@ -80,7 +82,7 @@
 
 ### שרטוט ראשוני לצורת הרשומה ב-Sheet (ל-9ד, לא לבנות עכשיו)
 כל רשומת "מצב תלמיד/קבוצה" (snapshot, לא event log) תצטרך את השדות:
-`track | school_id | class_id | group_name | student_or_pair_name | ls1...ls17 | leaves_spent | passport1 (JSON) | badges | last_updated`
+`track | school_id | class_id | group_name | student_or_pair_name | ls1...ls17 | ls55 | leaves_spent | passport1 (JSON) | badges | last_updated`
 זה מרחיב את מה שכבר נכתב פר-תלמיד ב-localStorage (השורה למעלה) בארבעת השדות הראשונים בלבד – שאר השדות זהים למה שכבר קיים.
 
 ## נקודת החלטה שכבר לא רלוונטית

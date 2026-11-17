@@ -3,99 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>שיעור 6 – שקפים | גדלים למחר</title>
+<title>שיעור 6 – הרובוט מקבל חושים | שקפים</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/slides-core.css">
+<style>.el{display:none}.trk-el .el{display:inline}.trk-el .mid{display:none}svg text{font-family:Heebo,sans-serif}</style>
+<script>if(/track=el/.test(location.search))document.documentElement.classList.add('trk-el');</script>
 </head>
 <body>
-
-<div id="deck-title">שיעור 6 – איך שומעים את הסביבה של הצמח?</div>
+<!-- מסלול: ברירת מחדל = חטיבה. ליסודי: ?track=el -->
+<div id="deck-title">שיעור 6 – הרובוט מקבל חושים</div>
 <div id="backdrop">
 
-  <!-- שקף 1 - ESP32 + חיישנים (תבנית F) -->
-  <section class="slide active" data-name="שקף 1">
-    <div class="topbar">
-      <span class="eyebrow">שיעור 6 · גדלים למחר</span>
-      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
+  <section class="slide active" data-name="פתיחה">
+    <div class="topbar"><span class="eyebrow">שיעור 6 · 🤖 אקדמיית הרובוטים 2/4</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-center">
+      <p style="font-size:clamp(3rem,8vw,7rem);">🤖👃</p>
+      <p class="h1">הרובוט מקבל חושים</p>
+      <p class="h2" style="margin-top:2%;color:#92400e;">"מרגיש" → חושב → עושה</p>
     </div>
-    <div class="stage-row" style="gap:4%;">
-      <div style="flex:1;">
-        <p class="h1">מה זה, לדעתכם?</p>
-      </div>
-      <div class="img-slot" style="flex:1; height:70%; border:none;">
-        <img src="../assets/img/esp32/esp32-farm-photo.jpg" alt="לוח ESP32 על breadboard לצד חממה אנכית">
-      </div>
-    </div>
-    <div class="mascot">🌿</div>
+    <div class="mascot">🤖</div>
   </section>
 
-  <!-- שקף 2 - גוף אדם מול בקר ESP32 (תבנית D) -->
-  <section class="slide" data-name="שקף 2" data-steps="3">
-    <div class="topbar">
-      <span class="eyebrow">שיעור 6 · גדלים למחר</span>
-      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
-    </div>
-    <div class="stage-row" style="gap:3%;">
-      <div class="rv card card-green" data-step="1" style="flex:1;">
-        <p class="label label-green" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🧑 גוף האדם</p>
-        <p class="h2" style="color:#374151;">5 חושים קבועים</p>
-      </div>
-      <div class="vs-badge pulse-at" data-step="2">VS</div>
-      <div class="rv card card-gold" data-step="3" style="flex:1;">
-        <p class="label label-gold" style="font-size:clamp(.9rem,1.4vw,1.3rem); margin-bottom:10px;">🤖 בקר ESP32</p>
-        <p class="h2" style="color:#374151;">כמה שרוצים חיישנים</p>
-      </div>
-    </div>
-    <div class="mascot">🌿</div>
-  </section>
-
-  <!-- שקף 3 - הלולאה: קרא-בדוק-פעל-חזור (תבנית C) -->
-  <section class="slide" data-name="שקף 3" data-steps="4">
-    <div class="topbar">
-      <span class="eyebrow">שיעור 6 · גדלים למחר</span>
-      <span class="phase-chip">🌿 פאזה 2 – צמיחה</span>
-    </div>
+  <section class="slide" data-name="מה זה חיישן" data-steps="4">
+    <div class="topbar"><span class="eyebrow">שיעור 6 · סכמה</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
     <div class="stage-col">
-      <p class="h1" style="margin-bottom:5%;">הלולאה הבסיסית</p>
-      <div style="display:flex; align-items:center; gap:1.6%;">
-        <div class="rv card card-green" data-step="1" style="flex:1;">
-          <p class="label label-green">1️⃣ קרא</p>
-          <p class="body" style="margin-top:8px;">חיישן מודד ערך</p>
-          <p class="small" dir="ltr" style="margin-top:6px;font-family:monospace;">moisture = soil.read_percent()</p>
-        </div>
-        <span class="seq-arrow">←</span>
-        <div class="rv card card-lime" data-step="2" style="flex:1;">
-          <p class="label label-lime">2️⃣ בדוק</p>
-          <p class="body" style="margin-top:8px;">האם הערך תקין?</p>
-          <p class="small" dir="ltr" style="margin-top:6px;font-family:monospace;">if moisture &lt; 30:</p>
-        </div>
-        <span class="seq-arrow">←</span>
-        <div class="rv card card-amber" data-step="3" style="flex:1;">
-          <p class="label label-amber">3️⃣ פעל</p>
-          <p class="body" style="margin-top:8px;">מפעיל פעולה</p>
-          <p class="small" dir="ltr" style="margin-top:6px;font-family:monospace;">buzzer.alarm_beep()</p>
-        </div>
-        <span class="seq-arrow">←</span>
-        <div class="rv card card-blue" data-step="4" style="flex:1;">
-          <p class="label label-blue">4️⃣ חזור</p>
-          <p class="body" style="margin-top:8px;">שוב מההתחלה</p>
-          <p class="small" dir="ltr" style="margin-top:6px;font-family:monospace;">while True:</p>
-        </div>
+      <p class="h1">👃 חיישן = חוש שהופך את העולם למספר</p>
+      <svg viewBox="0 0 680 200" style="direction:ltr;width:100%;max-height:45vh" dir="ltr">
+        <g class="rv" data-step="1"><rect x="10" y="60" width="130" height="80" rx="16" fill="#dcfce7"/><text x="75" y="110" font-size="22" text-anchor="middle">🌱 האדמה</text></g>
+        <path class="draw-path" data-step="2" pathLength="400" d="M140 100 H190" stroke="#334155" stroke-width="6" marker-end="url(#a)"/>
+        <g class="rv" data-step="2"><rect x="195" y="60" width="130" height="80" rx="16" fill="#e0f2fe"/><text x="260" y="110" font-size="22" text-anchor="middle">👃 חיישן</text></g>
+        <path class="draw-path" data-step="3" pathLength="400" d="M325 100 H375" stroke="#334155" stroke-width="6" marker-end="url(#a)"/>
+        <g class="rv" data-step="3"><rect x="380" y="60" width="130" height="80" rx="16" fill="#0f172a"/><text x="445" y="110" font-size="26" fill="#a3e635" text-anchor="middle" font-family="Consolas">38000</text></g>
+        <path class="draw-path" data-step="4" pathLength="400" d="M510 100 H560" stroke="#334155" stroke-width="6" marker-end="url(#a)"/>
+        <g class="rv" data-step="4"><rect x="565" y="60" width="110" height="80" rx="16" fill="#ede9fe"/><text x="620" y="110" font-size="22" text-anchor="middle">🤖 הבקר</text></g>
+        <defs><marker id="a" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 z" fill="#334155"/></marker></defs>
+      </svg>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="כן לא או מספר" data-steps="2">
+    <div class="topbar"><span class="eyebrow">שיעור 6 · 🤖 אקדמיית הרובוטים</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-row" style="gap:4%;">
+      <div class="rv card card-blue" data-step="1" style="flex:1;text-align:center;"><p style="font-size:clamp(2.5rem,6vw,5rem)">🔘</p><p class="h1">כן / לא</p><p class="body">נגעו בי? הדלת פתוחה?</p><p class="h2" style="margin-top:6px;">👆 חוט מגע</p></div>
+      <div class="vs-badge">VS</div>
+      <div class="rv card card-gold" data-step="2" style="flex:1;text-align:center;"><p style="font-size:clamp(2.5rem,6vw,5rem)">🎚️</p><p class="h1">מספר</p><p class="body">כמה רטוב? כמה חם?</p><p class="h2" style="margin-top:6px;">💧 חיישן לחות</p></div>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="ציר המספרים" data-steps="3">
+    <div class="topbar"><span class="eyebrow">שיעור 6 · 🎲 ציר מספרים</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <p class="h1">איפה יעמדו אוויר, מים ואדמה?</p>
+      <svg viewBox="0 0 680 190" style="direction:ltr;width:100%;max-height:45vh" dir="ltr">
+        <line x1="40" y1="120" x2="640" y2="120" stroke="#334155" stroke-width="6"/>
+        <text x="40" y="160" font-size="20" text-anchor="middle">0</text><text x="640" y="160" font-size="20" text-anchor="middle"><tspan class="mid">65535</tspan><tspan class="el">100</tspan></text>
+        <g class="rv" data-step="1"><circle cx="190" cy="120" r="14" fill="#0284c7"/><text x="190" y="90" font-size="22" text-anchor="middle">💧 מים</text></g>
+        <g class="rv" data-step="2"><circle cx="400" cy="120" r="14" fill="#16a34a"/><text x="400" y="90" font-size="22" text-anchor="middle">🌱 האדמה</text></g>
+        <g class="rv" data-step="3"><circle cx="600" cy="120" r="14" fill="#dc2626"/><text x="600" y="90" font-size="22" text-anchor="middle">🌬️ אוויר</text></g>
+      </svg>
+      <p class="h2 rv" data-step="3" style="text-align:center;color:#92400e;">גבוה = יבש · נמוך = רטוב</p>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="חיווט" data-steps="4">
+    <div class="topbar"><span class="eyebrow">שיעור 6 · סכמה</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <p class="h1">🔌 החושים מתחברים לרובוט</p>
+      <svg viewBox="0 0 660 280" style="direction:ltr;width:100%;max-height:55vh" dir="ltr">
+        <rect x="20" y="30" width="150" height="170" rx="14" fill="#e0f2fe" stroke="#0284c7" stroke-width="3"/><text x="95" y="22" font-size="17" text-anchor="middle">חיישן לחות</text>
+        <text x="40" y="75" font-size="19" font-weight="700">VCC</text><text x="40" y="125" font-size="19" font-weight="700">GND</text><text x="40" y="175" font-size="19" font-weight="700">AOUT</text>
+        <rect x="20" y="215" width="150" height="50" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/><text x="95" y="247" font-size="17" text-anchor="middle">👆 חוט מגע</text>
+        <rect x="450" y="30" width="190" height="235" rx="14" fill="#1e293b"/><text x="545" y="22" font-size="17" text-anchor="middle">הלוח</text>
+        <text x="468" y="75" font-size="19" fill="#fff" font-weight="700"><tspan class="mid">3V3</tspan> 🔴</text><text x="468" y="125" font-size="19" fill="#fff" font-weight="700"><tspan class="mid">GND</tspan> ⚫</text><text x="468" y="175" font-size="19" fill="#fff" font-weight="700"><tspan class="mid">GPIO 6</tspan> 🟡</text><text x="468" y="247" font-size="19" fill="#fff" font-weight="700"><tspan class="mid">GPIO 4</tspan> 🔵</text>
+        <path class="draw-path" data-step="1" pathLength="400" d="M170 68 H450" stroke="#dc2626" stroke-width="7"/>
+        <path class="draw-path" data-step="2" pathLength="400" d="M170 118 H450" stroke="#111827" stroke-width="7"/>
+        <path class="draw-path" data-step="3" pathLength="400" d="M170 168 H450" stroke="#eab308" stroke-width="7"/>
+        <path class="draw-path" data-step="4" pathLength="400" d="M170 240 H450" stroke="#2563eb" stroke-width="7"/>
+      </svg>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="קודם מחוץ לאדמה" data-steps="3">
+    <div class="topbar"><span class="eyebrow">שיעור 6 · 📏 מדידות</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:3%;">קודם מחוץ לאדמה!</p>
+      <div style="display:flex;gap:3%;">
+        <div class="rv card card-amber" data-step="1" style="flex:1;text-align:center;"><p style="font-size:clamp(2rem,5vw,4rem)">🌬️</p><p class="h2">1. אוויר</p><p class="body">הכי יבש</p></div>
+        <div class="rv card card-blue" data-step="2" style="flex:1;text-align:center;"><p style="font-size:clamp(2rem,5vw,4rem)">🥤</p><p class="h2">2. כוס מים</p><p class="body">הכי רטוב – רק עד הקו!</p></div>
+        <div class="rv card card-green" data-step="3" style="flex:1;text-align:center;"><p style="font-size:clamp(2rem,5vw,4rem)">🌱</p><p class="h2">3. האדמה של הצמח</p><p class="body">המדידה האמיתית</p></div>
+      </div>
+      <p class="body" style="margin-top:3%;text-align:center;">המספר לא זז בין אוויר למים? הבעיה בחיווט – לא באדמה.</p>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="הקוד" data-steps="1">
+    <div class="topbar"><span class="eyebrow">שיעור 6 · Use</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <p class="h1"><span class="mid">Use – מריצים קוד מוכן (F5)</span><span class="el">המוח לוחץ F5 – והרובוט מדבר</span></p>
+      <pre class="rv card" data-step="1" dir="ltr" style="text-align:left;background:#0f172a;color:#7dd3fc;font-size:clamp(.8rem,1.6vw,1.3rem);font-family:Consolas,monospace;"><span class="mid">soil = SoilMoistureSensor(pin_num=6)
+touch = TouchSensor(pin_num=4)
+while True:
+    print(soil.read_raw(), touch.is_touched())
+    time.sleep(1)</span><span class="el">92
+91
+34   TOUCH!
+58</span></pre>
+    </div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="Phytech" data-steps="3">
+    <div class="topbar"><span class="eyebrow">שיעור 6 · 🇮🇱 Phytech</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <p class="h1" style="margin-bottom:3%;">🌳 חוש לעצים</p>
+      <div style="display:flex;gap:3%;">
+        <div class="rv card card-blue" data-step="1" style="flex:1;text-align:center;"><p class="h2">👃 מרגיש</p><p class="body">דנדרומטר על הגזע – עץ צמא מתכווץ</p></div>
+        <div class="rv card card-purple" data-step="2" style="flex:1;text-align:center;"><p class="h2">🧠 חושב</p><p class="body">מחשב שמנתח את הנתונים</p></div>
+        <div class="rv card card-green" data-step="3" style="flex:1;text-align:center;"><p class="h2">👄 עושה</p><p class="body">התראה לחקלאי – לפני העלים הצהובים</p></div>
       </div>
     </div>
-    <div class="mascot">🌿</div>
+    <div class="mascot">🤖</div>
+  </section>
+
+  <section class="slide" data-name="סגירה" data-steps="3">
+    <div class="topbar"><span class="eyebrow">שיעור 6 · סגירה</span><span class="phase-chip">🌿 פאזה 2 – צמיחה</span></div>
+    <div class="stage-col">
+      <div class="rv card card-gold" data-step="1"><p class="h2">🛫 שורה חדשה בכרטיס הטייס: 4. חוקר/ת החושים בדק/ה כל חוט מול <span class="mid">הכיתוב</span><span class="el">הצבע של המדבקה</span></p></div>
+      <div class="rv card card-green" data-step="2" style="margin-top:2%;"><p class="h2">🪪 תעודה: "אני מרגיש ___" + אוויר / מים / אדמה</p></div>
+      <div class="rv card card-purple" data-step="3" style="margin-top:2%;"><p class="h2">🔮 הרובוט כבר <b>יודע</b> שהאדמה יבשה. איך הוא יגיד לנו?</p></div>
+    </div>
+    <div class="mascot">🤖</div>
   </section>
 
 </div>
-
 <div id="controls">
   <button class="navbtn" onclick="slidesGo(-1)">→</button>
-  <span id="counter">1 / 3</span>
+  <span id="counter">1 / 9</span>
   <div id="dots"></div>
   <button class="navbtn" onclick="slidesGo(1)">←</button>
   <button class="navbtn" id="fsbtn" title="מסך מלא">⛶</button>
 </div>
-
 <script src="assets/slides-core.js"></script>
 </body>
 </html>

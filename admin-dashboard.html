@@ -122,7 +122,7 @@
     }
     function sumLeaves(row){
       let t=0;
-      for(let i=1;i<=17;i++) t+=Number(row['ls'+i])||0;
+      for(let i=1;i<=17;i++) t+=Number(row['ls'+i])||0; t+=Number(row.ls55)||0;
       return t;
     }
 

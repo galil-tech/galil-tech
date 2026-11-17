@@ -140,6 +140,7 @@ GC._syncLeafDisplay = function() {
 GC.getLeavesEarned = function() {
   let total = 0;
   for (let i = 1; i <= 17; i++) total += parseInt(localStorage.getItem('ls' + i) || '0');
+  total += parseInt(localStorage.getItem('ls55') || '0'); // שיעור 5.5
   return total;
 };
 
@@ -917,7 +918,9 @@ function mascotSay(msg, emoji) { GC.mascotSay(msg, emoji); }
     if (document.getElementById('gc-session-end-banner')) return;
     if (!(window.GC_ID && GC_ID.getIdentity && GC_ID.getIdentity())) return;
     const earned = parseInt(localStorage.getItem('ls' + lessonNum) || '0', 10);
-    const max = window.GC && GC.LESSON_MAX && GC.LESSON_MAX[lessonNum];
+    const isElTrack = /\/elementary(-bilingual)?\//.test(location.pathname);
+    const tgt = window.GC && GC.LESSON_TARGET && GC.LESSON_TARGET[isElTrack ? 'elementary' : 'middle'];
+    const max = (tgt && tgt[lessonNum]) || (window.GC && GC.LESSON_MAX && GC.LESSON_MAX[lessonNum]);
     const mastered = !max || earned >= max; // בלי GC.LESSON_MAX טעון - לא חוסמים, רק לא בודקים
     const b = document.createElement('div');
     b.id = 'gc-session-end-banner';
