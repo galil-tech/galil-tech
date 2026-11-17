@@ -3,81 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>מערך שיעור 7 | מסלול יסודי | גדלים למחר</title>
+  <title>מערך שיעור 7 | מסלול יסודי | מדריך מורה</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
-  <style>*{font-family:'Heebo',sans-serif;}</style>
+  <style>*{font-family:'Heebo',sans-serif;} pre,code{font-family:Consolas,monospace;direction:ltr;text-align:left;}</style>
 </head>
 <body class="bg-gray-50">
 
-<div id="content">
-
-<div class="bg-green-800 text-white py-5 px-8 flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-lg gap-3">
+<div class="bg-emerald-800 text-white py-5 px-8 flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-lg gap-3">
   <div>
-    <span class="text-xs text-green-300">מערך שיעור · מסלול יסודי · גליל-טק</span>
-    <h1 class="text-2xl font-black">שיעור 7 – הצמח מפעיל מכונות!</h1>
+    <span class="text-xs text-emerald-200">מערך שיעור · מסלול יסודי · פאזה 2 · 🤖 אקדמיית הרובוטים 3/4</span>
+    <h1 class="text-2xl font-black">שיעור 7 – הרובוט מקבל מוח ופה 🧠👄</h1>
   </div>
   <div class="flex gap-3 flex-wrap">
     <span class="bg-white/20 px-4 py-2 rounded-xl text-sm">⏱ 90 דקות</span>
-    <span class="bg-lime-500 px-4 py-2 rounded-xl text-sm font-bold">פאזה 2 – צמיחה</span>
-    <a href="../lessons/lesson-07.html" target="_blank" class="bg-white text-green-900 px-4 py-2 rounded-xl text-sm font-bold hover:bg-green-100">👁 פתח לומדה</a>
-    <a href="teacher-06.html" class="bg-white/20 text-white px-4 py-2 rounded-xl text-sm">← שיעור 6</a>
+    <span class="bg-blue-500 px-4 py-2 rounded-xl text-sm font-bold">פאזה 2 – צמיחה</span>
+    <a href="../lessons/lesson-07.html" target="_blank" class="bg-white text-emerald-900 px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-100">👁 פתח לומדה</a>
+    <a href="../../index.html" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-emerald-500">← דף בית</a>
   </div>
 </div>
 
 <div class="max-w-5xl mx-auto px-6 py-10 space-y-10">
 
-  <!-- GOALS -->
+  <div class="bg-sky-50 border-2 border-sky-300 rounded-3xl p-6 text-sm text-gray-700">
+    <p class="font-black text-sky-900 text-lg mb-3">⚡ השיעור בקצרה</p>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div><p class="text-xs text-gray-500">המשפט של השיעור</p><p class="text-xl font-black text-sky-900">"חושב → עושה"</p></div>
+      <div><p class="text-xs text-gray-500">הרובוט מקבל</p><p class="font-bold">🧠 מוח (כלל) · 👄 פה (זמזם) · פנים (נורית)</p></div>
+      <div><p class="text-xs text-gray-500">רגע השיא</p><p class="font-bold">הרובוט צועק כשיבש – ונרגע כשמשקים</p></div>
+    </div>
+    <p class="mt-4">הכלל של הרובוט נאמר במילים: <b>"אם יבש – צועקים"</b> (לא אומרים if/else). הצוות בוחר <b>את הקול של הרובוט</b> – השינוי הראשון שלהם בקוד.<br>
+    <b>היום הרובוט רק מזעיק.</b> מי שמשקה – בשיעור 8.</p>
+  </div>
+
   <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-green-700 text-white p-6"><h2 class="text-2xl font-black">🎯 מטרות השיעור</h2></div>
-    <div class="p-6 grid md:grid-cols-2 gap-6">
-      <div>
-        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase">ידע ומושגים</h3>
-        <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">✅ <span>מסביר שהקופסה החכמה <b>מרגישה</b> (חיישן), <b>חושבת</b> (כלל "אם...אז...") ו<b>עושה</b> (נורית, זמזם)</span></li>
-          <li class="flex gap-2">✅ <span>מבין "אם...אז...אחרת..." – קורא בלוק ומנחש מה יקרה (בלי לכתוב קוד)</span></li>
-          <li class="flex gap-2">✅ <span>מכיר את Beewise ומחבר לשיעור</span></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase">מיומנויות – בסימולטור בלוקים</h3>
-        <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">🎮 <span><b>גרירה בלבד:</b> סידור 3-4 בלוקי "אם...אז..." לסדר נכון (בסימולטור ויזואלי מפושט, בסגנון הסימולטור הכללי) – בלי כתיבת קוד ובלי בחירה מרשימת מילים באנגלית</span></li>
-          <li class="flex gap-2">🔌 <span><b>חיבור אמיתי:</b> זמזם וחוט "כפתור מגע" לבקר ESP32 – והנורית המובנית בלוח נדלקת לפי האדמה</span></li>
-        </ul>
-      </div>
+    <div class="bg-slate-700 text-white p-6"><h2 class="text-2xl font-black">🎯 מטרות השיעור</h2><p class="text-slate-300 text-sm">בסוף השיעור התלמיד/ה...</p></div>
+    <div class="p-6 grid md:grid-cols-2 gap-6 text-sm text-gray-600">
+      <div><h3 class="font-bold text-gray-700 mb-2">ידע</h3><ul class="space-y-2">
+        <li>✅ הרובוט מחליט לפי כלל: "אם יבש – צועקים"</li>
+        <li>✅ לפני שהרובוט מחליט, מלמדים אותו מה זה יבש ומה זה רטוב (<b>כיול</b>)</li>
+        <li>✅ הרובוט עושה נורית חלשה ע"י הדלקה וכיבוי מהירים</li></ul></div>
+      <div><h3 class="font-bold text-gray-700 mb-2">מיומנויות</h3><ul class="space-y-2">
+        <li>🔧 מחבר/ת זמזם לפי המדבקות</li>
+        <li>🔧 מכייל/ת את הרובוט בנגיעה</li></ul></div>
+      <div><h3 class="font-bold text-gray-700 mb-2">חשיבה</h3><ul class="space-y-2">
+        <li>💭 אומר/ת מה הרובוט מרגיש, מה הוא חושב ומה הוא עושה</li>
+        <li>💭 מוצא/ת "באג" בכלל של משחק ההשקיה</li></ul></div>
+      <div><h3 class="font-bold text-gray-700 mb-2">גיימיפיקציה</h3><ul class="space-y-2">
+        <li>🌿 עד <b>55 עלים</b> · באדג' <b>"הקוד עובד!"</b></li>
+        <li>🪪 תעודה: הכלל, הקול, הצבעים</li></ul></div>
     </div>
   </div>
 
-  <!-- EQUIPMENT -->
   <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-orange-600 text-white p-6"><h2 class="text-2xl font-black">🧰 ציוד לשיעור</h2></div>
-    <div class="px-6 pt-6">
-      <div class="bg-red-50 border-2 border-red-300 rounded-2xl p-4 text-sm text-red-800">
-        ⛔ <b>רק Thonny ו-MicroPython.</b> לא להעלות לבקר קוד מ-Arduino IDE – זה מוחק את MicroPython ואת הדרייברים.
-      </div>
-    </div>
-    <div class="p-6 grid md:grid-cols-3 gap-6 text-sm">
+    <div class="bg-teal-700 text-white p-6"><h2 class="text-2xl font-black">🧰 הכנה וציוד</h2></div>
+    <div class="p-6 grid md:grid-cols-2 gap-6 text-sm text-gray-600">
       <div>
-        <h3 class="font-bold mb-3">⚡ ציוד לקבוצה</h3>
-        <ul class="space-y-2 text-gray-600">
-          <li>📋 לוח ESP32-S3 + חיישן לחות האדמה משיעור 6</li>
-          <li>📋 מודול זמזם (2 חוטים)</li>
-          <li>📋 חוט "כפתור מגע": כבל אחד שהקצה שלו מודבק לריבוע נייר כסף על קרטון – רחוק מהלוח, ולעולם לא בתוך ה-breadboard</li>
-          <li>📋 כוס אדמה יבשה, כוס אדמה רטובה, כוס מים (לכיול)</li>
-          <li class="bg-amber-50 text-amber-800 rounded-lg p-2 mt-2">🌈 הנורית הצבעונית מובנית בלוח – לא צריך לחבר אותה ולא צריך נגד.</li>
-          <li class="flex gap-2 mt-2">🧰 <span><b>ערכת חומרה רזרבית אחת לכיתה</b> – למקרה תקלה</span></li>
+        <h3 class="font-bold text-gray-800 mb-2">לכל צוות</h3>
+        <ul class="space-y-1">
+          <li>📋 הערכה עם החיישן וחוט המגע משיעור 6 + <b>זמזם</b> (מדבקה 🟢 על הרגל +)</li>
+          <li>📋 שטיח · כרטיס טייס · תעודה · מגש: כוס מים + כוס אדמה יבשה + כפית</li>
+          <li>📋 מחשב עם Thonny והקובץ <code>robot7.py</code> פתוח</li>
         </ul>
+        <h3 class="font-bold text-gray-800 mt-4 mb-2">לכיתה</h3>
+        <ul class="space-y-1">
+          <li>📦 <b>קופסת המסתורין</b> – ערכת המדריך/ה עם זמזם + חוט מגע + הקוד שלה (ראו <a href="../../teachers/teacher-07.html" class="underline">מערך חטיבה</a>), מוסתר</li>
+          <li>🎲 <b>מערכת ההשקיה האנושית:</b> כרטיסי מספרים (15 · 35 · 70 · 90) · כרטיס כלל נכון ("אם מעל 60 ← אדום, אחרת ← ירוק") · כרטיס כלל באגי (הפוך) · כוס אדומה + ירוקה · עציץ + כוס מים</li>
+          <li>🔦 פנס טלפון</li>
+        </ul>
+        <div class="bg-amber-50 border border-amber-300 rounded-2xl p-3 mt-4 text-xs">⚠️ להריץ את קופסת המסתורין ואת <code>robot7.py</code> על ערכה אחת יום לפני.</div>
       </div>
       <div>
-        <h3 class="font-bold mb-3">🐍 קוד – המורה בלבד</h3>
-        <p class="text-gray-600 mb-2">התלמידים לא כותבים קוד היום. המורה שומר מראש על כל בקר <code>main.py</code> (אותה לוגיקה כמו בחטיבה: אדום = יבש, ירוק = תקין). התלמידים מחווטים, מכיילים בנגיעה, ועובדים עם בלוקים בלומדה.</p>
-        <pre dir="ltr" class="bg-slate-800 rounded-xl p-3 text-xs text-green-400 font-mono overflow-x-auto"># main.py – teacher only
-import time
+        <p class="font-black text-gray-800 mb-1">🐍 robot7.py – הילדים לוחצים F5</p>
+        <p class="text-xs mb-2">עם "התוכנה האחת": <code>LESSON = 7</code>. עד אז – הקובץ הזה במחשב של כל צוות:</p>
+<pre class="bg-gray-50 border rounded-xl p-3 text-xs overflow-x-auto">import time
 from soil_moisture_driver import SoilMoistureSensor
 from touch_driver import TouchSensor
 from ws2812_driver import WS2812LED
 from buzzer_driver import PassiveBuzzer
+
+TON = 1000   # the robot's voice: 400 - 2000
 
 soil = SoilMoistureSensor(pin_num=6)
 touch = TouchSensor(pin_num=4)
@@ -85,276 +90,183 @@ led = WS2812LED(pin_num=48, brightness=0.2)
 buzzer = PassiveBuzzer(pin_num=5)
 
 def wait_for_touch():
-    while touch.is_touched():      # wait for release first
+    while touch.is_touched():
         time.sleep_ms(50)
-    while not touch.is_touched():  # wait for a new touch
+    while not touch.is_touched():
         time.sleep_ms(50)
     buzzer.alarm_beep(count=1, freq=1000, beep_ms=80)
-    while touch.is_touched():      # wait until the finger lifts
+    while touch.is_touched():
         time.sleep_ms(50)
     time.sleep_ms(300)
 
-led.red()             # 1. sensor in AIR
+led.red()             # 1. sensor in AIR - touch
 wait_for_touch()
 soil.calibrate_dry()
-led.green()           # 2. sensor in WATER
+led.green()           # 2. sensor in WATER - touch
 wait_for_touch()
 soil.calibrate_wet()
 
 last_alarm = 0
 while True:
-    if soil.read_percent() &lt; 30:
+    if soil.read_percent() &lt; 30:      # dry -> shout
         led.red()
-        if time.time() - last_alarm &gt;= 3:   # not every second
-            buzzer.alarm_beep(count=3, freq=1000, beep_ms=100)
+        if time.time() - last_alarm &gt;= 3:
+            buzzer.alarm_beep(count=3, freq=TON, beep_ms=100)
             last_alarm = time.time()
     else:
         led.green()
     time.sleep(1)</pre>
-        <p class="text-xs text-gray-500 mt-2">💡 <b>הכיול בנגיעה:</b> נורית אדומה = שימו את החיישן באוויר וגעו בחוט. נורית ירוקה = טבלו את החיישן במים וגעו שוב. אחרי זה הבקר יודע לבד מה "יבש" ומה "רטוב".</p>
-      </div>
-      <div>
-        <h3 class="font-bold mb-3">📐 חיבורים (התלמידים מחברים, המורה בודק)</h3>
-        <div class="space-y-2 text-xs">
-          <div class="bg-sky-50 border border-sky-200 rounded-xl p-3">
-            <p class="font-bold text-sky-700 mb-1">💧 חיישן לחות (משיעור 6)</p>
-            <p>VCC → 3V3 · GND → GND · AOUT → GPIO 6</p>
-          </div>
-          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
-            <p class="font-bold text-amber-700 mb-1">🔔 זמזם</p>
-            <p>הרגל עם סימן + (מדבקה קטנה, לא תמיד ברורה) → GPIO 5 (PWM) · הרגל השנייה → GND. חיבור הפוך = צפצוף חלש יותר.</p>
-          </div>
-          <div class="bg-purple-50 border border-purple-200 rounded-xl p-3">
-            <p class="font-bold text-purple-700 mb-1">👆 חוט מגע</p>
-            <p>קצה אחד → GPIO 4 · הקצה השני חופשי (נוגעים בו)</p>
-          </div>
-          <div class="bg-green-50 border border-green-200 rounded-xl p-3">
-            <p class="font-bold text-green-700 mb-1">🌈 נורית צבעונית</p>
-            <p>מובנית בלוח – אין מה לחבר</p>
-          </div>
-          <p class="text-gray-500">⚡ הכל ב-3.3V. מחברים רק כשה-USB מנותק. לא נוגעים בחוט המגע בשנייה שמחברים USB (הבקר "לומד" אז איך נראה חוט בלי נגיעה).</p>
-        </div>
       </div>
     </div>
   </div>
 
-  <!-- ══ VISUALS ══ -->
   <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-slate-600 text-white p-6"><h2 class="text-2xl font-black">🖼️ להמחשה</h2><p class="text-slate-300 text-sm">מתוך מצגות ההדרכה של צוות החומרה – אפשר להקרין בכיתה</p></div>
-    <div class="p-6 grid md:grid-cols-2 gap-6">
-      <div><figure class="my-4"><img src="../../assets/img/esp32/touch.jpg" alt="חיישן מגע ב-GPIO 4" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">חוט המגע – "כפתור" שלא מחליד</figcaption></figure></div>
-      <div><figure class="my-4"><img src="../../assets/img/esp32/rgb-led.jpg" alt="נורית RGB מובנית ב-GPIO 48" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">הנורית הצבעונית שעל הלוח</figcaption></figure></div>
+    <div class="bg-blue-700 text-white p-6"><h2 class="text-2xl font-black">💬 דיון מודרך</h2></div>
+    <div class="p-6 space-y-4 text-sm">
+      <div class="bg-lime-50 border border-lime-300 rounded-xl p-4">
+        <p class="font-bold text-lime-800 mb-1">← חיבור לשיעור 6 (Teaser):</p>
+        <p class="text-gray-700">"הרובוט כבר יודע שהאדמה יבשה. איך הוא יגיד לנו?" ← צריך <b>פה</b> (זמזם) ו<b>פנים</b> (נורית). "ומי מחליט <b>מתי</b> לצעוק?" ← <b>מוח</b>.</p>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p class="font-bold text-blue-900 mb-1">🎲 מערכת ההשקיה האנושית (ליבה, 8 דק')</p>
+        <ol class="list-decimal list-inside text-gray-600 space-y-1">
+          <li><b>"החיישן"</b> מרים כרטיס מספר (גבוה = יבש, כמו אצלנו).</li>
+          <li><b>"המוח"</b> קורא את כרטיס הכלל ומחליט.</li>
+          <li><b>"הפנים"</b> מרימים כוס אדומה או ירוקה.</li>
+          <li>אם אדום – <b>"הברז"</b> שופך מעט מים לעציץ.</li>
+        </ol>
+        <p class="text-gray-600 mt-2">אחרי 3 סבבים מחליפים בשקט לכרטיס <b>הבאגי</b> ← הרובוט צועק כשרטוב! "מה השתבש?" – הכיתה מוצאת את הבאג.</p>
+      </div>
+      <div class="bg-white border-2 border-blue-300 rounded-xl p-4">
+        <p class="font-bold text-blue-900 mb-1">🌉 שאלת הדיון:</p>
+        <p class="text-xl text-gray-800 font-bold">"מה ההבדל בין רובוט שרק אומר מספר לבין רובוט שמחליט מה לעשות?"</p>
+      </div>
+      <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+        <p class="font-bold text-green-900 mb-1">🇮🇱 Beewise – כוורת רובוטית</p>
+        <p class="text-gray-600">"יש חברה ישראלית שבנתה כוורת-רובוט: היא <b>מרגישה</b> מה קורה לדבורים, <b>חושבת</b>, ו<b>עושה</b> – מטפלת בהן לבד." צוות "שומר הכוורת" – זה הסטארטאפ שלכם!</p>
+      </div>
     </div>
   </div>
 
-  <!-- TIMELINE -->
   <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
     <div class="bg-slate-700 text-white p-6"><h2 class="text-2xl font-black">⏱ לוח זמנים – 90 דקות</h2></div>
-    <div class="divide-y divide-gray-100">
-
+    <div class="divide-y divide-gray-100 text-sm text-gray-600">
       <div class="p-6 flex gap-5">
         <div class="flex-shrink-0 w-20 text-center"><div class="bg-green-100 text-green-800 font-black text-lg rounded-xl py-2">0–15</div></div>
-        <div class="flex-1">
-          <h3 class="text-xl font-black mb-2">🎤 פתיחה – כללי "אם...אז..." בחיים שלנו</h3>
-          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-3 text-sm">
-            <p class="font-bold text-amber-900 mb-1">🚀 פתח עם משחק:</p>
-            <p>"אני אגיד חצי משפט – אתם משלימים: <b>אם</b> יורד גשם... (לוקחים מטריה). <b>אם</b> הרמזור אדום... (עוצרים). <b>אם</b> הצלצול נשמע... (יוצאים להפסקה)." 3–4 דוגמאות, מהר ובכיף.</p>
-          </div>
-          <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-3">
-            <p class="font-bold text-purple-900 mb-1">🪜 מדרגת כניסה ל"כלל" שהבקר מבצע:</p>
-            <p class="text-sm text-gray-700">"כל המשפטים האלה הם <b>כללים</b>: אם קורה משהו – עושים משהו. בשיעור 6 הקופסה החכמה רק <b>הרגישה</b> את האדמה. היום ניתן לה כלל: <b>אם</b> האדמה יבשה – נורית אדומה וצפצוף. <b>אחרת</b> – נורית ירוקה. ככה היא גם <b>חושבת</b> וגם <b>עושה</b>." ורק אז: "כלל כזה, שהמחשב מבצע, הוא חלק מ<b>תוכנה</b>."</p>
-          </div>
-          <div class="bg-gray-50 border border-dashed border-gray-300 rounded-xl p-3 text-xs text-gray-500">
-            💡 למה אין היום נגד? הנורית הצבעונית <b>מובנית בלוח</b> והוא כבר דואג לה. (בתוכנית החטיבה מסבירים נגד – ביסודי מוותרים, כי התלמידים לא פוגשים אותו בערכה.) אם הכיתה עשתה 5.5 – "סגור, אבל לא קצר" עדיין בתוקף.
-          </div>
-        </div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">🎤 פתיחה – ☀️ + 📦 + 🔦</h3>
+          <ul class="space-y-1">
+            <li><b>(3') ☀️ דוח בוקר מהצמח:</b> "העין שלי אומרת ___".</li>
+            <li><b>(7') 📦 קופסת המסתורין:</b> את/ה נוגע/ת בחוט ← כחול + 2 צפצופים. "מה הרובוט הזה מרגיש? מה הוא עושה? מה הכלל שלו?" – הצוותים אומרים במילים.</li>
+            <li><b>(5') 🔦 פנס:</b> ילד/ה מכסה ופותח/ת – לאט ← מהבהב · מהר מאוד ← נראה קבוע · פתוח רוב הזמן ← בהיר. "הרובוט יודע רק דולק/כבוי – ככה הוא עושה נורית חלשה!"</li>
+          </ul></div>
       </div>
-
       <div class="p-6 flex gap-5">
         <div class="flex-shrink-0 w-20 text-center"><div class="bg-blue-100 text-blue-800 font-black text-lg rounded-xl py-2">15–30</div></div>
-        <div class="flex-1">
-          <h3 class="text-xl font-black mb-2">💬 דיון – Teaser מהשיעור הקודם</h3>
-          <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm">
-            <p class="font-bold text-blue-900 mb-1">❓ שאלת הדיון:</p>
-            <p class="text-gray-600 mb-2">🔗 זוכרים? שאלנו: "האדמה התייבשה – איך נגרום לבקר 'לדעת' להדליק נורית אדומה ולצפצף בעצמו?"</p>
-            <p class="text-lg font-bold">"עד עכשיו הבקר רק מדד ודיווח. מה צריך לקרות כדי שהוא יעשה משהו בעצמו?"</p>
-            <p class="text-gray-500 mt-2">תשובה צפויה: לחבר אותו ל"ידיים" – נורית, זמזם. זה מה שנבנה היום.</p>
-          </div>
-        </div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">💬 דיון</h3><p>מערכת ההשקיה האנושית · אומר מול מחליט · Beewise.</p></div>
       </div>
-
       <div class="p-6 flex gap-5">
         <div class="flex-shrink-0 w-20 text-center"><div class="bg-purple-100 text-purple-800 font-black text-lg rounded-xl py-2">30–55</div></div>
-        <div class="flex-1">
-          <h3 class="text-xl font-black mb-2">💻 לומדה – עבודה בזוגות</h3>
-          <div class="grid md:grid-cols-2 gap-4">
-            <div class="bg-purple-50 rounded-xl p-4 text-sm">
-              <p class="font-bold mb-2">📋 שלבים:</p>
-              <ol class="space-y-1 text-gray-600 list-decimal list-inside text-xs">
-                <li>גשר – כללי "אם...אז..." בחיים + שאלה</li>
-                <li>🔌 חיבור על המסך: זמזם (+ ל-GPIO 5, השנייה ל-GND) וחוט מגע (GPIO 4)</li>
-                <li>🎮 סידור 4 בלוקים לסדר נכון (גרירה או לחיצה)</li>
-                <li>💡 סימולטור: כיול בנגיעה (אוויר, מים) ואז הנורית מתחלפת לפי האדמה</li>
-                <li>🐝 Beewise</li>
-                <li>🔌 פרויקט + רישום מה הנורית עשתה</li>
-                <li>דרכון + כוכב הצפון + Teaser</li>
-              </ol>
-            </div>
-            <div class="bg-white border rounded-xl p-4 text-sm">
-              <p class="font-bold text-gray-700 mb-2">👨‍🏫 תפקיד המורה:</p>
-              <ul class="space-y-1 text-gray-500 text-xs">
-                <li>• שלב 2: עזרו לתקועים – "מה קורה קודם – בודקים או מדליקים?"</li>
-                <li>• Beewise: "כמה כסף לדעתכם גייסו?" → 80 מיליון דולר!</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">💻 לומדה – זוגות</h3>
+          <ol class="list-decimal list-inside space-y-1">
+            <li>מיון: מרגיש / חושב / עושה (חיישן, לוח, זמזם, נורית, חוט מגע)</li>
+            <li>חזק או חלש – נורית שנדלקת ונכבית לאט ומהר</li>
+            <li>3 כרטיסי כלל – גוררים לסדר: "אם יבש ← אדום + צעקה" / "אחרת ← ירוק"</li>
+            <li>סימולטור הנורית</li>
+            <li>Beewise – מה הכוורת מרגישה ועושה?</li>
+          </ol></div>
       </div>
-
       <div class="p-6 flex gap-5">
         <div class="flex-shrink-0 w-20 text-center"><div class="bg-lime-100 text-lime-800 font-black text-lg rounded-xl py-2">55–85</div></div>
-        <div class="flex-1">
-          <h3 class="text-xl font-black mb-2">🔌 פרויקט – הנורית מגלה מה האדמה צריכה</h3>
-          <div class="bg-lime-50 border border-lime-200 rounded-xl p-4 mb-3 text-sm">
-            <p class="font-bold mb-2">📋 5 משימות:</p>
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              <div class="bg-white rounded-lg p-2">א. חיבור הזמזם (רגל + → GPIO 5, השנייה → GND)</div>
-              <div class="bg-white rounded-lg p-2">ב. חיבור חוט המגע ל-GPIO 4 + בדיקת חיישן הלחות (GPIO 6)</div>
-              <div class="bg-white rounded-lg p-2 border-2 border-orange-200"><b>ג. המורה בודק – מחברים USB – מכיילים בנגיעה</b> (אוויר → מים)</div>
-              <div class="bg-white rounded-lg p-2">ד. צפו: החיישן באדמה רטובה – איזה צבע? באדמה יבשה – מה קרה?</div>
-              <div class="bg-white rounded-lg p-2">ה. צלמו את שניהם</div>
-            </div>
-          </div>
-          <div class="grid md:grid-cols-2 gap-4">
-            <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
-              <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
-              <ul class="space-y-1 text-xs text-gray-600">
-                <li><b>⚠️ הלוח או החיישן מתחמם / ריח שרוף:</b> מנתקים USB מיד, לא נוגעים ברכיב החם, בודקים קצר (3V3/5V ל-GND, או VCC/GND הפוכים) ועוברים לערכה הרזרבית</li>
-                <li><b>הנורית לא נדלקת בכלל:</b> קראו למורה – בדיקת כבל ה-USB ושהקוד שמור כ-main.py</li>
-                <li><b>הנגיעה לא עושה כלום:</b> נגעו בחוט בזמן חיבור ה-USB – נתקו, חברו שוב בלי לגעת, ואז געו</li>
-                <li><b>הזמזם שקט או חלש:</b> קראו למורה – אולי הזמזם מחובר הפוך (רגל + צריכה להיות ב-GPIO 5)</li>
-                <li><b>הצבע לא משתנה בין יבש לרטוב:</b> נתקו וחברו USB וכיילו מחדש (קודם אוויר, אחר כך מים)</li>
-              </ul>
-            </div>
-            <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-sm">
-              <p class="font-bold text-green-800 mb-2">💡 להעמקה:</p>
-              <p class="text-xs text-gray-600">"הבקר מצפצף שהאדמה יבשה – אבל מי ישקה אותה?" → Teaser לשיעור 8.</p>
-            </div>
-          </div>
-        </div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">🔌 מעשי – צוותים</h3>
+          <ul class="space-y-2">
+            <li><b>(6') חיווט זמזם:</b> רגל + ← 🟢 · השנייה ← ⚫. <b>בהשגחה צמודה</b> · בדיקה · כרטיס טייס · USB.</li>
+            <li><b>(14') המוח לוחץ F5 – כיול בנגיעה:</b> נורית אדומה ← חיישן <b>באוויר</b> ← נוגעים בכסף · נורית ירוקה ← חיישן <b>במים</b> ← נוגעים. עכשיו לאדמה היבשה ← <b>אדום + צעקה!</b> כל ילד/ה בתורו/ה משקה כפית ← הרובוט נרגע ← <b>ירוק</b>.</li>
+            <li><b>(5') השינוי הראשון – הקול של הרובוט:</b> משנים את <code>TON</code> (400 = נמוך, 2000 = גבוה) ← F5 ← כיול ← מקשיבים. <span class="text-xs">(ה'–ו': הצוות מקליד · ד': את/ה במקרן, הצוות מכתיב)</span></li>
+            <li><b>(5')</b> צילום שני המצבים.</li>
+          </ul>
+          <p class="mt-2 text-xs bg-gray-50 rounded-xl p-2"><b>🌿 בונוס – הצמח שצועק</b> ⚠️ (לבדוק קודם): חוט המגע לעציץ – נגיעה בצמח ← צפצוף.</p></div>
       </div>
-
       <div class="p-6 flex gap-5">
         <div class="flex-shrink-0 w-20 text-center"><div class="bg-yellow-100 text-yellow-800 font-black text-lg rounded-xl py-2">85–90</div></div>
-        <div class="flex-1">
-          <h3 class="text-xl font-black mb-2">🏁 נתונים + Teaser</h3>
-          <div class="grid md:grid-cols-3 gap-3 text-sm">
-            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 נתונים (2 דק')</p><p class="text-xs text-gray-500">מה הנורית עשתה ביבש וברטוב? רשמו בדרכון.</p></div>
-            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🌿 עלים (1 דק')</p><p class="text-xs text-gray-500">מי מגיע לרמה חדשה?</p></div>
-            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-xs text-gray-700 font-medium">"הבקר מצפצף שהאדמה יבשה – אבל אם אף אחד לא בכיתה, מי ישקה אותה?" ← אל תתנו תשובה, זה שיעור 8</p></div>
-          </div>
-          <div class="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm"><b>⭐ כוכב הצפון (1 דק'):</b> "איך זה רלוונטי לפרויקט שלי?" – השלימו: "אם ___ אז הקופסה החכמה ___" – מה תרצו שהמערכת שלכם תעשה?</div>
-        </div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">🏁 סגירה</h3>
+          <ul class="space-y-1">
+            <li>🪪 <b>תעודה:</b> "הכלל שלי: אם ___ אז ___" · הקול שלי (נמוך/גבוה) · הצבעים שלי · כמה כפיות עד שנרגעתי?</li>
+            <li>🔮 <b>Teaser:</b> "מי ישקה כשאין אף אחד בכיתה? ואיך החקלאי ידע כשהוא בבית?"</li>
+          </ul>
+          <p class="mt-2 bg-amber-50 border border-amber-200 rounded-xl p-2"><b>⭐ משפט סגירה:</b> "היום הרובוט שלנו למד ש___, ובפרויקט שלנו זה יעזור ל___."</p></div>
       </div>
     </div>
   </div>
 
-  <!-- BEEWISE -->
+  <div class="bg-white rounded-3xl shadow-lg p-6 text-sm text-gray-600">
+    <h2 class="text-xl font-black text-gray-900 mb-3">🛫 כרטיס הטייס – גרסה 3 (+1)</h2>
+    <ol class="list-decimal list-inside space-y-1">
+      <li class="text-gray-400">הכבל מנותק כשמחברים או מנתקים חוטים.</li>
+      <li class="text-gray-400">החיישן תמיד לאדום. הכתום – רק למסך.</li>
+      <li class="text-gray-400">אף חוט לא מחבר ישר אדום לשחור.</li>
+      <li class="text-gray-400">כל חוט מחבר מדבקה למדבקה באותו צבע.</li>
+      <li class="font-bold text-gray-800">הזמזם: + לירוק, השנייה לשחור · חוט המגע רחוק מהלוח.</li>
+    </ol>
+  </div>
+
   <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-amber-700 text-white p-6"><h2 class="text-2xl font-black">🐝 Beewise – רקע למורה</h2></div>
-    <div class="p-6 grid md:grid-cols-2 gap-6 text-sm text-gray-600">
-      <div>
-        <h3 class="font-bold text-gray-800 mb-2">מי הם?</h3>
-        <p class="mb-2">סטארטאפ ישראלי מבאר שבע, שהתחיל ב-2018. גייסו 80 מיליון דולר ממשקיעים. פעילים בישראל ובארה"ב.</p>
-        <p>בנו כוורת רובוטית שפועלת לבד יומם ולילה – חיישנים בודקים, "המוח" מחליט, ומשהו קורה. בדיוק כמו מה שבנינו היום, רק בשביל דבורים!</p>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-800 mb-2">שאלות לדיון:</h3>
-        <ul class="space-y-1">
-          <li>"מה הם פתרו לדבוראים, שקודם היה קשה?"</li>
-          <li>"אילו עוד חיישנים הייתם מוסיפים לכוורת?"</li>
-          <li>"מה הקשר למה שבנינו היום?"</li>
-        </ul>
-      </div>
-    </div>
+    <div class="bg-red-700 text-white p-6"><h2 class="text-2xl font-black">🚨 בעיות נפוצות</h2></div>
+    <div class="p-6"><table class="w-full text-sm"><tbody class="divide-y divide-gray-100 text-gray-600">
+      <tr><td class="p-2 font-bold w-1/3">הזמזם לוחש</td><td class="p-2">הרגליים הפוכות – להפוך.</td></tr>
+      <tr><td class="p-2 font-bold">הנורית תמיד אדומה</td><td class="p-2">הכיול התהפך (מים ואוויר התחלפו) – ⏹, F5, ולכייל שוב.</td></tr>
+      <tr><td class="p-2 font-bold">הכיול לא מתקדם</td><td class="p-2">נגעו בכסף בזמן ההפעלה – ⏹ ו-F5 בלי לגעת, ורק אז נגיעה.</td></tr>
+      <tr><td class="p-2 font-bold">"ומי ישקה?"</td><td class="p-2">"שאלה מעולה – זה בדיוק השיעור הבא!"</td></tr>
+      <tr><td class="p-2 font-bold">כל הכיתה מצפצפת</td><td class="p-2">שקט בתורות: צוות אחד בודק את הקול בכל פעם.</td></tr>
+      <tr><td class="p-2 font-bold">טעות הקלדה ב-TON</td><td class="p-2">רק ספרות, בלי רווח ובלי נקודה. אם נשבר – <kbd>Ctrl+Z</kbd>.</td></tr>
+    </tbody></table></div>
   </div>
 
-  <!-- GAMIFICATION -->
   <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-lime-600 text-white p-6"><h2 class="text-2xl font-black">🌿 גיימיפיקציה – שיעור 7</h2></div>
-    <div class="p-6">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-center text-sm">
-        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-green-600">15</div><div class="text-gray-500">השתתפות בדיון</div></div>
-        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-green-600">25</div><div class="text-gray-500">משחק גרירת הבלוקים</div></div>
-        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-green-600">20</div><div class="text-gray-500">חיבור זמזם + חיישן אמיתי</div></div>
-        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-green-600">10</div><div class="text-gray-500">רישום בדרכון חקלאי</div></div>
-      </div>
-      <div class="bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
-        <span class="text-2xl font-black text-lime-700">סה"כ מקסימום: ~70 עלים 🌿</span>
-        <span class="text-gray-500 text-sm block mt-1">🎮 באדג' "הקוד עובד!" — לכל קבוצה שכיילה בעצמה (אוויר, מים) והראתה את הנורית מתחלפת: אדום ביבש, ירוק ברטוב. הלומדה מעניקה אותו אחרי סידור הבלוקים + סימון המשימות</span>
-      </div>
+    <div class="bg-green-800 text-white p-6"><h2 class="text-2xl font-black">🇮🇱 Beewise – רקע למדריך/ה</h2></div>
+    <div class="p-6 text-sm text-gray-600 space-y-2">
+      <p>סטארטאפ ישראלי שבנה כוורת רובוטית: חיישנים ומצלמות עוקבים אחרי הדבורים, והמערכת מחליטה ומטפלת בהן – גם כשאין דבוראי בשטח.</p>
+      <p><b>לילדים:</b> "בדיוק כמו הרובוט שלנו – מרגיש, חושב, עושה." שאלה: "איזה חוש הייתם מוסיפים לכוורת?"</p>
+      <p class="text-xs text-gray-400">בלי מספרים ביסודי. רקע מלא: <a href="../../teachers/teacher-07.html" class="underline">מערך שיעור 7 – חטיבה</a>.</p>
     </div>
   </div>
 
-  <!-- DIFFERENTIATION -->
   <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-teal-700 text-white p-6"><h2 class="text-2xl font-black">♿ התאמות</h2></div>
-    <div class="p-6 grid md:grid-cols-3 gap-6 text-sm">
-      <div>
-        <h3 class="font-bold text-red-700 mb-2">🐢 תקועים בבלוקים</h3>
-        <ul class="space-y-1 text-gray-600">
-          <li>• "מה קורה ראשון – בודקים או מדליקים?"</li>
-          <li>• הדפיסו את הבלוקים על נייר – גרירה פיזית</li>
-          <li>• עבודה בזוגות</li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold text-blue-700 mb-2">🚀 מתקדמים</h3>
-        <ul class="space-y-1 text-gray-600">
-          <li>• "מה קורה אם שני התנאים נכונים בו-זמנית?"</li>
-          <li>• בקשו מהם להסביר לחבר/ה</li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold text-orange-700 mb-2">🌍 ריבוי שפות</h3>
-        <ul class="space-y-1 text-gray-600">
-          <li>• אם = إذا (א'דא), אחרת = وإلا (וא'לא)</li>
-          <li>• דלוק = مضاء (מוضاء)</li>
-        </ul>
-      </div>
+    <div class="bg-lime-600 text-white p-6"><h2 class="text-2xl font-black">🌿 גיימיפיקציה – 55 עלים + "הקוד עובד!"</h2></div>
+    <div class="p-6 grid md:grid-cols-3 gap-4 text-sm text-gray-600">
+      <div class="bg-gray-50 rounded-xl p-4"><p class="font-bold text-gray-800 mb-1">💻 לומדה – 30</p><p>5 · 5 · 10 (כרטיסי כלל) · 5 · 5</p></div>
+      <div class="bg-gray-50 rounded-xl p-4"><p class="font-bold text-gray-800 mb-1">🔌 מעשי – 20</p><p>חיווט זמזם 5 · כיול + צעקה 10 · הקול של הרובוט 5</p><p class="text-xs text-gray-400 mt-1">באדג' "הקוד עובד!" – כשהרובוט מאדים ומוריק לבד</p></div>
+      <div class="bg-gray-50 rounded-xl p-4"><p class="font-bold text-gray-800 mb-1">🏁 סגירה – 5</p><p>תעודה + ניחוש ה-Teaser</p></div>
     </div>
-    <div class="px-6 pb-6">
-      <div class="bg-pink-50 border-2 border-pink-200 rounded-2xl p-5 text-sm">
-        <h3 class="font-bold text-pink-700 mb-3 text-base">🎈 התאמות לכיתות ג'-ד'</h3>
-        <ul class="space-y-2 text-gray-700">
-          <li>• <b>הבלוקים:</b> 2 בלוקים בלבד (במקום 3-4), ותרגול קבוצתי משותף לפני שכל זוג מנסה לבד.</li>
-          <li>• <b>הכלל:</b> משפט אחד בלבד – "אם יבש – אדום. אחרת – ירוק." בלי המילה "תוכנה".</li>
-          <li>• <b>החיבור הפיזי:</b> המורה מחבר את החיישן והזמזם, התלמידים מחברים רק את חוט המגע, נוגעים בו ורואים את הנורית מתחלפת.</li>
-        </ul>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-orange-600 text-white p-6"><h2 class="text-2xl font-black">♿ התאמות</h2></div>
+    <div class="p-6 space-y-6 text-sm text-gray-600">
+      <div class="grid md:grid-cols-3 gap-6">
+        <div><h3 class="font-bold text-red-700 mb-2">🐢 תקועים</h3><ul class="space-y-1"><li>• רק נורית, בלי זמזם</li><li>• משפט אחד: "אם יבש – צועקים"</li></ul></div>
+        <div><h3 class="font-bold text-blue-700 mb-2">🚀 מתקדמים</h3><ul class="space-y-1"><li>• "איזה עוד כלל הרובוט שלכם צריך?" (יבש מאוד ← צעקה ארוכה)</li><li>• הצמח שצועק</li></ul></div>
+        <div><h3 class="font-bold text-orange-700 mb-2">🌍 ריבוי שפות</h3><ul class="space-y-1"><li>• אם = إذا · צועק = يصرخ</li><li>• מערכת ההשקיה האנושית עובדת בלי שפה</li></ul></div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-gray-50 rounded-2xl p-4"><h3 class="font-bold text-gray-800 mb-2">🎈 כיתה ד'</h3>
+          <ul class="space-y-1"><li>• שינוי הקול – את/ה מקליד/ה במקרן, הצוות בוחר "נמוך / בינוני / גבוה"</li><li>• לומדה: שלבים 1, 3 יחד על המסך המשותף</li></ul></div>
+        <div class="bg-gray-50 rounded-2xl p-4"><h3 class="font-bold text-gray-800 mb-2">🎚️ אם אין זמן</h3>
+          <p><b>ליבה – לא מוותרים:</b> מערכת ההשקיה האנושית · חיווט הזמזם · כרטיס טייס · אדום/ירוק על הרובוט · משפט סגירה. <b>מתקצר ראשון:</b> הלומדה, אחר כך הפנס.</p></div>
       </div>
     </div>
   </div>
 
-  <!-- HARDWARE NOTE -->
-  <div class="bg-slate-100 border border-slate-300 rounded-2xl p-4 text-xs text-slate-600">
-    🔧 <b>עודכן ל-ESP32-S3 + MicroPython (מסלול יסודי):</b> חיישן לחות→GPIO 6 · זמזם פסיבי→GPIO 5 · חוט מגע→GPIO 4 · נורית RGB מובנית→GPIO 48, מתח 3.3V, כיול יבש/רטוב בנגיעה. המורה שומר <code>main.py</code>; התלמידים מחווטים ומכיילים. פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
-  </div>
-
-  <!-- NOTES -->
   <div class="bg-white rounded-3xl shadow-lg p-6">
     <h2 class="text-2xl font-black text-gray-900 mb-4">📝 הערות לשיעור</h2>
-    <textarea rows="5" placeholder="מה עבד, מה לשפר, בעיות חיבור..." class="w-full border-2 border-gray-200 rounded-2xl p-4 text-lg resize-none focus:border-green-400 focus:outline-none" onchange="save(this.value)" id="notes"></textarea>
+    <textarea rows="5" placeholder="אילו קולות בחרו? מי פתר את קופסת המסתורין?" class="w-full border-2 border-gray-200 rounded-2xl p-4 text-lg resize-none focus:border-slate-400 focus:outline-none" onchange="saveNotes(this.value)" id="notes-area"></textarea>
     <p class="text-xs text-gray-400 mt-1">נשמר אוטומטית</p>
   </div>
 
 </div>
-</div>
 
 <script>
-function load(){
-  const n=localStorage.getItem('el_t7notes');if(n)document.getElementById('notes').value=n;
-}
-function save(v){localStorage.setItem('el_t7notes',v);}
+function load(){try{const n=localStorage.getItem('el_t7notes');if(n)document.getElementById('notes-area').value=n;}catch(e){}}
+function saveNotes(v){try{localStorage.setItem('el_t7notes',v);}catch(e){}}
 load();
 </script>
 </body>

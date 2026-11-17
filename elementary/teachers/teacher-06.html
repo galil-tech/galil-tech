@@ -3,394 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>מערך שיעור 6 | מסלול יסודי | גדלים למחר</title>
+  <title>מערך שיעור 6 | מסלול יסודי | מדריך מורה</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
-  <style>*{font-family:'Heebo',sans-serif;}</style>
+  <style>*{font-family:'Heebo',sans-serif;} pre,code{font-family:Consolas,monospace;direction:ltr;text-align:left;}</style>
 </head>
 <body class="bg-gray-50">
 
-<div id="content">
-
-<!-- TOP BAR -->
-<div class="bg-slate-800 text-white py-5 px-8 flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-lg gap-3">
+<div class="bg-emerald-800 text-white py-5 px-8 flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-lg gap-3">
   <div>
-    <span class="text-xs text-slate-400">מערך שיעור · מסלול יסודי · גליל-טק</span>
-    <h1 class="text-2xl font-black">שיעור 6 – איך "שומעים" את הסביבה של הצמח?</h1>
+    <span class="text-xs text-emerald-200">מערך שיעור · מסלול יסודי · פאזה 2 · 🤖 אקדמיית הרובוטים 2/4</span>
+    <h1 class="text-2xl font-black">שיעור 6 – הרובוט מקבל חושים 👃</h1>
   </div>
   <div class="flex gap-3 flex-wrap">
     <span class="bg-white/20 px-4 py-2 rounded-xl text-sm">⏱ 90 דקות</span>
     <span class="bg-blue-500 px-4 py-2 rounded-xl text-sm font-bold">פאזה 2 – צמיחה</span>
-    <a href="../lessons/lesson-06.html" target="_blank" class="bg-white text-slate-900 px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-100">👁 פתח לומדה</a>
-    <a href="teacher-05.html" class="bg-slate-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-slate-500">← שיעור 5</a>
+    <a href="../lessons/lesson-06.html" target="_blank" class="bg-white text-emerald-900 px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-100">👁 פתח לומדה</a>
+    <a href="../../index.html" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-emerald-500">← דף בית</a>
   </div>
 </div>
 
 <div class="max-w-5xl mx-auto px-6 py-10 space-y-10">
 
-  <!-- GOALS -->
-  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-slate-700 text-white p-6">
-      <h2 class="text-2xl font-black">🎯 מטרות השיעור</h2>
-      <p class="text-slate-300 text-sm">בסוף השיעור התלמיד...</p>
+  <div class="bg-sky-50 border-2 border-sky-300 rounded-3xl p-6 text-sm text-gray-700">
+    <p class="font-black text-sky-900 text-lg mb-3">⚡ השיעור בקצרה</p>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div><p class="text-xs text-gray-500">המשפט של השיעור</p><p class="text-xl font-black text-sky-900">"מרגיש"</p><p class="text-xs">מרגיש → חושב → עושה</p></div>
+      <div><p class="text-xs text-gray-500">הרובוט מקבל</p><p class="font-bold">👃 חושים: חיישן לחות + חוט מגע</p></div>
+      <div><p class="text-xs text-gray-500">רגע השיא</p><p class="font-bold">הרובוט מודד את האדמה של הצמח שלנו</p></div>
     </div>
-    <div class="p-6 grid md:grid-cols-2 gap-6">
-      <div>
-        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">ידע ומושגים</h3>
-        <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">✅ <span>מסביר מהו חיישן – "חוש" מלאכותי שמודד דבר אחד (חום, לחות, אור)</span></li>
-          <li class="flex gap-2">✅ <span>מסביר מהו הבקר (ESP32) – "מוח" קטן שמקבל מידע מהחיישנים ומחליט מה לעשות</span></li>
-          <li class="flex gap-2">✅ <span>מבין לוגיקה פשוטה: "אם קורה X → תעשה Y" (בלוקים, לא כתיבת קוד)</span></li>
-          <li class="flex gap-2">✅ <span>יודע בערך: לאדמה של הצמח צריכה להיות לחות בינונית – לא יבשה ולא בוצית (ובטמפ' בין 15 ל-28 מעלות)</span></li>
-          <li class="flex gap-2">✅ <span>מכיר את Phytech – חיישן שמרגיש כשעץ "צמא" לפני שרואים בעיניים</span></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">מיומנויות מעשיות</h3>
-        <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">🔧 <span>מחבר בעצמו חיישן לחות אדמה (3 חוטים) לבקר ESP32, לפי סכמה פשוטה</span></li>
-          <li class="flex gap-2">🔧 <span>קורא ערכים ראשוניים (אדמה יבשה מול רטובה) ואומר אם הם "נראים תקינים"</span></li>
-          <li class="flex gap-2">🔧 <span>מרכיב בלוק "אם...אז..." אחד פשוט בלומדה</span></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">חשיבה</h3>
-        <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">💭 <span>מקשר בין המדידה הידנית של שיעור 5 לצורך במדידה כל הזמן</span></li>
-          <li class="flex gap-2">💭 <span>מסביר איך Phytech פותרת בעיה שהוא עצמו חווה בכיתה</span></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-600 mb-3 text-sm uppercase tracking-wide">גיימיפיקציה</h3>
-        <ul class="space-y-2 text-sm text-gray-600">
-          <li class="flex gap-2">🌿 <span>בלומדה: עד 50 עלים (שאלות, 3 משחקים, סימולטור, מדידה, דרכון). הטבלה למטה – כל השיעור.</span></li>
-        </ul>
-      </div>
+    <p class="mt-4">ביסודי הרובוט מדבר ב<b>מספרים מ-0 עד 100</b> – <b>מספר גבוה = יבש</b>. לא אומרים "GPIO", לא אומרים "אנלוגי". הילדים מחווטים בעצמם לפי המדבקות, <b>בהשגחה צמודה שלך</b>.</p>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-slate-700 text-white p-6"><h2 class="text-2xl font-black">🎯 מטרות השיעור</h2><p class="text-slate-300 text-sm">בסוף השיעור התלמיד/ה...</p></div>
+    <div class="p-6 grid md:grid-cols-2 gap-6 text-sm text-gray-600">
+      <div><h3 class="font-bold text-gray-700 mb-2">ידע</h3><ul class="space-y-2">
+        <li>✅ חיישן = חוש של הרובוט</li>
+        <li>✅ יש חוש שעונה <b>כן/לא</b> (נגעו בי?) ויש חוש שעונה ב<b>מספר</b> (כמה יבש?)</li>
+        <li>✅ אצל הרובוט שלנו: <b>מספר גבוה = אדמה יבשה</b></li></ul></div>
+      <div><h3 class="font-bold text-gray-700 mb-2">מיומנויות</h3><ul class="space-y-2">
+        <li>🔧 מחבר/ת חיישן לחות + חוט מגע לפי צבעי המדבקות</li>
+        <li>🔧 קורא/ת מספרים במסך ומשווה: אוויר, מים, אדמה</li></ul></div>
+      <div><h3 class="font-bold text-gray-700 mb-2">חשיבה</h3><ul class="space-y-2">
+        <li>💭 מסביר/ה למה המספר משתנה כשמשקים</li></ul></div>
+      <div><h3 class="font-bold text-gray-700 mb-2">גיימיפיקציה</h3><ul class="space-y-2">
+        <li>🌿 עד <b>50 עלים</b></li>
+        <li>🪪 תעודה: מה אני מרגיש + 3 המספרים שלי</li></ul></div>
     </div>
   </div>
 
-  <!-- PREP -->
   <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-teal-700 text-white p-6">
-      <h2 class="text-2xl font-black">🧰 הכנה לפני השיעור – חשוב מאוד!</h2>
-    </div>
-    <div class="px-6 pt-6">
-      <div class="bg-red-50 border-2 border-red-300 rounded-2xl p-4 text-sm text-red-800">
-        ⛔ <b>רק Thonny ו-MicroPython.</b> לא להעלות לבקר קוד מ-Arduino IDE – זה מוחק את MicroPython ואת הדרייברים שהותקנו מראש.
-      </div>
-    </div>
-    <div class="p-6 grid md:grid-cols-3 gap-6 text-sm">
-      <div>
-        <h3 class="font-bold text-gray-800 mb-3">⚡ ציוד לקבוצה</h3>
-        <ul class="space-y-2 text-gray-600">
-          <li class="flex gap-2">📋 <span>לוח ESP32-S3 (MicroPython + דרייברים צרובים) + כבל USB-C של נתונים</span></li>
-          <li class="flex gap-2">📋 <span><b>חיישן לחות אדמה</b> (3 חוטים) – החיישן של השיעור</span></li>
-          <li class="flex gap-2">📋 <span>3 כבלי חיבור (Jumper)</span></li>
-          <li class="flex gap-2">📋 <span>2 כוסות אדמה: אחת יבשה, אחת רטובה (להשוואה)</span></li>
-          <li class="bg-amber-50 text-amber-800 rounded-lg p-2 mt-2">💡 הערכה מגיעה <b>לא מחווטת</b> – התלמידים מחברים בעצמם. זה הלב של השיעור.</li>
-          <li class="bg-red-50 text-red-700 rounded-lg p-2 mt-2">⚠️ שמרו את הקוד על כל הבקרים יום לפני, ובדקו ערכה אחת מחוברת!</li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-800 mb-3">🐍 מה המורה מכין (לא התלמידים)</h3>
-        <p class="text-gray-600 mb-2">התלמידים לא כותבים קוד היום – רק גוררים בלוקים בלומדה. את הקוד המורה שומר מראש על כל בקר בשם <code>main.py</code>, כך שהוא רץ לבד ברגע שמחברים USB.</p>
-        <pre dir="ltr" class="bg-slate-800 rounded-xl p-3 text-xs text-green-400 font-mono overflow-x-auto"># main.py – לשימוש המורה בלבד
-import time
-from soil_moisture_driver import SoilMoistureSensor
-from ws2812_driver import WS2812LED
-
-soil = SoilMoistureSensor(pin_num=6)  # AOUT → GPIO 6
-led = WS2812LED(pin_num=48, brightness=0.2)
-
-while True:
-    led.blue()               # "אני מודד!" – משוב גם בלי מחשב
-    print(soil.read_raw())   # גבוה = יבש
-    time.sleep_ms(300)
-    led.off()
-    time.sleep(2)</pre>
-        <ul class="text-xs text-gray-500 mt-2 space-y-1">
-          <li>• Thonny → Interpreter: <b>MicroPython (ESP32)</b>.</li>
-          <li>• File → Save as → <b>MicroPython device</b> → <code>main.py</code>.</li>
-          <li>• את הערכים רואים בחלון ה-Shell של Thonny (⏹ Stop/Restart ואז הקוד רץ).</li>
-          <li>💡 <b>מספר גבוה = יבש</b>, מספר נמוך = רטוב. רשמו את הערכים – נשווה אליהם בשיעור 7.</li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-800 mb-3">📐 חיבור – 3 חוטים בלבד</h3>
-        <div class="bg-gray-50 rounded-xl p-3 text-xs space-y-1 mb-3">
-          <p class="font-bold text-gray-700">חיישן לחות אדמה → ESP32:</p>
-          <p>VCC → 3V3 · GND → GND · AOUT → GPIO 6</p>
-          <p class="text-gray-500">⚡ רק 3V3 – לא 5V. עובדים לפי הכיתוב על החיישן ועל הלוח (לא לפי צבע החוט).</p>
-          <p class="text-gray-500">🔌 מחברים חוטים רק כשכבל ה-USB מנותק. המורה בודק – ורק אז מחברים USB.</p>
-          <p class="text-gray-500">💧 הכוסות יציבות ורחוקות מהלוח. החיישן נכנס לאדמה רק עד הקו המסומן עליו.</p>
-        </div>
-        <h3 class="font-bold text-gray-800 mb-3">🖥️ ציוד נוסף</h3>
-        <ul class="space-y-1 text-gray-600 text-xs">
-          <li>📋 מחשב/טאבלט לכל זוג (לומדה)</li>
-          <li>📋 <b>מחשב Windows/Mac עם Thonny לכל קבוצה</b> בשלב הפרויקט (לא טאבלט) – אפשר אחד ממחשבי הזוגות. הנורית הכחולה מהבהבת = הבקר מודד</li>
-          <li>🧰 <b>ערכת חומרה רזרבית אחת לכיתה</b> (ESP32 + חיישן חלופי)</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ VISUALS ══ -->
-  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-slate-600 text-white p-6"><h2 class="text-2xl font-black">🖼️ להמחשה</h2><p class="text-slate-300 text-sm">מתוך מצגות ההדרכה של צוות החומרה – אפשר להקרין בכיתה</p></div>
-    <div class="p-6 grid md:grid-cols-2 gap-6">
-      <div><figure class="my-4"><img src="../../assets/img/esp32/esp32-farm-photo.jpg" alt="לוח ESP32 על breadboard לצד חממה אנכית" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">לפתיחה: "מה זה לדעתכם?"</figcaption></figure></div>
-      <div><figure class="my-4"><img src="../../assets/img/esp32/soil-moisture.jpg" alt="חיישן לחות קרקע ב-GPIO 6" loading="lazy" class="w-full rounded-2xl shadow border border-gray-200"><figcaption class="text-xs text-gray-400 mt-1">חיישן לחות האדמה – החיישן של השיעור</figcaption></figure></div>
-    </div>
-  </div>
-
-  <!-- TIMELINE -->
-  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-slate-700 text-white p-6">
-      <h2 class="text-2xl font-black">⏱ לוח זמנים – 90 דקות</h2>
-    </div>
-    <div class="divide-y divide-gray-100">
-
-      <div class="p-6 flex gap-5">
-        <div class="flex-shrink-0 text-center w-20"><div class="bg-green-100 text-green-800 font-black text-lg rounded-xl py-2">0–15</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
-        <div class="flex-1">
-          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎤</span><h3 class="text-xl font-black">פתיחה – איך יודעים מה קורה סביב הצמח?</h3><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">כל הכיתה</span></div>
-          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-3">
-            <p class="font-bold text-amber-900 mb-1">🔁 תזכורת משיעור 5:</p>
-            <p class="text-sm text-gray-700">"זוכרים ששאלנו: אם הצמח לא מרגיש טוב – איך נדע לפני שרואים בעיניים? מדדתם ביד את המים, אבל מה יקרה בשעה 2 בלילה, כשאף אחד לא בכיתה? היום נכיר את מי שיודע: חיישן."</p>
-          </div>
-          <div class="bg-sky-50 border border-sky-200 rounded-xl p-4 mb-3">
-            <p class="font-bold text-sky-900 mb-1">⚡ אם הכיתה עשתה את שיעור 5.5:</p>
-            <p class="text-sm text-gray-700">"בשיעור 5.5 חיברתם את 3 החוטים <b>על המסך</b> ורשמתם את המיפוי של הקבוצה. היום – על הערכה האמיתית. ובסוף 5.5 ניחשתם: כשהאדמה יבשה, המספר יהיה גבוה או נמוך? היום בודקים!" (התשובה: <b>גבוה = יבש</b>. הלומדה בשלב 4 מזכירה לכל זוג מה ניחש.)</p>
-            <p class="text-xs text-gray-500 mt-1">לא עשו את 5.5? לא נורא – שלב הפרויקט בלומדה מסביר את 3 החוטים, וחמשת כללי הבטיחות מופיעים גם כאן למטה.</p>
-          </div>
-          <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-3">
-            <p class="font-bold text-purple-900 mb-1">🪜 מדרגת כניסה למושג "חיישן" ו"בקר":</p>
-            <p class="text-sm text-gray-700">"לגוף שלכם יש חושים – עיניים רואות, אוזניים שומעות, עור מרגיש חום. חיישן הוא בדיוק אותו רעיון, רק מלאכותי – מכשיר קטן שמרגיש דבר אחד (חום, אור, לחות). וה'מוח' הקטן שמקבל את כל המידע מהחיישנים ומחליט מה לעשות – נקרא <b>בקר</b>. שלנו נקרא ESP32."</p>
-          </div>
-          <ul class="text-sm text-gray-600 space-y-1">
-            <li>• <b>שקף 1:</b> תמונת ESP32 עם חיישנים – "מה זה לדעתכם?"</li>
-            <li>• <b>שקף 2:</b> ציור גוף אדם עם 5 חושים, לצד הבקר עם כמה שרוצים "חושים"</li>
-          </ul>
-          <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 mt-3 text-sm text-blue-900">
-            💡 הראו לוח ESP32 אמיתי, תנו לתלמיד/ה אחד/ת לגעת: "זה עולה כמה עשרות שקלים. Phytech בנו על הרעיון הזה – חיישן + מוח קטן – חברה גדולה."
-          </div>
-        </div>
-      </div>
-
-      <div class="p-6 flex gap-5">
-        <div class="flex-shrink-0 text-center w-20"><div class="bg-blue-100 text-blue-800 font-black text-lg rounded-xl py-2">15–30</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
-        <div class="flex-1">
-          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">💬</span><h3 class="text-xl font-black">דיון מבוסס בעיה</h3><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">קבוצות של 4</span></div>
-          <div class="space-y-4">
-            <div class="bg-amber-50 border border-amber-300 rounded-xl p-4">
-              <p class="font-bold text-amber-900 mb-2">🎯 שאלת הדיון המרכזית (10 דק׳)</p>
-              <p class="text-sm text-gray-600 mb-2">🔗 גשר משיעור 3: "בשיעור 3 אמרנו שלצמח יש 4 צרכים (אור, מים, מזון, אוויר). היום נבדוק איך <b>בודקים</b> אם הוא מקבל אותם."</p>
-              <p class="text-lg text-gray-800 font-bold mb-3">"אם יש לכם 5 דברים שאפשר למדוד אצל הצמח (מים, טמפרטורה, לחות, אור, מזון) – איזה חיישן צריך לכל אחד?"</p>
-              <div class="grid md:grid-cols-2 gap-3 text-sm">
-                <div class="bg-white rounded-lg p-3">
-                  <p class="font-bold mb-1">תשובות צפויות:</p>
-                  <ul class="text-gray-500 space-y-1">
-                    <li>מים באדמה → חיישן לחות אדמה (נחבר היום!)</li>
-                    <li>מזון במים → מד EC (משיעור 5)</li>
-                    <li>חום ולחות האוויר → חיישן חום (בקרוב בערכה)</li>
-                    <li>אור → חיישן אור (בקרוב בערכה)</li>
-                  </ul>
-                </div>
-                <div class="bg-white rounded-lg p-3">
-                  <p class="font-bold mb-1">גשר לשיעור:</p>
-                  <p class="text-gray-500">"בדיוק! ואת כולם אפשר לחבר לבקר אחד קטן. היום נתחיל מהחשוב ביותר לשתיל: לחות האדמה."</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="p-6 flex gap-5">
-        <div class="flex-shrink-0 text-center w-20"><div class="bg-purple-100 text-purple-800 font-black text-lg rounded-xl py-2">30–55</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
-        <div class="flex-1">
-          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">📖</span><h3 class="text-xl font-black">לומדה – עבודה בזוגות</h3><span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">זוגות</span></div>
-          <div class="bg-slate-50 rounded-xl p-4 text-sm text-gray-600">
-            <p class="mb-2">📌 <b>הלומדה – 7 שלבים</b> (<a href="../lessons/lesson-06.html" target="_blank" class="underline text-purple-700">elementary/lessons/lesson-06.html</a>):</p>
-            <ol class="space-y-1 list-decimal list-inside mr-4">
-              <li>חושים וחיישנים: גרירת 3 חושים של הגוף לחיישן המתאים + שאלה</li>
-              <li>הקופסה החכמה (ESP32): מרגישה, חושבת, עושה + "איזה חיישן לכל צורך?"</li>
-              <li><b>🎮 "אם...אז..." – 2 בלוקים בלבד:</b> גוררים "אם האדמה יבשה" ו"צפצף" למקום, עם מסיחים. בלי קוד ובלי שורות טקסט</li>
-              <li>🎮 סימולטור חיישן הלחות: משקים / השמש מייבשת, המספר והגרף זזים (גבוה = יבש) – ותשובה לניחוש מ-5.5</li>
-              <li>🎮 תרחיש אחד (עלים נבולים, המספר גבוה) + Phytech</li>
-              <li>פרויקט: משימות החיבור + דף רישום (אוויר / אדמה יבשה / אדמה רטובה) שנשמר בדרכון</li>
-              <li>דרכון + כוכב הצפון + Teaser</li>
-            </ol>
-            <p class="mt-2 text-xs text-gray-400">בלי הסבר טכני על "הזחה"/תחביר קוד – הכל ויזואלי-בלוקים.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="p-6 flex gap-5">
-        <div class="flex-shrink-0 text-center w-20"><div class="bg-lime-100 text-lime-800 font-black text-lg rounded-xl py-2">55–85</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
-        <div class="flex-1">
-          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🔌</span><h3 class="text-xl font-black">פרויקט – חיבור ראשון</h3><span class="bg-lime-100 text-lime-700 px-3 py-1 rounded-full text-xs font-bold">קבוצות</span></div>
-          <div class="bg-lime-50 border border-lime-200 rounded-xl p-4 mb-4 text-sm">
-            <p class="font-bold text-lime-800 mb-2">📋 4 משימות:</p>
-            <div class="grid md:grid-cols-2 gap-2 text-xs">
-              <div class="bg-white rounded-lg p-2">א. חיבור חיישן לחות אדמה – 3 חוטים (VCC→3V3 / GND→GND / AOUT→GPIO 6), המורה בודק לפני USB</div>
-              <div class="bg-white rounded-lg p-2">ב. החיישן בכוס יבשה, ואז בכוס רטובה</div>
-              <div class="bg-white rounded-lg p-2 border-2 border-green-200"><b>ג. קריאת ערכים ראשונים</b> (הקוד כבר שמור על הבקר) – איזה מספר גדול יותר?</div>
-              <div class="bg-white rounded-lg p-2">ד. צילום ה-ESP32 המחובר לקיר</div>
-            </div>
-          </div>
-          <div class="grid md:grid-cols-2 gap-4">
-            <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
-              <p class="font-bold text-red-800 mb-2">🚨 בעיות נפוצות:</p>
-              <ul class="space-y-1 text-xs text-gray-600">
-                <li><b>⚠️ הלוח או החיישן מתחמם / ריח שרוף:</b> מנתקים USB מיד, לא נוגעים ברכיב החם, בודקים קצר (3V3/5V ל-GND, או VCC/GND הפוכים) ועוברים לערכה הרזרבית</li>
-                <li><b>הערך תקוע על 0 או 65535:</b> קראו למורה – חוט AOUT לא ב-GPIO 6, או חוט חשמל רופף</li>
-                <li><b>אין הבדל בין יבש לרטוב:</b> ודאו שהחיישן נכנס לאדמה עד הקו</li>
-                <li><b>Thonny לא רואה את הלוח:</b> נסו כבל USB-C אחר (כבל נתונים, לא רק טעינה), או את שקע ה-USB-C השני בלוח, ואז ⏹ Stop/Restart</li>
-              </ul>
-            </div>
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm">
-              <p class="font-bold text-blue-800 mb-2">💡 להעמקה:</p>
-              <p class="text-xs text-gray-600">"מי מצא ערך שונה מקבוצה אחרת? למה לדעתכם?" → השוו חיישנים בפינות שונות של הכיתה.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="p-6 flex gap-5">
-        <div class="flex-shrink-0 text-center w-20"><div class="bg-yellow-100 text-yellow-800 font-black text-lg rounded-xl py-2">85–90</div><div class="text-xs text-gray-400 mt-1">דקות</div></div>
-        <div class="flex-1">
-          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🏁</span><h3 class="text-xl font-black">נתונים + Teaser</h3></div>
-          <div class="grid md:grid-cols-3 gap-3 text-sm">
-            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">📊 נתונים (2 דק')</p><p class="text-xs text-gray-500">כל קבוצה מדווחת. הצג ממוצע כיתתי.</p></div>
-            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🌿 עלים (1 דק')</p><p class="text-xs text-gray-500">מי מגיע לרמה חדשה?</p></div>
-            <div class="bg-white border rounded-xl p-3"><p class="font-bold mb-1">🔮 Teaser (2 דק')</p><p class="text-xs text-gray-700 font-medium">"האדמה התייבשה – הבקר צריך להדליק נורה אדומה ולצפצף. איך נגרום לו 'לדעת' לעשות את זה בעצמו?" ← אל תתנו תשובה, זה שיעור 7</p></div>
-          </div>
-          <div class="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm"><b>⭐ כוכב הצפון (1 דק'):</b> "איך זה רלוונטי לפרויקט שלי?" – מה הייתם רוצים שחיישן יבדוק בשביל הצמח שלכם?</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- STARTUP -->
-  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-teal-800 text-white p-6">
-      <h2 class="text-2xl font-black">🇮🇱 Phytech – רקע למורה</h2>
-    </div>
+    <div class="bg-teal-700 text-white p-6"><h2 class="text-2xl font-black">🧰 הכנה וציוד</h2></div>
     <div class="p-6 grid md:grid-cols-2 gap-6 text-sm text-gray-600">
       <div>
-        <h3 class="font-bold text-gray-800 mb-2">מי הם?</h3>
-        <p class="mb-2">חברה ישראלית שהוקמה בקיבוץ יד מרדכי. עוזרים לחקלאים לדעת מה קורה עם העצים והצמחים שלהם, בזמן אמת.</p>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-800 mb-2">הדנדרומטר – מה זה?</h3>
-        <p>חיישן קטן שנצמד לגזע העץ ומרגיש שינויים זעירים בעובי שלו. כשעץ "צמא" – הגזע מתכווץ טיפה. Phytech מגלים את זה לפני שרואים עלים צהובים.</p>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-800 mb-2">מספרים לדיון:</h3>
+        <h3 class="font-bold text-gray-800 mb-2">לכל צוות</h3>
         <ul class="space-y-1">
-          <li>🌊 500 מיליארד ליטר מים נחסכו בשנה אחת</li>
-          <li>🌳 43 מיליון עצים בניטור</li>
-          <li>🗺️ 18,000 שדות ביותר מ-20 מדינות</li>
+          <li>📋 הערכה המאומצת + כבל USB-C של נתונים + מחשב עם Thonny</li>
+          <li>📋 שטיח · כרטיס טייס · תעודת הרובוט</li>
+          <li>📋 מגש עם 2 כוסות: <b>מים</b> + <b>אדמה מהצמח</b> (או השתיל האישי)</li>
+          <li>📋 חוט מגע מודבק לנייר כסף על קרטון – רחוק מהלוח, עם מדבקה 🔵</li>
         </ul>
-        <p class="text-xs text-gray-400 mt-2">🔗 זוכרים את "מדרגות המספרים" משיעור 1? 500 מיליארד זה מספר ענק – אפשר לחזור לזה: "כמה זמן ייקח לספור עד 500 מיליארד?"</p>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-800 mb-2">שאלות לדיון בכיתה:</h3>
+        <h3 class="font-bold text-gray-800 mt-4 mb-2">לכיתה</h3>
         <ul class="space-y-1">
-          <li>"איך אפשר לדעת שעץ 'צמא' לפני שרואים בעיניים?"</li>
-          <li>"מה ההבדל בין מה שעשינו היום (מדידה ידנית) ל-Phytech?"</li>
+          <li>📋 חבל / נייר דבק על הרצפה מסומן <b>0 ← 100</b> (ציר מספרים)</li>
+          <li>📋 <b>ערכת המדריך/ה</b> מחוברת – למדידה מול הכיתה</li>
+          <li>📋 מדבקה 🔵 כחולה ליד פין GPIO 4 בכל ערכה (אם עוד לא הודבקה)</li>
         </ul>
+        <div class="bg-amber-50 border border-amber-300 rounded-2xl p-3 mt-4 text-xs">⚠️ להריץ את הקוד על ערכה אחת יום לפני. ⛔ רק Thonny – לא Arduino IDE.</div>
+      </div>
+      <div>
+        <p class="font-black text-gray-800 mb-1">🐍 הקוד של היום – הילדים רק לוחצים F5</p>
+        <p class="text-xs mb-2">עם "התוכנה האחת": <code>LESSON = 6</code>, <code>TRACK = "elem"</code>. עד אז: שמרו את הקובץ הזה במחשב של כל צוות בשם <code>robot6.py</code> ופתחו אותו ב-Thonny לפני השיעור:</p>
+<pre class="bg-gray-50 border rounded-xl p-3 text-xs overflow-x-auto">import time
+from soil_moisture_driver import SoilMoistureSensor
+from touch_driver import TouchSensor
+soil = SoilMoistureSensor(pin_num=6)
+touch = TouchSensor(pin_num=4)   # don't touch while starting!
+while True:
+    number = round(soil.read_raw() * 100 / 65535)   # 0-100, high = dry
+    if touch.is_touched():
+        print(number, "  TOUCH!")
+    else:
+        print(number)
+    time.sleep(1)</pre>
+        <p class="text-xs text-gray-500 mt-2">ההדפסות באנגלית בכוונה – עברית מתהפכת בחלון של Thonny. "TOUCH!" = "נגעו בי!".</p>
       </div>
     </div>
   </div>
 
-  <!-- GAMIFICATION -->
   <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-lime-600 text-white p-6">
-      <h2 class="text-2xl font-black">🌿 גיימיפיקציה – שיעור 6</h2>
-    </div>
-    <div class="p-6">
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-sm">
-        <span class="font-bold text-amber-800">📡 מכניקה בעלת שם: "לוח נתונים חי"</span> — כל קבוצה מדווחת בזמן אמת 2-3 ערכים ללוח כיתתי משותף.
+    <div class="bg-blue-700 text-white p-6"><h2 class="text-2xl font-black">💬 דיון מודרך</h2></div>
+    <div class="p-6 space-y-4 text-sm">
+      <div class="bg-lime-50 border border-lime-300 rounded-xl p-4">
+        <p class="font-bold text-lime-800 mb-1">← חיבור לשיעור 5.5:</p>
+        <p class="text-gray-700">"בפעם הקודמת הלב של הרובוט התחיל לפעום. אבל הוא עוד לא מרגיש כלום! מה הוא צריך כדי לדעת מה קורה לצמח?"</p>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5 text-center text-sm">
-        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-slate-700">15</div><div class="text-gray-500">שאלות חיישן+בקר</div></div>
-        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-slate-700">20</div><div class="text-gray-500">משחק "אם...אז..."</div></div>
-        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-slate-700">20</div><div class="text-gray-500">חיבור וקריאת חיישנים</div></div>
-        <div class="bg-gray-50 rounded-xl p-4"><div class="text-3xl font-black text-slate-700">10</div><div class="text-gray-500">רישום בדרכון חקלאי</div></div>
+      <div class="bg-white border-2 border-blue-300 rounded-xl p-4">
+        <p class="font-bold text-blue-900 mb-1">🌉 שאלת הדיון:</p>
+        <p class="text-xl text-gray-800 font-bold">"לנו יש 5 חושים. איזה חוש צריך הרובוט שלכם כדי לשמור על הצמח?"</p>
       </div>
-      <div class="bg-lime-50 border border-lime-300 rounded-xl p-4 text-center">
-        <span class="text-2xl font-black text-lime-700">סה"כ מקסימום: ~65 עלים 🌿</span>
-        <span class="text-gray-500 text-sm block mt-1">* מספר זמני – יחושב סופית אחרי כל 17 מערכי המורה</span>
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p class="font-bold text-blue-900 mb-1">🎲 הרובוט העיוור (בונוס, 5 דק')</p>
+        <p class="text-gray-600">ילד/ה בעיניים עצומות = רובוט בלי חושים, צריך/ה להגיע לעציץ. <b>סבב 1:</b> "החיישן" אומר רק "כן" או "לא". <b>סבב 2:</b> "החיישן" אומר מספר מ-1 עד 10 (10 = ממש קרוב). ← "מה עזר יותר?" → <b>כן/לא מול מספר.</b></p>
+      </div>
+      <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+        <p class="font-bold text-green-900 mb-1">🇮🇱 Phytech – חוש לעצים</p>
+        <p class="text-gray-600">"יש חברה ישראלית ששמה חיישן על הגזע של עצים. כשעץ צמא – הגזע מתכווץ קצת, והחיישן מרגיש את זה לפני שרואים עלים צהובים. גם לרובוט שלכם יש חוש כזה!"</p>
       </div>
     </div>
   </div>
 
-  <!-- DIFFERENTIATION -->
   <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-    <div class="bg-orange-600 text-white p-6">
-      <h2 class="text-2xl font-black">♿ התאמות ודיפרנציאציה</h2>
-    </div>
-    <div class="p-6 grid md:grid-cols-3 gap-6 text-sm">
-      <div>
-        <h3 class="font-bold text-red-700 mb-3">🐢 תלמידים שנתקעים</h3>
-        <ul class="space-y-2 text-gray-600">
-          <li>• "זה כמו כלל משחק – אם קורה X, עושים Y"</li>
-          <li>• תנו להם לעבוד עם שותף/ה</li>
-          <li>• שאלו: "מה הבקר צריך לדעת ראשון?"</li>
-        </ul>
+    <div class="bg-slate-700 text-white p-6"><h2 class="text-2xl font-black">⏱ לוח זמנים – 90 דקות</h2></div>
+    <div class="divide-y divide-gray-100 text-sm text-gray-600">
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 w-20 text-center"><div class="bg-green-100 text-green-800 font-black text-lg rounded-xl py-2">0–15</div></div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">🎤 פתיחה – ☀️ דוח בוקר + 🎲 ציר מספרים</h3>
+          <ul class="space-y-1">
+            <li><b>(3') ☀️ דוח בוקר מהצמח:</b> כל ילד/ה מסתכל/ת על השתיל שלו/ה: "העין שלי אומרת שהאדמה ___". (היום רק עין – בשיעור הבא גם הרובוט.)</li>
+            <li><b>(10') ציר מספרים אנושי:</b> 3 ילדים נעמדים על הציר 0–100 – איפה יהיה המספר של <b>אוויר</b>? של <b>מים</b>? של <b>האדמה של הצמח</b>? את/ה מודד/ת בערכה שלך ← מי צדק? <b>גבוה = יבש!</b> (זו התשובה ל-Teaser.)</li>
+            <li><b>(2')</b> חזרה: "סגור – אבל לא קצר" + כרטיס הטייס.</li>
+          </ul></div>
       </div>
-      <div>
-        <h3 class="font-bold text-blue-700 mb-3">🚀 תלמידים מתקדמים</h3>
-        <ul class="space-y-2 text-gray-600">
-          <li>• "איך תוסיפו כלל שני – גם אם רטוב מדי?"</li>
-          <li>• בקשו מהם להסביר לחבר/ה</li>
-        </ul>
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 w-20 text-center"><div class="bg-blue-100 text-blue-800 font-black text-lg rounded-xl py-2">15–30</div></div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">💬 דיון</h3><p>חושים של הרובוט · הרובוט העיוור · Phytech.</p></div>
       </div>
-      <div>
-        <h3 class="font-bold text-orange-700 mb-3">🌍 ריבוי שפות</h3>
-        <ul class="space-y-2 text-gray-600">
-          <li>• חיישן = حساس (ח'אסס)</li>
-          <li>• תמונות ותרשימים ויזואליים לפני טקסט</li>
-        </ul>
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 w-20 text-center"><div class="bg-purple-100 text-purple-800 font-black text-lg rounded-xl py-2">30–55</div></div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">💻 לומדה – זוגות</h3>
+          <ol class="list-decimal list-inside space-y-1">
+            <li>חושים של ילד/ה וחושים של רובוט – התאמה</li>
+            <li>כן/לא או מספר? – כפתור מול מחוג</li>
+            <li>סליידר: משקים את האדמה ← המספר <b>יורד</b> (0–100)</li>
+            <li>Phytech – מה החוש של העץ?</li>
+          </ol></div>
       </div>
-    </div>
-    <div class="px-6 pb-6">
-      <div class="bg-pink-50 border-2 border-pink-200 rounded-2xl p-5 text-sm">
-        <h3 class="font-bold text-pink-700 mb-3 text-base">🎈 התאמות לכיתות ג'-ד'</h3>
-        <ul class="space-y-2 text-gray-700">
-          <li>• <b>בקר/חיישן:</b> הישארו רק על "חושים מלאכותיים" – ותרו על השם "ESP32" עצמו, קראו לו "הקופסה החכמה".</li>
-          <li>• <b>הבלוק "אם...אז...":</b> הדגמה קבוצתית של המורה בלבד על המסך המשותף – הזוגות רק בוחרים "מה יקרה?" מתוך 2 אפשרויות, לא בונים בלוק בעצמם.</li>
-          <li>• <b>החיבור הפיזי:</b> המורה מחבר, התלמידים "עוזרים להחזיק", מזהים איזה חוט הולך לאן לפי הכיתוב (VCC / GND / AOUT – אפשר להדביק ליד כל פין מדבקה עם ציור), ותוקעים את החיישן באדמה.</li>
-          <li>• <b>500 מיליארד ליטר:</b> ותרו על המספר המדויק – מספיק "כל כך הרבה מים שאי אפשר לספור".</li>
-        </ul>
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 w-20 text-center"><div class="bg-lime-100 text-lime-800 font-black text-lg rounded-xl py-2">55–85</div></div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">🔌 מעשי – צוותים (תפקידים חדשים!)</h3>
+          <ul class="space-y-2">
+            <li><b>(10') חיווט – צבע לצבע:</b> חיישן: 🔴 ← 🔴 · ⚫ ← ⚫ · 🟡 ← 🟡. חוט מגע ← 🔵. <b>את/ה עובר/ת צוות-צוות, חוט אחרי חוט.</b> צוות שמחכה – ממלא את תעודת הרובוט.</li>
+            <li><b>(3') בדיקה:</b> חוקר/ת החושים בודק/ת שכל חוט בצבע הנכון · המוח קורא/ת את כרטיס הטייס · את/ה מחבר/ת USB.</li>
+            <li><b>(12') המוח לוחץ F5 – קודם מחוץ לאדמה:</b> חיישן <b>באוויר</b> ← <b>בכוס מים</b> ← ורק אז <b>באדמה של הצמח</b>. כל ילד/ה בצוות מודד/ת פעם אחת. נוגעים בכסף ← "TOUCH!".</li>
+            <li><b>(5') תעודה:</b> 3 המספרים.</li>
+          </ul>
+          <p class="mt-2 text-xs bg-gray-50 rounded-xl p-2"><b>🩺 למי שסיים – בית חולים לתקלות:</b> את/ה מנתק/ת בשקט את החוט הצהוב ← "המספר משתגע! מה קרה לרובוט?" הצוות מאבחן ומתקן. <b>לעולם לא כתום ולא קצר.</b></p></div>
+      </div>
+      <div class="p-6 flex gap-5">
+        <div class="flex-shrink-0 w-20 text-center"><div class="bg-yellow-100 text-yellow-800 font-black text-lg rounded-xl py-2">85–90</div></div>
+        <div><h3 class="text-lg font-black text-gray-800 mb-1">🏁 סגירה</h3>
+          <ul class="space-y-1">
+            <li>🪪 <b>תעודה:</b> "אני מרגיש ___" + אוויר / מים / אדמה.</li>
+            <li>🔮 <b>Teaser:</b> "הרובוט כבר <b>יודע</b> שהאדמה יבשה. איך הוא יגיד לנו?"</li>
+          </ul>
+          <p class="mt-2 bg-amber-50 border border-amber-200 rounded-xl p-2"><b>⭐ משפט סגירה:</b> "היום הרובוט שלנו למד ש___, ובפרויקט שלנו זה יעזור ל___."</p></div>
       </div>
     </div>
   </div>
 
-  <!-- HARDWARE NOTE -->
-  <div class="bg-slate-100 border border-slate-300 rounded-2xl p-4 text-xs text-slate-600">
-    🔧 <b>עודכן ל-ESP32-S3 + MicroPython (מסלול יסודי):</b> חיישן לחות אדמה → GPIO 6, מתח 3.3V, קריאה גולמית 0–65535 (גבוה = יבש). המורה שומר <code>main.py</code> מראש; התלמידים מחווטים וקוראים ערכים. פירוט מלא: <code>docs/hardware-esp32-phase2.md</code>
+  <div class="bg-white rounded-3xl shadow-lg p-6 text-sm text-gray-600">
+    <h2 class="text-xl font-black text-gray-900 mb-3">🛫 כרטיס הטייס – גרסה 2 (+1)</h2>
+    <ol class="list-decimal list-inside space-y-1">
+      <li class="text-gray-400">הכבל מנותק כשמחברים או מנתקים חוטים.</li>
+      <li class="text-gray-400">החיישן תמיד לאדום. הכתום – רק למסך.</li>
+      <li class="text-gray-400">אף חוט לא מחבר ישר אדום לשחור.</li>
+      <li class="font-bold text-gray-800">חוקר/ת החושים בדק/ה: כל חוט מחבר מדבקה למדבקה באותו צבע.</li>
+    </ol>
   </div>
 
-  <!-- NOTES -->
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-red-700 text-white p-6"><h2 class="text-2xl font-black">🚨 בעיות נפוצות</h2></div>
+    <div class="p-6"><table class="w-full text-sm"><tbody class="divide-y divide-gray-100 text-gray-600">
+      <tr><td class="p-2 font-bold w-1/3">המספר לא זז בין אוויר למים</td><td class="p-2">בעיית חיווט – הצהוב במקום? האדום באדום? בגלל זה בודקים קודם מחוץ לאדמה.</td></tr>
+      <tr><td class="p-2 font-bold">המספר "משתגע"</td><td class="p-2">החוט הצהוב רופף, או החיישן לא עמוק מספיק באדמה.</td></tr>
+      <tr><td class="p-2 font-bold">כל הזמן "TOUCH!"</td><td class="p-2">נגעו בכסף ברגע שלחצו F5 – ⏹ ו-F5 שוב, בלי לגעת.</td></tr>
+      <tr><td class="p-2 font-bold">"למה רטוב = מספר קטן?"</td><td class="p-2">"ככה הרובוט שלנו סופר – הוא סופר כמה <b>יבש</b>. בשיעור הבא נלמד אותו מה זה 'יבש מדי'."</td></tr>
+      <tr><td class="p-2 font-bold">⚠️ חיישן במים</td><td class="p-2">רק עד הקו המסומן. החלק העליון נשאר יבש. המגש 30 ס"מ מהלוח.</td></tr>
+      <tr><td class="p-2 font-bold">Thonny לא מתחבר</td><td class="p-2">כבל נתונים · ⏹ · שקע ה-USB-C השני.</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-green-800 text-white p-6"><h2 class="text-2xl font-black">🇮🇱 Phytech – רקע למדריך/ה</h2></div>
+    <div class="p-6 text-sm text-gray-600 space-y-2">
+      <p>חברת אגרוטק ישראלית (קיבוץ יד מרדכי). שמה על עצים <b>דנדרומטר</b> – חיישן שנצמד לגזע ומודד שינויים זעירים בעובי שלו. כשעץ צמא – הגזע מתכווץ, ו-Phytech מגלה את זה לפני שהחקלאי רואה עלים צהובים.</p>
+      <p><b>לילדים:</b> "גם לעצים יש רובוט שמרגיש בשבילם." שאלה: "איך הם יודעים שעץ צמא לפני שרואים בעיניים?"</p>
+      <p class="text-xs text-gray-400">בלי מספרים ביסודי. רקע מלא: <a href="../../teachers/teacher-06.html" class="underline">מערך שיעור 6 – חטיבה</a>.</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-lime-600 text-white p-6"><h2 class="text-2xl font-black">🌿 גיימיפיקציה – 50 עלים</h2></div>
+    <div class="p-6 grid md:grid-cols-3 gap-4 text-sm text-gray-600">
+      <div class="bg-gray-50 rounded-xl p-4"><p class="font-bold text-gray-800 mb-1">💻 לומדה – 20</p><p>4 שלבים × 5</p></div>
+      <div class="bg-gray-50 rounded-xl p-4"><p class="font-bold text-gray-800 mb-1">🔌 מעשי – 20</p><p>חיווט + בדיקה 10 · 3 מדידות 10</p><p class="text-xs text-gray-400 mt-1">מסמנים בלומדה אחרי אישורך</p></div>
+      <div class="bg-gray-50 rounded-xl p-4"><p class="font-bold text-gray-800 mb-1">🏁 סגירה – 10</p><p>תעודה + ניחוש ה-Teaser</p></div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+    <div class="bg-orange-600 text-white p-6"><h2 class="text-2xl font-black">♿ התאמות</h2></div>
+    <div class="p-6 space-y-6 text-sm text-gray-600">
+      <div class="grid md:grid-cols-3 gap-6">
+        <div><h3 class="font-bold text-red-700 mb-2">🐢 תקועים</h3><ul class="space-y-1"><li>• רק חיישן הלחות, בלי חוט מגע</li><li>• רק 2 מדידות: אוויר ומים</li></ul></div>
+        <div><h3 class="font-bold text-blue-700 mb-2">🚀 מתקדמים</h3><ul class="space-y-1"><li>• "מה עוד אפשר לחבר לחוט המגע?" (כף, כוס מים) ⚠️ לבדוק</li><li>• לסדר 5 כוסות אדמה מהיבשה לרטובה – לפי הרובוט</li></ul></div>
+        <div><h3 class="font-bold text-orange-700 mb-2">🌍 ריבוי שפות</h3><ul class="space-y-1"><li>• חיישן = مستشعر · רטוב / יבש = رطب / جاف</li><li>• ציר המספרים והמדבקות עובדים בלי שפה</li></ul></div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-gray-50 rounded-2xl p-4"><h3 class="font-bold text-gray-800 mb-2">🎈 כיתה ד'</h3>
+          <ul class="space-y-1"><li>• מספרים עד 100 – בלי בעיה. בציר המספרים: רק "הרבה / קצת"</li><li>• לומדה: שלבים 2–3 יחד על המסך המשותף</li><li>• חיווט: חוט אחד בכל פעם, את/ה מאשר/ת כל חוט</li></ul></div>
+        <div class="bg-gray-50 rounded-2xl p-4"><h3 class="font-bold text-gray-800 mb-2">🎚️ אם אין זמן</h3>
+          <p><b>ליבה – לא מוותרים:</b> ציר המספרים · חיווט אמיתי · כרטיס טייס · 3 מדידות · משפט סגירה. <b>מתקצר ראשון:</b> הלומדה, אחר כך הרובוט העיוור.</p></div>
+      </div>
+    </div>
+  </div>
+
   <div class="bg-white rounded-3xl shadow-lg p-6">
-    <h2 class="text-2xl font-black text-gray-900 mb-4">📝 הערות שלי לשיעור</h2>
-    <textarea rows="5" placeholder="מה עבד, מה לשפר, ערכי חיישנים שנמדדו, בעיות טכניות..." class="w-full border-2 border-gray-200 rounded-2xl p-4 text-lg resize-none focus:border-slate-400 focus:outline-none" onchange="saveNotes(this.value)" id="notes-area"></textarea>
+    <h2 class="text-2xl font-black text-gray-900 mb-4">📝 הערות לשיעור</h2>
+    <textarea rows="5" placeholder="אילו מספרים יצאו? איפה נתקעו בחיווט?" class="w-full border-2 border-gray-200 rounded-2xl p-4 text-lg resize-none focus:border-slate-400 focus:outline-none" onchange="saveNotes(this.value)" id="notes-area"></textarea>
     <p class="text-xs text-gray-400 mt-1">נשמר אוטומטית</p>
   </div>
 
-</div><!-- max-w -->
-</div><!-- content -->
+</div>
 
 <script>
-function load(){
-  const n=localStorage.getItem('el_t6notes');
-  if(n)document.getElementById('notes-area').value=n;
-}
-function saveNotes(v){localStorage.setItem('el_t6notes',v);}
+function load(){try{const n=localStorage.getItem('el_t6notes');if(n)document.getElementById('notes-area').value=n;}catch(e){}}
+function saveNotes(v){try{localStorage.setItem('el_t6notes',v);}catch(e){}}
 load();
 </script>
 </body>
